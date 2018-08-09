@@ -1,0 +1,62 @@
+package bullet;
+
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
+public class BulletInfo {
+	private final static int 
+		NONE = thh.THH.NONE,
+		MAX = thh.THH.MAX;
+	public static String name;
+	public static int
+		nowFrame,
+		source,
+		kind,
+		size,
+		team,
+		atk,
+		offSet,
+		penetration,
+		reflection,
+		limitFrame,
+		limitRange;
+	public static double
+		x,y,xSpeed,ySpeed,accel,
+		angle;
+	public static int
+		imageID;
+	public static boolean
+		isLaser;
+	
+	public static final void clear() {
+		name = "";
+		kind = NONE;
+		size = 0;
+		team = NONE;
+		atk = 0;
+		offSet = 0;
+		penetration = 0;
+		reflection = 0;
+		limitFrame = MAX;
+		limitRange = MAX;
+		xSpeed = 0.0;
+		ySpeed = 0.0;
+		accel = 1.0;
+		angle = 0.0;
+		imageID = NONE;
+		isLaser = false;
+	}
+	public static final void fastParamSet_XYADSpd(double gunnerX,double gunnerY,double angle,double distance,double speed){
+		final double cos_angle = cos(angle),sin_angle = sin(angle);
+		BulletInfo.angle = angle;
+		x = gunnerX + distance*cos_angle;
+		y = gunnerY + distance*sin_angle;
+		xSpeed = speed*cos_angle;
+		ySpeed = speed*sin_angle;
+	}
+	public static final void fastParamSet_ADSpd(double angle,double distance,double speed){
+		BulletInfo.angle = angle;
+		xSpeed = speed*cos(angle);
+		ySpeed = speed*sin(angle);
+	}
+}
