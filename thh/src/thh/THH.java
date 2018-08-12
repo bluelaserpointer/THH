@@ -7,8 +7,10 @@ import java.awt.geom.*;
 import static java.awt.event.KeyEvent.*;
 import javax.swing.*;
 
-import bullet.Bullet2;
+import bullet.Bullet;
 import bullet.BulletInfo;
+import effect.Effect;
+import effect.EffectInfo;
 
 import java.io.*;
 import java.net.*;
@@ -78,17 +80,10 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	private int charaTeam[];
 	
 	//bullet data
-	public ArrayList<Bullet2> bullets = new ArrayList<Bullet2>();
+	public ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	
 	//effect data
-	public final int[]
-		effectChara = new int[1024],
-		effectKind = new int[1024],
-		effectAppearedFrame = new int[1024],
-		effectX = new int[1024],
-		effectY = new int[1024];
-	private int effect_maxID = -1;
-	private int effect_total;
+	public ArrayList<Effect> effects = new ArrayList<Effect>();
 	
 	//ResourceSystem
 	private Image[] arrayImage = new Image[128];
@@ -128,7 +123,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 						return name.endsWith(".class");
 					}
 				};
-			int classNumber = 0;
+			int classAmount = 0;
 			charaClass = new Chara[64];
 			File charaFolder = null;
 			try{
@@ -142,21 +137,23 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 				charaClass = new Chara[0];
 				break loadChara;
 			}
+			Chara.thh = this;
 			for(String className : charaFolder.list(classFilter)){
 				try{
 					final Object obj = Class.forName("chara." + className.substring(0,className.length() - 6)).newInstance();
 					if(obj instanceof Chara){
 						final Chara cls = (Chara)obj;
-						cls.giveInstance(this);
 						cls.loadImageData();
 						cls.loadSoundData();
-						charaClass[classNumber++] = cls;
+						charaClass[classAmount++] = cls;
 					}
-				}catch(ClassNotFoundException | InstantiationException | IllegalAccessException e){
+				}catch(InstantiationException e) {
+					System.out.println("ignored abstract class: " + className);
+				}catch(ClassNotFoundException | IllegalAccessException e){
 					System.out.println(e);
 				}
 			}
-			charaClass = Arrays.copyOf(charaClass,classNumber);
+			charaClass = Arrays.copyOf(charaClass,classAmount);
 			System.out.println("loaded chara class: " + charaClass.length);
 			resetData();
 		}
@@ -212,7 +209,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		//}
 	}
 	
-	private BufferedImage offImage = new BufferedImage(defaultScreenW,defaultScreenH,BufferedImage.TYPE_INT_ARGB_PRE); //僟僽儖僶僢僼傽僉儍儞僶僗
+	private final BufferedImage offImage = new BufferedImage(defaultScreenW,defaultScreenH,BufferedImage.TYPE_INT_ARGB_PRE); //僟僽儖僶僢僼傽僉儍儞僶僗
 	private Graphics2D g2;
 	private final Font basicFont = createFont("font/upcibi.ttf").deriveFont(Font.BOLD + Font.ITALIC,30.0f),commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN,15.0f);
 	private final BasicStroke stroke1 = new BasicStroke(1f),stroke2 = new BasicStroke(2f),stroke3 = new BasicStroke(3f),stroke5 = new BasicStroke(5f),stroke10 = new BasicStroke(10f);
@@ -246,7 +243,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		////////////////////////////////////////////////////////////////////////
 		//bulletAction
 		{
-			for(Bullet2 bullet : bullets.toArray(new Bullet2[0])) {
+			for(Bullet bullet : bullets.toArray(new Bullet[0])) {
 				final int gunnerID = bullet.SOURCE;
 				if(0 <= gunnerID && gunnerID < battleCharaClass.length)
 					battleCharaClass[gunnerID].bulletIdle(bullet,chara == gunnerID);
@@ -255,11 +252,10 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		///////////////////////////////////////////////////////////////
 		//effectAction
 		{
-			for(int i = 0;i <= effect_maxID;i++) {
-				if(effectKind[i] != NONE) {
-					final int charaID = effectChara[i];
-					battleCharaClass[charaID].effectIdle(i,effectKind[i],chara == charaID);
-				}
+			for(Effect effect : effects.toArray(new Effect[0])) {
+				final int gunnerID = effect.SOURCE;
+				if(0 <= gunnerID && gunnerID < battleCharaClass.length)
+					battleCharaClass[gunnerID].effectIdle(effect,chara == gunnerID);
 			}
 		}
 		///////////////////////////////////////////////////////////////
@@ -310,7 +306,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		loadTime_total = System.currentTimeMillis() - LOAD_TIME_PAINTCOMPONENT;
 	}
 	
-	public final int[] callBulletEngage(Bullet2 bullet) {
+	public final int[] callBulletEngage(Bullet bullet) {
 		int[] result = new int[battleCharaClass.length];
 		int searched = 0;
 		for(int i = 0;i < battleCharaClass.length;i++) {
@@ -330,23 +326,17 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 
 	//tool
-	public final boolean deleteBullet(Bullet2 bullet) {
+	public final boolean deleteBullet(Bullet bullet) {
 		if(battleCharaClass[bullet.SOURCE].deleteBullet(bullet))
 			return bullets.remove(bullet);
 		return false;
 	}
-	public final void deleteEffect(int id) {
-		if(battleCharaClass[effectChara[id]].deleteEffect(effectKind[id],id)) {
-			effectKind[id] = NONE;
-			effect_total--;
-			if(id == effect_maxID) {
-				do {
-					effect_maxID--;
-				}while(effect_maxID > -1 && effectKind[effect_maxID] == NONE);
-			}
-		}
+	public final boolean deleteEffect(Effect effect) {
+		if(battleCharaClass[effect.SOURCE].deleteEffect(effect))
+			return effects.remove(effect);
+		return false;
 	}
-	public final void fastFillArray(int[] array,int[] targetIDs,int value){
+	public final static void fastFillArray(int[] array,int[] targetIDs,int value){
 		for(int targetID : targetIDs){
 			if(0 <= targetID && targetID < array.length)
 				array[targetID] = value;
@@ -354,7 +344,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 				System.out.println("<Warning> fastFillArray detected a illegal targetID (" + targetID + ")");
 		}
 	}
-	public final void fastFillArray(int[] array,int[] targetIDs,int[] values){
+	public final static void fastFillArray(int[] array,int[] targetIDs,int[] values){
 		if(targetIDs.length != values.length){
 			System.out.println("<SystemError> fastFillArray called illegally: length of targetIDs(" + targetIDs.length + ") and length of values(" + values.length + ") are different");
 			return;
@@ -388,7 +378,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public final int receiveDamageInSquare(int team,int hp,int x,int y,int size){ //自処理被弾(弾消滅)
 		for(int i = 0;i < bullets.size() && hp > 0;i++){
-			final Bullet2 bullet = bullets.get(i);
+			final Bullet bullet = bullets.get(i);
 			if(team != bullet.team && bullet.atk > 0 && squreCollision((int)bullet.x,(int)bullet.y,bullet.SIZE,x,y,size)){ //衝突
 				hp -= bullet.atk;
 				battleCharaClass[bullet.SOURCE].bulletHitObject(bullet);
@@ -400,23 +390,23 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		//Editting
 		return 0;
 	}
-	public final Bullet2 searchBulletInSquare_single(int x,int y,int size,int team){
-		for(Bullet2 bullet : bullets.toArray(new Bullet2[0])){
+	public final Bullet searchBulletInSquare_single(int x,int y,int size,int team){
+		for(Bullet bullet : bullets.toArray(new Bullet[0])){
 			if(team != bullet.team && squreCollision((int)bullet.x,(int)bullet.y,bullet.SIZE,x,y,size)) //衝突
 				return bullet; //return ID
 		}
 		return null; //Not found
 	}
-	public final Bullet2[] searchBulletInSquare_multiple(int x,int y,int size,int team){
-		Bullet2[] foundIDs = new Bullet2[bullets.size()];
+	public final Bullet[] searchBulletInSquare_multiple(int x,int y,int size,int team){
+		Bullet[] foundIDs = new Bullet[bullets.size()];
 		int foundAmount =  0;
-		for(Bullet2 bullet : bullets.toArray(new Bullet2[0])){
+		for(Bullet bullet : bullets.toArray(new Bullet[0])){
 			if(team != bullet.team && squreCollision((int)bullet.x,(int)bullet.y,bullet.SIZE,x,y,size)) //衝突
 				foundIDs[foundAmount++] = bullet; //record ID
 		}
 		return Arrays.copyOf(foundIDs,foundAmount);
 	}
-	public final boolean squreCollision(int x1,int y1,int size1,int x2,int y2,int size2) {
+	public final static boolean squreCollision(int x1,int y1,int size1,int x2,int y2,int size2) {
 		final int halfSize = (size1 + size2)/2;
 		return abs(x1 - x2) < halfSize && abs(y1 - y2) < halfSize;
 	}
@@ -430,17 +420,11 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	//input
 	private int mouseX,mouseY;
 	private boolean mouseLeftPress,mouseMiddlePress,mouseRightPress;
-	private int mouseLeftCount,mouseMiddleCount,mouseRightCount;
 	private int mouseLeftPressedFrame,mouseMiddlePressedFrame,mouseRightPressedFrame;
-	private int mouseWheelMovedFrame;
-	private int mouseWheelMoveAmount;
 	private int mousePointing = NONE; //マウスがポイントしているもの
 	private int middleDragGapX,middleDragGapY;
 	
-	public void mouseWheelMoved(MouseWheelEvent e){
-		mouseWheelMovedFrame = nowFrame;
-		mouseWheelMoveAmount = e.getWheelRotation();
-	}
+	public void mouseWheelMoved(MouseWheelEvent e){}
 	public void mouseEntered(MouseEvent e){}
 	public void mouseExited(MouseEvent e){}
 	public void mousePressed(MouseEvent e){
@@ -448,18 +432,31 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		case MouseEvent.BUTTON1:
 			mouseLeftPress = true;
 			mouseLeftPressedFrame = nowFrame;
-			mouseLeftCount++;
+			if(key_1 && chara != 0)
+				battleCharaClass[0].dodgeOrder(mouseX, mouseY);
+			if(key_2 && chara != 1)
+				battleCharaClass[1].dodgeOrder(mouseX, mouseY);
+			if(key_3 && chara != 2)
+				battleCharaClass[2].dodgeOrder(mouseX, mouseY);
+			if(key_4 && chara != 3)
+				battleCharaClass[3].dodgeOrder(mouseX, mouseY);
 			break;
 		case MouseEvent.BUTTON2:
 			mouseMiddlePress = true;
-			mouseMiddleCount++;
 			middleDragGapX = viewX - mouseX;
 			middleDragGapY = viewY - mouseY;
 			break;
 		case MouseEvent.BUTTON3:
 			mouseRightPress = true;
 			mouseRightPressedFrame = nowFrame;
-			mouseRightCount++;
+			if(key_1 && chara != 0)
+				battleCharaClass[0].guardOrder(mouseX, mouseY);
+			if(key_2 && chara != 1)
+				battleCharaClass[1].guardOrder(mouseX, mouseY);
+			if(key_3 && chara != 2)
+				battleCharaClass[2].guardOrder(mouseX, mouseY);
+			if(key_4 && chara != 3)
+				battleCharaClass[3].guardOrder(mouseX, mouseY);
 			break;
 		}
 	}
@@ -495,24 +492,6 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	public final int getMouseY(){
 		return mouseY - viewY;
 	}
-	public final boolean getMouseLeftPress(){
-		return mouseLeftPress;
-	}
-	public final boolean getMouseMiddlePress(){
-		return mouseMiddlePress;
-	}
-	public final boolean getMouseRightPress(){
-		return mouseRightPress;
-	}
-	public final int getMouseLeftCount(){
-		return mouseLeftCount;
-	}
-	public final int getMouseMiddleCount(){
-		return mouseMiddleCount;
-	}
-	public final int getMouseRightCount(){
-		return mouseRightCount;
-	}
 	public final int getMousePressedFrame_left(){
 		return mouseLeftPressedFrame;
 	}
@@ -522,12 +501,6 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	public final int getMousePressedFrame_right(){
 		return mouseRightPressedFrame;
 	}
-	public final int getMouseWheelMovedFrame() {
-		return mouseWheelMovedFrame;
-	}
-	public final int getMouseWheelMoveAmount() {
-		return mouseWheelMoveAmount;
-	}
 	public final boolean isMouseInArea(int x,int y,int w,int h) {
 		return abs(x - mouseX + viewX) < w/2 && abs(y - mouseY + viewY) < h/2;
 	}
@@ -536,12 +509,25 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		return this.isMouseInArea(x,y,img.getWidth(null),img.getHeight(null));
 	}
 	//僉乕忣曬
+	private boolean key_1,key_2,key_3,key_4;
 	private boolean key_W,key_A,key_S,key_D;
 	private final int[] keyInputFrame = new int[1024];
 	public void keyPressed(KeyEvent e){
 		final int KEY_CODE = e.getKeyCode();
 		keyInputFrame[KEY_CODE] = nowFrame;
 		switch(KEY_CODE){
+		case VK_1:
+			key_1 = true;
+			break;
+		case VK_2:
+			key_2 = true;
+			break;
+		case VK_3:
+			key_3 = true;
+			break;
+		case VK_4:
+			key_4 = true;
+			break;
 		case VK_W:
 		case VK_UP:
 			key_W = true;
@@ -568,6 +554,18 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public void keyReleased(KeyEvent e){
 		switch(e.getKeyCode()){
+		case VK_1:
+			key_1 = false;
+			break;
+		case VK_2:
+			key_2 = false;
+			break;
+		case VK_3:
+			key_3 = false;
+			break;
+		case VK_4:
+			key_4 = false;
+			break;
 		case VK_W:
 		case VK_UP:
 			key_W = false;
@@ -602,11 +600,11 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	
 	//generation
 	public final void createBullet(){ //弾生成
-		bullets.add(new Bullet2());
+		bullets.add(new Bullet());
 	}
 	public final void createBullet(int amount) {
-		for(int i = 0,id = bullets.size();i < amount;i++,id++)
-			bullets.add(new Bullet2());
+		for(int i = 0;i < amount;i++)
+			bullets.add(new Bullet());
 	}
 	public final void createBullet_RoundDesign(int amount,double gunnerX,double gunnerY,double radius){
 		final double ANGLE = 2*PI/amount;
@@ -616,70 +614,20 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 			this.createBullet();
 		}
 	}
-	public final int createEffectID_cut(){ //弾ID生成
-		for(int i = 0;i < effectKind.length;i++){
-			if(effectKind[i] == NONE){
-				effectKind[i] = EXIST;
-				if(i > effect_maxID)
-					effect_maxID = i;
-				effect_total++;
-				effectAppearedFrame[i] = nowFrame;
-				return i;
-			}
-		}
-		return NONE;
+	public final void createEffect(){ //弾生成
+		effects.add(new Effect());
 	}
-	public final int createEffectID_safe(){ //弾ID生成
-		for(int i = 0;i < effectKind.length;i++){
-			if(effectKind[i] == NONE){
-				effectKind[i] = EXIST;
-				if(i > effect_maxID)
-					effect_maxID = i;
-				effect_total++;
-				effectAppearedFrame[i] = nowFrame;
-				return i;
-			}
-		}
-		return effectKind.length - 1;
+	public final void createEffect(int amount) {
+		for(int i = 0;i < amount;i++)
+			effects.add(new Effect());
 	}
-	public final int[] createEffectID_cut(int amount){ //弾ID生成
-		int[] ids = new int[amount];
-		int j = 0;
-		for(int i = 0;j < amount;i++){
-			if(effectKind[i] == NONE){
-				effectKind[i] = EXIST;
-				effectAppearedFrame[i] = nowFrame;
-				if(i > effect_maxID)
-					effect_maxID = i;
-				effect_total++;
-				ids[j++] = i;
-			}
-			if(++i >= effectKind.length) {
-				ids = Arrays.copyOf(ids, j);
-				break;
-			}
+	public final void createEffect_RoundDesign(int amount,double gunnerX,double gunnerY,double radius){
+		final double ANGLE = 2*PI/amount;
+		for(int i = 0;i < amount;i++){
+			EffectInfo.x = gunnerX + radius*cos(ANGLE*i);
+			EffectInfo.y = gunnerY + radius*sin(ANGLE*i);
+			this.createEffect();
 		}
-		return ids;
-	}
-	public final int[] createEffectID_safe(int amount){ //弾ID生成
-		final int[] ids = new int[amount];
-		int j = 0;
-		for(int i = 0;j < amount;i++){
-			if(effectKind[i] == NONE){
-				effectKind[i] = EXIST;
-				effectAppearedFrame[i] = nowFrame;
-				if(i > effect_maxID)
-					effect_maxID = i;
-				effect_total++;
-				ids[j++] = i;
-			}
-			if(++i >= effectKind.length) {
-				while(++j < amount)
-					ids[j] = effectKind.length - 1;
-				break;
-			}
-		}
-		return ids;
 	}
 	public final int getNowFrame() {
 		return nowFrame;
@@ -690,15 +638,24 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	public final boolean isExpired(int appearFrame,int limitFrame) {
 		return (nowFrame - appearFrame) >= limitFrame;
 	}
-	public final void prepareBulletInfo() {
+	public final void prepareBulletInfo(int charaID) {
 		BulletInfo.clear();
 		BulletInfo.nowFrame = nowFrame;
+		BulletInfo.source = charaID;
+	}
+	public final void prepareEffectInfo(int charaID) {
+		EffectInfo.clear();
+		EffectInfo.nowFrame = nowFrame;
+		EffectInfo.source = charaID;
+	}
+	public final void addKeyListener(KeyListener e) {
+		myFrame.addKeyListener(e);
 	}
 	
 	//premade stage test area
 	final private void resetData(){
 		bullets.clear();
-		Arrays.fill(effectKind, NONE);
+		effects.clear();
 		System.out.println("add characters to the game");
 		if(charaClass.length > 0){
 			battleCharaClass = new Chara[]{charaClass[0],charaClass[1]};
@@ -868,7 +825,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	//悢抣宯
-	public final double angleFormat(double radian){ //儔僕傾儞惍棟儊僜僢僪 -PI~+PI偵捈偡
+	public static final double angleFormat(double radian){ //儔僕傾儞惍棟儊僜僢僪 -PI~+PI偵捈偡
 		radian %= PI*2;
 		if(radian > PI)
 			radian -= PI*2;

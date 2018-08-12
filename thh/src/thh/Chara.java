@@ -1,16 +1,18 @@
 package thh;
 
-import java.io.Serializable;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
-import bullet.Bullet2;
+import bullet.Bullet;
+import effect.Effect;
 
-public abstract class Chara implements Serializable{
-	/**
-	 * 
-	 */
+public abstract class Chara implements KeyListener,MouseListener,MouseWheelListener{
 	//•’•£©`•Î•…
 	//•∑•π•∆•‡ÈvﬂB
-	private static final long serialVersionUID = -59140414705285416L;
 	protected final static int
 		//system
 		NONE = THH.NONE,
@@ -18,14 +20,11 @@ public abstract class Chara implements Serializable{
 		MIN = THH.MIN,
 		EXIST = THH.EXIST;
 	
-	protected THH thh;
+	protected static THH thh;
 	
 	//•·•Ω•√•…
 	
 	//Initialization
-	final void giveInstance(THH thh){
-		this.thh = thh;
-	}
 	protected void battleStarted(int charaID){}
 	protected abstract void spawn(int charaID,int charaTeam,int spawnX,int spawnY);
 	protected void turnStarted(){}
@@ -34,44 +33,78 @@ public abstract class Chara implements Serializable{
 	
 	//idle
 	protected abstract void idle(boolean isActive); //Include painting
-	protected abstract void bulletIdle(Bullet2 bullet,boolean IsCharaActive); //Include painting
-	protected abstract void effectIdle(int id,int kind,boolean IsCharaActive); //Include painting
+	protected abstract void bulletIdle(Bullet bullet,boolean IsCharaActive); //Include painting
+	protected abstract void effectIdle(Effect effect,boolean IsCharaActive); //Include painting
 	
-	//contact
-	protected abstract boolean bulletEngage(Bullet2 bullet);
-	
+	//control
+	//judge
+	public abstract boolean bulletEngage(Bullet bullet);
 	//decrease
-	protected abstract int decreaseME_amount(int amount);
-	protected abstract int decreaseME_rate(double rate);
+	public abstract int decreaseME_amount(int amount);
+	public abstract int decreaseME_rate(double rate);
 	public abstract int damage_amount(int damage);
 	public abstract int damage_rate(double rate);
-	protected abstract boolean kill();
-	//infomation
-	protected abstract int getHP();
-	protected abstract double getHPRate();
-	
+	public abstract boolean kill();
+	//information
+	public abstract String getName();
+	public abstract int getHP();
+	public abstract double getHPRate();
+	public abstract int getME();
+	public abstract double getMERate();
+	public abstract int getCharaStatus();
 	//acceleration
-	protected abstract void addAccel(double xAccel,double yAccel);
-	protected abstract void setAccel(double xAccel,double yAccel);
+	public abstract void addAccel(double xAccel,double yAccel);
+	public abstract void setAccel(double xAccel,double yAccel);
+
 	//bullet
-	public void bulletOutOfLifeSpan(Bullet2 bullet){}
-	public void bulletOutOfRange(Bullet2 bullet){}
-	public void bulletOutOfPenetration(Bullet2 bullet) {
+	public void bulletOutOfLifeSpan(Bullet bullet){}
+	public void bulletOutOfRange(Bullet bullet){}
+	public void bulletOutOfPenetration(Bullet bullet) {
 		if(!bullet.IS_LASER)
 			thh.deleteBullet(bullet);
 	}
-	public void bulletOutOfReflection(Bullet2 bullet) {
+	public void bulletOutOfReflection(Bullet bullet) {
 		if(!bullet.IS_LASER)
 			thh.deleteBullet(bullet);
 	}
-	public void bulletHitObject(Bullet2 bullet){}
-	protected boolean deleteBullet(Bullet2 bullet){
-		return true;
-	}
-	protected boolean deleteEffect(int kind,int id){
-		return true;
-	}
-	public boolean bulletIfHitLandscape(Bullet2 bullet,int x,int y){
+	public void bulletHitObject(Bullet bullet){}
+	public boolean bulletIfHitLandscape(Bullet bullet,int x,int y){
 		return thh.hitLandscape(x,y,10,10);
 	}
+	protected boolean deleteBullet(Bullet bullet){
+		return true;
+	}
+	
+	//effect
+	public void effectOutOfLifeSpan(Effect effect) {}
+	public void effectOutOfRange(Effect effect) {}
+	protected boolean deleteEffect(Effect effect){
+		return true;
+	}
+	
+	//keyEvent
+	@Override
+	public void keyPressed(KeyEvent e) {}
+	@Override
+	public void keyReleased(KeyEvent e) {}
+	@Override
+	public void keyTyped(KeyEvent e) {}	
+	//mouseEvent
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e){}
+	@Override
+	public void mouseEntered(MouseEvent e){}
+	@Override
+	public void mouseExited(MouseEvent e){}
+	@Override
+	public void mousePressed(MouseEvent e){}
+	@Override
+	public void mouseReleased(MouseEvent e){}
+	@Override
+	public void mouseClicked(MouseEvent e){}
+	//specialEvent
+	protected abstract void attackOrder(int targetX,int targetY);
+	protected abstract void jumpOrder(int targetX,int targetY);
+	protected abstract void dodgeOrder(int targetX,int targetY);
+	protected abstract void guardOrder(int targetX,int targetY);
 }

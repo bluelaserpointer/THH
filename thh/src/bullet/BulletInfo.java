@@ -29,7 +29,7 @@ public class BulletInfo {
 		isLaser;
 	
 	public static final void clear() {
-		name = "";
+		name = "<Not named>";
 		kind = NONE;
 		size = 0;
 		team = NONE;
@@ -46,7 +46,7 @@ public class BulletInfo {
 		imageID = NONE;
 		isLaser = false;
 	}
-	public static final void fastParamSet_XYADSpd(double gunnerX,double gunnerY,double angle,double distance,double speed){
+	public static final void fastParaSet_XYADSpd(double gunnerX,double gunnerY,double angle,double distance,double speed){
 		final double cos_angle = cos(angle),sin_angle = sin(angle);
 		BulletInfo.angle = angle;
 		x = gunnerX + distance*cos_angle;
@@ -54,7 +54,7 @@ public class BulletInfo {
 		xSpeed = speed*cos_angle;
 		ySpeed = speed*sin_angle;
 	}
-	public static final void fastParamSet_ADSpd(double angle,double distance,double speed){
+	public static final void fastParaSet_ADSpd(double angle,double distance,double speed){
 		BulletInfo.angle = angle;
 		xSpeed = speed*cos(angle);
 		ySpeed = speed*sin(angle);
