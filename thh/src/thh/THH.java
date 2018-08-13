@@ -23,7 +23,13 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	 */
 	private static final long serialVersionUID = 123412351L;
 
-	//フィールド
+	final static String
+		GAME_VERSION = "Ver beta1.0.0";
+	final public static int
+		NONE = -999999999, //値なし
+		MAX = Integer.MAX_VALUE, //最大
+		MIN = Integer.MIN_VALUE; //最小
+
 	//システム関連
 	//File Pass
 	final String
@@ -36,15 +42,6 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	//debug
 	private boolean freezeScreen,debugMode;
 	private long loadTime_total;
-
-	//others
-	final static String
-		GAME_VERSION = "Ver beta1.0.0";
-	final public static int
-		NONE = -999999999, //値なし
-		EXIST = 888888888, //
-		MAX = Integer.MAX_VALUE, //最大
-		MIN = Integer.MIN_VALUE; //最小
 	
 	//イベント関連
 	public final int 
@@ -58,6 +55,12 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		EVENT_PART = 8000;
 	private int mainEvent = OPENING; //イベント複合情報(イベント種類+イベントデータ)
 	
+	//stopEvent
+	private static int stopEventKind = NONE;
+	public static final int STOP = 0,FREEZE = 1;
+	private static int stopEventReason;
+	public static final int MESSAGE = 0,SPELL = 1;
+	
 	//ウィンドウ関連
 	final int defaultScreenW = 1000,defaultScreenH = 600; //デフォルトウィンドサイズ
 	int screenW = 1000,screenH = 600,displayW,displayH;
@@ -67,8 +70,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	
 	//タイム情報
 	private int gameTime,clearFrame; //ゲーム関係時間
-	private int nowFrame; //現在フレーム
-	private long nowTime; //現在ミリ秒時間
+	private static int nowFrame; //現在フレーム
 	
 	//stage Info
 	private int nowStage; //現在ステージ
@@ -76,15 +78,22 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	
 	//キャラクター情報
 	private int chara = NONE; //峴摦拞偺恖
-	private Chara[] charaClass,battleCharaClass = new Chara[0];
-	private int charaTeam[];
+	private static Chara[] charaClass;
+	private static Chara[] battleCharaClass = new Chara[0];
+	private static int charaTeam[];
 	
 	//bullet data
-	public ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+	private static final ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	
 	//effect data
-	public ArrayList<Effect> effects = new ArrayList<Effect>();
+	private static final ArrayList<Effect> effects = new ArrayList<Effect>();
 	
+	//event data
+	private static final ArrayDeque<String> messageStr = new ArrayDeque<String>();
+	private static final ArrayDeque<Integer> messageSource = new ArrayDeque<Integer>();
+	private static final ArrayDeque<Integer> messageEvent = new ArrayDeque<Integer>();
+	private int messageIterator;
+
 	//ResourceSystem
 	private Image[] arrayImage = new Image[128];
 	private String[] arrayImageURL = new String[128];
@@ -154,6 +163,10 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 				}
 			}
 			charaClass = Arrays.copyOf(charaClass,classAmount);
+			//image & sound length fit
+			arrayImage = Arrays.copyOf(arrayImage, arrayImage_maxID + 1);
+			arraySound = Arrays.copyOf(arraySound, arrayImage_maxID + 1);
+			
 			System.out.println("loaded chara class: " + charaClass.length);
 			resetData();
 		}
@@ -164,32 +177,13 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		System.out.println("loadTimeReslut: " + (System.currentTimeMillis() - loadTime));//儘乕僪強梫帪娫寢壥昞帵
 		new Thread(this).start();
 	}
-	final void loadConfig(boolean isFirstReload){
-		/*
-		//コンフィグ本体読み込み
-		if(!isFirstReload)
-			System.out.println("\nStart Config Reload...");
-		final long usedTime = System.currentTimeMillis();
-		try(ObjectInputStream ois = new ObjectInputStream(getClass().getResourceAsStream(CFG_URL))){
-			cfg = (Config)ois.readObject();
-		}catch(IOException | ClassNotFoundException e){
-			JOptionPane.showMessageDialog(null,CFG_URL + "の読み込みに失敗しました。\n全ステージに入れない可能性があります。\n「ConfigLoaderコンパイル.bat」の起動をお試しください。","config読み込みエラー",JOptionPane.ERROR_MESSAGE);
-			cfg = new Config();
-		}
-		//所要時間表示
-		if(firstLoad)
-			System.out.println("Config&Mod: " + (System.currentTimeMillis() - usedTime));
-		else{
-			System.out.println("config reload complete!");
-			System.out.println("TimeUsed: " + (System.currentTimeMillis() - usedTime) + "(ms)");
-		}*/
-	}
+
 	//mainLoop///////////////
-	public void run(){
+	public final void run(){
 		//titleBGM.loop();
 		//try{
 			while(true){
-				nowTime = System.currentTimeMillis();
+				final long nowTime = System.currentTimeMillis();
 				try{
 					Thread.sleep(25L);
 				}catch(InterruptedException e){}
@@ -212,8 +206,8 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	private final BufferedImage offImage = new BufferedImage(defaultScreenW,defaultScreenH,BufferedImage.TYPE_INT_ARGB_PRE); //僟僽儖僶僢僼傽僉儍儞僶僗
 	private Graphics2D g2;
 	private final Font basicFont = createFont("font/upcibi.ttf").deriveFont(Font.BOLD + Font.ITALIC,30.0f),commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN,15.0f);
-	private final BasicStroke stroke1 = new BasicStroke(1f),stroke2 = new BasicStroke(2f),stroke3 = new BasicStroke(3f),stroke5 = new BasicStroke(5f),stroke10 = new BasicStroke(10f);
-	private final Color HPWarningColor = new Color(255,120,120),debugTextColor = new Color(200,200,200,160);
+	private static final BasicStroke stroke1 = new BasicStroke(1f),stroke2 = new BasicStroke(2f),stroke3 = new BasicStroke(3f),stroke5 = new BasicStroke(5f),stroke10 = new BasicStroke(10f);
+	private static final Color HPWarningColor = new Color(255,120,120),debugTextColor = new Color(200,200,200,160);
 	private final Rectangle2D screenRect = new Rectangle2D.Double(0,0,defaultScreenW,defaultScreenH);
 	
 	private int[] poliX = {0,0,300,400,500,600,700,700,},poliY = {650,450,450,350,350,450,450,650};
@@ -236,13 +230,22 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		g2.fill(landPolygon);
 		////////////////////////////////////////////////////////////////////////
 		//charaAction
-		{
+		switch(stopEventKind) {
+		case STOP:
+			for(int i = 0;i < battleCharaClass.length;i++)
+				battleCharaClass[i].animationPaint();
+			break;
+		case FREEZE:
+			for(int i = 0;i < battleCharaClass.length;i++)
+				battleCharaClass[i].freezePaint();
+			break;
+		default:
 			for(int i = 0;i < battleCharaClass.length;i++)
 				battleCharaClass[i].idle(chara == i);
 		}
 		////////////////////////////////////////////////////////////////////////
 		//bulletAction
-		{
+		if(stopEventKind == NONE){
 			for(Bullet bullet : bullets.toArray(new Bullet[0])) {
 				final int gunnerID = bullet.SOURCE;
 				if(0 <= gunnerID && gunnerID < battleCharaClass.length)
@@ -251,7 +254,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		}
 		///////////////////////////////////////////////////////////////
 		//effectAction
-		{
+		if(stopEventKind == NONE){
 			for(Effect effect : effects.toArray(new Effect[0])) {
 				final int gunnerID = effect.SOURCE;
 				if(0 <= gunnerID && gunnerID < battleCharaClass.length)
@@ -297,6 +300,34 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 				viewX -= SCROLL_SPEED;
 				middleDragGapX -= SCROLL_SPEED;
 			}
+			//message
+			if(stopEventKind != NONE && stopEventReason == MESSAGE) {
+				if(messageStr.size() > 0) {
+					if(messageIterator > messageStr.getFirst().length() - 1){
+						if(key_enter) { //next message order
+							messageStr.remove();
+							final int SOURCE = messageSource.remove();
+							final int EVENT = messageEvent.remove();
+							if(EVENT != NONE && 0 <= SOURCE && SOURCE < battleCharaClass.length)
+								battleCharaClass[SOURCE].eventNotice(EVENT);
+							messageIterator = 0;
+						}
+					}else if(nowFrame % 8 == 0) //reading
+						messageIterator++;
+					//show message
+					if(messageStr.size() > 0) {
+						g2.setStroke(stroke5);
+						g2.setColor(Color.CYAN);
+						g2.drawString(messageStr.getFirst().substring(0, messageIterator), 150, 450);
+					}
+				}else { //finished reading
+					stopEventKind = stopEventReason = NONE;
+					messageIterator = 0;
+					messageStr.clear();
+					messageSource.clear();
+					messageEvent.clear();
+				}
+			}
 		}
 		g2.translate(-TRANSLATE_X, -TRANSLATE_Y);
 		//UI昤夋
@@ -315,10 +346,10 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return Arrays.copyOf(result, searched);
 	}
-	public final Chara getCharaClass(int charaID) {
+	public static final Chara getCharaClass(int charaID) {
 		return battleCharaClass[charaID];
 	}
-	public final int getCharaTeam(int charaID) {
+	public static final int getCharaTeam(int charaID) {
 		return charaTeam[charaID];
 	}
 	public final Image getImageByID(int imageID) {
@@ -335,24 +366,6 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		if(battleCharaClass[effect.SOURCE].deleteEffect(effect))
 			return effects.remove(effect);
 		return false;
-	}
-	public final static void fastFillArray(int[] array,int[] targetIDs,int value){
-		for(int targetID : targetIDs){
-			if(0 <= targetID && targetID < array.length)
-				array[targetID] = value;
-			else if(targetID != NONE)
-				System.out.println("<Warning> fastFillArray detected a illegal targetID (" + targetID + ")");
-		}
-	}
-	public final static void fastFillArray(int[] array,int[] targetIDs,int[] values){
-		if(targetIDs.length != values.length){
-			System.out.println("<SystemError> fastFillArray called illegally: length of targetIDs(" + targetIDs.length + ") and length of values(" + values.length + ") are different");
-			return;
-		}
-		for(int i = 0;i < targetIDs.length;i++){
-			if(targetIDs[i] < array.length)
-				array[targetIDs[i]] = values[i];
-		}
 	}
 	public final void rollCharaTurn(){
 		if(++chara == battleCharaClass.length)
@@ -432,14 +445,18 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		case MouseEvent.BUTTON1:
 			mouseLeftPress = true;
 			mouseLeftPressedFrame = nowFrame;
-			if(key_1 && chara != 0)
-				battleCharaClass[0].dodgeOrder(mouseX, mouseY);
-			if(key_2 && chara != 1)
-				battleCharaClass[1].dodgeOrder(mouseX, mouseY);
-			if(key_3 && chara != 2)
-				battleCharaClass[2].dodgeOrder(mouseX, mouseY);
-			if(key_4 && chara != 3)
-				battleCharaClass[3].dodgeOrder(mouseX, mouseY);
+			if(key_1 || key_2 || key_3 || key_4) {
+				if(key_1 && battleCharaClass.length >= 1)
+					battleCharaClass[0].attackOrder = true;
+				if(key_2 && battleCharaClass.length >= 2)
+					battleCharaClass[1].attackOrder = true;
+				if(key_3 && battleCharaClass.length >= 3)
+					battleCharaClass[2].attackOrder = true;
+				if(key_4 && battleCharaClass.length >= 4)
+					battleCharaClass[3].attackOrder = true;
+			}else
+				for(Chara chara : battleCharaClass)
+					chara.dodgeOrder = true;
 			break;
 		case MouseEvent.BUTTON2:
 			mouseMiddlePress = true;
@@ -449,14 +466,18 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		case MouseEvent.BUTTON3:
 			mouseRightPress = true;
 			mouseRightPressedFrame = nowFrame;
-			if(key_1 && chara != 0)
-				battleCharaClass[0].guardOrder(mouseX, mouseY);
-			if(key_2 && chara != 1)
-				battleCharaClass[1].guardOrder(mouseX, mouseY);
-			if(key_3 && chara != 2)
-				battleCharaClass[2].guardOrder(mouseX, mouseY);
-			if(key_4 && chara != 3)
-				battleCharaClass[3].guardOrder(mouseX, mouseY);
+			if(key_1 || key_2 || key_3 || key_4) {
+				if(key_1 && battleCharaClass.length >= 1)
+					battleCharaClass[0].moveOrder = true;
+				if(key_2 && battleCharaClass.length >= 2)
+					battleCharaClass[1].moveOrder = true;
+				if(key_3 && battleCharaClass.length >= 3)
+					battleCharaClass[2].moveOrder = true;
+				if(key_4 && battleCharaClass.length >= 4)
+					battleCharaClass[3].moveOrder = true;
+			}else
+				for(Chara chara : battleCharaClass)
+					chara.guardOrder = true;
 			break;
 		}
 	}
@@ -510,7 +531,8 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	//僉乕忣曬
 	private boolean key_1,key_2,key_3,key_4;
-	private boolean key_W,key_A,key_S,key_D;
+	private long key_1_time,key_2_time,key_3_time,key_4_time;
+	private boolean key_W,key_A,key_S,key_D,key_enter;
 	private final int[] keyInputFrame = new int[1024];
 	public void keyPressed(KeyEvent e){
 		final int KEY_CODE = e.getKeyCode();
@@ -518,15 +540,27 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		switch(KEY_CODE){
 		case VK_1:
 			key_1 = true;
+			if(getPassedTime(key_1_time) < 200 && battleCharaClass.length >= 1)
+				battleCharaClass[0].spellOrder = true;
+			key_1_time = getNowTime();
 			break;
 		case VK_2:
 			key_2 = true;
+			if(getPassedTime(key_2_time) < 200 && battleCharaClass.length >= 2)
+				battleCharaClass[1].spellOrder = true;
+			key_2_time = getNowTime();
 			break;
 		case VK_3:
 			key_3 = true;
+			if(getPassedTime(key_3_time) < 200 && battleCharaClass.length >= 3)
+				battleCharaClass[2].spellOrder = true;
+			key_3_time = getNowTime();
 			break;
 		case VK_4:
 			key_4 = true;
+			if(getPassedTime(key_4_time) < 200 && battleCharaClass.length >= 4)
+				battleCharaClass[3].spellOrder = true;
+			key_4_time = getNowTime();
 			break;
 		case VK_W:
 		case VK_UP:
@@ -544,6 +578,8 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		case VK_RIGHT:
 			key_D = true;
 			break;
+		case VK_ENTER:
+			key_enter = true;
 		case VK_F3:
 			debugMode = !debugMode;
 			break;
@@ -582,6 +618,8 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		case VK_RIGHT:
 			key_D = false;
 			break;
+		case VK_ENTER:
+			key_enter = false;
 		}
 	}
 	public void keyTyped(KeyEvent e){}
@@ -599,51 +637,60 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	//generation
-	public final void createBullet(){ //弾生成
+	public final static void createBullet(){ //弾生成
 		bullets.add(new Bullet());
 	}
-	public final void createBullet(int amount) {
+	public final static void createBullet(int amount) {
 		for(int i = 0;i < amount;i++)
 			bullets.add(new Bullet());
 	}
-	public final void createBullet_RoundDesign(int amount,double gunnerX,double gunnerY,double radius){
+	public final static void createBullet_RoundDesign(int amount,double gunnerX,double gunnerY,double radius){
 		final double ANGLE = 2*PI/amount;
 		for(int i = 0;i < amount;i++){
 			BulletInfo.x = gunnerX + radius*cos(ANGLE*i);
 			BulletInfo.y = gunnerY + radius*sin(ANGLE*i);
-			this.createBullet();
+			createBullet();
 		}
 	}
-	public final void createEffect(){ //弾生成
+	public final static void createEffect(){ //弾生成
 		effects.add(new Effect());
 	}
-	public final void createEffect(int amount) {
+	public final static void createEffect(int amount) {
 		for(int i = 0;i < amount;i++)
 			effects.add(new Effect());
 	}
-	public final void createEffect_RoundDesign(int amount,double gunnerX,double gunnerY,double radius){
+	public final static void createEffect_RoundDesign(int amount,double gunnerX,double gunnerY,double radius){
 		final double ANGLE = 2*PI/amount;
 		for(int i = 0;i < amount;i++){
 			EffectInfo.x = gunnerX + radius*cos(ANGLE*i);
 			EffectInfo.y = gunnerY + radius*sin(ANGLE*i);
-			this.createEffect();
+			createEffect();
 		}
 	}
-	public final int getNowFrame() {
+	public static final int getNowFrame() {
 		return nowFrame;
 	}
-	public final int getPassedFrame(int frame) {
+	public static final int getPassedFrame(int frame) {
 		return nowFrame - frame;
 	}
-	public final boolean isExpired(int appearFrame,int limitFrame) {
+	public static final boolean isExpired_frame(int appearFrame,int limitFrame) {
 		return (nowFrame - appearFrame) >= limitFrame;
 	}
-	public final void prepareBulletInfo(int charaID) {
+	public static final long getNowTime() {
+		return System.currentTimeMillis();
+	}
+	public static final int getPassedTime(long time) {
+		return (int)(System.currentTimeMillis() - time);
+	}
+	public static final boolean isExpired_time(long time,int limitTime) {
+		return (System.currentTimeMillis() - time) >= limitTime;
+	}
+	public static final void prepareBulletInfo(int charaID) {
 		BulletInfo.clear();
 		BulletInfo.nowFrame = nowFrame;
 		BulletInfo.source = charaID;
 	}
-	public final void prepareEffectInfo(int charaID) {
+	public static final void prepareEffectInfo(int charaID) {
 		EffectInfo.clear();
 		EffectInfo.nowFrame = nowFrame;
 		EffectInfo.source = charaID;
@@ -652,10 +699,30 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		myFrame.addKeyListener(e);
 	}
 	
+	//event
+	public static final void addMessage(int source,String message) {
+		stopEventKind = STOP;
+		stopEventReason = MESSAGE;
+		messageSource.add(source);
+		messageStr.add(message);
+		messageEvent.add(THH.NONE);
+	}
+	public static final void addMessage(int source,int event,String message) {
+		stopEventKind = STOP;
+		stopEventReason = MESSAGE;
+		messageSource.add(source);
+		messageStr.add(message);
+		messageEvent.add(event);
+	}
+	
 	//premade stage test area
 	final private void resetData(){
 		bullets.clear();
 		effects.clear();
+		messageSource.clear();
+		messageStr.clear();
+		messageEvent.clear();
+		
 		System.out.println("add characters to the game");
 		if(charaClass.length > 0){
 			battleCharaClass = new Chara[]{charaClass[0],charaClass[1]};
@@ -845,7 +912,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	* @return 僟僀傾儘僌偑暵偠傜傟傞傑偱偺宱夁帪娫
 	* @since beta9.0
 	*/
-	public final long warningBox(String message,String title){
+	public static final long warningBox(String message,String title){
 		long openTime = System.currentTimeMillis();
 		JOptionPane.showMessageDialog(null,message,title,JOptionPane.WARNING_MESSAGE);
 		return System.currentTimeMillis() - openTime;

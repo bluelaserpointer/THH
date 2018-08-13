@@ -53,9 +53,9 @@ public class Bullet extends Entity{
 	}
 	
 	public final boolean defaultIdle(THH thh) {
-		final Chara chara = thh.getCharaClass(SOURCE);
+		final Chara chara = THH.getCharaClass(SOURCE);
 		//LifeSpan & Range
-		if(LIMIT_FRAME <= thh.getNowFrame() - super.APPEARED_FRAME) {
+		if(LIMIT_FRAME <= THH.getNowFrame() - super.APPEARED_FRAME) {
 			chara.bulletOutOfLifeSpan(this);
 			thh.deleteBullet(this);
 			return false;
@@ -83,8 +83,8 @@ public class Bullet extends Entity{
 		}
 		//Damaging
 		for(int charaID : thh.callBulletEngage(this)) {
-			if(thh.getCharaTeam(charaID) != team && atk > 0) {
-				thh.getCharaClass(charaID).damage_amount(atk);
+			if(THH.getCharaTeam(charaID) != team && atk > 0) {
+				THH.getCharaClass(charaID).damage_amount(atk);
 				chara.bulletHitObject(this);
 				if(penetration > 0)
 					penetration--;

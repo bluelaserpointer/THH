@@ -1,24 +1,16 @@
 package thh;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-
 import bullet.Bullet;
 import effect.Effect;
 
-public abstract class Chara implements KeyListener,MouseListener,MouseWheelListener{
+public abstract class Chara{
 	//•’•£©`•Î•…
 	//•∑•π•∆•‡ÈvﬂB
 	protected final static int
 		//system
 		NONE = THH.NONE,
 		MAX = THH.MAX,
-		MIN = THH.MIN,
-		EXIST = THH.EXIST;
+		MIN = THH.MIN;
 	
 	protected static THH thh;
 	
@@ -33,6 +25,8 @@ public abstract class Chara implements KeyListener,MouseListener,MouseWheelListe
 	
 	//idle
 	protected abstract void idle(boolean isActive); //Include painting
+	protected abstract void animationPaint();
+	protected abstract void freezePaint();
 	protected abstract void bulletIdle(Bullet bullet,boolean IsCharaActive); //Include painting
 	protected abstract void effectIdle(Effect effect,boolean IsCharaActive); //Include painting
 	
@@ -82,29 +76,12 @@ public abstract class Chara implements KeyListener,MouseListener,MouseWheelListe
 		return true;
 	}
 	
-	//keyEvent
-	@Override
-	public void keyPressed(KeyEvent e) {}
-	@Override
-	public void keyReleased(KeyEvent e) {}
-	@Override
-	public void keyTyped(KeyEvent e) {}	
-	//mouseEvent
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent e){}
-	@Override
-	public void mouseEntered(MouseEvent e){}
-	@Override
-	public void mouseExited(MouseEvent e){}
-	@Override
-	public void mousePressed(MouseEvent e){}
-	@Override
-	public void mouseReleased(MouseEvent e){}
-	@Override
-	public void mouseClicked(MouseEvent e){}
 	//specialEvent
-	protected abstract void attackOrder(int targetX,int targetY);
-	protected abstract void jumpOrder(int targetX,int targetY);
-	protected abstract void dodgeOrder(int targetX,int targetY);
-	protected abstract void guardOrder(int targetX,int targetY);
+	protected int weaponChangeOrder;
+	protected boolean attackOrder,moveOrder,dodgeOrder,guardOrder,spellOrder;
+	protected void resetOrder() {
+		weaponChangeOrder = 0;
+		attackOrder = moveOrder = dodgeOrder = guardOrder = spellOrder = false;
+	}
+	protected void eventNotice(int event) {}
 }

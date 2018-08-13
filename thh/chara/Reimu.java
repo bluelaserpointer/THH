@@ -64,11 +64,6 @@ public class Reimu extends THHOriginal{
 		charaJumpLimit = 300;
 	}
 	
-	//behavior
-	@Override
-	protected final void guardOrder(int targetX,int targetY) {
-		
-	}
 	//bullet
 	@Override
 	final protected void bulletSpawn(int kind) {

@@ -1,7 +1,6 @@
 package chara;
 
 import static java.lang.Math.*;
-import java.awt.event.MouseWheelEvent;
 
 import bullet.Bullet;
 import bullet.BulletInfo;
@@ -16,6 +15,7 @@ public abstract class THHOriginal extends Chara{
 		charaHP,charaME,
 		charaBaseHP,charaBaseME,
 		charaJumpLimit,
+		charaSpellCharge,
 		charaSize,
 		charaStatus;
 	protected double
@@ -49,6 +49,7 @@ public abstract class THHOriginal extends Chara{
 	}
 	@Override
 	protected void spawn(int charaID,int charaTeam,int x,int y){ //³õÆÚ»¯„IÀí
+		super.resetOrder();
 		this.charaID = charaID;
 		this.charaTeam = charaTeam;
 		charaX = x;
@@ -84,29 +85,57 @@ public abstract class THHOriginal extends Chara{
 					charaOnLand = true;
 			}
 		}
+		//dodge
+		if(super.dodgeOrder)
+			dodge(mouseX,mouseY);
 		//attack
 		if(isActive){
 			//death
 			if(charaHP <= 0) {
-				System.out.println("died HP: " + charaHP);
 				thh.rollCharaTurn();
 				return;
 			}
 			//attack
-			if(attackOrder) {
+			if(super.attackOrder) {
 				charaShotAngle = mouseAngle;
 				bulletSpawn(BulletInfo.kind = weaponSlot[slot]);
-				attackOrder = false;
 			}
-			if(jumpOrder) {
-				if(charaJumpLimit > 0){
-					charaJumpLimit--;
-					dodge(mouseX,mouseY);
+			if(moveOrder) {
+				charaX += (mouseX - charaX)/10;
+				charaY += (mouseY - charaY)/10;
+			}
+			//weaponChange
+			int roll = super.weaponChangeOrder;
+			if(roll != 0) {
+				int target = slot;
+				if(roll > 0){
+					while(target < weaponSlot_max - 1){
+						if(weaponSlot[++target] != NONE) {
+							if(--roll == 0)
+								break;
+						}
+					}
+				}else{
+					while(target > 0){
+						if(weaponSlot[--target] != NONE) {
+							if(++roll == 0)
+								break;
+						}
+					}
 				}
-				jumpOrder = false;
+				slot = target;
 			}
 		}
+		super.resetOrder();
 		//paintChara
+		this.animationPaint();
+	}
+	@Override
+	protected void animationPaint() {
+		this.freezePaint();
+	}
+	@Override
+	protected void freezePaint() {
 		thh.drawImageTHH(charaIID,(int)charaX,(int)charaY);
 		thh.paintHPArc((int)charaX,(int)charaY,charaHP,charaBaseHP);
 	}
@@ -183,45 +212,6 @@ public abstract class THHOriginal extends Chara{
 		return charaStatus;
 	}
 
-	//KeyEvent
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		//weaponChange
-		int roll = e.getWheelRotation();
-		if(roll != 0) {
-			int target = slot;
-			if(roll > 0){
-				while(target < weaponSlot_max - 1){
-					if(weaponSlot[++target] != NONE) {
-						if(--roll == 0)
-							break;
-					}
-				}
-			}else{
-				while(target > 0){
-					if(weaponSlot[--target] != NONE) {
-						if(++roll == 0)
-							break;
-					}
-				}
-			}
-			slot = target;
-		}
-	}
-
-	boolean attackOrder,jumpOrder;
-	@Override
-	protected final void attackOrder(int targetX,int targetY) {
-		attackOrder = true;
-	}
-	@Override
-	protected final void jumpOrder(int targetX,int targetY) {
-		jumpOrder = true;
-	}
-	@Override
-	protected void dodgeOrder(int targetX,int targetY) {
-		this.dodge(targetX, targetY);
-	}
-	protected void bulletSpawn(int kind) {}
-	protected void effectSpawn(int kind) {}	
+	abstract protected void bulletSpawn(int kind);
+	abstract protected void effectSpawn(int kind);
 }

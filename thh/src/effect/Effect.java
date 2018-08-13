@@ -39,9 +39,9 @@ public class Effect extends Entity{
 	}
 
 	public final boolean defaultIdle(THH thh) {
-		final Chara chara = thh.getCharaClass(SOURCE);
+		final Chara chara = THH.getCharaClass(SOURCE);
 		//LifeSpan & Range
-		if(LIMIT_FRAME <= thh.getNowFrame() - super.APPEARED_FRAME) {
+		if(LIMIT_FRAME <= THH.getNowFrame() - super.APPEARED_FRAME) {
 			chara.effectOutOfLifeSpan(this);
 			thh.deleteEffect(this);
 			return false;

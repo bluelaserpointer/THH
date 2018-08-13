@@ -7,6 +7,7 @@ import bullet.Bullet;
 import bullet.BulletInfo;
 import effect.Effect;
 import effect.EffectInfo;
+import thh.THH;
 
 public class Marisa extends THHOriginal{
 	@Override
@@ -64,15 +65,10 @@ public class Marisa extends THHOriginal{
 		charaJumpLimit = 300;
 	}
 	
-	//behavior
-	@Override
-	protected final void guardOrder(int targetX,int targetY) {
-		
-	}
 	//bullet
 	@Override
 	final protected void bulletSpawn(int kind) {
-		thh.prepareBulletInfo(charaID);
+		THH.prepareBulletInfo(charaID);
 		BulletInfo.team = charaTeam;
 		switch(kind){
 		case MILLKY_WAY:
@@ -87,7 +83,7 @@ public class Marisa extends THHOriginal{
 			BulletInfo.limitFrame = 200;
 			BulletInfo.limitRange = MAX;
 			BulletInfo.imageID = bulletIID[MILLKY_WAY];
-			thh.createBullet_RoundDesign(8,charaX,charaY,50);
+			THH.createBullet_RoundDesign(8,charaX,charaY,50);
 			break;
 		case NARROW_SPARK:
 			BulletInfo.name = "NARROW_SPARK";
@@ -102,7 +98,7 @@ public class Marisa extends THHOriginal{
 			BulletInfo.limitRange = MAX;
 			BulletInfo.imageID = bulletIID[NARROW_SPARK];
 			BulletInfo.isLaser = true;
-			thh.createBullet();
+			THH.createBullet();
 			break;
 		case REUSE_BOMB:
 			BulletInfo.name = "REUSE_BOMB";
@@ -116,13 +112,13 @@ public class Marisa extends THHOriginal{
 			BulletInfo.limitFrame = 200;
 			BulletInfo.limitRange = MAX;
 			BulletInfo.imageID = bulletIID[REUSE_BOMB];
-			thh.createBullet_RoundDesign(3,charaX,charaY,50);
+			THH.createBullet_RoundDesign(3,charaX,charaY,50);
 			break;
 		}
 	}
 	@Override
 	final protected void effectSpawn(int kind) {
-		thh.prepareEffectInfo(charaID);
+		THH.prepareEffectInfo(charaID);
 		switch(kind){
 		case LIGHTNING:
 			EffectInfo.name = "LIGHTNING";
@@ -132,7 +128,7 @@ public class Marisa extends THHOriginal{
 			EffectInfo.limitFrame = 8;
 			EffectInfo.limitRange = MAX;
 			EffectInfo.imageID = effectIID[LIGHTNING];
-			thh.createBullet();
+			THH.createBullet();
 			break;
 		}
 	}
