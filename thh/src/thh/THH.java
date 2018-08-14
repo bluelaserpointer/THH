@@ -17,10 +17,13 @@ import java.net.*;
 import java.util.*;
 import static java.lang.Math.*;
 
+/**
+ * 
+ * @author bluelaserpointer
+ * @version alpha1.0
+ *
+ */
 final public class THH extends JPanel implements MouseListener,MouseMotionListener,MouseWheelListener,KeyListener,Runnable{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 123412351L;
 
 	final static String
@@ -419,18 +422,26 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
 	}
 	public final int receiveDamageInSquare(int team,int hp,int x,int y,int size){ //自処理被弾(弾消滅)
-		for(int i = 0;i < bullets.size() && hp > 0;i++){
-			final Bullet bullet = bullets.get(i);
+		for(Bullet bullet : bullets){
 			if(team != bullet.team && bullet.atk > 0 && squreCollision((int)bullet.x,(int)bullet.y,bullet.SIZE,x,y,size)){ //衝突
 				hp -= bullet.atk;
 				battleCharaClass[bullet.SOURCE].bulletHitObject(bullet);
+				if(hp <= 0)
+					break;
 			}
 		}
 		return hp; //残ったHPを返す
 	}
 	public final int receiveBulletInCircle(int hp,int x,int y,int size,int team){ //自処理被弾(弾消滅)
-		//Editting
-		return 0;
+		for(Bullet bullet : bullets){
+			if(team != bullet.team && bullet.atk > 0 && circleCollision((int)bullet.x,(int)bullet.y,bullet.SIZE,x,y,size)){ //衝突
+				hp -= bullet.atk;
+				battleCharaClass[bullet.SOURCE].bulletHitObject(bullet);
+				if(hp <= 0)
+					break;
+			}
+		}
+		return hp; //残ったHPを返す
 	}
 	public final Bullet searchBulletInSquare_single(int x,int y,int size,int team){
 		for(Bullet bullet : bullets.toArray(new Bullet[0])){
@@ -451,6 +462,10 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	public final static boolean squreCollision(int x1,int y1,int size1,int x2,int y2,int size2) {
 		final int halfSize = (size1 + size2)/2;
 		return abs(x1 - x2) < halfSize && abs(y1 - y2) < halfSize;
+	}
+	public final static boolean circleCollision(int x1,int y1,int size1,int x2,int y2,int size2) {
+		final double DX = x1 - x1,DY = y1 - y2,RANGE = size1 + size2;
+		return DX*DX + DY*DY <= RANGE*RANGE;
 	}
 	
 	//input
