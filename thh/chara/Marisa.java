@@ -27,7 +27,7 @@ public class Marisa extends THHOriginal{
 	//Sounds
 	
 	@Override
-	final protected void loadImageData(){ //画像読み込み
+	protected final void loadImageData(){ //画像読み込み
 		super.loadImageData();
 		charaIID = thh.loadImage("Marisa.png");
 		bulletIID[MILLKY_WAY] = thh.loadImage("MillkyWay.png");
@@ -38,37 +38,35 @@ public class Marisa extends THHOriginal{
 	}
 	
 	@Override
-	final protected void loadSoundData(){ //サウンド読み込み
+	protected final void loadSoundData(){ //サウンド読み込み
 	}
 	
 	//Initialization
 	@Override
-	final protected void battleStarted(int charaID){
+	protected final void battleStarted(int charaID){
 		//test area
-		weaponSlot[0] = MILLKY_WAY;
-		weaponSlot[1] = NARROW_SPARK;
-		weaponSlot[2] = REUSE_BOMB;
+		weaponSlot[0] = REUSE_BOMB;
+		spellSlot[0] = NARROW_SPARK;
+		spellSlot[1] = REUSE_BOMB;
 		////
-		slot = 0;
+		slot_spell = 0;
 	}
 	@Override
-	final protected void spawn(int charaID,int charaTeam,int x,int y){ //初期化処理
+	protected final void spawn(int charaID,int charaTeam,int x,int y){ //初期化処理
 		super.spawn(charaID,charaTeam,x,y);
 		charaHP = super.charaBaseHP = 10000;
 		charaME = charaBaseME = 100;
 		charaSize = 70;
-		charaJumpLimit = 300;
 	}
 	@Override
-	final protected void turnStarted(){
+	protected final void turnStarted(){
 		super.turnStarted();
-		charaJumpLimit = 300;
 	}
 	
 	//bullet
 	@Override
-	final protected void bulletSpawn(int kind) {
-		THH.prepareBulletInfo(charaID);
+	protected final void bulletSpawn(int kind) {
+		super.bulletSpawn(kind);
 		BulletInfo.team = charaTeam;
 		switch(kind){
 		case MILLKY_WAY:
@@ -86,6 +84,9 @@ public class Marisa extends THHOriginal{
 			THH.createBullet_RoundDesign(8,charaX,charaY,50);
 			break;
 		case NARROW_SPARK:
+			//message
+			THH.addMessage(charaID,"KOIFU [MasterSpark]");
+			THH.addMessage(charaID,"TEST MESSAGE 2");
 			BulletInfo.name = "NARROW_SPARK";
 			BulletInfo.fastParaSet_XYADSpd(charaX,charaY,charaShotAngle,0,thh.getImageByID(bulletIID[NARROW_SPARK]).getWidth(null));
 			BulletInfo.accel = 1.0;
@@ -117,70 +118,47 @@ public class Marisa extends THHOriginal{
 		}
 	}
 	@Override
-	final protected void effectSpawn(int kind) {
-		THH.prepareEffectInfo(charaID);
+	protected final void effectSpawn(int kind,double x,double y) {
+		super.effectSpawn(kind,x,y);
 		switch(kind){
 		case LIGHTNING:
 			EffectInfo.name = "LIGHTNING";
-			EffectInfo.fastParaSet_XYADSpd(charaX,charaY,2*PI*random(),10,20);
+			EffectInfo.fastParaSet_XYADSpd(x,y,2*PI*random(),10,20);
 			EffectInfo.accel = 1.0;
 			EffectInfo.size = NONE;
-			EffectInfo.limitFrame = 8;
+			EffectInfo.limitFrame = 2;
 			EffectInfo.limitRange = MAX;
 			EffectInfo.imageID = effectIID[LIGHTNING];
-			THH.createBullet();
+			THH.createEffect();
 			break;
 		}
 	}
 	@Override
-	final protected void bulletIdle(Bullet bullet,boolean isCharaActive) {
+	protected final void bulletIdle(Bullet bullet,boolean isCharaActive) {
 		switch(bullet.KIND) {
 		case MILLKY_WAY:
-			bullet.defaultIdle(thh);
-			bullet.defaultPaint(thh);
+			super.bulletIdle(bullet, isCharaActive);
 			break;
 		case NARROW_SPARK: //laser action
-			while(thh.inStage((int)bullet.x,(int)bullet.y) && bullet.defaultIdle(thh))
-				bullet.defaultPaint(thh);
+			while(THH.stage.inStage((int)bullet.x,(int)bullet.y) && bullet.defaultIdle())
+				bullet.defaultPaint();
 			bullet.x = charaX;
 			bullet.y = charaY;
 			break;
 		case REUSE_BOMB:
-			bullet.defaultIdle(thh);
+			bullet.defaultIdle();
 			bullet.setSpeedY(bullet.getSpeedY() + 1.1);
-			bullet.defaultPaint(thh);
+			bullet.defaultPaint();
 			if(random() < 0.2)
-				effectSpawn(LIGHTNING);
+				effectSpawn(LIGHTNING,bullet.x,bullet.y);
 			break;
 		}
 	}
 	@Override
-	final protected boolean deleteBullet(Bullet bullet) {
-		switch(bullet.KIND) {
-		case REUSE_BOMB:
-			break;
-		}
-		return true;
-	}
-	//effect
-	@Override
-	final protected void effectIdle(Effect effect,boolean isCharaActive) {
+	protected final void effectIdle(Effect effect,boolean isCharaActive) {
 		switch(effect.KIND) {
-		case LIGHTNING:
-			break;
-		case NARROW_SPARK_HE:
-			break;
+		default:
+			super.effectIdle(effect, isCharaActive);
 		}
-	}
-	@Override
-	final public boolean deleteEffect(Effect effect) {
-		switch(effect.KIND) {
-		case LIGHTNING:
-			effect.name = "LIGHTNING_D";
-			return false;
-		case NARROW_SPARK_HE:
-			return true;
-		}
-		return true;
 	}
 }

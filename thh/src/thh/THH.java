@@ -40,7 +40,9 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		LOCAL_FONT_URL = "assets/font";
 	
 	//debug
-	private boolean freezeScreen,debugMode;
+	private static boolean freezeScreen;
+
+	private boolean debugMode;
 	private long loadTime_total;
 	
 	//イベント関連
@@ -69,18 +71,16 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	int page,page_max; //ページ機能
 	
 	//タイム情報
-	private int gameTime,clearFrame; //ゲーム関係時間
-	private static int nowFrame; //現在フレーム
-	
-	//stage Info
-	private int nowStage; //現在ステージ
-	private int stageW = 2000,stageH = 2000;
+	private int clearFrame; //ゲーム関係時間
+	private static int systemFrame; //現在フレーム
+	private static int gameFrame;
 	
 	//キャラクター情報
-	private int chara = NONE; //峴摦拞偺恖
 	private static Chara[] charaClass;
 	private static Chara[] battleCharaClass = new Chara[0];
-	private static int charaTeam[];
+	
+	//stage
+	public static final Stage stage = new Stage();
 	
 	//bullet data
 	private static final ArrayList<Bullet> bullets = new ArrayList<Bullet>();
@@ -103,7 +103,6 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	private int arraySound_maxID = -1;
 	
 	//Initialize methods/////////////
-	
 	public static void main(String args[]){
 		new THH();
 	}
@@ -168,7 +167,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 			arraySound = Arrays.copyOf(arraySound, arrayImage_maxID + 1);
 			
 			System.out.println("loaded chara class: " + charaClass.length);
-			resetData();
+			resetStage();
 		}
 		try{
 			tracker.waitForAll(); //夋憸儘乕僪
@@ -183,20 +182,15 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		//titleBGM.loop();
 		//try{
 			while(true){
-				final long nowTime = System.currentTimeMillis();
 				try{
 					Thread.sleep(25L);
 				}catch(InterruptedException e){}
 				if(freezeScreen)
 					continue;
-				if(mainEvent != BATTLE_PAUSE){
-					nowFrame++;
-					if(mainEvent == BATTLE){
-					}
-				}
+				systemFrame++;
+				if(stopEventKind == NONE)
+					gameFrame++;
 				repaint();
-				if(mainEvent == BATTLE)
-					gameTime += (System.currentTimeMillis() - nowTime);
 			}
 		//}catch(Exception e){
 			//JOptionPane.showMessageDialog(null, "怽偟栿偁傝傑偣傫偑丄僄儔乕偑敪惗偟傑偟偨丅\n僄儔乕僐乕僪丗" + e.toString(),"僄儔乕",JOptionPane.ERROR_MESSAGE);
@@ -206,12 +200,10 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	private final BufferedImage offImage = new BufferedImage(defaultScreenW,defaultScreenH,BufferedImage.TYPE_INT_ARGB_PRE); //僟僽儖僶僢僼傽僉儍儞僶僗
 	private Graphics2D g2;
 	private final Font basicFont = createFont("font/upcibi.ttf").deriveFont(Font.BOLD + Font.ITALIC,30.0f),commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN,15.0f);
-	private static final BasicStroke stroke1 = new BasicStroke(1f),stroke2 = new BasicStroke(2f),stroke3 = new BasicStroke(3f),stroke5 = new BasicStroke(5f),stroke10 = new BasicStroke(10f);
+	private static final BasicStroke stroke1 = new BasicStroke(1f),stroke5 = new BasicStroke(5f);
 	private static final Color HPWarningColor = new Color(255,120,120),debugTextColor = new Color(200,200,200,160);
 	private final Rectangle2D screenRect = new Rectangle2D.Double(0,0,defaultScreenW,defaultScreenH);
 	
-	private int[] poliX = {0,0,300,400,500,600,700,700,},poliY = {650,450,450,350,350,450,450,650};
-	private Polygon landPolygon = new Polygon(poliX,poliY,poliX.length);
 	public void paintComponent(Graphics g){
 		final long LOAD_TIME_PAINTCOMPONENT = System.currentTimeMillis();
 		super.paintComponent(g);
@@ -226,64 +218,62 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		g2.fill(screenRect);
 		final int TRANSLATE_X = viewX,TRANSLATE_Y = viewY;
 		g2.translate(TRANSLATE_X, TRANSLATE_Y);
-		g2.setColor(Color.GRAY);
-		g2.fill(landPolygon);
+		stage.paintStage(g2);
 		////////////////////////////////////////////////////////////////////////
 		//charaAction
 		switch(stopEventKind) {
 		case STOP:
-			for(int i = 0;i < battleCharaClass.length;i++)
-				battleCharaClass[i].animationPaint();
+			for(Chara chara : battleCharaClass)
+				chara.animationPaint();
 			break;
 		case FREEZE:
-			for(int i = 0;i < battleCharaClass.length;i++)
-				battleCharaClass[i].freezePaint();
+			for(Chara chara : battleCharaClass)
+				chara.freezePaint();
 			break;
 		default:
-			for(int i = 0;i < battleCharaClass.length;i++)
-				battleCharaClass[i].idle(chara == i);
+			for(Chara chara : battleCharaClass) {
+				chara.idle(true);
+				chara.resetSingleOrder();
+			}
 		}
 		////////////////////////////////////////////////////////////////////////
 		//bulletAction
-		if(stopEventKind == NONE){
-			for(Bullet bullet : bullets.toArray(new Bullet[0])) {
-				final int gunnerID = bullet.SOURCE;
-				if(0 <= gunnerID && gunnerID < battleCharaClass.length)
-					battleCharaClass[gunnerID].bulletIdle(bullet,chara == gunnerID);
+		for(Bullet bullet : bullets.toArray(new Bullet[0])) {
+			final int gunnerID = bullet.SOURCE;
+			if(0 <= gunnerID && gunnerID < battleCharaClass.length) {
+				switch(stopEventKind) {
+				case STOP:
+					battleCharaClass[gunnerID].bulletAnimationPaint(bullet);
+					break;
+				case FREEZE:
+					battleCharaClass[gunnerID].bulletPaint(bullet);
+					break;
+				default:
+					battleCharaClass[gunnerID].bulletIdle(bullet,true);
+				}
 			}
 		}
 		///////////////////////////////////////////////////////////////
 		//effectAction
-		if(stopEventKind == NONE){
-			for(Effect effect : effects.toArray(new Effect[0])) {
-				final int gunnerID = effect.SOURCE;
-				if(0 <= gunnerID && gunnerID < battleCharaClass.length)
-					battleCharaClass[gunnerID].effectIdle(effect,chara == gunnerID);
+		//System.out.println("effect amount: " + effects.toArray(new Effect[0]).length);
+		for(Effect effect : effects.toArray(new Effect[0])) {
+			final int gunnerID = effect.SOURCE;
+			if(0 <= gunnerID && gunnerID < battleCharaClass.length) {
+				switch(stopEventKind) {
+				case STOP:
+					battleCharaClass[gunnerID].effectAnimationPaint(effect);
+					break;
+				case FREEZE:
+					battleCharaClass[gunnerID].effectPaint(effect);
+					break;
+				default:
+					battleCharaClass[gunnerID].effectIdle(effect,true);
+				}
 			}
 		}
 		///////////////////////////////////////////////////////////////
 		//GUIAction
 		{
-			//mouseInfo
-			g2.setColor(Color.GRAY);
-			g2.setStroke(stroke5);
-			g2.setFont(basicFont);
-			//bulletInfo
-			if(debugMode){
-				g2.setColor(debugTextColor);
-				for(int i = 100;i < defaultScreenW;i += 100)
-					g2.drawLine(i,0,i,defaultScreenH);
-				for(int i = 100;i < defaultScreenH;i += 100)
-					g2.drawLine(0,i,defaultScreenW,i);
-				g2.setColor(debugTextColor);
-				g2.drawString(mouseX + "," + mouseY,mouseX + 20,mouseY + 20);
-				g2.drawString("Chara:" + battleCharaClass.length + " EF:" + 0 + " B:" + bullets.size(),30,100);
-				g2.drawString("LoadTime(ms):" + loadTime_total,30,120);
-				//g2.drawString("EM:" + loadTime_enemy + " ET:" + loadTime_entity + " G:" + loadTime_gimmick + " EF:" + loadTime_effect + " B:" + loadTime_bullet + " I:" + loadTime_item + " W: " + loadTime_weapon + " Other: " + loadTime_other,30,140);
-				g2.drawString("GameTime(ms):" + gameTime,30,160);
-				g2.setColor(debugTextColor);
-				g2.drawString("(" + (mouseX - viewX) + "," + (mouseY - viewY) + ")",mouseX + 20,mouseY + 40);
-			}
 			//keyScroll
 			final int SCROLL_SPEED = 8;
 			if(key_W) {
@@ -311,11 +301,16 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 							if(EVENT != NONE && 0 <= SOURCE && SOURCE < battleCharaClass.length)
 								battleCharaClass[SOURCE].eventNotice(EVENT);
 							messageIterator = 0;
+							key_enter = false;
 						}
-					}else if(nowFrame % 8 == 0) //reading
+					}else if(key_enter) {
+						messageIterator = messageStr.getFirst().length();
+						key_enter = false;
+					}else if(systemFrame % 2 == 0) //reading
 						messageIterator++;
 					//show message
 					if(messageStr.size() > 0) {
+						g2.setFont(basicFont);
 						g2.setStroke(stroke5);
 						g2.setColor(Color.CYAN);
 						g2.drawString(messageStr.getFirst().substring(0, messageIterator), 150, 450);
@@ -330,6 +325,40 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 			}
 		}
 		g2.translate(-TRANSLATE_X, -TRANSLATE_Y);
+		//Fixed GUI
+		{
+			if(debugMode){
+				g2.setColor(debugTextColor);
+				g2.setFont(basicFont);
+				g2.setStroke(stroke1);
+				for(int i = 100;i < defaultScreenW;i += 100)
+					g2.drawLine(i,0,i,defaultScreenH);
+				for(int i = 100;i < defaultScreenH;i += 100)
+					g2.drawLine(0,i,defaultScreenW,i);
+				g2.setStroke(stroke5);
+				g2.drawString(mouseX + "," + mouseY,mouseX + 20,mouseY + 20);
+				//entityInfo
+				g2.drawString("Chara:" + battleCharaClass.length + " EF:" + effects.size() + " B:" + bullets.size(),30,100);
+				g2.drawString("LoadTime(ms):" + loadTime_total,30,120);
+				//g2.drawString("EM:" + loadTime_enemy + " ET:" + loadTime_entity + " G:" + loadTime_gimmick + " EF:" + loadTime_effect + " B:" + loadTime_bullet + " I:" + loadTime_item + " W: " + loadTime_weapon + " Other: " + loadTime_other,30,140);
+				g2.drawString("GameTime(ms):" + gameFrame,30,160);
+				//mouseInfo
+				g2.setStroke(stroke1);
+				g2.drawLine(mouseX - 15, mouseY, mouseX + 15, mouseY);
+				g2.drawLine(mouseX, mouseY - 15, mouseX, mouseY + 15);
+				g2.setStroke(stroke5);
+				g2.drawString("(" + (mouseX - viewX) + "," + (mouseY - viewY) + ")",mouseX + 20,mouseY + 40);
+				//charaInfo
+				for(Chara chara : battleCharaClass) {
+					final int X = (int)chara.getX(),Y = (int)chara.getY();
+					g2.setStroke(stroke1);
+					g2.drawRect(X + viewX - 50, Y + viewY - 50, 100,100);
+					g2.drawLine(X + viewX + 50, Y + viewY - 50, X + viewX + 60, Y + viewY - 60);
+					g2.setStroke(stroke5);
+					g2.drawString(chara.getName(), X + viewX + 62, Y + viewY - 68);
+				}
+			}
+		}
 		//UI昤夋
 		g2.setColor(Color.GRAY);
 		g2.fillRect(0,0,defaultScreenW,40);
@@ -350,7 +379,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		return battleCharaClass[charaID];
 	}
 	public static final int getCharaTeam(int charaID) {
-		return charaTeam[charaID];
+		return battleCharaClass[charaID].getTeam();
 	}
 	public final Image getImageByID(int imageID) {
 		return arrayImage[imageID];
@@ -367,11 +396,11 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 			return effects.remove(effect);
 		return false;
 	}
-	public final void rollCharaTurn(){
+	/*public final void rollCharaTurn(){
 		if(++chara == battleCharaClass.length)
 			chara = 0;
 		battleCharaClass[chara].turnStarted();
-	}
+	}*/
 	public final void paintHPArc(int x,int y,int hp,int maxHP) {
 		g2.setStroke(stroke5);
 		if((double)hp/(double)maxHP > 0.75) //HPが少なくなるごとに色が変化
@@ -380,7 +409,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 			g2.setColor(Color.GREEN); //緑色
 		else if((double)hp/(double)maxHP > 0.25)
 			g2.setColor(Color.YELLOW); //黄色
-		else if((double)hp/(double)maxHP > 0.10 || nowFrame % 4 < 2)
+		else if((double)hp/(double)maxHP > 0.10 || systemFrame % 4 < 2)
 			g2.setColor(Color.RED); //赤色
 		else
 			g2.setColor(HPWarningColor);
@@ -423,12 +452,6 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		final int halfSize = (size1 + size2)/2;
 		return abs(x1 - x2) < halfSize && abs(y1 - y2) < halfSize;
 	}
-	public final boolean hitLandscape(int x,int y,int w,int h){
-		return landPolygon.intersects(x - w/2,y + h/2,w,h);
-	}
-	public final boolean inStage(int x,int y) {
-		return 0 <= x && x < stageW && 0 <= y && y < stageH;
-	}
 	
 	//input
 	private int mouseX,mouseY;
@@ -444,7 +467,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		switch(e.getButton()) {
 		case MouseEvent.BUTTON1:
 			mouseLeftPress = true;
-			mouseLeftPressedFrame = nowFrame;
+			mouseLeftPressedFrame = gameFrame;
 			if(key_1 || key_2 || key_3 || key_4) {
 				if(key_1 && battleCharaClass.length >= 1)
 					battleCharaClass[0].attackOrder = true;
@@ -456,7 +479,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 					battleCharaClass[3].attackOrder = true;
 			}else
 				for(Chara chara : battleCharaClass)
-					chara.dodgeOrder = true;
+					chara.attackOrder = true;
 			break;
 		case MouseEvent.BUTTON2:
 			mouseMiddlePress = true;
@@ -465,19 +488,21 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 			break;
 		case MouseEvent.BUTTON3:
 			mouseRightPress = true;
-			mouseRightPressedFrame = nowFrame;
-			if(key_1 || key_2 || key_3 || key_4) {
-				if(key_1 && battleCharaClass.length >= 1)
-					battleCharaClass[0].moveOrder = true;
-				if(key_2 && battleCharaClass.length >= 2)
-					battleCharaClass[1].moveOrder = true;
-				if(key_3 && battleCharaClass.length >= 3)
-					battleCharaClass[2].moveOrder = true;
-				if(key_4 && battleCharaClass.length >= 4)
-					battleCharaClass[3].moveOrder = true;
-			}else
-				for(Chara chara : battleCharaClass)
-					chara.guardOrder = true;
+			mouseRightPressedFrame = gameFrame;
+			if(isNoStopEvent()) {
+				if(key_1 || key_2 || key_3 || key_4) {
+					if(key_1 && battleCharaClass.length >= 1)
+						battleCharaClass[0].dodgeOrder = true;
+					if(key_2 && battleCharaClass.length >= 2)
+						battleCharaClass[1].dodgeOrder = true;
+					if(key_3 && battleCharaClass.length >= 3)
+						battleCharaClass[2].dodgeOrder = true;
+					if(key_4 && battleCharaClass.length >= 4)
+						battleCharaClass[3].dodgeOrder = true;
+				}else
+					for(Chara chara : battleCharaClass)
+						chara.dodgeOrder = true;
+			}
 			break;
 		}
 	}
@@ -485,12 +510,16 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		switch(e.getButton()) {
 		case MouseEvent.BUTTON1:
 			mouseLeftPress = false;
+			for(Chara chara : battleCharaClass)
+				chara.attackOrder = false;
 			break;
 		case MouseEvent.BUTTON2:
 			mouseMiddlePress = false;
 			break;
 		case MouseEvent.BUTTON3:
 			mouseRightPress = false;
+			for(Chara chara : battleCharaClass)
+				chara.moveOrder = false;
 			break;
 		}
 	}
@@ -536,29 +565,29 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	private final int[] keyInputFrame = new int[1024];
 	public void keyPressed(KeyEvent e){
 		final int KEY_CODE = e.getKeyCode();
-		keyInputFrame[KEY_CODE] = nowFrame;
+		keyInputFrame[KEY_CODE] = gameFrame;
 		switch(KEY_CODE){
 		case VK_1:
 			key_1 = true;
-			if(getPassedTime(key_1_time) < 200 && battleCharaClass.length >= 1)
+			if(isNoStopEvent() && getPassedTime(key_1_time) < 200 && battleCharaClass.length >= 1)
 				battleCharaClass[0].spellOrder = true;
 			key_1_time = getNowTime();
 			break;
 		case VK_2:
 			key_2 = true;
-			if(getPassedTime(key_2_time) < 200 && battleCharaClass.length >= 2)
+			if(isNoStopEvent() && getPassedTime(key_2_time) < 200 && battleCharaClass.length >= 2)
 				battleCharaClass[1].spellOrder = true;
 			key_2_time = getNowTime();
 			break;
 		case VK_3:
 			key_3 = true;
-			if(getPassedTime(key_3_time) < 200 && battleCharaClass.length >= 3)
+			if(isNoStopEvent() && getPassedTime(key_3_time) < 200 && battleCharaClass.length >= 3)
 				battleCharaClass[2].spellOrder = true;
 			key_3_time = getNowTime();
 			break;
 		case VK_4:
 			key_4 = true;
-			if(getPassedTime(key_4_time) < 200 && battleCharaClass.length >= 4)
+			if(isNoStopEvent() && getPassedTime(key_4_time) < 200 && battleCharaClass.length >= 4)
 				battleCharaClass[3].spellOrder = true;
 			key_4_time = getNowTime();
 			break;
@@ -580,6 +609,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 			break;
 		case VK_ENTER:
 			key_enter = true;
+			break;
 		case VK_F3:
 			debugMode = !debugMode;
 			break;
@@ -620,6 +650,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 			break;
 		case VK_ENTER:
 			key_enter = false;
+			break;
 		}
 	}
 	public void keyTyped(KeyEvent e){}
@@ -668,13 +699,13 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		}
 	}
 	public static final int getNowFrame() {
-		return nowFrame;
+		return gameFrame;
 	}
 	public static final int getPassedFrame(int frame) {
-		return nowFrame - frame;
+		return gameFrame - frame;
 	}
 	public static final boolean isExpired_frame(int appearFrame,int limitFrame) {
-		return (nowFrame - appearFrame) >= limitFrame;
+		return (gameFrame - appearFrame) >= limitFrame;
 	}
 	public static final long getNowTime() {
 		return System.currentTimeMillis();
@@ -685,14 +716,17 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	public static final boolean isExpired_time(long time,int limitTime) {
 		return (System.currentTimeMillis() - time) >= limitTime;
 	}
+	public static boolean isNoStopEvent() {
+		return !freezeScreen && stopEventKind == NONE;
+	}
 	public static final void prepareBulletInfo(int charaID) {
 		BulletInfo.clear();
-		BulletInfo.nowFrame = nowFrame;
+		BulletInfo.nowFrame = gameFrame;
 		BulletInfo.source = charaID;
 	}
 	public static final void prepareEffectInfo(int charaID) {
 		EffectInfo.clear();
-		EffectInfo.nowFrame = nowFrame;
+		EffectInfo.nowFrame = gameFrame;
 		EffectInfo.source = charaID;
 	}
 	public final void addKeyListener(KeyListener e) {
@@ -716,12 +750,13 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	//premade stage test area
-	final private void resetData(){
+	final private void resetStage(){
 		bullets.clear();
 		effects.clear();
 		messageSource.clear();
 		messageStr.clear();
 		messageEvent.clear();
+		gameFrame = 0;
 		
 		System.out.println("add characters to the game");
 		if(charaClass.length > 0){
@@ -729,11 +764,11 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 			battleCharaClass[0].battleStarted(0);
 			battleCharaClass[1].battleStarted(1);
 			battleCharaClass[0].spawn(0,0,50,200);
-			battleCharaClass[1].spawn(1,1,400,200);
-			charaTeam = new int[]{0,1};
-			chara = 0;
+			battleCharaClass[1].spawn(1,0,400,200);
 		}else
 			battleCharaClass = new Chara[0];
+		
+		stage.useTestStage();
 	}
 	
 	//ResourceLoad

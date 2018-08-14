@@ -38,17 +38,17 @@ public class Effect extends Entity{
 		IMAGE_ID = EffectInfo.imageID;
 	}
 
-	public final boolean defaultIdle(THH thh) {
+	public final boolean defaultIdle() {
 		final Chara chara = THH.getCharaClass(SOURCE);
 		//LifeSpan & Range
-		if(LIMIT_FRAME <= THH.getNowFrame() - super.APPEARED_FRAME) {
+		if(LIMIT_FRAME <= THH.getPassedFrame(super.APPEARED_FRAME)) {
 			chara.effectOutOfLifeSpan(this);
-			thh.deleteEffect(this);
+			Chara.thh.deleteEffect(this);
 			return false;
 		}
 		if(LIMIT_RANGE <= movedDistance){
 			chara.effectOutOfRange(this);
-			thh.deleteEffect(this);
+			Chara.thh.deleteEffect(this);
 			return false;
 		}
 		//Speed & Acceleration
@@ -61,10 +61,10 @@ public class Effect extends Entity{
 		}
 		return true;
 	}
-	public final void defaultPaint(THH thh) {
+	public final void defaultPaint() {
 		if(angle%(2*PI) == 0)
-			thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
+			Chara.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
 		else
-			thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);
+			Chara.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);
 	}
 }

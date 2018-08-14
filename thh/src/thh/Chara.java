@@ -12,7 +12,7 @@ public abstract class Chara{
 		MAX = THH.MAX,
 		MIN = THH.MIN;
 	
-	protected static THH thh;
+	public static THH thh;
 	
 	//メソッド
 	
@@ -27,8 +27,26 @@ public abstract class Chara{
 	protected abstract void idle(boolean isActive); //Include painting
 	protected abstract void animationPaint();
 	protected abstract void freezePaint();
-	protected abstract void bulletIdle(Bullet bullet,boolean IsCharaActive); //Include painting
-	protected abstract void effectIdle(Effect effect,boolean IsCharaActive); //Include painting
+	protected void bulletIdle(Bullet bullet,boolean isCharaActive) { //Include painting
+		bullet.defaultIdle();
+		bullet.defaultPaint();
+	}
+	protected void bulletAnimationPaint(Bullet bullet) {
+		this.bulletPaint(bullet);
+	}
+	protected void bulletPaint(Bullet bullet) {
+		bullet.defaultPaint();
+	}
+	protected void effectIdle(Effect effect,boolean isCharaActive) { //Include painting
+		effect.defaultIdle();
+		effect.defaultPaint();
+	}
+	protected void effectAnimationPaint(Effect effect) {
+		this.effectPaint(effect);
+	}
+	protected void effectPaint(Effect effect) {
+		effect.defaultPaint();
+	}
 	
 	//control
 	//judge
@@ -41,11 +59,14 @@ public abstract class Chara{
 	public abstract boolean kill();
 	//information
 	public abstract String getName();
+	public abstract int getTeam();
 	public abstract int getHP();
 	public abstract double getHPRate();
 	public abstract int getME();
 	public abstract double getMERate();
-	public abstract int getCharaStatus();
+	public abstract int getStatus();
+	public abstract double getX();
+	public abstract double getY();
 	//acceleration
 	public abstract void addAccel(double xAccel,double yAccel);
 	public abstract void setAccel(double xAccel,double yAccel);
@@ -63,7 +84,7 @@ public abstract class Chara{
 	}
 	public void bulletHitObject(Bullet bullet){}
 	public boolean bulletIfHitLandscape(Bullet bullet,int x,int y){
-		return thh.hitLandscape(x,y,10,10);
+		return THH.stage.hitLandscape(x,y,10,10);
 	}
 	protected boolean deleteBullet(Bullet bullet){
 		return true;
@@ -78,10 +99,14 @@ public abstract class Chara{
 	
 	//specialEvent
 	protected int weaponChangeOrder;
-	protected boolean attackOrder,moveOrder,dodgeOrder,guardOrder,spellOrder;
+	protected boolean attackOrder,moveOrder,dodgeOrder,spellOrder;
 	protected void resetOrder() {
 		weaponChangeOrder = 0;
-		attackOrder = moveOrder = dodgeOrder = guardOrder = spellOrder = false;
+		attackOrder = moveOrder = dodgeOrder = spellOrder = false;
+	}
+	protected void resetSingleOrder() {
+		weaponChangeOrder = 0;
+		spellOrder = dodgeOrder = false;
 	}
 	protected void eventNotice(int event) {}
 }
