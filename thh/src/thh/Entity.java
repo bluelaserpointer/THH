@@ -5,7 +5,7 @@ public abstract class Entity {
 	public final double APPEARED_X,APPEARED_Y;
 	public double x,y;
 	public Entity() {
-		SOURCE = thh.THH.NONE;
+		SOURCE = THH.NONE;
 		APPEARED_FRAME = 0;
 		APPEARED_X = 0;
 		APPEARED_Y = 0;
@@ -19,6 +19,6 @@ public abstract class Entity {
 	/*public final boolean isExpired(int nowFrame,int limitFrame) {
 		return (nowFrame - APPEARED_FRAME) >= limitFrame;
 	}*/
-	abstract public boolean defaultIdle(THH thh);
-	abstract public void defaultPaint(THH thh);
+	abstract public boolean defaultIdle();
+	abstract public void defaultPaint();
 }

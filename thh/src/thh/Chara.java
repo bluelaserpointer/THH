@@ -1,26 +1,18 @@
 package thh;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-
 import bullet.Bullet;
 import effect.Effect;
 
-public abstract class Chara implements KeyListener,MouseListener,MouseWheelListener{
+public abstract class Chara{
 	//•’•£©`•Î•…
 	//•∑•π•∆•‡ÈvﬂB
 	protected final static int
 		//system
 		NONE = THH.NONE,
 		MAX = THH.MAX,
-		MIN = THH.MIN,
-		EXIST = THH.EXIST;
+		MIN = THH.MIN;
 	
-	protected static THH thh;
+	public static THH thh;
 	
 	//•·•Ω•√•…
 	
@@ -33,8 +25,28 @@ public abstract class Chara implements KeyListener,MouseListener,MouseWheelListe
 	
 	//idle
 	protected abstract void idle(boolean isActive); //Include painting
-	protected abstract void bulletIdle(Bullet bullet,boolean IsCharaActive); //Include painting
-	protected abstract void effectIdle(Effect effect,boolean IsCharaActive); //Include painting
+	protected abstract void animationPaint();
+	protected abstract void freezePaint();
+	protected void bulletIdle(Bullet bullet,boolean isCharaActive) { //Include painting
+		bullet.defaultIdle();
+		bullet.defaultPaint();
+	}
+	protected void bulletAnimationPaint(Bullet bullet) {
+		this.bulletPaint(bullet);
+	}
+	protected void bulletPaint(Bullet bullet) {
+		bullet.defaultPaint();
+	}
+	protected void effectIdle(Effect effect,boolean isCharaActive) { //Include painting
+		effect.defaultIdle();
+		effect.defaultPaint();
+	}
+	protected void effectAnimationPaint(Effect effect) {
+		this.effectPaint(effect);
+	}
+	protected void effectPaint(Effect effect) {
+		effect.defaultPaint();
+	}
 	
 	//control
 	//judge
@@ -47,11 +59,14 @@ public abstract class Chara implements KeyListener,MouseListener,MouseWheelListe
 	public abstract boolean kill();
 	//information
 	public abstract String getName();
+	public abstract int getTeam();
 	public abstract int getHP();
 	public abstract double getHPRate();
 	public abstract int getME();
 	public abstract double getMERate();
-	public abstract int getCharaStatus();
+	public abstract int getStatus();
+	public abstract double getX();
+	public abstract double getY();
 	//acceleration
 	public abstract void addAccel(double xAccel,double yAccel);
 	public abstract void setAccel(double xAccel,double yAccel);
@@ -69,7 +84,7 @@ public abstract class Chara implements KeyListener,MouseListener,MouseWheelListe
 	}
 	public void bulletHitObject(Bullet bullet){}
 	public boolean bulletIfHitLandscape(Bullet bullet,int x,int y){
-		return thh.hitLandscape(x,y,10,10);
+		return THH.stage.hitLandscape(x,y,10,10);
 	}
 	protected boolean deleteBullet(Bullet bullet){
 		return true;
@@ -82,29 +97,16 @@ public abstract class Chara implements KeyListener,MouseListener,MouseWheelListe
 		return true;
 	}
 	
-	//keyEvent
-	@Override
-	public void keyPressed(KeyEvent e) {}
-	@Override
-	public void keyReleased(KeyEvent e) {}
-	@Override
-	public void keyTyped(KeyEvent e) {}	
-	//mouseEvent
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent e){}
-	@Override
-	public void mouseEntered(MouseEvent e){}
-	@Override
-	public void mouseExited(MouseEvent e){}
-	@Override
-	public void mousePressed(MouseEvent e){}
-	@Override
-	public void mouseReleased(MouseEvent e){}
-	@Override
-	public void mouseClicked(MouseEvent e){}
 	//specialEvent
-	protected abstract void attackOrder(int targetX,int targetY);
-	protected abstract void jumpOrder(int targetX,int targetY);
-	protected abstract void dodgeOrder(int targetX,int targetY);
-	protected abstract void guardOrder(int targetX,int targetY);
+	protected int weaponChangeOrder;
+	protected boolean attackOrder,moveOrder,dodgeOrder,spellOrder;
+	protected void resetOrder() {
+		weaponChangeOrder = 0;
+		attackOrder = moveOrder = dodgeOrder = spellOrder = false;
+	}
+	protected void resetSingleOrder() {
+		weaponChangeOrder = 0;
+		spellOrder = dodgeOrder = false;
+	}
+	protected void eventNotice(int event) {}
 }

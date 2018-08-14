@@ -52,17 +52,17 @@ public class Bullet extends Entity{
 		IS_LASER = BulletInfo.isLaser;
 	}
 	
-	public final boolean defaultIdle(THH thh) {
-		final Chara chara = thh.getCharaClass(SOURCE);
+	public final boolean defaultIdle() {
+		final Chara chara = THH.getCharaClass(SOURCE);
 		//LifeSpan & Range
-		if(LIMIT_FRAME <= thh.getNowFrame() - super.APPEARED_FRAME) {
+		if(LIMIT_FRAME <= THH.getPassedFrame(super.APPEARED_FRAME)) {
 			chara.bulletOutOfLifeSpan(this);
-			thh.deleteBullet(this);
+			Chara.thh.deleteBullet(this);
 			return false;
 		}
 		if(LIMIT_RANGE <= movedDistance){
 			chara.bulletOutOfRange(this);
-			thh.deleteBullet(this);
+			Chara.thh.deleteBullet(this);
 			return false;
 		}
 		//Speed & Acceleration
@@ -82,9 +82,9 @@ public class Bullet extends Entity{
 				chara.bulletOutOfReflection(this);
 		}
 		//Damaging
-		for(int charaID : thh.callBulletEngage(this)) {
-			if(thh.getCharaTeam(charaID) != team && atk > 0) {
-				thh.getCharaClass(charaID).damage_amount(atk);
+		for(int charaID : Chara.thh.callBulletEngage(this)) {
+			if(THH.getCharaTeam(charaID) != team && atk > 0) {
+				THH.getCharaClass(charaID).damage_amount(atk);
 				chara.bulletHitObject(this);
 				if(penetration > 0)
 					penetration--;
@@ -94,11 +94,11 @@ public class Bullet extends Entity{
 		}
 		return true;
 	}
-	public final void defaultPaint(THH thh) {
+	public final void defaultPaint() {
 		if(angle%(2*PI) == 0.0)
-			thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
+			Chara.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
 		else
-			thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);
+			Chara.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);
 	}
 	public final int getPenetration() {
 		return penetration;

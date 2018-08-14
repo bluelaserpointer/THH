@@ -33,12 +33,14 @@ public class EffectInfo {
 	}
 	public static void fastParaSet_XYADSpd(double x,double y,double angle,int distance,int speed) {
 		final double cos_angle = Math.cos(angle),sin_angle = Math.sin(angle);
+		EffectInfo.angle = angle;
 		EffectInfo.x = (int)(x + distance*cos_angle);
 		EffectInfo.y = (int)(y + distance*sin_angle);
 		EffectInfo.xSpeed = (int)(speed*cos_angle);
 		EffectInfo.ySpeed = (int)(speed*sin_angle);
 	}
 	public static void fastParaSet_ADSpd(double angle,int distance,int speed) {
+		EffectInfo.angle = angle;
 		EffectInfo.xSpeed = (int)(speed*Math.cos(angle));
 		EffectInfo.ySpeed = (int)(speed*Math.sin(angle));
 	}

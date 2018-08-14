@@ -1,0 +1,4 @@
+isSideView = false
+structureKind = wood,wood,wood
+structureX = 20,20,20
+structureY = 80,100,120
