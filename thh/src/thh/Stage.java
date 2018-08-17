@@ -56,6 +56,11 @@ public class Stage {
 		return landPolygon.intersects(x - w/2,y + h/2,w,h);
 	}
 	//role
+	final void stageIdle() {
+		for(Chara chara : THH.getCharaClass()) {
+			chara.gravity(1.1);
+		}
+	}
 	final void useTestStage() {
 		stageW = stageH = 2000;
 	}

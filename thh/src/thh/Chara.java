@@ -70,6 +70,7 @@ public abstract class Chara{
 	//acceleration
 	public abstract void addAccel(double xAccel,double yAccel);
 	public abstract void setAccel(double xAccel,double yAccel);
+	public abstract void gravity(double value);
 
 	//bullet
 	public void bulletOutOfLifeSpan(Bullet bullet){}

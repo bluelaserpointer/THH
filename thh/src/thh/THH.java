@@ -223,6 +223,9 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		g2.translate(TRANSLATE_X, TRANSLATE_Y);
 		stage.paintStage(g2);
 		////////////////////////////////////////////////////////////////////////
+		//stageAction
+		stage.stageIdle();
+		////////////////////////////////////////////////////////////////////////
 		//charaAction
 		switch(stopEventKind) {
 		case STOP:
@@ -377,6 +380,9 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 				result[searched++] = i;
 		}
 		return Arrays.copyOf(result, searched);
+	}
+	public static final Chara[] getCharaClass() {
+		return battleCharaClass;
 	}
 	public static final Chara getCharaClass(int charaID) {
 		return battleCharaClass[charaID];
