@@ -60,17 +60,6 @@ public abstract class THHOriginal extends Chara {
 			charaYSpeed *= 0.9;
 		else
 			charaYSpeed = 0.0;
-		if (!charaOnLand) {
-			charaYSpeed += 1.1;
-			if (THH.stage.hitLandscape((int) charaX - 10, (int) charaY + 40, 20, 20)) {
-				charaYSpeed = 0.0;
-				do {
-					charaY -= 1.0;
-				} while (THH.stage.hitLandscape((int) charaX - 10, (int) charaY + 30, 20, 10));
-				if (charaXSpeed == 0.0)
-					charaOnLand = true;
-			}
-		}
 		// dodge
 		if (super.dodgeOrder)
 			dodge(mouseX, mouseY);
@@ -158,6 +147,20 @@ public abstract class THHOriginal extends Chara {
 		charaXSpeed += 40 * cos(ANGLE);
 		charaYSpeed += 40 * sin(ANGLE);
 		charaOnLand = false;
+	}
+	@Override
+	public final void gravity(double g) {
+		if (!charaOnLand) {
+			if (THH.stage.hitLandscape((int) charaX - 10, (int) charaY + 40, 20, 20)) {
+				charaYSpeed = 0.0;
+				do {
+					charaY -= 1.0;
+				} while (THH.stage.hitLandscape((int) charaX - 10, (int) charaY + 30, 20, 10));
+				if (charaXSpeed == 0.0)
+					charaOnLand = true;
+			}else
+				charaYSpeed += g;
+		}
 	}
 
 	// decrease
