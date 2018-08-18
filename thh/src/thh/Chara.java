@@ -12,39 +12,39 @@ public abstract class Chara{
 		MAX = THH.MAX,
 		MIN = THH.MIN;
 	
-	public static THH thh;
+	protected static THH thh;
 	
 	//丟末永玉
 	
 	//Initialization
-	protected void battleStarted(int charaID){}
-	protected abstract void spawn(int charaID,int charaTeam,int spawnX,int spawnY);
-	protected void turnStarted(){}
-	protected void loadImageData(){} //賒砉掂心煋心
-	protected void loadSoundData(){} //扔它件玉掂心煋心
+	public void battleStarted(int charaID){}
+	public abstract void spawn(int charaID,int charaTeam,int spawnX,int spawnY);
+	public void turnStarted(){}
+	public void loadImageData(){} //賒砉掂心煋心
+	public void loadSoundData(){} //扔它件玉掂心煋心
 	
 	//idle
-	protected abstract void idle(boolean isActive); //Include painting
-	protected abstract void animationPaint();
-	protected abstract void freezePaint();
-	protected void bulletIdle(Bullet bullet,boolean isCharaActive) { //Include painting
+	public abstract void idle(boolean isActive); //Include painting
+	public abstract void animationPaint();
+	public abstract void freezePaint();
+	public void bulletIdle(Bullet bullet,boolean isCharaActive) { //Include painting
 		bullet.defaultIdle();
 		bullet.defaultPaint();
 	}
-	protected void bulletAnimationPaint(Bullet bullet) {
+	public void bulletAnimationPaint(Bullet bullet) {
 		this.bulletPaint(bullet);
 	}
-	protected void bulletPaint(Bullet bullet) {
+	public void bulletPaint(Bullet bullet) {
 		bullet.defaultPaint();
 	}
-	protected void effectIdle(Effect effect,boolean isCharaActive) { //Include painting
+	public void effectIdle(Effect effect,boolean isCharaActive) { //Include painting
 		effect.defaultIdle();
 		effect.defaultPaint();
 	}
-	protected void effectAnimationPaint(Effect effect) {
+	public void effectAnimationPaint(Effect effect) {
 		this.effectPaint(effect);
 	}
-	protected void effectPaint(Effect effect) {
+	public void effectPaint(Effect effect) {
 		effect.defaultPaint();
 	}
 	
@@ -77,37 +77,37 @@ public abstract class Chara{
 	public void bulletOutOfRange(Bullet bullet){}
 	public void bulletOutOfPenetration(Bullet bullet) {
 		if(!bullet.IS_LASER)
-			thh.deleteBullet(bullet);
+			THH.deleteBullet(bullet);
 	}
 	public void bulletOutOfReflection(Bullet bullet) {
 		if(!bullet.IS_LASER)
-			thh.deleteBullet(bullet);
+			THH.deleteBullet(bullet);
 	}
 	public void bulletHitObject(Bullet bullet){}
 	public boolean bulletIfHitLandscape(Bullet bullet,int x,int y){
-		return THH.stage.hitLandscape(x,y,10,10);
+		return THH.hitLandscape(x,y,10,10);
 	}
-	protected boolean deleteBullet(Bullet bullet){
+	public boolean deleteBullet(Bullet bullet){
 		return true;
 	}
 	
 	//effect
 	public void effectOutOfLifeSpan(Effect effect) {}
 	public void effectOutOfRange(Effect effect) {}
-	protected boolean deleteEffect(Effect effect){
+	public boolean deleteEffect(Effect effect){
 		return true;
 	}
 	
 	//specialEvent
-	protected int weaponChangeOrder;
-	protected boolean attackOrder,moveOrder,dodgeOrder,spellOrder;
-	protected void resetOrder() {
+	public int weaponChangeOrder;
+	public boolean attackOrder,moveOrder,dodgeOrder,spellOrder;
+	public void resetOrder() {
 		weaponChangeOrder = 0;
 		attackOrder = moveOrder = dodgeOrder = spellOrder = false;
 	}
-	protected void resetSingleOrder() {
+	public void resetSingleOrder() {
 		weaponChangeOrder = 0;
 		spellOrder = dodgeOrder = false;
 	}
-	protected void eventNotice(int event) {}
+	public void eventNotice(int event) {}
 }

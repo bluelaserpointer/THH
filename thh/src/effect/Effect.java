@@ -43,12 +43,12 @@ public class Effect extends Entity{
 		//LifeSpan & Range
 		if(LIMIT_FRAME <= THH.getPassedFrame(super.APPEARED_FRAME)) {
 			chara.effectOutOfLifeSpan(this);
-			Chara.thh.deleteEffect(this);
+			THH.deleteEffect(this);
 			return false;
 		}
 		if(LIMIT_RANGE <= movedDistance){
 			chara.effectOutOfRange(this);
-			Chara.thh.deleteEffect(this);
+			THH.deleteEffect(this);
 			return false;
 		}
 		//Speed & Acceleration
@@ -63,8 +63,8 @@ public class Effect extends Entity{
 	}
 	public final void defaultPaint() {
 		if(angle%(2*PI) == 0)
-			Chara.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
+			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
 		else
-			Chara.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);
+			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);
 	}
 }

@@ -1,11 +1,5 @@
-/.classpath
-/.project
 /bullet/
 /chara/
 /effect/
-/font/
-/image/
-/library/
-/manifest
-/stage/
 /thh/
+/engine/

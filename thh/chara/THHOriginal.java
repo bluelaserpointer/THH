@@ -11,29 +11,29 @@ import thh.THH;
 public abstract class THHOriginal extends Chara {
 
 	// バトルパート関連
-	protected int charaID, charaTeam, charaHP, charaME, charaBaseHP, charaBaseME, charaSpellCharge,
+	public int charaID, charaTeam, charaHP, charaME, charaBaseHP, charaBaseME, charaSpellCharge,
 			charaSize, charaStatus;
-	protected double charaX, charaY, charaXSpeed, charaYSpeed, charaShotAngle;
-	protected boolean charaOnLand;
+	public double charaX, charaY, charaXSpeed, charaYSpeed, charaShotAngle;
+	public boolean charaOnLand;
 
 	// Weapon
-	protected int slot_spell, slot_weapon;
-	protected final int spellSlot_max = 6, weaponSlot_max = 6, weapon_max = 10;
-	protected final int[] spellSlot = new int[spellSlot_max], weaponSlot = new int[weaponSlot_max];
+	public int slot_spell, slot_weapon;
+	public final int spellSlot_max = 6, weaponSlot_max = 6, weapon_max = 10;
+	public final int[] spellSlot = new int[spellSlot_max], weaponSlot = new int[weaponSlot_max];
 
 	// GUI
 
 	// Resource
 	// Images
-	protected int charaIID;
-	protected final int bulletIID[] = new int[weapon_max], effectIID[] = new int[10];
+	public int charaIID;
+	public final int bulletIID[] = new int[weapon_max], effectIID[] = new int[10];
 
 	@Override
-	protected void loadImageData() { // 画像読み込み
+	public void loadImageData() { // 画像読み込み
 	}
 
 	@Override
-	protected void spawn(int charaID, int charaTeam, int x, int y) { // 初期化処理
+	public void spawn(int charaID, int charaTeam, int x, int y) { // 初期化処理
 		super.resetOrder();
 		this.charaID = charaID;
 		this.charaTeam = charaTeam;
@@ -46,8 +46,8 @@ public abstract class THHOriginal extends Chara {
 	}
 
 	@Override
-	protected void idle(boolean isActive) {
-		final int mouseX = thh.getMouseX(), mouseY = thh.getMouseY();
+	public void idle(boolean isActive) {
+		final int mouseX = THH.getMouseX(), mouseY = THH.getMouseY();
 		final double mouseAngle = atan2(mouseY - charaY, mouseX - charaX);
 		// dynam
 		charaX += charaXSpeed;
@@ -114,11 +114,11 @@ public abstract class THHOriginal extends Chara {
 		this.animationPaint();
 	}
 	@Override
-	protected void animationPaint() {
+	public void animationPaint() {
 		this.freezePaint();
 	}
 	@Override
-	protected void freezePaint() {
+	public void freezePaint() {
 		thh.drawImageTHH(charaIID, (int) charaX, (int) charaY);
 		thh.paintHPArc((int) charaX, (int) charaY, charaHP, charaBaseHP);
 	}
@@ -151,11 +151,11 @@ public abstract class THHOriginal extends Chara {
 	@Override
 	public final void gravity(double g) {
 		if (!charaOnLand) {
-			if (THH.stage.hitLandscape((int) charaX - 10, (int) charaY + 40, 20, 20)) {
+			if (THH.hitLandscape((int) charaX - 10, (int) charaY + 40, 20, 20)) {
 				charaYSpeed = 0.0;
 				do {
 					charaY -= 1.0;
-				} while (THH.stage.hitLandscape((int) charaX - 10, (int) charaY + 30, 20, 10));
+				} while (THH.hitLandscape((int) charaX - 10, (int) charaY + 30, 20, 10));
 				if (charaXSpeed == 0.0)
 					charaOnLand = true;
 			}else
@@ -234,12 +234,12 @@ public abstract class THHOriginal extends Chara {
 		return charaY;
 	}
 
-	protected void bulletSpawn(int kind) {
+	public void bulletSpawn(int kind) {
 		THH.prepareBulletInfo(charaID);
 		BulletInfo.kind = kind;
 	}
 
-	protected void effectSpawn(int kind,double x,double y) {
+	public void effectSpawn(int kind,double x,double y) {
 		THH.prepareEffectInfo(charaID);
 		EffectInfo.kind = kind;
 	}

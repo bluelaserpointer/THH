@@ -57,12 +57,12 @@ public class Bullet extends Entity{
 		//LifeSpan & Range
 		if(LIMIT_FRAME <= THH.getPassedFrame(super.APPEARED_FRAME)) {
 			chara.bulletOutOfLifeSpan(this);
-			Chara.thh.deleteBullet(this);
+			THH.deleteBullet(this);
 			return false;
 		}
 		if(LIMIT_RANGE <= movedDistance){
 			chara.bulletOutOfRange(this);
-			Chara.thh.deleteBullet(this);
+			THH.deleteBullet(this);
 			return false;
 		}
 		//Speed & Acceleration
@@ -82,7 +82,7 @@ public class Bullet extends Entity{
 				chara.bulletOutOfReflection(this);
 		}
 		//Damaging
-		for(int charaID : Chara.thh.callBulletEngage(this)) {
+		for(int charaID : THH.callBulletEngage(this)) {
 			if(THH.getCharaTeam(charaID) != team && atk > 0) {
 				THH.getCharaClass(charaID).damage_amount(atk);
 				chara.bulletHitObject(this);
@@ -96,9 +96,9 @@ public class Bullet extends Entity{
 	}
 	public final void defaultPaint() {
 		if(angle%(2*PI) == 0.0)
-			Chara.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
+			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
 		else
-			Chara.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);
+			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);
 	}
 	public final int getPenetration() {
 		return penetration;

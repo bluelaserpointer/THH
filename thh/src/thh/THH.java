@@ -11,6 +11,7 @@ import bullet.Bullet;
 import bullet.BulletInfo;
 import effect.Effect;
 import effect.EffectInfo;
+import engine.Ver_I;
 
 import java.io.*;
 import java.net.*;
@@ -68,10 +69,10 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	
 	//ウィンドウ関連
 	final int defaultScreenW = 1000,defaultScreenH = 600; //デフォルトウィンドサイズ
-	int screenW = 1000,screenH = 600,displayW,displayH;
-	int viewX,viewY;
+	private static int screenW = 1000,screenH = 600;
+	private static int viewX,viewY;
 	
-	int page,page_max; //ページ機能
+	private int page,page_max; //ページ機能
 	
 	//タイム情報
 	private int clearFrame; //ゲーム関係時間
@@ -79,11 +80,11 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	private static int gameFrame;
 	
 	//キャラクター情報
-	private static Chara[] charaClass;
 	private static Chara[] battleCharaClass = new Chara[0];
 	
 	//stage
-	public static final Stage stage = new Stage();
+	private static StageEngine engine = new Ver_I();
+	private static Stage stage;
 	
 	//bullet data
 	private static final ArrayList<Bullet> bullets = new ArrayList<Bullet>();
@@ -105,6 +106,8 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	private String[] arraySoundURL = new String[128];
 	private int arraySound_maxID = -1;
 	
+	public static THH thh;
+	
 	//Initialize methods/////////////
 	public static void main(String args[]){
 		new THH();
@@ -112,6 +115,8 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	private final JFrame myFrame;
 	private final MediaTracker tracker;
 	public THH(){
+		thh = this;
+		Chara.thh = thh;
 		final long loadTime = System.currentTimeMillis();
 		//僂傿儞僪僂僙僢僩傾僢僾
 		myFrame = new JFrame("搶曽榋抏枊愢");
@@ -127,57 +132,19 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		myFrame.setVisible(true);
 		//load assets
 		tracker = new MediaTracker(this);
-		//load chara classes
-		loadChara:{
-			final FilenameFilter classFilter = new FilenameFilter(){
-					public boolean accept(File dir,String name){
-						return name.endsWith(".class");
-					}
-				};
-			int classAmount = 0;
-			charaClass = new Chara[64];
-			File charaFolder = null;
-			try{
-				charaFolder = new File(getClass().getResource("../chara").toURI());
-			}catch(URISyntaxException e){
-			}catch(NullPointerException e) {
-				System.out.println("ファイル構造に問題が発生しています。");
-			}
-			if(charaFolder == null){
-				System.out.println("charaフォルダが見つかりません");
-				charaClass = new Chara[0];
-				break loadChara;
-			}
-			Chara.thh = this;
-			for(String className : charaFolder.list(classFilter)){
-				try{
-					final Object obj = Class.forName("chara." + className.substring(0,className.length() - 6)).newInstance();
-					if(obj instanceof Chara){
-						final Chara cls = (Chara)obj;
-						cls.loadImageData();
-						cls.loadSoundData();
-						charaClass[classAmount++] = cls;
-					}
-				}catch(InstantiationException e) {
-					System.out.println("ignored abstract class: " + className);
-				}catch(ClassNotFoundException | IllegalAccessException e){
-					System.out.println(e);
-				}
-			}
-			charaClass = Arrays.copyOf(charaClass,classAmount);
-			//image & sound length fit
-			arrayImage = Arrays.copyOf(arrayImage, arrayImage_maxID + 1);
-			arraySound = Arrays.copyOf(arraySound, arrayImage_maxID + 1);
-			
-			System.out.println("loaded chara class: " + charaClass.length);
-			resetStage();
-		}
+		//setup
+		resetStage();
+		//System.out.println("loaded chara class: " + charaLibrary.length);
+		//image & sound length fit
+		arrayImage = Arrays.copyOf(arrayImage, arrayImage_maxID + 1);
+		arraySound = Arrays.copyOf(arraySound, arrayImage_maxID + 1);
 		try{
 			tracker.waitForAll(); //夋憸儘乕僪
 		}catch(InterruptedException | NullPointerException e){}
 		
 		System.out.println("loadTimeReslut: " + (System.currentTimeMillis() - loadTime));//儘乕僪強梫帪娫寢壥昞帵
 		new Thread(this).start();
+		loadComplete = true;
 	}
 
 	//mainLoop///////////////
@@ -200,6 +167,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		//}
 	}
 	
+	private boolean loadComplete;
 	private final BufferedImage offImage = new BufferedImage(defaultScreenW,defaultScreenH,BufferedImage.TYPE_INT_ARGB_PRE); //僟僽儖僶僢僼傽僉儍儞僶僗
 	private Graphics2D g2;
 	private final Font basicFont = createFont("font/upcibi.ttf").deriveFont(Font.BOLD + Font.ITALIC,30.0f),commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN,15.0f);
@@ -209,6 +177,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	
 	public void paintComponent(Graphics g){
 		final long LOAD_TIME_PAINTCOMPONENT = System.currentTimeMillis();
+		final int mouseX = THH.mouseX,mouseY = THH.mouseY;
 		super.paintComponent(g);
 		if(g2 == null){
 			g2 = offImage.createGraphics();
@@ -217,14 +186,15 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 			g2.setRenderingHint(RenderingHints.KEY_RENDERING,RenderingHints.VALUE_RENDER_SPEED);
 		}
+		if(!loadComplete)
+			return;
 		g2.setColor(Color.WHITE);
 		g2.fill(screenRect);
 		final int TRANSLATE_X = viewX,TRANSLATE_Y = viewY;
 		g2.translate(TRANSLATE_X, TRANSLATE_Y);
-		stage.paintStage(g2);
 		////////////////////////////////////////////////////////////////////////
 		//stageAction
-		stage.stageIdle();
+		engine.idle(g2,stopEventKind);
 		////////////////////////////////////////////////////////////////////////
 		//charaAction
 		switch(stopEventKind) {
@@ -372,7 +342,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		loadTime_total = System.currentTimeMillis() - LOAD_TIME_PAINTCOMPONENT;
 	}
 	
-	public final int[] callBulletEngage(Bullet bullet) {
+	public static final int[] callBulletEngage(Bullet bullet) {
 		int[] result = new int[battleCharaClass.length];
 		int searched = 0;
 		for(int i = 0;i < battleCharaClass.length;i++) {
@@ -381,6 +351,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return Arrays.copyOf(result, searched);
 	}
+	//information-chara
 	public static final Chara[] getCharaClass() {
 		return battleCharaClass;
 	}
@@ -390,17 +361,32 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	public static final int getCharaTeam(int charaID) {
 		return battleCharaClass[charaID].getTeam();
 	}
+	//information-stage
+	public static final Stage getStage() {
+		return stage;
+	}
+	public static final boolean hitLandscape(int x,int y,int w,int h) {
+		return stage.hitLandscape(x, y, w, h);
+	}
+	public static final boolean inStage(int x,int y) {
+		return stage.inStage(x, y);
+	}
+	//information-paint
+	public static final boolean inScreen(int x,int y) {
+		return abs(viewX - x) < screenW && abs(viewY - y) < screenH;
+	}
+	//information-resource
 	public final Image getImageByID(int imageID) {
 		return arrayImage[imageID];
 	}
 
 	//tool
-	public final boolean deleteBullet(Bullet bullet) {
+	public static final boolean deleteBullet(Bullet bullet) {
 		if(battleCharaClass[bullet.SOURCE].deleteBullet(bullet))
 			return bullets.remove(bullet);
 		return false;
 	}
-	public final boolean deleteEffect(Effect effect) {
+	public static final boolean deleteEffect(Effect effect) {
 		if(battleCharaClass[effect.SOURCE].deleteEffect(effect))
 			return effects.remove(effect);
 		return false;
@@ -475,7 +461,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	//input
-	private int mouseX,mouseY;
+	private static int mouseX,mouseY;
 	private boolean mouseLeftPress,mouseMiddlePress,mouseRightPress;
 	private int mouseLeftPressedFrame,mouseMiddlePressedFrame,mouseRightPressedFrame;
 	private int mousePointing = NONE; //マウスがポイントしているもの
@@ -557,10 +543,10 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 			viewY = y + middleDragGapY;
 		}
 	}
-	public final int getMouseX(){
+	public static final int getMouseX(){
 		return mouseX - viewX;
 	}
-	public final int getMouseY(){
+	public static final int getMouseY(){
 		return mouseY - viewY;
 	}
 	public final int getMousePressedFrame_left(){
@@ -572,12 +558,12 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	public final int getMousePressedFrame_right(){
 		return mouseRightPressedFrame;
 	}
-	public final boolean isMouseInArea(int x,int y,int w,int h) {
+	public static final boolean isMouseInArea(int x,int y,int w,int h) {
 		return abs(x - mouseX + viewX) < w/2 && abs(y - mouseY + viewY) < h/2;
 	}
 	public final boolean isMouseOnImage(int imgID,int x,int y) {
 		final Image img = arrayImage[imgID];
-		return this.isMouseInArea(x,y,img.getWidth(null),img.getHeight(null));
+		return isMouseInArea(x,y,img.getWidth(null),img.getHeight(null));
 	}
 	//僉乕忣曬
 	private boolean key_1,key_2,key_3,key_4;
@@ -780,16 +766,8 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		gameFrame = 0;
 		
 		System.out.println("add characters to the game");
-		if(charaClass.length > 0){
-			battleCharaClass = new Chara[]{charaClass[0],charaClass[1]};
-			battleCharaClass[0].battleStarted(0);
-			battleCharaClass[1].battleStarted(1);
-			battleCharaClass[0].spawn(0,0,50,200);
-			battleCharaClass[1].spawn(1,0,400,200);
-		}else
-			battleCharaClass = new Chara[0];
-		
-		stage.useTestStage();
+		battleCharaClass = engine.charaSetup();
+		stage = engine.stageSetup();
 	}
 	
 	//ResourceLoad
@@ -880,6 +858,44 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public final URL CHARA_DIC_URL = getClass().getResource("../chara");
+	public final Chara[] loadAllChara(URL url) {
+		final FilenameFilter classFilter = new FilenameFilter(){
+			public boolean accept(File dir,String name){
+				return name.endsWith(".class");
+			}
+		};
+		File charaFolder = null;
+		try{
+			charaFolder = new File(url.toURI());
+		}catch(URISyntaxException e){
+		}catch(NullPointerException e) {
+			System.out.println("ファイル構造に問題が発生しています。");
+		}
+		if(charaFolder == null){
+			System.out.println("charaフォルダが見つかりません");
+			return new Chara[0];
+		}
+		int classAmount = 0;
+		final Chara[] charaClass = new Chara[64];
+		for(String className : charaFolder.list(classFilter)){
+			try{
+				final Object obj = Class.forName("chara." + className.substring(0,className.length() - 6)).newInstance();
+				if(obj instanceof Chara){
+					final Chara cls = (Chara)obj;
+					cls.loadImageData();
+					cls.loadSoundData();
+					charaClass[classAmount++] = cls;
+				}
+			}catch(InstantiationException e) {
+				System.out.println("ignored abstract class: " + className);
+			}catch(ClassNotFoundException | IllegalAccessException e){
+				System.out.println(e);
+			}
+		}
+		return Arrays.copyOf(charaClass,classAmount);
 	}
 	
 	//Paint

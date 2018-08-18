@@ -27,7 +27,7 @@ public class Marisa extends THHOriginal{
 	//Sounds
 	
 	@Override
-	protected final void loadImageData(){ //画像読み込み
+	public final void loadImageData(){ //画像読み込み
 		super.loadImageData();
 		charaIID = thh.loadImage("Marisa.png");
 		bulletIID[MILLKY_WAY] = thh.loadImage("MillkyWay.png");
@@ -38,12 +38,12 @@ public class Marisa extends THHOriginal{
 	}
 	
 	@Override
-	protected final void loadSoundData(){ //サウンド読み込み
+	public final void loadSoundData(){ //サウンド読み込み
 	}
 	
 	//Initialization
 	@Override
-	protected final void battleStarted(int charaID){
+	public final void battleStarted(int charaID){
 		//test area
 		weaponSlot[0] = REUSE_BOMB;
 		spellSlot[0] = NARROW_SPARK;
@@ -52,20 +52,20 @@ public class Marisa extends THHOriginal{
 		slot_spell = 0;
 	}
 	@Override
-	protected final void spawn(int charaID,int charaTeam,int x,int y){ //初期化処理
+	public final void spawn(int charaID,int charaTeam,int x,int y){ //初期化処理
 		super.spawn(charaID,charaTeam,x,y);
 		charaHP = super.charaBaseHP = 10000;
 		charaME = charaBaseME = 100;
 		charaSize = 70;
 	}
 	@Override
-	protected final void turnStarted(){
+	public final void turnStarted(){
 		super.turnStarted();
 	}
 	
 	//bullet
 	@Override
-	protected final void bulletSpawn(int kind) {
+	public final void bulletSpawn(int kind) {
 		super.bulletSpawn(kind);
 		BulletInfo.team = charaTeam;
 		switch(kind){
@@ -118,7 +118,7 @@ public class Marisa extends THHOriginal{
 		}
 	}
 	@Override
-	protected final void effectSpawn(int kind,double x,double y) {
+	public final void effectSpawn(int kind,double x,double y) {
 		super.effectSpawn(kind,x,y);
 		switch(kind){
 		case LIGHTNING:
@@ -134,13 +134,13 @@ public class Marisa extends THHOriginal{
 		}
 	}
 	@Override
-	protected final void bulletIdle(Bullet bullet,boolean isCharaActive) {
+	public final void bulletIdle(Bullet bullet,boolean isCharaActive) {
 		switch(bullet.KIND) {
 		case MILLKY_WAY:
 			super.bulletIdle(bullet, isCharaActive);
 			break;
 		case NARROW_SPARK: //laser action
-			while(THH.stage.inStage((int)bullet.x,(int)bullet.y) && bullet.defaultIdle())
+			while(THH.inStage((int)bullet.x,(int)bullet.y) && bullet.defaultIdle())
 				bullet.defaultPaint();
 			bullet.x = charaX;
 			bullet.y = charaY;
@@ -155,7 +155,7 @@ public class Marisa extends THHOriginal{
 		}
 	}
 	@Override
-	protected final void effectIdle(Effect effect,boolean isCharaActive) {
+	public final void effectIdle(Effect effect,boolean isCharaActive) {
 		switch(effect.KIND) {
 		default:
 			super.effectIdle(effect, isCharaActive);
