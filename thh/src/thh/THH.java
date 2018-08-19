@@ -9,8 +9,10 @@ import javax.swing.*;
 
 import bullet.Bullet;
 import bullet.BulletInfo;
+import bullet.BulletSource;
 import effect.Effect;
 import effect.EffectInfo;
+import effect.EffectSource;
 import engine.Ver_I;
 
 import java.io.*;
@@ -213,38 +215,36 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 			}
 		}
 		////////////////////////////////////////////////////////////////////////
-		//bulletAction
-		for(Bullet bullet : bullets.toArray(new Bullet[0])) {
-			final int gunnerID = bullet.SOURCE;
-			if(0 <= gunnerID && gunnerID < battleCharaClass.length) {
-				switch(stopEventKind) {
-				case STOP:
-					battleCharaClass[gunnerID].bulletAnimationPaint(bullet);
-					break;
-				case FREEZE:
-					battleCharaClass[gunnerID].bulletPaint(bullet);
-					break;
-				default:
-					battleCharaClass[gunnerID].bulletIdle(bullet,true);
-				}
+		//bulletAction&effectAction
+		switch(stopEventKind) {
+		case STOP:
+			for(int i = 0;i < bullets.size();i++) {
+				final Bullet bullet = bullets.get(i);
+				bullet.SOURCE.bulletAnimationPaint(bullet);
 			}
-		}
-		///////////////////////////////////////////////////////////////
-		//effectAction
-		//System.out.println("effect amount: " + effects.toArray(new Effect[0]).length);
-		for(Effect effect : effects.toArray(new Effect[0])) {
-			final int gunnerID = effect.SOURCE;
-			if(0 <= gunnerID && gunnerID < battleCharaClass.length) {
-				switch(stopEventKind) {
-				case STOP:
-					battleCharaClass[gunnerID].effectAnimationPaint(effect);
-					break;
-				case FREEZE:
-					battleCharaClass[gunnerID].effectPaint(effect);
-					break;
-				default:
-					battleCharaClass[gunnerID].effectIdle(effect,true);
-				}
+			for(int i = 0;i < effects.size();i++) {
+				final Effect effect = effects.get(i);
+				effect.SOURCE.effectAnimationPaint(effect);
+			}
+			break;
+		case FREEZE:
+			for(int i = 0;i < bullets.size();i++) {
+				final Bullet bullet = bullets.get(i);
+				bullet.SOURCE.bulletPaint(bullet);
+			}
+			for(int i = 0;i < effects.size();i++) {
+				final Effect effect = effects.get(i);
+				effect.SOURCE.effectPaint(effect);
+			}
+			break;
+		default:
+			for(int i = 0;i < bullets.size();i++) {
+				final Bullet bullet = bullets.get(i);
+				bullet.SOURCE.bulletIdle(bullet,true);
+			}
+			for(int i = 0;i < effects.size();i++) {
+				final Effect effect = effects.get(i);
+				effect.SOURCE.effectIdle(effect,true);
 			}
 		}
 		///////////////////////////////////////////////////////////////
@@ -382,12 +382,12 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 
 	//tool
 	public static final boolean deleteBullet(Bullet bullet) {
-		if(battleCharaClass[bullet.SOURCE].deleteBullet(bullet))
+		if(bullet.SOURCE.deleteBullet(bullet))
 			return bullets.remove(bullet);
 		return false;
 	}
 	public static final boolean deleteEffect(Effect effect) {
-		if(battleCharaClass[effect.SOURCE].deleteEffect(effect))
+		if(effect.SOURCE.deleteEffect(effect))
 			return effects.remove(effect);
 		return false;
 	}
@@ -417,7 +417,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		for(Bullet bullet : bullets){
 			if(team != bullet.team && bullet.atk > 0 && squreCollision((int)bullet.x,(int)bullet.y,bullet.SIZE,x,y,size)){ //ﾐnﾍｻ
 				hp -= bullet.atk;
-				battleCharaClass[bullet.SOURCE].bulletHitObject(bullet);
+				bullet.SOURCE.bulletHitObject(bullet);
 				if(hp <= 0)
 					break;
 			}
@@ -428,7 +428,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		for(Bullet bullet : bullets){
 			if(team != bullet.team && bullet.atk > 0 && circleCollision((int)bullet.x,(int)bullet.y,bullet.SIZE,x,y,size)){ //ﾐnﾍｻ
 				hp -= bullet.atk;
-				battleCharaClass[bullet.SOURCE].bulletHitObject(bullet);
+				bullet.SOURCE.bulletHitObject(bullet);
 				if(hp <= 0)
 					break;
 			}
@@ -675,34 +675,34 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	//generation
-	public final static void createBullet(){ //庶ﾉ嵭ﾉ
-		bullets.add(new Bullet());
+	public final static void createBullet(BulletSource source){ //庶ﾉ嵭ﾉ
+		bullets.add(new Bullet(source));
 	}
-	public final static void createBullet(int amount) {
+	public final static void createBullet(BulletSource source,int amount) {
 		for(int i = 0;i < amount;i++)
-			bullets.add(new Bullet());
+			bullets.add(new Bullet(source));
 	}
-	public final static void createBullet_RoundDesign(int amount,double gunnerX,double gunnerY,double radius){
+	public final static void createBullet_RoundDesign(BulletSource source,int amount,double gunnerX,double gunnerY,double radius){
 		final double ANGLE = 2*PI/amount;
 		for(int i = 0;i < amount;i++){
 			BulletInfo.x = gunnerX + radius*cos(ANGLE*i);
 			BulletInfo.y = gunnerY + radius*sin(ANGLE*i);
-			createBullet();
+			createBullet(source);
 		}
 	}
-	public final static void createEffect(){ //庶ﾉ嵭ﾉ
-		effects.add(new Effect());
+	public final static void createEffect(EffectSource source){ //庶ﾉ嵭ﾉ
+		effects.add(new Effect(source));
 	}
-	public final static void createEffect(int amount) {
+	public final static void createEffect(EffectSource source,int amount) {
 		for(int i = 0;i < amount;i++)
-			effects.add(new Effect());
+			effects.add(new Effect(source));
 	}
-	public final static void createEffect_RoundDesign(int amount,double gunnerX,double gunnerY,double radius){
+	public final static void createEffect_RoundDesign(EffectSource source,int amount,double gunnerX,double gunnerY,double radius){
 		final double ANGLE = 2*PI/amount;
 		for(int i = 0;i < amount;i++){
 			EffectInfo.x = gunnerX + radius*cos(ANGLE*i);
 			EffectInfo.y = gunnerY + radius*sin(ANGLE*i);
-			createEffect();
+			createEffect(source);
 		}
 	}
 	public static final int getNowFrame() {
@@ -910,7 +910,8 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		g2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,this);
 	}
 	public final void drawImageTHH(int imgID,int x,int y){
-		this.drawImageTHH(arrayImage[imgID],x,y);
+		if(0 <= imgID && imgID < arrayImage.length)
+			this.drawImageTHH(arrayImage[imgID],x,y);
 	}
 	/**
 	* 指定寸法で指定した画像をTHHへ描画する基本メソッドです。w,hも設定できます。

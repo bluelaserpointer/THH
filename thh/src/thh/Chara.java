@@ -1,9 +1,10 @@
 package thh;
 
 import bullet.Bullet;
-import effect.Effect;
+import bullet.BulletSource;
+import effect.EffectSource;
 
-public abstract class Chara{
+public abstract class Chara implements BulletSource,EffectSource{
 	//•’•£©`•Î•…
 	//•∑•π•∆•‡ÈvﬂB
 	protected final static int
@@ -23,30 +24,10 @@ public abstract class Chara{
 	public void loadImageData(){} //ª≠œÒ’i§ﬂﬁz§ﬂ
 	public void loadSoundData(){} //•µ•¶•Û•…’i§ﬂﬁz§ﬂ
 	
-	//idle
+	//idles
 	public abstract void idle(boolean isActive); //Include painting
 	public abstract void animationPaint();
 	public abstract void freezePaint();
-	public void bulletIdle(Bullet bullet,boolean isCharaActive) { //Include painting
-		bullet.defaultIdle();
-		bullet.defaultPaint();
-	}
-	public void bulletAnimationPaint(Bullet bullet) {
-		this.bulletPaint(bullet);
-	}
-	public void bulletPaint(Bullet bullet) {
-		bullet.defaultPaint();
-	}
-	public void effectIdle(Effect effect,boolean isCharaActive) { //Include painting
-		effect.defaultIdle();
-		effect.defaultPaint();
-	}
-	public void effectAnimationPaint(Effect effect) {
-		this.effectPaint(effect);
-	}
-	public void effectPaint(Effect effect) {
-		effect.defaultPaint();
-	}
 	
 	//control
 	//judge
@@ -71,32 +52,6 @@ public abstract class Chara{
 	public abstract void addAccel(double xAccel,double yAccel);
 	public abstract void setAccel(double xAccel,double yAccel);
 	public abstract void gravity(double value);
-
-	//bullet
-	public void bulletOutOfLifeSpan(Bullet bullet){}
-	public void bulletOutOfRange(Bullet bullet){}
-	public void bulletOutOfPenetration(Bullet bullet) {
-		if(!bullet.IS_LASER)
-			THH.deleteBullet(bullet);
-	}
-	public void bulletOutOfReflection(Bullet bullet) {
-		if(!bullet.IS_LASER)
-			THH.deleteBullet(bullet);
-	}
-	public void bulletHitObject(Bullet bullet){}
-	public boolean bulletIfHitLandscape(Bullet bullet,int x,int y){
-		return THH.hitLandscape(x,y,10,10);
-	}
-	public boolean deleteBullet(Bullet bullet){
-		return true;
-	}
-	
-	//effect
-	public void effectOutOfLifeSpan(Effect effect) {}
-	public void effectOutOfRange(Effect effect) {}
-	public boolean deleteEffect(Effect effect){
-		return true;
-	}
 	
 	//specialEvent
 	public int weaponChangeOrder;

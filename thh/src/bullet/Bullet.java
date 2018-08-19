@@ -1,12 +1,12 @@
 package bullet;
 
 import static java.lang.Math.*;
-
-import thh.Chara;
 import thh.Entity;
 import thh.THH;
 
 public class Bullet extends Entity{
+	public final BulletSource SOURCE;
+	
 	public String name;
 	public final int
 		KIND,
@@ -32,8 +32,9 @@ public class Bullet extends Entity{
 	public final boolean
 		IS_LASER;
 	
-	public Bullet() {
-		super(BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame,BulletInfo.source);
+	public Bullet(BulletSource source) {
+		super(BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
+		this.SOURCE = source;
 		name = BulletInfo.name;
 		KIND = BulletInfo.kind;
 		SIZE = BulletInfo.size;
@@ -51,17 +52,37 @@ public class Bullet extends Entity{
 		IMAGE_ID = BulletInfo.imageID;
 		IS_LASER = BulletInfo.isLaser;
 	}
-	
+		
+	public Bullet(Bullet bullet) {
+		super(BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
+		this.SOURCE = bullet.SOURCE;
+		name = bullet.name;
+		KIND = bullet.KIND;
+		SIZE = bullet.SIZE;
+		LIMIT_FRAME = bullet.LIMIT_FRAME;
+		LIMIT_RANGE = bullet.LIMIT_RANGE;
+		team = bullet.team;
+		atk = bullet.atk;
+		offSet = bullet.offSet;
+		penetration = bullet.penetration;
+		reflection = bullet.reflection;
+		ACCEL = bullet.ACCEL;
+		xSpeed = bullet.xSpeed;
+		ySpeed = bullet.ySpeed;
+		angle = bullet.angle;
+		IMAGE_ID = bullet.IMAGE_ID;
+		IS_LASER = bullet.IS_LASER;
+	}
+
 	public final boolean defaultIdle() {
-		final Chara chara = THH.getCharaClass(SOURCE);
 		//LifeSpan & Range
 		if(LIMIT_FRAME <= THH.getPassedFrame(super.APPEARED_FRAME)) {
-			chara.bulletOutOfLifeSpan(this);
+			SOURCE.bulletOutOfLifeSpan(this);
 			THH.deleteBullet(this);
 			return false;
 		}
 		if(LIMIT_RANGE <= movedDistance){
-			chara.bulletOutOfRange(this);
+			SOURCE.bulletOutOfRange(this);
 			THH.deleteBullet(this);
 			return false;
 		}
@@ -74,28 +95,28 @@ public class Bullet extends Entity{
 			ySpeed *= ACCEL;
 		}
 		//Penetration & Reflection
-		if(chara.bulletIfHitLandscape(this,(int)x,(int)y)){
+		if(SOURCE.bulletIfHitLandscape(this,(int)x,(int)y)){
 			if(reflection > 0) {
 				reflection--;
 				//edit
 			}else
-				chara.bulletOutOfReflection(this);
+				SOURCE.bulletOutOfReflection(this);
 		}
 		//Damaging
 		for(int charaID : THH.callBulletEngage(this)) {
 			if(THH.getCharaTeam(charaID) != team && atk > 0) {
 				THH.getCharaClass(charaID).damage_amount(atk);
-				chara.bulletHitObject(this);
+				SOURCE.bulletHitObject(this);
 				if(penetration > 0)
 					penetration--;
 				else
-					chara.bulletOutOfPenetration(this);
+					SOURCE.bulletOutOfPenetration(this);
 			}
 		}
 		return true;
 	}
 	public final void defaultPaint() {
-		if(angle%(2*PI) == 0.0)
+		if(angle == 0.0)
 			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
 		else
 			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);

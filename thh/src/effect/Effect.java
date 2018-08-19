@@ -1,13 +1,12 @@
 package effect;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.sqrt;
-
-import thh.Chara;
+import static java.lang.Math.*;
 import thh.Entity;
 import thh.THH;
 
 public class Effect extends Entity{
+	public final EffectSource SOURCE;
+	
 	public String name;
 	public final int
 		KIND,
@@ -24,8 +23,9 @@ public class Effect extends Entity{
 	private final int
 		IMAGE_ID;
 	
-	public Effect() {
-		super(EffectInfo.x,EffectInfo.y,EffectInfo.nowFrame,EffectInfo.source);
+	public Effect(EffectSource source) {
+		super(EffectInfo.x,EffectInfo.y,EffectInfo.nowFrame);
+		this.SOURCE = source;
 		name = EffectInfo.name;
 		KIND = EffectInfo.kind;
 		SIZE = EffectInfo.size;
@@ -37,17 +37,30 @@ public class Effect extends Entity{
 		angle = EffectInfo.angle;
 		IMAGE_ID = EffectInfo.imageID;
 	}
+	
+	public Effect(Effect effect) {
+		SOURCE = effect.SOURCE;
+		name = effect.name;
+		KIND = effect.KIND;
+		SIZE = effect.SIZE;
+		LIMIT_FRAME = effect.LIMIT_FRAME;
+		LIMIT_RANGE = effect.LIMIT_RANGE;
+		ACCEL = effect.ACCEL;
+		xSpeed = effect.xSpeed;
+		ySpeed = effect.ySpeed;
+		angle = effect.angle;
+		IMAGE_ID = effect.IMAGE_ID;
+	}
 
 	public final boolean defaultIdle() {
-		final Chara chara = THH.getCharaClass(SOURCE);
 		//LifeSpan & Range
 		if(LIMIT_FRAME <= THH.getPassedFrame(super.APPEARED_FRAME)) {
-			chara.effectOutOfLifeSpan(this);
+			SOURCE.effectOutOfLifeSpan(this);
 			THH.deleteEffect(this);
 			return false;
 		}
 		if(LIMIT_RANGE <= movedDistance){
-			chara.effectOutOfRange(this);
+			SOURCE.effectOutOfRange(this);
 			THH.deleteEffect(this);
 			return false;
 		}
@@ -62,7 +75,7 @@ public class Effect extends Entity{
 		return true;
 	}
 	public final void defaultPaint() {
-		if(angle%(2*PI) == 0)
+		if(angle == 0)
 			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
 		else
 			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);

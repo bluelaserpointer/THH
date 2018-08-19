@@ -81,7 +81,7 @@ public class Reimu extends THHOriginal{
 			BulletInfo.limitFrame = 200;
 			BulletInfo.limitRange = MAX;
 			BulletInfo.imageID = bulletIID[MILLKY_WAY];
-			THH.createBullet_RoundDesign(8,charaX,charaY,50);
+			THH.createBullet_RoundDesign(this,8,charaX,charaY,50);
 			break;
 		case NARROW_SPARK:
 			//message
@@ -99,7 +99,7 @@ public class Reimu extends THHOriginal{
 			BulletInfo.limitRange = MAX;
 			BulletInfo.imageID = bulletIID[NARROW_SPARK];
 			BulletInfo.isLaser = true;
-			THH.createBullet();
+			THH.createBullet(this);
 			break;
 		case REUSE_BOMB:
 			BulletInfo.name = "REUSE_BOMB";
@@ -113,7 +113,7 @@ public class Reimu extends THHOriginal{
 			BulletInfo.limitFrame = 200;
 			BulletInfo.limitRange = MAX;
 			BulletInfo.imageID = bulletIID[REUSE_BOMB];
-			THH.createBullet_RoundDesign(3,charaX,charaY,50);
+			THH.createBullet_RoundDesign(this,3,charaX,charaY,50);
 			break;
 		}
 	}
@@ -129,7 +129,7 @@ public class Reimu extends THHOriginal{
 			EffectInfo.limitFrame = 2;
 			EffectInfo.limitRange = MAX;
 			EffectInfo.imageID = effectIID[LIGHTNING];
-			THH.createEffect();
+			THH.createEffect(this);
 			break;
 		}
 	}
