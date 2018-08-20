@@ -1,4 +1,6 @@
 package bullet;
 
-public class BulletAgent implements BulletSource{
+import effect.EffectSource;
+
+public class BulletAgent implements BulletSource,EffectSource{
 }

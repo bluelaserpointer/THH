@@ -436,7 +436,8 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		return hp; //²Ð¤Ã¤¿HP¤ò·µ¤¹
 	}
 	public final Bullet searchBulletInSquare_single(int x,int y,int size,int team){
-		for(Bullet bullet : bullets.toArray(new Bullet[0])){
+		for(int i = 0;i < bullets.size();i++){
+			final Bullet bullet = bullets.get(i);
 			if(team != bullet.team && squreCollision((int)bullet.x,(int)bullet.y,bullet.SIZE,x,y,size)) //ÐnÍ»
 				return bullet; //return ID
 		}
@@ -445,7 +446,8 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	public final Bullet[] searchBulletInSquare_multiple(int x,int y,int size,int team){
 		Bullet[] foundIDs = new Bullet[bullets.size()];
 		int foundAmount =  0;
-		for(Bullet bullet : bullets.toArray(new Bullet[0])){
+		for(int i = 0;i < bullets.size();i++){
+			final Bullet bullet = bullets.get(i);
 			if(team != bullet.team && squreCollision((int)bullet.x,(int)bullet.y,bullet.SIZE,x,y,size)) //ÐnÍ»
 				foundIDs[foundAmount++] = bullet; //record ID
 		}
