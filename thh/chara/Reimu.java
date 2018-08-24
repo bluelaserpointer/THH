@@ -43,7 +43,7 @@ public class Reimu extends THHOriginal{
 	
 	//Initialization
 	@Override
-	public final void battleStarted(int charaID){
+	public final void battleStarted(){
 		//test area
 		weaponSlot[0] = REUSE_BOMB;
 		spellSlot[0] = NARROW_SPARK;

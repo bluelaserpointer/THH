@@ -4,7 +4,7 @@ import bullet.Bullet;
 import bullet.BulletSource;
 import effect.EffectSource;
 
-public abstract class Chara implements BulletSource,EffectSource{
+public abstract class Chara implements BulletSource,EffectSource,MessageSource{
 	//•’•£©`•Î•…
 	//•∑•π•∆•‡ÈvﬂB
 	protected final static int
@@ -18,7 +18,7 @@ public abstract class Chara implements BulletSource,EffectSource{
 	//•·•Ω•√•…
 	
 	//Initialization
-	public void battleStarted(int charaID){}
+	public void battleStarted(){}
 	public abstract void spawn(int charaID,int charaTeam,int spawnX,int spawnY);
 	public void turnStarted(){}
 	public void loadImageData(){} //ª≠œÒ’i§ﬂﬁz§ﬂ
@@ -64,5 +64,4 @@ public abstract class Chara implements BulletSource,EffectSource{
 		weaponChangeOrder = 0;
 		spellOrder = dodgeOrder = false;
 	}
-	public void eventNotice(int event) {}
 }

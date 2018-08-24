@@ -2,7 +2,7 @@ package thh;
 
 import java.awt.Graphics2D;
 
-public abstract class StageEngine {
+public abstract class StageEngine{
 	//•’•£©`•Î•…
 	//•∑•π•∆•‡ÈvﬂB
 	protected final static int
@@ -17,6 +17,7 @@ public abstract class StageEngine {
 	//initialization
 	public abstract Chara[] charaSetup();
 	public abstract Stage stageSetup();
+	public abstract void openStage();
 	
 	//idle
 	public abstract void idle(Graphics2D g2,int stopEventKind);

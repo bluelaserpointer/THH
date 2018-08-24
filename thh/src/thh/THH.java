@@ -96,7 +96,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	
 	//event data
 	private static final ArrayDeque<String> messageStr = new ArrayDeque<String>();
-	private static final ArrayDeque<Integer> messageSource = new ArrayDeque<Integer>();
+	private static final ArrayDeque<MessageSource> messageSource = new ArrayDeque<MessageSource>();
 	private static final ArrayDeque<Integer> messageEvent = new ArrayDeque<Integer>();
 	private int messageIterator;
 
@@ -272,10 +272,10 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 					if(messageIterator > messageStr.getFirst().length() - 1){
 						if(key_enter) { //next message order
 							messageStr.remove();
-							final int SOURCE = messageSource.remove();
+							final MessageSource SOURCE = messageSource.remove();
 							final int EVENT = messageEvent.remove();
-							if(EVENT != NONE && 0 <= SOURCE && SOURCE < battleCharaClass.length)
-								battleCharaClass[SOURCE].eventNotice(EVENT);
+							if(EVENT != NONE)
+								SOURCE.eventNotice(EVENT);
 							messageIterator = 0;
 							key_enter = false;
 						}
@@ -743,14 +743,14 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	//event
-	public static final void addMessage(int source,String message) {
+	public static final void addMessage(MessageSource source,String message) {
 		stopEventKind = STOP;
 		stopEventReason = MESSAGE;
 		messageSource.add(source);
 		messageStr.add(message);
 		messageEvent.add(THH.NONE);
 	}
-	public static final void addMessage(int source,int event,String message) {
+	public static final void addMessage(MessageSource source,int event,String message) {
 		stopEventKind = STOP;
 		stopEventReason = MESSAGE;
 		messageSource.add(source);
@@ -974,6 +974,122 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		else if(radian <= -PI)
 			radian += PI*2;
 		return radian;
+	}
+	public final static String trim2(String str){
+		if(str == null || str.length() == 0)
+			return "";
+		for(int i = 0;;i++){
+			if(i >= str.length()){
+				str = "";
+				break;
+			}
+			final char c = str.charAt(i);
+			if(c == ' ' || c == '　'){
+				continue;
+			}else{
+				str = str.substring(i);
+				break;
+			}
+		}
+		for(int i = str.length() - 1;i >= 0;i--){
+			final char c = str.charAt(i);
+			if(c == ' ' || c == '　'){
+				continue;
+			}else{
+				str = str.substring(0,i + 1);
+				break;
+			}
+		}
+		return str;
+	}
+	/**
+	* 文字列をtokenで分割して配列で返す、String.splitメソッドのブレスコ版です。
+	* 分割された文字は、さらに前後の半角/全角空白を除去されます。
+	* 指定された文字列がnullであったときは空配列が返され、例外は投げません。
+	* @param str 分割される文字列
+	* @param token 分割に使うトークン
+	* @return 分割された文字配列
+	* @since beta8.0
+	*/
+	public final static String[] split2(String str,String token){
+		if(!isActualString(str))
+			return new String[0];
+		final String[] strs = str.split(token);
+		for(int i = 0;i < strs.length;i++)
+			strs[i] = trim2(strs[i]);
+		return strs;
+	}
+	/**
+	* String値が無効値ではないことを検証します。
+	*/
+	public final static boolean isActualString(String value){
+		if(value != null && !value.isEmpty() && !value.equalsIgnoreCase("NONE"))
+			return true;
+		return false;
+	}
+	/**
+	* String配列が無効値ではないことを検証します。
+	*/
+	public final static boolean isActualString(String[] value){
+		if(value != null && value.length > 0 && !value[0].isEmpty() && !value[0].equalsIgnoreCase("NONE"))
+			return true;
+		return false;
+	}
+	/**
+	* このint値は特別な意味が含まれない実数値ゾーンであるかを調べます。
+	* BreakScopeでは一部の変数に特殊な意味を持たせた数値を代入し、違った挙動を示すような仕組みがあります。
+	* (例：gimmickHPは定数MAXのとき破壊不能,定数NONEのとき衝突判定なし)
+	* 実数値と混同しないため、このゾーンは限界値付近であることが多いようになっています。
+	* @param value 調べる値
+	* @return 実数値であるときtrue,そうでなければfalse
+	* @since beta8.0
+	*/
+	public final static boolean isActualNumber(int value){
+		switch(value){
+		case NONE:
+		case MAX:
+		case MIN:
+		case ConfigLoader.SELF:
+		case ConfigLoader.REVERSE_SELF:
+		case ConfigLoader.TARGET:
+		case ConfigLoader.REVERSE_TARGET:
+		case ConfigLoader.FOCUS:
+			return false;
+		}
+		return true;
+	}
+	/**
+	* このdouble値は特別な意味が含まれない実数値ゾーンであるかを調べます。
+	* BreakScopeでは一部の変数に特殊な意味を持たせた数値を代入し、違った挙動を示すような仕組みがあります。
+	* (例：gimmickHPが定数MAXのとき破壊不能,定数NONEのとき衝突判定なし)
+	* 実数値と混同しないため、このゾーンは限界値付近であることが多いようになっています。
+	* なお、NaNや[NEGATIVE/POSITIVE]_INFINITYでもfalseが返ってきます。
+	* @param value 調べる値
+	* @return 実数値とであるときtrue,そうでなければfalse
+	* @since beta8.0
+	*/
+	public final static boolean isActualNumber(double value){
+		if(	value == Double.NaN ||
+			value == Double.NEGATIVE_INFINITY ||
+			value == Double.POSITIVE_INFINITY ||
+			!isActualNumber((int)value))
+			return false;
+		else
+			return true;
+	}
+	/**
+	* 度をラジアンへ変換しますが、実数値ではない値を保持します。
+	* たとえば、コンフィグ内の角度項目で指定できる"TARGET"や"SELF"などの特殊値はこのメソッドを通しても値は変化しません。
+	* 内部的には実際の掛け算で求めています。
+	* @param ラジアンに変換する数値
+	* @return 変換された値
+	* @since beta9.0
+	*/
+	public final static double toRadians2(double degress){
+		if(isActualNumber(degress))
+			return degress*PI/180;
+		else
+			return degress;
 	}
 	
 	//儊僢僙乕僕僂傿儞僪僂宯
