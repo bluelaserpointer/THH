@@ -9,6 +9,7 @@ import thh.Chara;
 import thh.MessageSource;
 import thh.Stage;
 import thh.StageEngine;
+import thh.THH;
 
 public class Ver_I extends StageEngine implements MessageSource{
 	private final Chara[] battleCharaClass = {new Marisa(),new Reimu()};
@@ -34,17 +35,20 @@ public class Ver_I extends StageEngine implements MessageSource{
 	}
 	@Override
 	public final void openStage() {
+		THH.addMessage(this,"This is a prototype stage.");
 	}
 	//idle
 	@Override
 	public final void idle(Graphics2D g2,int stopEventKind) {
 		g2.setColor(Color.GRAY);
 		g2.draw(stages[nowStage].getLandPolygon());
-		switch(nowStage) {
-		case 0:
-			for(Chara chara : battleCharaClass)
-				chara.gravity(1.1);
-			break;
+		if(stopEventKind == NONE) {
+			switch(nowStage) {
+			case 0:
+				for(Chara chara : battleCharaClass)
+					chara.gravity(1.1);
+				break;
+			}
 		}
 	}
 	

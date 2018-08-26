@@ -26,16 +26,19 @@ import static java.lang.Math.*;
  * @version alpha1.0
  *
  */
-final public class THH extends JPanel implements MouseListener,MouseMotionListener,MouseWheelListener,KeyListener,Runnable{
+public final class THH extends JPanel implements MouseListener,MouseMotionListener,MouseWheelListener,KeyListener,Runnable{
 	private static final long serialVersionUID = 123412351L;
 
-	final static String
+	static final String
 		GAME_VERSION = "Ver beta1.0.0";
-	final public static int
+	public static final int
 		NONE = -999999999, //値なし
 		MAX = Integer.MAX_VALUE, //最大
 		MIN = Integer.MIN_VALUE; //最小
 
+	public static final String
+		NOT_NAMED = "<Not Named>";
+	
 	//システム関連
 	//File Pass
 	final String
@@ -770,6 +773,7 @@ final public class THH extends JPanel implements MouseListener,MouseMotionListen
 		System.out.println("add characters to the game");
 		battleCharaClass = engine.charaSetup();
 		stage = engine.stageSetup();
+		engine.openStage();
 	}
 	
 	//ResourceLoad

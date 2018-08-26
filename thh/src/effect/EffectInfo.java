@@ -1,5 +1,6 @@
 package effect;
 
+import thh.THH;
 
 public class EffectInfo {
 	private final static int 
@@ -20,7 +21,7 @@ public class EffectInfo {
 		imageID;
 	
 	public static final void clear() {
-		name = "<Not named>";
+		name = THH.NOT_NAMED;
 		kind = NONE;
 		size = NONE;
 		limitFrame = MAX;

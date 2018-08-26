@@ -7,12 +7,12 @@ import effect.EffectSource;
 public abstract class Chara implements BulletSource,EffectSource,MessageSource{
 	//•’•£©`•Î•…
 	//•∑•π•∆•‡ÈvﬂB
-	protected final static int
+	protected static final int
 		//system
 		NONE = THH.NONE,
 		MAX = THH.MAX,
 		MIN = THH.MIN;
-	
+		
 	protected static THH thh;
 	
 	//•·•Ω•√•…

@@ -3,7 +3,9 @@ package bullet;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-public class BulletInfo {
+import thh.THH;
+
+public final class BulletInfo {
 	private final static int 
 		NONE = thh.THH.NONE,
 		MAX = thh.THH.MAX;
@@ -29,7 +31,7 @@ public class BulletInfo {
 		isLaser;
 	
 	public static final void clear() {
-		name = "<Not named>";
+		name = THH.NOT_NAMED;
 		kind = NONE;
 		size = 0;
 		team = NONE;

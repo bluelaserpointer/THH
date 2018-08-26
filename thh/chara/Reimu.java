@@ -85,8 +85,8 @@ public class Reimu extends THHOriginal{
 			break;
 		case NARROW_SPARK:
 			//message
-			THH.addMessage(charaID,"KOIFU [MasterSpark]");
-			THH.addMessage(charaID,"TEST MESSAGE 2");
+			THH.addMessage(this,charaID,"KOIFU [MasterSpark]");
+			THH.addMessage(this,charaID,"TEST MESSAGE 2");
 			BulletInfo.name = "NARROW_SPARK";
 			BulletInfo.fastParaSet_XYADSpd(charaX,charaY,charaShotAngle,0,thh.getImageByID(bulletIID[NARROW_SPARK]).getWidth(null));
 			BulletInfo.accel = 1.0;

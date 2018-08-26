@@ -198,6 +198,10 @@ public abstract class THHOriginal extends Chara {
 
 	// information
 	@Override
+	public String getName() {
+		return THH.NOT_NAMED;
+	}
+	@Override
 	public final int getTeam() {
 		return charaTeam;
 	}
