@@ -6,14 +6,14 @@ public interface BulletSource {
 	
 	//idle
 	public default void bulletIdle(Bullet bullet,boolean isCharaActive) { //Include painting
-		bullet.defaultIdle();
-		bullet.defaultPaint();
+		bullet.idle();
+		bullet.paint();
 	}
 	public default void bulletAnimationPaint(Bullet bullet) {
 		this.bulletPaint(bullet);
 	}
 	public default void bulletPaint(Bullet bullet) {
-		bullet.defaultPaint();
+		bullet.paint();
 	}
 	
 	//event

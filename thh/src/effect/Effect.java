@@ -1,10 +1,10 @@
 package effect;
 
 import static java.lang.Math.*;
-import thh.Entity;
+import thh.Entity_double;
 import thh.THH;
 
-public class Effect extends Entity{
+public class Effect extends Entity_double{
 	public final EffectSource SOURCE;
 	
 	public String name;
@@ -52,7 +52,7 @@ public class Effect extends Entity{
 		IMAGE_ID = effect.IMAGE_ID;
 	}
 
-	public final boolean defaultIdle() {
+	public final boolean idle() {
 		//LifeSpan & Range
 		if(LIMIT_FRAME <= THH.getPassedFrame(super.APPEARED_FRAME)) {
 			SOURCE.effectOutOfLifeSpan(this);
@@ -74,7 +74,7 @@ public class Effect extends Entity{
 		}
 		return true;
 	}
-	public final void defaultPaint() {
+	public final void paint() {
 		if(angle == 0)
 			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
 		else

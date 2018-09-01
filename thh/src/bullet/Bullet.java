@@ -1,10 +1,12 @@
 package bullet;
 
 import static java.lang.Math.*;
-import thh.Entity;
+
+import thh.DynamInteractable;
+import thh.Entity_double;
 import thh.THH;
 
-public class Bullet extends Entity{
+public class Bullet extends Entity_double implements DynamInteractable{
 	public final BulletSource SOURCE;
 	
 	public String name;
@@ -31,7 +33,7 @@ public class Bullet extends Entity{
 		IMAGE_ID;
 	public final boolean
 		IS_LASER;
-	
+	 
 	public Bullet(BulletSource source) {
 		super(BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
 		this.SOURCE = source;
@@ -74,7 +76,7 @@ public class Bullet extends Entity{
 		IS_LASER = bullet.IS_LASER;
 	}
 
-	public final boolean defaultIdle() {
+	public final boolean idle() {
 		//LifeSpan & Range
 		if(LIMIT_FRAME <= THH.getPassedFrame(super.APPEARED_FRAME)) {
 			SOURCE.bulletOutOfLifeSpan(this);
@@ -115,28 +117,78 @@ public class Bullet extends Entity{
 		}
 		return true;
 	}
-	public final void defaultPaint() {
+	public final void paint() {
 		if(angle == 0.0)
 			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
 		else
 			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);
 	}
+	//control
+	@Override
+	public final void setXY(double x,double y) {
+		this.x = x;this.y = y;
+	}
+	@Override
+	public final void setX(double x) {
+		this.x = x;
+	}
+	@Override
+	public final void setY(double y) {
+		this.y = y;
+	}
+	@Override
+	public final void setSpeed(double xSpeed,double ySpeed) {
+		this.xSpeed = xSpeed;this.ySpeed = ySpeed;
+	}
+	@Override
+	public final void addSpeed(double xSpeed,double ySpeed) {
+		this.xSpeed += xSpeed;this.ySpeed += ySpeed;
+	}
+	@Override
+	public final void acceleration(double rate) {
+		this.xSpeed *= rate;this.ySpeed *= rate;
+	}
+	//information
 	public final int getPenetration() {
 		return penetration;
 	}
 	public final int getReflection() {
 		return reflection;
 	}
-	public final double getSpeedX() {
-		return xSpeed;
+	@Override
+	public final double getX() {
+		return x;
+	}
+	@Override
+	public final double getY() {
+		return y;
+	}
+	@Override
+	public final boolean isMovable() {
+		return true;
+	}
+	@Override
+	public final boolean inStage() {
+		return THH.inStage((int)x,(int)y);
+	}
+	@Override
+	public final boolean inArea(int x,int y,int w,int h) {
+		return abs(x - this.x) < w && abs(y - this.y) < h;
+	}
+	@Override
+	public final double getDistance(double x,double y) {
+		final double XD = x - this.x,YD = y - this.y;
+		return sqrt(XD*XD + YD*YD);
+	}
+	@Override
+	public final boolean isStop() {
+		return xSpeed == 0.0 && ySpeed == 0.0;
+	}
+	@Override
+	public final double getSpeed() {
+		return sqrt(xSpeed*xSpeed + ySpeed*ySpeed);
 	}
 	public final void setSpeedX(double value) {
 		xSpeed = value;
-	}
-	public final double getSpeedY() {
-		return ySpeed;
-	}
-	public final void setSpeedY(double value) {
-		ySpeed = value;
 	}
 }

@@ -4,7 +4,7 @@ import bullet.Bullet;
 import bullet.BulletSource;
 import effect.EffectSource;
 
-public abstract class Chara implements BulletSource,EffectSource,MessageSource{
+public abstract class Chara implements BulletSource,EffectSource,MessageSource,DynamInteractable{
 	//•’•£©`•Î•…
 	//•∑•π•∆•‡ÈvﬂB
 	protected static final int
@@ -46,11 +46,7 @@ public abstract class Chara implements BulletSource,EffectSource,MessageSource{
 	public abstract int getME();
 	public abstract double getMERate();
 	public abstract int getStatus();
-	public abstract double getX();
-	public abstract double getY();
 	//acceleration
-	public abstract void addAccel(double xAccel,double yAccel);
-	public abstract void setAccel(double xAccel,double yAccel);
 	public abstract void gravity(double value);
 	
 	//specialEvent

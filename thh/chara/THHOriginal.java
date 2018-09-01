@@ -129,17 +129,29 @@ public abstract class THHOriginal extends Chara {
 		return THH.squreCollision((int) charaX, (int) charaY, charaSize, (int) bullet.x, (int) bullet.y, bullet.SIZE)
 				&& (bullet.team == charaTeam ^ bullet.atk > 0);
 	}
-
+	//XY
+	@Override
+	public void setX(double x) {
+		charaX = x;
+	}
+	@Override
+	public void setY(double y) {
+		charaY = y;
+	}
+	@Override
+	public void setXY(double x,double y) {
+		charaX = x;charaY = y;
+	}
 	// acceleration
 	@Override
-	public final void addAccel(double xAccel, double yAccel) {
-		charaXSpeed += xAccel;
-		charaYSpeed += yAccel;
+	public final void addSpeed(double xPower, double yPower) {
+		charaXSpeed += xPower;
+		charaYSpeed += yPower;
 	}
 
-	public final void setAccel(double xAccel, double yAccel) {
-		charaXSpeed = xAccel;
-		charaYSpeed = yAccel;
+	public final void setSpeed(double xPower, double yPower) {
+		charaXSpeed = xPower;
+		charaYSpeed = yPower;
 	}
 
 	private final void dodge(double targetX, double targetY) {
@@ -237,7 +249,32 @@ public abstract class THHOriginal extends Chara {
 	public final double getY() {
 		return charaY;
 	}
-
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public final boolean inStage() {
+		return THH.inStage((int)charaX,(int)charaY);
+	}
+	@Override
+	public final boolean inArea(int x,int y,int w,int h) {
+		return abs(x - charaX) < w && abs(y - charaY) < h;
+	}
+	@Override
+	public final double getDistance(double x,double y) {
+		final double XD = x - charaX,YD = y - charaY;
+		return sqrt(XD*XD + YD*YD);
+	}
+	@Override
+	public final boolean isStop() {
+		return charaXSpeed == 0.0 && charaYSpeed == 0.0;
+	}
+	@Override
+	public final double getSpeed() {
+		final double xSpd = charaXSpeed,ySpd = charaYSpeed;
+		return sqrt(xSpd*xSpd + ySpd*ySpd);
+	}
 	public void bulletSpawn(int kind) {
 		THH.prepareBulletInfo(charaID);
 		BulletInfo.kind = kind;

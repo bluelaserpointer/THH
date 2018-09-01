@@ -983,26 +983,22 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		if(str == null || str.length() == 0)
 			return "";
 		for(int i = 0;;i++){
-			if(i >= str.length()){
-				str = "";
-				break;
-			}
+			if(i >= str.length())
+				return "";
 			final char c = str.charAt(i);
-			if(c == ' ' || c == '　'){
+			if(c == ' ' || c == '　')
 				continue;
-			}else{
+			else{
 				str = str.substring(i);
 				break;
 			}
 		}
 		for(int i = str.length() - 1;i >= 0;i--){
 			final char c = str.charAt(i);
-			if(c == ' ' || c == '　'){
+			if(c == ' ' || c == '　')
 				continue;
-			}else{
-				str = str.substring(0,i + 1);
-				break;
-			}
+			else
+				return str.substring(0,i + 1);
 		}
 		return str;
 	}

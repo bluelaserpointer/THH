@@ -140,15 +140,15 @@ public class Marisa extends THHOriginal{
 			super.bulletIdle(bullet, isCharaActive);
 			break;
 		case NARROW_SPARK: //laser action
-			while(THH.inStage((int)bullet.x,(int)bullet.y) && bullet.defaultIdle())
-				bullet.defaultPaint();
+			while(THH.inStage((int)bullet.x,(int)bullet.y) && bullet.idle())
+				bullet.paint();
 			bullet.x = charaX;
 			bullet.y = charaY;
 			break;
 		case REUSE_BOMB:
-			bullet.defaultIdle();
-			bullet.setSpeedY(bullet.getSpeedY() + 1.1);
-			bullet.defaultPaint();
+			bullet.idle();
+			bullet.addSpeed(0.0,1.1);
+			bullet.paint();
 			if(random() < 0.2)
 				effectSpawn(LIGHTNING,bullet.x,bullet.y);
 			break;
