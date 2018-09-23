@@ -20,7 +20,6 @@ public abstract class Chara implements BulletSource,EffectSource,MessageSource,D
 	//Initialization
 	public void battleStarted(){}
 	public abstract void spawn(int charaID,int charaTeam,int spawnX,int spawnY);
-	public void turnStarted(){}
 	public void loadImageData(){} //賒砉掂心煋心
 	public void loadSoundData(){} //扔它件玉掂心煋心
 	

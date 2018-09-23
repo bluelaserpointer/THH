@@ -74,14 +74,14 @@ public abstract class THHOriginal extends Chara {
 				charaShotAngle = mouseAngle;
 				final int weapon = weaponSlot[slot_weapon];
 				if (weapon != NONE)
-					bulletSpawn(weapon);
+					useWeapon(weapon);
 			}
 			// spell
 			if (super.spellOrder) {
 				charaShotAngle = mouseAngle;
 				final int spell = spellSlot[slot_spell];
 				if (spell != NONE)
-					bulletSpawn(spell);
+					useWeapon(spell);
 			}
 			// move
 			if (super.moveOrder) {
@@ -275,12 +275,11 @@ public abstract class THHOriginal extends Chara {
 		final double xSpd = charaXSpeed,ySpd = charaYSpeed;
 		return sqrt(xSpd*xSpd + ySpd*ySpd);
 	}
-	public void bulletSpawn(int kind) {
+	public void useWeapon(int kind) {
 		THH.prepareBulletInfo(charaID);
 		BulletInfo.kind = kind;
 	}
-
-	public void effectSpawn(int kind,double x,double y) {
+	public void useEffect(int kind,double x,double y) {
 		THH.prepareEffectInfo(charaID);
 		EffectInfo.kind = kind;
 	}

@@ -8,6 +8,8 @@ import bullet.BulletInfo;
 import effect.Effect;
 import effect.EffectInfo;
 import thh.THH;
+import weapon.Weapon;
+import weapon.WeaponInfo;
 
 public class Reimu extends THHOriginal{
 	@Override
@@ -18,7 +20,7 @@ public class Reimu extends THHOriginal{
 	//weapon&bullet kind name
 	final int
 		MILLKY_WAY = 0,NARROW_SPARK = 1,REUSE_BOMB = 2;
-	
+	private final Weapon weaponController[] = new Weapon[10];
 	//effect kind name
 	private final int LIGHTNING = 0,NARROW_SPARK_HE = 1;
 	
@@ -48,7 +50,32 @@ public class Reimu extends THHOriginal{
 		weaponSlot[0] = REUSE_BOMB;
 		spellSlot[0] = NARROW_SPARK;
 		spellSlot[1] = REUSE_BOMB;
-		////
+		////weaponLoad
+		//MILLKY_WAY
+		WeaponInfo.clear();
+		WeaponInfo.name = "MILLKY_WAY";
+		WeaponInfo.coolTime = 10;
+		WeaponInfo.reloadTime = 100;
+		WeaponInfo.magazineSize = 180;
+		WeaponInfo.magazineConsumption = 6;
+		weaponController[MILLKY_WAY] = new Weapon();
+		//NARROW_SPARK
+		WeaponInfo.clear();
+		WeaponInfo.name = "NARROW_SPARK";
+		WeaponInfo.coolTime = 10;
+		WeaponInfo.reloadTime = 1000;
+		WeaponInfo.magazineSize = 2;
+		WeaponInfo.magazineConsumption = 1;
+		weaponController[NARROW_SPARK] = new Weapon();
+		//REUSE_BOMB
+		WeaponInfo.clear();
+		WeaponInfo.name = "REUSE_BOMB";
+		WeaponInfo.coolTime = 10;
+		WeaponInfo.reloadTime = 100;
+		WeaponInfo.magazineSize = 90;
+		WeaponInfo.magazineConsumption = 3;
+		weaponController[REUSE_BOMB] = new Weapon();
+		/////////////////////
 		slot_spell = 0;
 	}
 	@Override
@@ -57,19 +84,28 @@ public class Reimu extends THHOriginal{
 		charaHP = super.charaBaseHP = 10000;
 		charaME = charaBaseME = 100;
 		charaSize = 70;
-	}
+		for(Weapon ver : weaponController) {
+			if(ver != null)
+				ver.reset();
+		}
+	}	
 	@Override
-	public final void turnStarted(){
-		super.turnStarted();
+	public void idle(boolean isActive) {
+		super.idle(isActive);
+		for(Weapon ver : weaponController) {
+			if(ver != null)
+				ver.defaultIdle();
+		}
 	}
-	
 	//bullet
 	@Override
-	public final void bulletSpawn(int kind) {
-		super.bulletSpawn(kind);
+	public final void useWeapon(int kind) {
+		super.useWeapon(kind);
 		BulletInfo.team = charaTeam;
 		switch(kind){
 		case MILLKY_WAY:
+			if(!weaponController[MILLKY_WAY].trigger())
+				break;
 			BulletInfo.name = "MILLKY_WAY";
 			BulletInfo.fastParaSet_ADSpd(charaShotAngle,10,20);
 			BulletInfo.accel = 1.0;
@@ -84,6 +120,8 @@ public class Reimu extends THHOriginal{
 			THH.createBullet_RoundDesign(this,8,charaX,charaY,50);
 			break;
 		case NARROW_SPARK:
+			if(!weaponController[NARROW_SPARK].trigger())
+				break;
 			//message
 			THH.addMessage(this,charaID,"KOIFU [MasterSpark]");
 			THH.addMessage(this,charaID,"TEST MESSAGE 2");
@@ -102,6 +140,8 @@ public class Reimu extends THHOriginal{
 			THH.createBullet(this);
 			break;
 		case REUSE_BOMB:
+			if(!weaponController[REUSE_BOMB].trigger())
+				break;
 			BulletInfo.name = "REUSE_BOMB";
 			BulletInfo.fastParaSet_ADSpd(charaShotAngle,10,40);
 			BulletInfo.accel = 0.98;
@@ -118,8 +158,8 @@ public class Reimu extends THHOriginal{
 		}
 	}
 	@Override
-	public final void effectSpawn(int kind,double x,double y) {
-		super.effectSpawn(kind,x,y);
+	public final void useEffect(int kind,double x,double y) {
+		super.useEffect(kind,x,y);
 		switch(kind){
 		case LIGHTNING:
 			EffectInfo.name = "LIGHTNING";
@@ -150,7 +190,7 @@ public class Reimu extends THHOriginal{
 			bullet.addSpeed(0.0,1.1);
 			bullet.paint();
 			if(random() < 0.2)
-				effectSpawn(LIGHTNING,bullet.x,bullet.y);
+				useEffect(LIGHTNING,bullet.x,bullet.y);
 			break;
 		}
 	}
