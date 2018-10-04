@@ -1,7 +1,6 @@
 package chara;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.random;
+import static java.lang.Math.*;
 
 import bullet.Bullet;
 import bullet.BulletInfo;
@@ -19,10 +18,10 @@ public class Reimu extends THHOriginal{
 	
 	//weapon&bullet kind name
 	final int
-		MILLKY_WAY = 0,NARROW_SPARK = 1,REUSE_BOMB = 2;
+		FUDA_KOUHAKU = 0,FUDA_SHIROKURO = 1,FUDA_SOUHAKU = 2;
 	private final Weapon weaponController[] = new Weapon[10];
 	//effect kind name
-	private final int LIGHTNING = 0,NARROW_SPARK_HE = 1;
+	private final int LIGHTNING = 0,FUDA_SHIROKURO_HE = 1;
 	
 	//GUI
 		
@@ -32,11 +31,11 @@ public class Reimu extends THHOriginal{
 	public final void loadImageData(){ //»­ÏñÕi¤ßÞz¤ß
 		super.loadImageData();
 		charaIID = thh.loadImage("Reimu.png");
-		bulletIID[MILLKY_WAY] = thh.loadImage("MillkyWay.png");
-		bulletIID[NARROW_SPARK] = thh.loadImage("NarrowSpark_2.png");
-		bulletIID[REUSE_BOMB] = thh.loadImage("ReuseBomb.png");
+		bulletIID[FUDA_KOUHAKU] = thh.loadImage("KouhakuNoFuda.png");
+		bulletIID[FUDA_SHIROKURO] = thh.loadImage("ShirokuroNoFuda.png");
+		bulletIID[FUDA_SOUHAKU] = thh.loadImage("SouhakuNoFuda.png");
 		effectIID[LIGHTNING] = thh.loadImage("ReuseBomb_Effect.png");
-		effectIID[NARROW_SPARK_HE] = thh.loadImage("NarrowSpark_HitEffect.png");
+		effectIID[FUDA_SHIROKURO_HE] = thh.loadImage("NarrowSpark_HitEffect.png");
 	}
 	
 	@Override
@@ -47,34 +46,32 @@ public class Reimu extends THHOriginal{
 	@Override
 	public final void battleStarted(){
 		//test area
-		weaponSlot[0] = REUSE_BOMB;
-		spellSlot[0] = NARROW_SPARK;
-		spellSlot[1] = REUSE_BOMB;
+		weaponSlot[0] = FUDA_SHIROKURO;
+		spellSlot[0] = FUDA_SHIROKURO;
+		spellSlot[1] = FUDA_SOUHAKU;
 		////weaponLoad
-		//MILLKY_WAY
+		//FUDA_KOUHAKU
 		WeaponInfo.clear();
-		WeaponInfo.name = "MILLKY_WAY";
-		WeaponInfo.coolTime = 10;
+		WeaponInfo.name = "FUDA_KOUHAKU";
+		WeaponInfo.coolTime = 1;
 		WeaponInfo.reloadTime = 100;
 		WeaponInfo.magazineSize = 180;
-		WeaponInfo.magazineConsumption = 6;
-		weaponController[MILLKY_WAY] = new Weapon();
-		//NARROW_SPARK
+		WeaponInfo.magazineConsumption = 2;
+		weaponController[FUDA_KOUHAKU] = new Weapon();
+		//FUDA_SHIROKURO
 		WeaponInfo.clear();
-		WeaponInfo.name = "NARROW_SPARK";
-		WeaponInfo.coolTime = 10;
-		WeaponInfo.reloadTime = 1000;
-		WeaponInfo.magazineSize = 2;
-		WeaponInfo.magazineConsumption = 1;
-		weaponController[NARROW_SPARK] = new Weapon();
-		//REUSE_BOMB
-		WeaponInfo.clear();
-		WeaponInfo.name = "REUSE_BOMB";
-		WeaponInfo.coolTime = 10;
+		WeaponInfo.name = "FUDA_SHIROKURO";
+		WeaponInfo.coolTime = 2;
 		WeaponInfo.reloadTime = 100;
-		WeaponInfo.magazineSize = 90;
-		WeaponInfo.magazineConsumption = 3;
-		weaponController[REUSE_BOMB] = new Weapon();
+		WeaponInfo.magazineSize = 180;
+		WeaponInfo.magazineConsumption = 2;
+		weaponController[FUDA_SHIROKURO] = new Weapon();
+		//FUDA_SOUHAKU
+		WeaponInfo.clear();
+		WeaponInfo.name = "FUDA_SOUHAKU";
+		WeaponInfo.coolTime = 12;
+		WeaponInfo.magazineSize = MAX;
+		weaponController[FUDA_SOUHAKU] = new Weapon();
 		/////////////////////
 		slot_spell = 0;
 	}
@@ -103,57 +100,55 @@ public class Reimu extends THHOriginal{
 		super.useWeapon(kind);
 		BulletInfo.team = charaTeam;
 		switch(kind){
-		case MILLKY_WAY:
-			if(!weaponController[MILLKY_WAY].trigger())
+		case FUDA_KOUHAKU:
+			if(!weaponController[FUDA_KOUHAKU].trigger())
 				break;
-			BulletInfo.name = "MILLKY_WAY";
-			BulletInfo.fastParaSet_ADSpd(charaShotAngle,10,20);
-			BulletInfo.accel = 1.0;
-			BulletInfo.size = 30;
-			BulletInfo.atk = 40;
-			BulletInfo.offSet = 20;
-			BulletInfo.penetration = 0;
-			BulletInfo.reflection = 0;
+			BulletInfo.name = "FUDA_KOUHAKU";
+			BulletInfo.size = 10;
+			BulletInfo.atk = 30;
+			BulletInfo.offSet = 5;
 			BulletInfo.limitFrame = 200;
 			BulletInfo.limitRange = MAX;
-			BulletInfo.imageID = bulletIID[MILLKY_WAY];
-			THH.createBullet_RoundDesign(this,8,charaX,charaY,50);
-			break;
-		case NARROW_SPARK:
-			if(!weaponController[NARROW_SPARK].trigger())
-				break;
-			//message
-			THH.addMessage(this,charaID,"KOIFU [MasterSpark]");
-			THH.addMessage(this,charaID,"TEST MESSAGE 2");
-			BulletInfo.name = "NARROW_SPARK";
-			BulletInfo.fastParaSet_XYADSpd(charaX,charaY,charaShotAngle,0,thh.getImageByID(bulletIID[NARROW_SPARK]).getWidth(null));
-			BulletInfo.accel = 1.0;
-			BulletInfo.size = 50;
-			BulletInfo.atk = 5;
-			BulletInfo.offSet = 20;
-			BulletInfo.penetration = MAX;
-			BulletInfo.reflection = 3;
-			BulletInfo.limitFrame = 30;
-			BulletInfo.limitRange = MAX;
-			BulletInfo.imageID = bulletIID[NARROW_SPARK];
-			BulletInfo.isLaser = true;
+			BulletInfo.imageID = bulletIID[FUDA_KOUHAKU];
+			final double DX = 50*cos(charaShotAngle + PI/2),DY = 50*sin(charaShotAngle + PI/2);
+			final double ANGLE = charaShotAngle + THH.random2(-PI/50, PI/50);
+			BulletInfo.fastParaSet_XYADSpd(charaX + DX,charaY + DY,ANGLE,10,40);
+			THH.createBullet(this);
+			BulletInfo.fastParaSet_XYADSpd(charaX - DX,charaY - DY,ANGLE,10,40);
 			THH.createBullet(this);
 			break;
-		case REUSE_BOMB:
-			if(!weaponController[REUSE_BOMB].trigger())
+		case FUDA_SHIROKURO:
+			if(!weaponController[FUDA_SHIROKURO].trigger())
 				break;
-			BulletInfo.name = "REUSE_BOMB";
-			BulletInfo.fastParaSet_ADSpd(charaShotAngle,10,40);
-			BulletInfo.accel = 0.98;
-			BulletInfo.size = 30;
-			BulletInfo.atk = 40;
-			BulletInfo.offSet = 20;
-			BulletInfo.penetration = 0;
-			BulletInfo.reflection = 0;
+			BulletInfo.name = "FUDA_SHIROKURO";
+			BulletInfo.size = 5;
+			BulletInfo.atk = 20;
+			BulletInfo.offSet = 3;
+			BulletInfo.reflection = 1;
 			BulletInfo.limitFrame = 200;
-			BulletInfo.limitRange = MAX;
-			BulletInfo.imageID = bulletIID[REUSE_BOMB];
-			THH.createBullet_RoundDesign(this,3,charaX,charaY,50);
+			BulletInfo.imageID = bulletIID[FUDA_SHIROKURO];
+			BulletInfo.fastParaSet_XYADSpd(charaX,charaY,charaShotAngle,10,40);
+			THH.createBullet(this);
+			BulletInfo.fastParaSet_XYADSpd(charaX,charaY,charaShotAngle - PI/18,10,40);
+			THH.createBullet(this);
+			BulletInfo.fastParaSet_XYADSpd(charaX,charaY,charaShotAngle + PI/18,10,40);
+			THH.createBullet(this);
+			break;
+		case FUDA_SOUHAKU:
+			if(!weaponController[FUDA_SOUHAKU].trigger())
+				break;
+			BulletInfo.name = "FUDA_SOUHAKU";
+			BulletInfo.accel = 0.8;
+			BulletInfo.size = 5;
+			BulletInfo.atk = 25;
+			BulletInfo.offSet = 25;
+			BulletInfo.reflection = 1;
+			BulletInfo.limitFrame = 40;
+			BulletInfo.imageID = bulletIID[FUDA_SOUHAKU];
+			for(int i = -4;i <= 4;i++) {
+				BulletInfo.fastParaSet_XYADSpd(charaX,charaY,charaShotAngle + i*PI/10,25,40);
+				THH.createBullet(this);
+			}
 			break;
 		}
 	}
@@ -176,21 +171,10 @@ public class Reimu extends THHOriginal{
 	@Override
 	public final void bulletIdle(Bullet bullet,boolean isCharaActive) {
 		switch(bullet.KIND) {
-		case MILLKY_WAY:
+		case FUDA_KOUHAKU:
+		case FUDA_SHIROKURO:
+		case FUDA_SOUHAKU:
 			super.bulletIdle(bullet, isCharaActive);
-			break;
-		case NARROW_SPARK: //laser action
-			while(THH.inStage((int)bullet.x,(int)bullet.y) && bullet.idle())
-				bullet.paint();
-			bullet.x = charaX;
-			bullet.y = charaY;
-			break;
-		case REUSE_BOMB:
-			bullet.idle();
-			bullet.addSpeed(0.0,1.1);
-			bullet.paint();
-			if(random() < 0.2)
-				useEffect(LIGHTNING,bullet.x,bullet.y);
 			break;
 		}
 	}

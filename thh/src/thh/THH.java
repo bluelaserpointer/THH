@@ -1095,6 +1095,18 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			return degress;
 	}
 	
+	public final static int random2(int value1,int value2) {
+		if(value1 > value2)
+			return new Random().nextInt(abs(value1 - value2)) + value2;
+		else
+			return new Random().nextInt(abs(value2 - value1)) + value1;
+	}
+	public final static double random2(double value1,double value2) {
+		if(value1 > value2)
+			return Math.random()*(value1 - value2) + value2;
+		else
+			return Math.random()*(value2 - value1) + value1;
+	}
 	//メッセージウィンドウ系
 	/**
 	* 警告ウィンドウの表示を行います。

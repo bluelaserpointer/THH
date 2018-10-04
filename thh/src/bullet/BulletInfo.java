@@ -56,7 +56,7 @@ public final class BulletInfo {
 		xSpeed = speed*cos_angle;
 		ySpeed = speed*sin_angle;
 	}
-	public static final void fastParaSet_ADSpd(double angle,double distance,double speed){
+	public static final void fastParaSet_ASpd(double angle,double speed){
 		BulletInfo.angle = angle;
 		xSpeed = speed*cos(angle);
 		ySpeed = speed*sin(angle);
