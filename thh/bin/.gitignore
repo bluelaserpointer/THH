@@ -1,7 +1,12 @@
 /bullet/
 /chara/
+/config/
 /effect/
 /engine/
+/image/
+/library/
+/manifest
+/stage/
 /structure/
 /thh/
 /weapon/

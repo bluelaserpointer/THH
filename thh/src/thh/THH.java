@@ -54,6 +54,8 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	private boolean debugMode;
 	private long loadTime_total;
 	
+	public static String errorPoint = "NONE";
+	
 	//•§•Ÿ•Û•»ÈvﬂB
 	public final int 
 		OPENING = 1000,
@@ -768,6 +770,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		messageSource.clear();
 		messageStr.clear();
 		messageEvent.clear();
+		ErrorCounter.clear();
 		gameFrame = 0;
 		
 		System.out.println("add characters to the game");

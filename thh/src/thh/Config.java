@@ -433,4 +433,57 @@ public class Config implements Serializable{
 	final void autoTagger_execute(String name){
 		tagger_targetMap.put(name,tagger_nowID++);
 	}
+	
+	//共用
+	public static final int parseInt2(String str,int defaultValue) {
+		str = THH.trim2(str);
+		if(str == null || str.isEmpty()){
+			return defaultValue;
+		}
+		try{ //通常-実数値
+			return Integer.parseInt(str);
+		}catch(NumberFormatException e){ //数字以外の特殊値または入力ミス
+			if(str.equalsIgnoreCase("MAX")) //正常-特殊値MAX
+				return MAX;
+			if(str.equalsIgnoreCase("MIN")) //正常-特殊値MIN
+				return MIN;
+			if(str.equalsIgnoreCase("NONE")) //正常-特殊値NONE
+				return NONE;
+			//異常-変換失敗
+			ErrorCounter.putWithPrint("parseInt2の不正使用：\"" + str + "\"");
+			return defaultValue;
+		}
+	}
+	public static final double parseDouble2(String str,double defaultValue) {
+		str = THH.trim2(str);
+		if(str == null || str.isEmpty()){
+			return defaultValue;
+		}
+		try{ //通常-実数値
+			return Double.parseDouble(str);
+		}catch(NumberFormatException e){ //数字以外の特殊値または入力ミス
+			if(str.equalsIgnoreCase("MAX")) //正常-特殊値MAX
+				return MAX;
+			if(str.equalsIgnoreCase("MIN")) //正常-特殊値MIN
+				return MIN;
+			if(str.equalsIgnoreCase("NONE")) //正常-特殊値NONE
+				return NONE;
+			//異常-変換失敗
+			ErrorCounter.putWithPrint("parseDouble2の不正使用：\"" + str + "\"");
+			return defaultValue;
+		}
+	}
+	public static final boolean parseBoolean2(String str,boolean defaultValue) {
+		str = THH.trim2(str);
+		if(str == null || str.isEmpty()){
+			return defaultValue;
+		}
+		try{ //通常-実数値
+			return Boolean.parseBoolean(str);
+		}catch(NumberFormatException e){ //数字以外の特殊値または入力ミス
+			//異常-変換失敗
+			ErrorCounter.putWithPrint("parseBoolean2の不正使用：\"" + str + "\"");
+			return defaultValue;
+		}
+	}
 }
