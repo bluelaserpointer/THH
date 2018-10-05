@@ -363,8 +363,20 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public static final Chara getCharaClass(int charaID) {
 		return battleCharaClass[charaID];
 	}
+	public static final int getCharaAmount() {
+		return battleCharaClass.length;
+	}
 	public static final int getCharaTeam(int charaID) {
 		return battleCharaClass[charaID].getTeam();
+	}
+	public static final boolean charaIsVisibleFrom(int charaID,int x,int y) {
+		return battleCharaClass[charaID].isVisibleFrom(x, y);
+	}
+	public static final double getCharaX(int charaID) {
+		return battleCharaClass[charaID].getX();
+	}
+	public static final double getCharaY(int charaID) {
+		return battleCharaClass[charaID].getY();
 	}
 	//information-stage
 	public static final Stage getStage() {

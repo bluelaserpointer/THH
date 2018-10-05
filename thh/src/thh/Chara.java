@@ -31,6 +31,9 @@ public abstract class Chara implements BulletSource,EffectSource,MessageSource,D
 	//control
 	//judge
 	public abstract boolean bulletEngage(Bullet bullet);
+	public boolean isVisibleFrom(int x,int y) {
+		return true;
+	}
 	//decrease
 	public abstract int decreaseME_amount(int amount);
 	public abstract int decreaseME_rate(double rate);
