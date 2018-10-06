@@ -207,15 +207,15 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		switch(stopEventKind) {
 		case STOP:
 			for(Chara chara : battleCharaClass)
-				chara.animationPaint();
+				chara.idle(Chara.PASSIVE_CONS);
 			break;
 		case FREEZE:
 			for(Chara chara : battleCharaClass)
-				chara.freezePaint();
+				chara.idle(Chara.PAINT_FREEZED);
 			break;
 		default:
 			for(Chara chara : battleCharaClass) {
-				chara.idle(true);
+				chara.idle();
 				chara.resetSingleOrder();
 			}
 		}

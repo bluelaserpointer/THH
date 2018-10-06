@@ -20,13 +20,39 @@ public abstract class Chara implements BulletSource,EffectSource,MessageSource,D
 	//Initialization
 	public void battleStarted(){}
 	public abstract void spawn(int charaID,int charaTeam,int spawnX,int spawnY);
+	public abstract void spawn(int charaID,int charaTeam,int spawnX,int spawnY,int hp);
 	public void loadImageData(){} //画像読み込み
 	public void loadSoundData(){} //サウンド読み込み
 	
 	//idles
-	public abstract void idle(boolean isActive); //Include painting
-	public abstract void animationPaint();
-	public abstract void freezePaint();
+	public static final int ACITIVE_CONS = 0,PASSIVE_CONS = 1,DYNAM = 2,PAINT_ANIMATED = 3,PAINT_FREEZED = 4,STOP_ALL = 5;
+	public final void idle() {
+		this.idle(ACITIVE_CONS);
+	}
+	public final void idle(int stopLevel) {
+		switch(stopLevel) {
+		case 0:
+			activeCons();
+		case 1:
+			passiveCons();
+		case 2:
+			dynam();
+		case 3:
+			paint(true);
+			break;
+		case 4:
+			paint(false);
+			break;
+		case 5:
+			break;
+		default:
+			ErrorCounter.put("Chara.idleの不正使用:\"" + stopLevel + "\"");
+		}
+	}
+	public abstract void activeCons();
+	public abstract void passiveCons();
+	public abstract void dynam();
+	public abstract void paint(boolean doAnimation);
 	
 	//control
 	//judge
@@ -39,6 +65,7 @@ public abstract class Chara implements BulletSource,EffectSource,MessageSource,D
 	public abstract int decreaseME_rate(double rate);
 	public abstract int damage_amount(int damage);
 	public abstract int damage_rate(double rate);
+
 	public abstract boolean kill();
 	//information
 	public abstract String getName();

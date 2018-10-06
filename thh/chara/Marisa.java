@@ -98,8 +98,8 @@ public class Marisa extends THHOriginal{
 		}
 	}	
 	@Override
-	public void idle(boolean isActive) {
-		super.idle(isActive);
+	public void activeCons() {
+		super.activeCons();
 		for(Weapon ver : weaponController) {
 			if(ver != null)
 				ver.defaultIdle();

@@ -44,12 +44,13 @@ public abstract class THHOriginal extends Chara {
 		charaOnLand = false;
 		slot_spell = 0;
 	}
-
 	@Override
-	public void idle(boolean isActive) {
-		final int mouseX = THH.getMouseX(), mouseY = THH.getMouseY();
-		final double mouseAngle = atan2(mouseY - charaY, mouseX - charaX);
-		// dynam
+	public void spawn(int charaID, int charaTeam, int x, int y,int hp) { // ³õÆÚ»¯„IÀí2
+		charaHP = charaBaseHP = hp;
+		this.spawn(charaID, charaTeam, x, y);
+	}
+	@Override
+	public void dynam() {
 		charaX += charaXSpeed;
 		charaY += charaYSpeed;
 		if (charaXSpeed < -0.5 || 0.5 < charaXSpeed)
@@ -60,65 +61,64 @@ public abstract class THHOriginal extends Chara {
 			charaYSpeed *= 0.9;
 		else
 			charaYSpeed = 0.0;
+	}
+	@Override
+	public void activeCons() {
+		// death
+		if (charaHP <= 0) {
+			return;
+		}
+		final int mouseX = THH.getMouseX(), mouseY = THH.getMouseY();
+		final double mouseAngle = atan2(mouseY - charaY, mouseX - charaX);
 		// dodge
 		if (super.dodgeOrder)
 			dodge(mouseX, mouseY);
 		// attack
-		if (isActive) {
-			// death
-			if (charaHP <= 0) {
-				return;
-			}
-			// attack
-			if (super.attackOrder) {
-				charaShotAngle = mouseAngle;
-				final int weapon = weaponSlot[slot_weapon];
-				if (weapon != NONE)
-					useWeapon(weapon);
-			}
-			// spell
-			if (super.spellOrder) {
-				charaShotAngle = mouseAngle;
-				final int spell = spellSlot[slot_spell];
-				if (spell != NONE)
-					useWeapon(spell);
-			}
-			// move
-			if (super.moveOrder) {
-				charaX += (mouseX - charaX) / 10;
-				charaY += (mouseY - charaY) / 10;
-			}
-			// weaponChange
-			int roll = super.weaponChangeOrder;
-			if (roll != 0) {
-				int target = slot_spell;
-				if (roll > 0) {
-					while (target < spellSlot_max - 1) {
-						if (spellSlot[++target] != NONE) {
-							if (--roll == 0)
-								break;
-						}
-					}
-				} else {
-					while (target > 0) {
-						if (spellSlot[--target] != NONE) {
-							if (++roll == 0)
-								break;
-						}
+		if (super.attackOrder) {
+			charaShotAngle = mouseAngle;
+			final int weapon = weaponSlot[slot_weapon];
+			if (weapon != NONE)
+				useWeapon(weapon);
+		}
+		// spell
+		if (super.spellOrder) {
+			charaShotAngle = mouseAngle;
+			final int spell = spellSlot[slot_spell];
+			if (spell != NONE)
+				useWeapon(spell);
+		}
+		// move
+		if (super.moveOrder) {
+			charaX += (mouseX - charaX) / 10;
+			charaY += (mouseY - charaY) / 10;
+		}
+		// weaponChange
+		int roll = super.weaponChangeOrder;
+		if (roll != 0) {
+			int target = slot_spell;
+			if (roll > 0) {
+				while (target < spellSlot_max - 1) {
+					if (spellSlot[++target] != NONE) {
+						if (--roll == 0)
+							break;
 					}
 				}
-				slot_spell = target;
+			} else {
+				while (target > 0) {
+					if (spellSlot[--target] != NONE) {
+						if (++roll == 0)
+							break;
+					}
+				}
 			}
+			slot_spell = target;
 		}
-		// paintChara
-		this.animationPaint();
 	}
 	@Override
-	public void animationPaint() {
-		this.freezePaint();
+	public void passiveCons() {
 	}
 	@Override
-	public void freezePaint() {
+	public void paint(boolean doAnimation) {
 		thh.drawImageTHH(charaIID, (int) charaX, (int) charaY);
 		thh.paintHPArc((int) charaX, (int) charaY, charaHP, charaBaseHP);
 	}
