@@ -1,5 +1,6 @@
 package chara;
 
+import bullet.BulletInfo;
 import thh.THH;
 import weapon.Weapon;
 
@@ -28,9 +29,13 @@ public class Fairy extends THHOriginal{
 			charaX += DX/20;
 			charaY += DY/20;
 		}
+		weaponController.defaultIdle();
 		for(int i = 0;i < THH.getCharaAmount();i++) {
 			if(THH.charaIsVisibleFrom(i,(int)charaX,(int)charaY)) {
 				if(weaponController.trigger()) {
+					THH.prepareBulletInfo();
+					BulletInfo.kind = EnemyBulletLibrary.lightBall_S;
+					BulletInfo.team = charaTeam;
 					EnemyBulletLibrary.inputBulletInfo(EnemyBulletLibrary.lightBall_S,bulletIID[0],(int)charaX,(int)charaY,(int)THH.getCharaX(i),(int)THH.getCharaY(i));
 				}
 			}

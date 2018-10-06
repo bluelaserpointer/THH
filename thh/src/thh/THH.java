@@ -746,10 +746,9 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public static boolean isNoStopEvent() {
 		return !freezeScreen && stopEventKind == NONE;
 	}
-	public static final void prepareBulletInfo(int charaID) {
+	public static final void prepareBulletInfo() {
 		BulletInfo.clear();
 		BulletInfo.nowFrame = gameFrame;
-		BulletInfo.source = charaID;
 	}
 	public static final void prepareEffectInfo(int charaID) {
 		EffectInfo.clear();

@@ -119,15 +119,18 @@ public abstract class THHOriginal extends Chara {
 	}
 	@Override
 	public void paint(boolean doAnimation) {
+		if(charaHP <= 0)
+			return;
 		thh.drawImageTHH(charaIID, (int) charaX, (int) charaY);
 		thh.paintHPArc((int) charaX, (int) charaY, charaHP, charaBaseHP);
 	}
 	
 	// control
 	// judge
+	@Override
 	public final boolean bulletEngage(Bullet bullet) {
 		return THH.squreCollision((int) charaX, (int) charaY, charaSize, (int) bullet.x, (int) bullet.y, bullet.SIZE)
-				&& (bullet.team == charaTeam ^ bullet.atk > 0);
+				&& (bullet.team == charaTeam ^ bullet.atk >= 0);
 	}
 	//XY
 	@Override
@@ -203,7 +206,7 @@ public abstract class THHOriginal extends Chara {
 	}
 
 	@Override
-	public final boolean kill() {
+	public final boolean kill(boolean force) {
 		charaHP = 0;
 		return true;
 	}
@@ -276,7 +279,7 @@ public abstract class THHOriginal extends Chara {
 		return sqrt(xSpd*xSpd + ySpd*ySpd);
 	}
 	public void useWeapon(int kind) {
-		THH.prepareBulletInfo(charaID);
+		THH.prepareBulletInfo();
 		BulletInfo.kind = kind;
 	}
 	public void useEffect(int kind,double x,double y) {

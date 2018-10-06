@@ -12,7 +12,6 @@ public final class BulletInfo {
 	public static String name;
 	public static int
 		nowFrame,
-		source,
 		kind,
 		size,
 		team,

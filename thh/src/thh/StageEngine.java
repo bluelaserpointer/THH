@@ -27,6 +27,8 @@ public abstract class StageEngine{
 	//control
 	public abstract void resetStage();
 	public abstract Chara[] callBulletEngage(Bullet bullet);
+	public abstract boolean deleteChara(Chara chara);
 	
 	//information
+	public abstract int getGameFrame();
 }

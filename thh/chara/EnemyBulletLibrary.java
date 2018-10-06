@@ -19,6 +19,7 @@ public class EnemyBulletLibrary extends BulletAgent{
 			WeaponInfo.name = "lightBall_S";
 			WeaponInfo.coolTime = 5;
 			WeaponInfo.magazineSize = 6;
+			WeaponInfo.reloadTime = 100;
 			return new Weapon();
 		default:
 			return null;
@@ -34,6 +35,7 @@ public class EnemyBulletLibrary extends BulletAgent{
 			BulletInfo.name = "lightBall_S";
 			BulletInfo.kind = lightBall_S;
 			BulletInfo.fastParaSet_XYADSpd(x,y,ANGLE,10,15);
+			BulletInfo.atk = 20;
 			BulletInfo.imageID = bulletIID;
 			THH.createBullet(source);
 			break;

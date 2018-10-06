@@ -50,8 +50,10 @@ public class Ver_I extends StageEngine implements MessageSource{
 		THH.addMessage(this,"This is a prototype stage.");
 	}
 	//idle
+	private int gameFrame;
 	@Override
 	public final void idle(Graphics2D g2,int stopEventKind) {
+		gameFrame++;
 		g2.setColor(Color.GRAY);
 		g2.draw(stages[nowStage].getLandPolygon());
 		if(stopEventKind == NONE) {
@@ -60,8 +62,13 @@ public class Ver_I extends StageEngine implements MessageSource{
 				for(Chara chara : battleCharaClass)
 					chara.gravity(1.1);
 				for(int i = 0;i < enemyCharaClass.size();i++) {
-					enemyCharaClass.get(i).idle();
-					final int FRAME = THH.getNowFrame() % 240;
+					final Chara enemy = enemyCharaClass.get(i);
+					if(enemy.getHP() <= 0) {
+						enemyCharaClass.remove(enemy);
+						continue;
+					}
+					enemy.idle();
+					final int FRAME = gameFrame % 240;
 					if(FRAME < 100)
 						enemyCharaClass.get(i).setSpeed(-5, 0);
 					else if(FRAME < 120)
@@ -97,7 +104,13 @@ public class Ver_I extends StageEngine implements MessageSource{
 		}
 		return Arrays.copyOf(result, searched);
 	}
-	
+	@Override
+	public boolean deleteChara(Chara chara) {
+		return enemyCharaClass.remove(chara);
+	}
 	//information
-
+	@Override
+	public final int getGameFrame() {
+		return gameFrame;
+	}
 }

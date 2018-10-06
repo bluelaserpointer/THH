@@ -66,7 +66,8 @@ public abstract class Chara implements BulletSource,EffectSource,MessageSource,D
 	public abstract int damage_amount(int damage);
 	public abstract int damage_rate(double rate);
 
-	public abstract boolean kill();
+	public abstract boolean kill(boolean force);
+	public void killed() {}
 	//information
 	public abstract String getName();
 	public abstract int getTeam();
