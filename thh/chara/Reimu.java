@@ -11,6 +11,9 @@ import weapon.Weapon;
 import weapon.WeaponInfo;
 
 public class Reimu extends THHOriginal{
+	{
+		charaSize = 70;
+	}
 	@Override
 	public final String getName() {
 		return "Reimu";
@@ -80,7 +83,6 @@ public class Reimu extends THHOriginal{
 		super.spawn(charaID,charaTeam,x,y);
 		charaHP = super.charaBaseHP = 10000;
 		charaME = charaBaseME = 100;
-		charaSize = 70;
 		for(Weapon ver : weaponController) {
 			if(ver != null)
 				ver.reset();
@@ -104,7 +106,7 @@ public class Reimu extends THHOriginal{
 			if(!weaponController[FUDA_KOUHAKU].trigger())
 				break;
 			BulletInfo.name = "FUDA_KOUHAKU";
-			BulletInfo.size = 10;
+			BulletInfo.size = 20;
 			BulletInfo.atk = 30;
 			BulletInfo.offSet = 5;
 			BulletInfo.limitFrame = 200;
@@ -121,7 +123,7 @@ public class Reimu extends THHOriginal{
 			if(!weaponController[FUDA_SHIROKURO].trigger())
 				break;
 			BulletInfo.name = "FUDA_SHIROKURO";
-			BulletInfo.size = 5;
+			BulletInfo.size = 10;
 			BulletInfo.atk = 20;
 			BulletInfo.offSet = 3;
 			BulletInfo.reflection = 1;
@@ -139,7 +141,7 @@ public class Reimu extends THHOriginal{
 				break;
 			BulletInfo.name = "FUDA_SOUHAKU";
 			BulletInfo.accel = 0.8;
-			BulletInfo.size = 5;
+			BulletInfo.size = 10;
 			BulletInfo.atk = 25;
 			BulletInfo.offSet = 25;
 			BulletInfo.reflection = 1;

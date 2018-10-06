@@ -12,6 +12,9 @@ import weapon.Weapon;
 import weapon.WeaponInfo;
 
 public class Marisa extends THHOriginal{
+	{
+		charaSize = 70;
+	}
 	@Override
 	public final String getName() {
 		return "Marisa";
@@ -91,7 +94,6 @@ public class Marisa extends THHOriginal{
 		super.spawn(charaID,charaTeam,x,y);
 		charaHP = super.charaBaseHP = 10000;
 		charaME = charaBaseME = 100;
-		charaSize = 70;
 		for(Weapon ver : weaponController) {
 			if(ver != null)
 				ver.reset();

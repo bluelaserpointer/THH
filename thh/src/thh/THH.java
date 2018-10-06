@@ -75,7 +75,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public static final int MESSAGE = 0,SPELL = 1;
 	
 	//•¶•£•Û•…•¶ÈvﬂB
-	final int defaultScreenW = 1000,defaultScreenH = 600; //•«•’•©•Î•»•¶•£•Û•…•µ•§•∫
+	private final int defaultScreenW = 1000,defaultScreenH = 600; //•«•’•©•Î•»•¶•£•Û•…•µ•§•∫
 	private static int screenW = 1000,screenH = 600;
 	private static int viewX,viewY;
 	
@@ -347,14 +347,8 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		loadTime_total = System.currentTimeMillis() - LOAD_TIME_PAINTCOMPONENT;
 	}
 	
-	public static final int[] callBulletEngage(Bullet bullet) {
-		int[] result = new int[battleCharaClass.length];
-		int searched = 0;
-		for(int i = 0;i < battleCharaClass.length;i++) {
-			if(battleCharaClass[i].bulletEngage(bullet))
-				result[searched++] = i;
-		}
-		return Arrays.copyOf(result, searched);
+	public static final Chara[] callBulletEngage(Bullet bullet) {
+		return engine.callBulletEngage(bullet);
 	}
 	//information-chara
 	public static final Chara[] getCharaClass() {
@@ -387,6 +381,13 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final boolean inStage(int x,int y) {
 		return stage.inStage(x, y);
+	}
+	//information-GUI
+	public static final int getScreenW(){
+		return screenW;
+	}
+	public static final int getScreenH(){
+		return screenH;
 	}
 	//information-paint
 	public static final boolean inScreen(int x,int y) {

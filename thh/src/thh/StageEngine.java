@@ -2,6 +2,8 @@ package thh;
 
 import java.awt.Graphics2D;
 
+import bullet.Bullet;
+
 public abstract class StageEngine{
 	//•’•£©`•Î•…
 	//•∑•π•∆•‡ÈvﬂB
@@ -24,6 +26,7 @@ public abstract class StageEngine{
 	
 	//control
 	public abstract void resetStage();
+	public abstract Chara[] callBulletEngage(Bullet bullet);
 	
 	//information
 }

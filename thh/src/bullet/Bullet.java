@@ -2,6 +2,7 @@ package bullet;
 
 import static java.lang.Math.*;
 
+import thh.Chara;
 import thh.DynamInteractable;
 import thh.Entity_double;
 import thh.THH;
@@ -105,9 +106,9 @@ public class Bullet extends Entity_double implements DynamInteractable{
 				SOURCE.bulletOutOfReflection(this);
 		}
 		//Damaging
-		for(int charaID : THH.callBulletEngage(this)) {
-			if(THH.getCharaTeam(charaID) != team && atk > 0) {
-				THH.getCharaClass(charaID).damage_amount(atk);
+		for(Chara chara : THH.callBulletEngage(this)) {
+			if(chara.getTeam() != team && atk > 0) {
+				chara.damage_amount(atk);
 				SOURCE.bulletHitObject(this);
 				if(penetration > 0)
 					penetration--;

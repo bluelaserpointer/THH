@@ -4,6 +4,9 @@ import thh.THH;
 import weapon.Weapon;
 
 public class Fairy extends THHOriginal{
+	{
+		charaSize = 70;
+	}
 	private int targetX,targetY;
 	private final Weapon weaponController = EnemyBulletLibrary.getWeaponController(EnemyBulletLibrary.lightBall_S);
 	private final int bulletIID[] = new int[10];
