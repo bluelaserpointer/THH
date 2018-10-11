@@ -36,7 +36,7 @@ public class Ver_I extends StageEngine implements MessageSource{
 		enemy.loadImageData();
 		enemy.loadSoundData();
 		enemy.battleStarted();
-		enemy.spawn(0, ENEMY, 700, THH.random2(100, 150),1000);
+		enemy.spawn(0, ENEMY, 400, THH.random2(100, 150),1000);
 		enemyCharaClass.add(enemy);
 		
 		return battleCharaClass;
@@ -59,8 +59,8 @@ public class Ver_I extends StageEngine implements MessageSource{
 		if(stopEventKind == NONE) {
 			switch(nowStage) {
 			case 0:
-				for(Chara chara : battleCharaClass)
-					chara.gravity(1.1);
+				//for(Chara chara : battleCharaClass)
+				//	chara.gravity(1.1);
 				for(int i = 0;i < enemyCharaClass.size();i++) {
 					final Chara enemy = enemyCharaClass.get(i);
 					if(enemy.getHP() <= 0) {
@@ -79,6 +79,16 @@ public class Ver_I extends StageEngine implements MessageSource{
 						enemyCharaClass.get(i).setSpeed(0, 0);
 				}
 				break;
+			}
+		}else if(stopEventKind == THH.STOP) {
+			for(int i = 0;i < enemyCharaClass.size();i++) {
+				final Chara enemy = enemyCharaClass.get(i);
+				enemy.idle(Chara.PASSIVE_CONS);
+			}
+		}else if(stopEventKind == THH.FREEZE) {
+			for(int i = 0;i < enemyCharaClass.size();i++) {
+				final Chara enemy = enemyCharaClass.get(i);
+				enemy.idle(Chara.PAINT_FREEZED);
 			}
 		}
 	}

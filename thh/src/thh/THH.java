@@ -125,9 +125,9 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		thh = this;
 		Chara.thh = thh;
 		final long loadTime = System.currentTimeMillis();
-		//ウィンドウセットアップ
-		myFrame = new JFrame("東方六弾幕説");
-		myFrame.add(this,BorderLayout.CENTER); //キャンバスを設置
+		//window setup
+		myFrame = new JFrame("翻ｷｽﾁ柴ｻﾕh");
+		myFrame.add(this,BorderLayout.CENTER);
 		myFrame.addWindowListener(new MyWindowAdapter());
 		addMouseMotionListener(this);
 		addMouseListener(this);
@@ -474,6 +474,9 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public final static boolean squreCollision(int x1,int y1,int size1,int x2,int y2,int size2) {
 		final int halfSize = (size1 + size2)/2;
 		return abs(x1 - x2) < halfSize && abs(y1 - y2) < halfSize;
+	}
+	public final static boolean rectangleCollision(int x1,int y1,int w1,int h1,int x2,int y2,int w2,int h2) {
+		return abs(x1 - x2) < (w1 + w2)/2 && abs(y1 - y2) < (h1 + h2)/2;
 	}
 	public final static boolean circleCollision(int x1,int y1,int size1,int x2,int y2,int size2) {
 		final double DX = x1 - x1,DY = y1 - y2,RANGE = size1 + size2;
@@ -985,7 +988,11 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		arraySound[soundID].loop(loops);
 	}
 	
-	//数値系
+	//special
+	public static final boolean isRival(int team1,int team2) {
+		return team1 == NONE || team1 != team2;
+	}
+	//math & string
 	public static final double angleFormat(double radian){ //ラジアン整理メソッド -PI~+PIに直す
 		radian %= PI*2;
 		if(radian > PI)

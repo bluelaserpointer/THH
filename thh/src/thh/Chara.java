@@ -49,10 +49,10 @@ public abstract class Chara implements BulletSource,EffectSource,MessageSource,D
 			ErrorCounter.put("Chara.idleの不正使用:\"" + stopLevel + "\"");
 		}
 	}
-	public abstract void activeCons();
-	public abstract void passiveCons();
-	public abstract void dynam();
-	public abstract void paint(boolean doAnimation);
+	public void activeCons() {};
+	public void passiveCons() {};
+	public void dynam() {};
+	public void paint(boolean doAnimation) {};
 	
 	//control
 	//judge
