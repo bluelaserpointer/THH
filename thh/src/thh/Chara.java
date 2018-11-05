@@ -55,6 +55,11 @@ public abstract class Chara implements BulletSource,EffectSource,MessageSource,D
 	public void paint(boolean doAnimation) {};
 	
 	//control
+	//move
+	public abstract void moveRel(int dx,int dy);
+	public abstract void moveTo(int x,int y);
+	public abstract void teleportRel(int dx,int dy);
+	public abstract void teleportTo(int x,int y);
 	//judge
 	public abstract boolean bulletEngage(Bullet bullet);
 	public boolean isVisibleFrom(int x,int y) {

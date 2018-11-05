@@ -1,9 +1,11 @@
-package thh;
+package stage;
 
 import java.awt.Polygon;
 import java.util.ArrayList;
 
 import structure.Structure;
+import thh.Chara;
+import thh.THH;
 
 public class Stage {
 	private final int

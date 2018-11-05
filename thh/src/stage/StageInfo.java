@@ -1,7 +1,8 @@
-package thh;
+package stage;
 
 import structure.Structure;
 import structure.Terrain;
+import thh.Chara;
 
 public class StageInfo {
 	public static String name;

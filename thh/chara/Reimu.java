@@ -10,7 +10,7 @@ import thh.THH;
 import weapon.Weapon;
 import weapon.WeaponInfo;
 
-public class Reimu extends THHOriginal{
+public class Reimu extends UserChara{
 	{
 		charaSize = 70;
 	}

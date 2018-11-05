@@ -79,7 +79,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 
 	public final boolean idle() {
 		//LifeSpan & Range
-		if(LIMIT_FRAME <= THH.getPassedFrame(super.APPEARED_FRAME)) {
+		if(LIMIT_FRAME <= THH.getPassedFrame(super.INITIAL_FRAME)) {
 			SOURCE.bulletOutOfLifeSpan(this);
 			THH.deleteBullet(this);
 			return false;

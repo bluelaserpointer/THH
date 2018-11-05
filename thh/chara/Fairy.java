@@ -4,7 +4,7 @@ import bullet.BulletInfo;
 import thh.THH;
 import weapon.Weapon;
 
-public class Fairy extends THHOriginal{
+public class Fairy extends UserChara{
 	{
 		charaSize = 70;
 	}

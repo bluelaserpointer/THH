@@ -7,22 +7,30 @@ import java.util.Arrays;
 
 import bullet.Bullet;
 import chara.*;
+import stage.Stage;
+import stage.StageEngine;
 import thh.Chara;
 import thh.MessageSource;
-import thh.Stage;
-import thh.StageEngine;
 import thh.THH;
 
-public class Ver_I extends StageEngine implements MessageSource{
-	private final Chara[] battleCharaClass = {new Marisa(),new Reimu()};
+public class Engine_THH1 extends StageEngine implements MessageSource{
+	private final UserChara[] battleCharaClass = {new Marisa(),new Reimu()};
 	private final ArrayList<Chara> enemyCharaClass = new ArrayList<Chara>();
 	private final Stage[] stages = new Stage[1];
 	private int nowStage;
 	
 	public final int ENEMY = 100;
+	final int FORMATION_MOVE_SPD = 20;
+	
+	int formationsX[],formationsY[];
+	int formationX,formationY;
+	
+	private final CtrlEx_THH1 ctrlEx = new CtrlEx_THH1(this);
+	
 	//initialization
 	@Override
 	public final Chara[] charaSetup() {
+		THH.addControlExpansion(ctrlEx);
 		for(Chara chara : battleCharaClass) {
 			chara.loadImageData();
 			chara.loadSoundData();
@@ -31,6 +39,11 @@ public class Ver_I extends StageEngine implements MessageSource{
 		battleCharaClass[1].battleStarted();
 		battleCharaClass[0].spawn(0,0,50,200);
 		battleCharaClass[1].spawn(1,0,400,200);
+		formationX = 225;formationY = 200;
+		formationsX = new int[2];
+		formationsY = new int[2];
+		formationsX[0] = -175;formationsY[0] = 0;
+		formationsX[1] = +175;formationsY[1] = 0;
 		//enemy
 		Chara enemy = new Fairy();
 		enemy.loadImageData();
@@ -57,10 +70,28 @@ public class Ver_I extends StageEngine implements MessageSource{
 		g2.setColor(Color.GRAY);
 		g2.draw(stages[nowStage].getLandPolygon());
 		if(stopEventKind == NONE) {
+			//scroll by key
+			if(doScrollView) {
+				final int SCROLL_SPEED = 8;
+				if(ctrlEx.getCommandBool(CtrlEx_THH1.UP)) {
+					THH.moveView(0,-SCROLL_SPEED);
+				}else if(ctrlEx.getCommandBool(CtrlEx_THH1.DOWN)) {
+					THH.moveView(0,SCROLL_SPEED);
+				}
+				if(ctrlEx.getCommandBool(CtrlEx_THH1.LEFT)) {
+					THH.moveView(-SCROLL_SPEED,0);
+				}else if(ctrlEx.getCommandBool(CtrlEx_THH1.RIGHT)) {
+					THH.moveView(SCROLL_SPEED,0);
+				}
+			}
+			//gravity
+			if(doGravity) {
+				for(Chara chara : battleCharaClass)
+					chara.gravity(1.1);
+			}
+			//others
 			switch(nowStage) {
 			case 0:
-				//for(Chara chara : battleCharaClass)
-				//	chara.gravity(1.1);
 				for(int i = 0;i < enemyCharaClass.size();i++) {
 					final Chara enemy = enemyCharaClass.get(i);
 					if(enemy.getHP() <= 0) {
@@ -77,6 +108,28 @@ public class Ver_I extends StageEngine implements MessageSource{
 						enemyCharaClass.get(i).setSpeed(5, 0);
 					else
 						enemyCharaClass.get(i).setSpeed(0, 0);
+				}
+				//formation
+				if(ctrlEx.getCommandBool(CtrlEx_THH1.UP))
+					formationY -= FORMATION_MOVE_SPD;
+				else if(ctrlEx.getCommandBool(CtrlEx_THH1.DOWN))
+					formationY += FORMATION_MOVE_SPD;
+				if(ctrlEx.getCommandBool(CtrlEx_THH1.LEFT))
+					formationX -= FORMATION_MOVE_SPD;
+				else if(ctrlEx.getCommandBool(CtrlEx_THH1.RIGHT))
+					formationX += FORMATION_MOVE_SPD;
+				for(int i = 0;i < battleCharaClass.length;i++)
+					battleCharaClass[i].moveTo(formationX + formationsX[i], formationY + formationsY[i]);
+				g2.setColor(Color.RED);
+				g2.setStroke(THH.stroke5);
+				g2.drawOval(formationX, formationY, 50, 50);
+				//shot
+				for(Chara chara : battleCharaClass)
+					chara.attackOrder = ctrlEx.getCommandBool(CtrlEx_THH1.SHOT);
+				//spell
+				if(ctrlEx.pullCommandBool(CtrlEx_THH1.SPELL)) {
+					battleCharaClass[ctrlEx.spellUser].spellOrder = true;
+					ctrlEx.spellUser = NONE;
 				}
 				break;
 			}
@@ -123,4 +176,9 @@ public class Ver_I extends StageEngine implements MessageSource{
 	public final int getGameFrame() {
 		return gameFrame;
 	}
+	final Chara[] getUserChara() {
+		return battleCharaClass;
+	}
+	private boolean doScrollView = false;
+	private boolean doGravity = false;
 }

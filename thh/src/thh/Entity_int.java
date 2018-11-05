@@ -1,18 +1,23 @@
 package thh;
 
 public abstract class Entity_int {
-	public final int APPEARED_FRAME;
-	public final int APPEARED_X,APPEARED_Y;
+	public final int INITIAL_FRAME;
+	public final int INITIAL_X,INITIAL_Y;
 	public int x,y;
 	public Entity_int() {
-		APPEARED_FRAME = 0;
-		APPEARED_X = 0;
-		APPEARED_Y = 0;
+		INITIAL_FRAME = 0;
+		INITIAL_X = 0;
+		INITIAL_Y = 0;
+	}
+	public Entity_int(int x,int y) {
+		INITIAL_FRAME = THH.getNowFrame();
+		INITIAL_X = this.x = x;
+		INITIAL_Y = this.y = y;
 	}
 	public Entity_int(int x,int y,int nowFrame) {
-		APPEARED_FRAME = nowFrame;
-		APPEARED_X = this.x = x;
-		APPEARED_Y = this.y = y;
+		INITIAL_FRAME = nowFrame;
+		INITIAL_X = this.x = x;
+		INITIAL_Y = this.y = y;
 	}
 	abstract public boolean idle();
 	abstract public void paint();

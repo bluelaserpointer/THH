@@ -11,7 +11,7 @@ import thh.THH;
 import weapon.Weapon;
 import weapon.WeaponInfo;
 
-public class Marisa extends THHOriginal{
+public class Marisa extends UserChara{
 	{
 		charaSize = 70;
 	}

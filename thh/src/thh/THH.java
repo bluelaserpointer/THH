@@ -13,7 +13,10 @@ import bullet.BulletSource;
 import effect.Effect;
 import effect.EffectInfo;
 import effect.EffectSource;
-import engine.Ver_I;
+import engine.Engine_THH1;
+import stage.ControlExpansion;
+import stage.Stage;
+import stage.StageEngine;
 
 import java.io.*;
 import java.net.*;
@@ -90,7 +93,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	private static Chara[] battleCharaClass = new Chara[0];
 	
 	//stage
-	private static StageEngine engine = new Ver_I();
+	private static StageEngine engine = new Engine_THH1();
 	private static Stage stage;
 	
 	//bullet data
@@ -178,7 +181,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	private final BufferedImage offImage = new BufferedImage(defaultScreenW,defaultScreenH,BufferedImage.TYPE_INT_ARGB_PRE); //ダブルバッファキャンバス
 	private Graphics2D g2;
 	private final Font basicFont = createFont("font/upcibi.ttf").deriveFont(Font.BOLD + Font.ITALIC,30.0f),commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN,15.0f);
-	private static final BasicStroke stroke1 = new BasicStroke(1f),stroke5 = new BasicStroke(5f);
+	public static final BasicStroke stroke1 = new BasicStroke(1f),stroke5 = new BasicStroke(5f);
 	private static final Color HPWarningColor = new Color(255,120,120),debugTextColor = new Color(200,200,200,160);
 	private final Rectangle2D screenRect = new Rectangle2D.Double(0,0,defaultScreenW,defaultScreenH);
 	
@@ -254,24 +257,9 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		}
 		///////////////////////////////////////////////////////////////
 		//GUIAction
+		g2.translate(-TRANSLATE_X, -TRANSLATE_Y);
 		{
-			//keyScroll
-			final int SCROLL_SPEED = 8;
-			if(key_W) {
-				viewY += SCROLL_SPEED;
-				middleDragGapY += SCROLL_SPEED;
-			}else if(key_S) {
-				viewY -= SCROLL_SPEED;
-				middleDragGapY -= SCROLL_SPEED;
-			}
-			if(key_A) {
-				viewX += SCROLL_SPEED;
-				middleDragGapX += SCROLL_SPEED;
-			}else if(key_D) {
-				viewX -= SCROLL_SPEED;
-				middleDragGapX -= SCROLL_SPEED;
-			}
-			//message
+			//message system///////////////
 			if(stopEventKind != NONE && stopEventReason == MESSAGE) {
 				if(messageStr.size() > 0) {
 					if(messageIterator > messageStr.getFirst().length() - 1){
@@ -304,10 +292,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 					messageEvent.clear();
 				}
 			}
-		}
-		g2.translate(-TRANSLATE_X, -TRANSLATE_Y);
-		//Fixed GUI
-		{
+			//debug ////////////////////////
 			if(debugMode){
 				g2.setColor(debugTextColor);
 				g2.setFont(basicFont);
@@ -382,6 +367,12 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public static final boolean inStage(int x,int y) {
 		return stage.inStage(x, y);
 	}
+	public static final int toStageCodX(int screenX) {
+		return viewX - screenX;
+	}
+	public static final int toStageCodY(int screenY) {
+		return viewY - screenY;
+	}
 	//information-GUI
 	public static final int getScreenW(){
 		return screenW;
@@ -398,7 +389,12 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return arrayImage[imageID];
 	}
 
-	//tool
+	//control
+	//control-gui
+	public static void moveView(int dx,int dy) {
+		viewX += dx;viewY += dy;
+	}
+	//control-bullet
 	public static final boolean deleteBullet(Bullet bullet) {
 		if(bullet.SOURCE.deleteBullet(bullet))
 			return bullets.remove(bullet);
@@ -488,7 +484,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	private boolean mouseLeftPress,mouseMiddlePress,mouseRightPress;
 	private int mouseLeftPressedFrame,mouseMiddlePressedFrame,mouseRightPressedFrame;
 	private int mousePointing = NONE; //･ﾞ･ｦ･ｹ､ｬ･ﾝ･､･ﾈ､ｷ､ﾆ､､､�､筅ﾎ
-	private int middleDragGapX,middleDragGapY;
+	private static int mouse2DragSX,mouse2DragSY;
 	
 	public void mouseWheelMoved(MouseWheelEvent e){}
 	public void mouseEntered(MouseEvent e){}
@@ -498,23 +494,11 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		case MouseEvent.BUTTON1:
 			mouseLeftPress = true;
 			mouseLeftPressedFrame = gameFrame;
-			if(key_1 || key_2 || key_3 || key_4) {
-				if(key_1 && battleCharaClass.length >= 1)
-					battleCharaClass[0].attackOrder = true;
-				if(key_2 && battleCharaClass.length >= 2)
-					battleCharaClass[1].attackOrder = true;
-				if(key_3 && battleCharaClass.length >= 3)
-					battleCharaClass[2].attackOrder = true;
-				if(key_4 && battleCharaClass.length >= 4)
-					battleCharaClass[3].attackOrder = true;
-			}else
-				for(Chara chara : battleCharaClass)
-					chara.attackOrder = true;
 			break;
 		case MouseEvent.BUTTON2:
 			mouseMiddlePress = true;
-			middleDragGapX = viewX - mouseX;
-			middleDragGapY = viewY - mouseY;
+			mouse2DragSX = mouseX - viewX;
+			mouse2DragSY = mouseY - viewY;
 			break;
 		case MouseEvent.BUTTON3:
 			mouseRightPress = true;
@@ -562,8 +546,11 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		final int x = e.getX(),y = e.getY();
 		mouseX = x;mouseY = y;
 		if(mouseMiddlePress) {
-			viewX = x + middleDragGapX;
-			viewY = y + middleDragGapY;
+			final int newRealX = x - viewX,newRealY = y - viewY;
+			viewX += newRealX - mouse2DragSX;
+			viewY += newRealY - mouse2DragSY;
+			mouse2DragSX = newRealX;
+			mouse2DragSY = newRealY;
 		}
 	}
 	public static final int getMouseX(){
@@ -732,19 +719,19 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return gameFrame;
 	}
 	public static final int getPassedFrame(int frame) {
-		return gameFrame - frame;
+		return frame == NONE ? NONE : gameFrame - frame;
 	}
-	public static final boolean isExpired_frame(int appearFrame,int limitFrame) {
-		return (gameFrame - appearFrame) >= limitFrame;
+	public static final boolean isExpired_frame(int initialFrame,int limitFrame) {
+		return initialFrame == NONE || (gameFrame - initialFrame) >= limitFrame;
 	}
 	public static final long getNowTime() {
 		return System.currentTimeMillis();
 	}
 	public static final int getPassedTime(long time) {
-		return (int)(System.currentTimeMillis() - time);
+		return time == NONE ? NONE : (int)(System.currentTimeMillis() - time);
 	}
-	public static final boolean isExpired_time(long time,int limitTime) {
-		return (System.currentTimeMillis() - time) >= limitTime;
+	public static final boolean isExpired_time(long initialFrame,long limitTime) {
+		return initialFrame == NONE || (System.currentTimeMillis() - initialFrame) >= limitTime;
 	}
 	public static boolean isNoStopEvent() {
 		return !freezeScreen && stopEventKind == NONE;
@@ -776,6 +763,12 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		messageSource.add(source);
 		messageStr.add(message);
 		messageEvent.add(event);
+	}
+	public static final void addControlExpansion(ControlExpansion ctrlEX) {
+		thh.addMouseMotionListener(ctrlEX);
+		thh.addMouseListener(ctrlEX);
+		thh.addMouseWheelListener(ctrlEX);
+		thh.myFrame.addKeyListener(ctrlEX);
 	}
 	
 	//premade stage test area
@@ -973,8 +966,8 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public final void drawImageTHH_center(int imgID,int x,int y){
 		this.drawImageTHH_center(arrayImage[imgID],x,y);
 	}
-	public final Graphics2D getGraphics2D() {
-		return g2;
+	public static final Graphics2D getGraphics2D() {
+		return thh.g2;
 	}
 	
 	//Sound
@@ -1000,6 +993,22 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		else if(radian <= -PI)
 			radian += PI*2;
 		return radian;
+	}
+	public static final int[] toIntArray(ArrayList<Integer> arrayList) {
+		final Integer[] array = arrayList.toArray(new Integer[0]);
+		final int[] result = new int[array.length];
+		for(int i = 0;i < array.length;i++) {
+			result[i] = array[i];
+		}
+		return result;
+	}
+	public static final double[] toDoubleArray(ArrayList<Double> arrayList) {
+		final Integer[] array = arrayList.toArray(new Integer[0]);
+		final double[] result = new double[array.length];
+		for(int i = 0;i < array.length;i++) {
+			result[i] = array[i];
+		}
+		return result;
 	}
 	public final static String trim2(String str){
 		if(str == null || str.length() == 0)

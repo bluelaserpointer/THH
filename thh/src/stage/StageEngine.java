@@ -1,8 +1,10 @@
-package thh;
+package stage;
 
 import java.awt.Graphics2D;
 
 import bullet.Bullet;
+import thh.Chara;
+import thh.THH;
 
 public abstract class StageEngine{
 	//¥Õ¥£©`¥ë¥É

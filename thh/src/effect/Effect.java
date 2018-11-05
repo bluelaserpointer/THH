@@ -54,7 +54,7 @@ public class Effect extends Entity_double{
 
 	public final boolean idle() {
 		//LifeSpan & Range
-		if(LIMIT_FRAME <= THH.getPassedFrame(super.APPEARED_FRAME)) {
+		if(LIMIT_FRAME <= THH.getPassedFrame(super.INITIAL_FRAME)) {
 			SOURCE.effectOutOfLifeSpan(this);
 			THH.deleteEffect(this);
 			return false;
