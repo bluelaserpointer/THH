@@ -3,19 +3,19 @@ package chara;
 import static java.lang.Math.*;
 import bullet.BulletAgent;
 import bullet.BulletInfo;
-import bullet.BulletSource;
+import thh.Chara;
 import thh.THH;
 import weapon.Weapon;
 import weapon.WeaponInfo;
 
 public class EnemyBulletLibrary extends BulletAgent{
-	public static final int lightBall_S = 0;
+	public static final int lightBall_S = 0,lightBall_ROUND = 1;
 	
-	private static final EnemyBulletLibrary instance = new EnemyBulletLibrary();
 	public static Weapon getWeaponController(int bulletKind) {
 		WeaponInfo.clear();
 		switch(bulletKind) {
 		case lightBall_S:
+		case lightBall_ROUND:
 			WeaponInfo.name = "lightBall_S";
 			WeaponInfo.coolTime = 5;
 			WeaponInfo.magazineSize = 6;
@@ -25,10 +25,9 @@ public class EnemyBulletLibrary extends BulletAgent{
 			return null;
 		}
 	}
-	public static void inputBulletInfo(int bulletKind,int bulletIID,int x,int y,int targetX,int targetY) {
-		inputBulletInfo(instance,bulletKind,bulletIID,x,y,targetX,targetY);
-	}
-	public static void inputBulletInfo(BulletSource source,int bulletKind,int bulletIID,int x,int y,int targetX,int targetY) {
+	public static void inputBulletInfo(Chara source,int bulletKind,int bulletIID,int x,int y,int targetX,int targetY) {
+		THH.prepareBulletInfo();
+		BulletInfo.team = source.getTeam();
 		final double ANGLE = atan2(targetY - y,targetX - x);
 		switch(bulletKind) {
 		case lightBall_S:
@@ -38,6 +37,13 @@ public class EnemyBulletLibrary extends BulletAgent{
 			BulletInfo.atk = 20;
 			BulletInfo.imageID = bulletIID;
 			THH.createBullet(source);
+			break;
+		case lightBall_ROUND:
+			BulletInfo.name = "lightBall_ROUND";
+			BulletInfo.kind = lightBall_ROUND;
+			BulletInfo.atk = 20;
+			BulletInfo.imageID = bulletIID;
+			THH.createBullet_BurstDesign(source,16,x,y,10,15);
 			break;
 		}
 	}

@@ -1,11 +1,14 @@
 package effect;
 
 import static java.lang.Math.*;
+
+import thh.DynamInteractable;
 import thh.Entity_double;
 import thh.THH;
 
 public class Effect extends Entity_double{
-	public final EffectSource SOURCE;
+	public final DynamInteractable SOURCE;
+	public final EffectScript SCRIPT;
 	
 	public String name;
 	public final int
@@ -23,9 +26,10 @@ public class Effect extends Entity_double{
 	private final int
 		IMAGE_ID;
 	
-	public Effect(EffectSource source) {
+	public Effect(DynamInteractable source) {
 		super(EffectInfo.x,EffectInfo.y,EffectInfo.nowFrame);
 		this.SOURCE = source;
+		this.SCRIPT = EffectInfo.script;
 		name = EffectInfo.name;
 		KIND = EffectInfo.kind;
 		SIZE = EffectInfo.size;
@@ -40,6 +44,7 @@ public class Effect extends Entity_double{
 	
 	public Effect(Effect effect) {
 		SOURCE = effect.SOURCE;
+		SCRIPT = effect.SCRIPT;
 		name = effect.name;
 		KIND = effect.KIND;
 		SIZE = effect.SIZE;
@@ -55,12 +60,17 @@ public class Effect extends Entity_double{
 	public final boolean idle() {
 		//LifeSpan & Range
 		if(LIMIT_FRAME <= THH.getPassedFrame(super.INITIAL_FRAME)) {
-			SOURCE.effectOutOfLifeSpan(this);
+			SCRIPT.effectOutOfLifeSpan(this);
 			THH.deleteEffect(this);
 			return false;
 		}
 		if(LIMIT_RANGE <= movedDistance){
-			SOURCE.effectOutOfRange(this);
+			SCRIPT.effectOutOfRange(this);
+			THH.deleteEffect(this);
+			return false;
+		}
+		//OutOfStage
+		if(!THH.inStage((int)x, (int)y)){
 			THH.deleteEffect(this);
 			return false;
 		}

@@ -1,5 +1,6 @@
 package thh;
 
+import action.Action;
 import bullet.Bullet;
 import bullet.BulletSource;
 import effect.EffectSource;
@@ -60,6 +61,7 @@ public abstract class Chara implements BulletSource,EffectSource,MessageSource,D
 	public abstract void moveTo(int x,int y);
 	public abstract void teleportRel(int dx,int dy);
 	public abstract void teleportTo(int x,int y);
+	public abstract void loadActionPlan(Action action);
 	//judge
 	public abstract boolean bulletEngage(Bullet bullet);
 	public boolean isVisibleFrom(int x,int y) {
@@ -76,6 +78,9 @@ public abstract class Chara implements BulletSource,EffectSource,MessageSource,D
 	//information
 	public abstract String getName();
 	public abstract int getTeam();
+	public boolean isAlive() {
+		return getHP() > 0;
+	}
 	public abstract int getHP();
 	public abstract double getHPRate();
 	public abstract int getME();

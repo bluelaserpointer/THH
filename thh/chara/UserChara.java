@@ -2,11 +2,12 @@ package chara;
 
 import static java.lang.Math.*;
 
+import action.Action;
+import action.ActionInfo;
 import bullet.Bullet;
-import bullet.BulletInfo;
-import effect.EffectInfo;
 import thh.Chara;
 import thh.THH;
+import weapon.Weapon;
 
 public abstract class UserChara extends Chara {
 
@@ -20,6 +21,7 @@ public abstract class UserChara extends Chara {
 	public int slot_spell, slot_weapon;
 	public final int spellSlot_max = 6, weaponSlot_max = 6, weapon_max = 10;
 	public final int[] spellSlot = new int[spellSlot_max], weaponSlot = new int[weaponSlot_max];
+	protected final Weapon weaponController[] = new Weapon[10];
 
 	// GUI
 
@@ -51,6 +53,8 @@ public abstract class UserChara extends Chara {
 	}
 	@Override
 	public void dynam() {
+		if(!isMovable())
+			return;
 		charaX += charaXSpeed;
 		charaY += charaYSpeed;
 		if (charaXSpeed < -0.5 || 0.5 < charaXSpeed)
@@ -75,18 +79,17 @@ public abstract class UserChara extends Chara {
 			dodge(mouseX, mouseY);
 		// attack
 		if (super.attackOrder) {
-			System.out.println("attack order received");
 			charaShotAngle = mouseAngle;
 			final int weapon = weaponSlot[slot_weapon];
-			if (weapon != NONE)
-				useWeapon(weapon);
+			if (weapon != NONE && useWeapon(weapon))
+				setBullet(weapon,this);
 		}
 		// spell
 		if (super.spellOrder) {
 			charaShotAngle = mouseAngle;
 			final int spell = spellSlot[slot_spell];
-			if (spell != NONE)
-				useWeapon(spell);
+			if (spell != NONE && useWeapon(spell))
+				setBullet(spell,this);
 		}
 		// move
 		if (super.moveOrder) {
@@ -133,7 +136,7 @@ public abstract class UserChara extends Chara {
 		if(charaHP <= 0)
 			return;
 		thh.drawImageTHH(charaIID, (int) charaX, (int) charaY);
-		thh.paintHPArc((int) charaX, (int) charaY, charaHP, charaBaseHP);
+		thh.paintHPArc((int) charaX, (int) charaY, 20,charaHP, charaBaseHP);
 	}
 	
 	// control
@@ -158,10 +161,44 @@ public abstract class UserChara extends Chara {
 		charaX = x;
 		charaY = y;
 	}
+	private Action actionPlan;
+	private int initialFrame;
+	@Override
+	public void loadActionPlan(Action action) {
+		actionPlan = action;
+	}
+	protected void doActionPlan() {
+		int countedFrame = 0;
+		for(int i = 0;i < actionPlan.frame.length;i++) {
+			final int FRAME = actionPlan.frame[i];
+			if((countedFrame += FRAME) == initialFrame) { //reach planned timing
+				final double X = actionPlan.x[i],
+					Y = actionPlan.y[i];
+				switch(actionPlan.meaning[i]) {
+				case ActionInfo.DST:
+					charaDstX = X;
+					charaDstY = Y;
+					break;
+				case ActionInfo.MOVE:
+					charaDstX = charaX + X;
+					charaDstY = charaY + Y;
+					break;
+				case ActionInfo.ATTACK:
+					setBullet(weaponSlot[slot_weapon],this);
+					break;
+				case ActionInfo.SPEED:
+					charaX += X;
+					charaY += Y;
+					break;
+				}
+			}
+			
+		}
+	}
 	// judge
 	@Override
 	public final boolean bulletEngage(Bullet bullet) {
-		return THH.squreCollision((int) charaX, (int) charaY, charaSize, (int) bullet.x, (int) bullet.y, bullet.SIZE)
+		return charaHP > 0 && THH.squreCollision((int) charaX, (int) charaY, charaSize, (int) bullet.getX(), (int) bullet.getY(), bullet.SIZE)
 				&& (bullet.team == charaTeam ^ bullet.atk >= 0);
 	}
 	//XY
@@ -177,18 +214,34 @@ public abstract class UserChara extends Chara {
 	public void setXY(double x,double y) {
 		charaX = x;charaY = y;
 	}
+	@Override
+	public void addXY(double x,double y) {
+		charaX += x;charaY += y;
+	}
+	// angle
+	@Override
+	public final void setAngle(double angle) {
+		charaShotAngle = angle;
+	}
 	// acceleration
+	@Override
+	public final void setXSpeed(double xSpeed) {
+		charaXSpeed = xSpeed;
+	}
+	@Override
+	public final void setYSpeed(double ySpeed) {
+		charaYSpeed = ySpeed;
+	}
+	@Override
+	public final void setSpeed(double xPower, double yPower) {
+		charaXSpeed = xPower;
+		charaYSpeed = yPower;
+	}
 	@Override
 	public final void addSpeed(double xPower, double yPower) {
 		charaXSpeed += xPower;
 		charaYSpeed += yPower;
 	}
-
-	public final void setSpeed(double xPower, double yPower) {
-		charaXSpeed = xPower;
-		charaYSpeed = yPower;
-	}
-
 	private final void dodge(double targetX, double targetY) {
 		final double ANGLE = atan2(targetY - charaY, targetX - charaX);
 		charaXSpeed += 40 * cos(ANGLE);
@@ -285,10 +338,6 @@ public abstract class UserChara extends Chara {
 		return charaY;
 	}
 	@Override
-	public boolean isMovable() {
-		return true;
-	}
-	@Override
 	public final boolean inStage() {
 		return THH.inStage((int)charaX,(int)charaY);
 	}
@@ -302,20 +351,30 @@ public abstract class UserChara extends Chara {
 		return sqrt(XD*XD + YD*YD);
 	}
 	@Override
+	public final double getXSpeed() {
+		return charaXSpeed;
+	}
+	@Override
+	public final double getYSpeed() {
+		return charaYSpeed;
+	}
+	@Override
+	public final double getSpeed() {
+		return sqrt(charaXSpeed*charaXSpeed + charaYSpeed*charaYSpeed);
+	}
+	@Override
 	public final boolean isStop() {
 		return charaXSpeed == 0.0 && charaYSpeed == 0.0;
 	}
 	@Override
-	public final double getSpeed() {
-		final double xSpd = charaXSpeed,ySpd = charaYSpeed;
-		return sqrt(xSpd*xSpd + ySpd*ySpd);
+	public boolean isMovable() {
+		return true;
 	}
-	public void useWeapon(int kind) {
-		THH.prepareBulletInfo();
-		BulletInfo.kind = kind;
+	@Override
+	public final double getAngle() {
+		return charaShotAngle;
 	}
-	public void useEffect(int kind,double x,double y) {
-		THH.prepareEffectInfo(charaID);
-		EffectInfo.kind = kind;
+	public boolean useWeapon(int kind) {
+		return true;
 	}
 }

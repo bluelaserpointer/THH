@@ -2,10 +2,11 @@ package chara;
 
 import static java.lang.Math.*;
 
-import bullet.Bullet;
 import bullet.BulletInfo;
-import effect.Effect;
+import bullet.BulletScript;
 import effect.EffectInfo;
+import effect.EffectScript;
+import thh.DynamInteractable;
 import thh.THH;
 import weapon.Weapon;
 import weapon.WeaponInfo;
@@ -49,7 +50,7 @@ public class Reimu extends UserChara{
 	@Override
 	public final void battleStarted(){
 		//test area
-		weaponSlot[0] = FUDA_SHIROKURO;
+		weaponSlot[0] = FUDA_KOUHAKU;
 		spellSlot[0] = FUDA_SHIROKURO;
 		spellSlot[1] = FUDA_SOUHAKU;
 		////weaponLoad
@@ -98,13 +99,26 @@ public class Reimu extends UserChara{
 	}
 	//bullet
 	@Override
-	public final void useWeapon(int kind) {
-		super.useWeapon(kind);
+	public final boolean useWeapon(int kind) {
+		return weaponController[kind].trigger();
+	}
+	@Override
+	public final void setBullet(int kind,DynamInteractable source) {
+		THH.prepareBulletInfo();
+		BulletInfo.kind = kind;
 		BulletInfo.team = charaTeam;
+		final double X,Y,ANGLE;
+		if(source == this) {
+			X = charaX;
+			Y = charaY;
+			ANGLE = charaShotAngle;
+		}else {
+			X = source.getX();
+			Y = source.getY();
+			ANGLE = source.getAngle();
+		}
 		switch(kind){
 		case FUDA_KOUHAKU:
-			if(!weaponController[FUDA_KOUHAKU].trigger())
-				break;
 			BulletInfo.name = "FUDA_KOUHAKU";
 			BulletInfo.size = 20;
 			BulletInfo.atk = 30;
@@ -112,16 +126,14 @@ public class Reimu extends UserChara{
 			BulletInfo.limitFrame = 200;
 			BulletInfo.limitRange = MAX;
 			BulletInfo.imageID = bulletIID[FUDA_KOUHAKU];
-			final double DX = 50*cos(charaShotAngle + PI/2),DY = 50*sin(charaShotAngle + PI/2);
-			final double ANGLE = charaShotAngle + THH.random2(-PI/50, PI/50);
-			BulletInfo.fastParaSet_XYADSpd(charaX + DX,charaY + DY,ANGLE,10,40);
+			final double DX = 50*cos(ANGLE + PI/2),DY = 50*sin(ANGLE + PI/2);
+			final double SHOT_ANGLE = ANGLE + THH.random2(-PI/50, PI/50);
+			BulletInfo.fastParaSet_XYADSpd(X + DX,Y + DY,SHOT_ANGLE,10,40);
 			THH.createBullet(this);
-			BulletInfo.fastParaSet_XYADSpd(charaX - DX,charaY - DY,ANGLE,10,40);
+			BulletInfo.fastParaSet_XYADSpd(X - DX,Y - DY,SHOT_ANGLE,10,40);
 			THH.createBullet(this);
 			break;
 		case FUDA_SHIROKURO:
-			if(!weaponController[FUDA_SHIROKURO].trigger())
-				break;
 			BulletInfo.name = "FUDA_SHIROKURO";
 			BulletInfo.size = 10;
 			BulletInfo.atk = 20;
@@ -129,16 +141,14 @@ public class Reimu extends UserChara{
 			BulletInfo.reflection = 1;
 			BulletInfo.limitFrame = 200;
 			BulletInfo.imageID = bulletIID[FUDA_SHIROKURO];
-			BulletInfo.fastParaSet_XYADSpd(charaX,charaY,charaShotAngle,10,40);
+			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE,10,4);
 			THH.createBullet(this);
-			BulletInfo.fastParaSet_XYADSpd(charaX,charaY,charaShotAngle - PI/18,10,40);
+			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE - PI/18,10,4);
 			THH.createBullet(this);
-			BulletInfo.fastParaSet_XYADSpd(charaX,charaY,charaShotAngle + PI/18,10,40);
+			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE + PI/18,10,4);
 			THH.createBullet(this);
 			break;
 		case FUDA_SOUHAKU:
-			if(!weaponController[FUDA_SOUHAKU].trigger())
-				break;
 			BulletInfo.name = "FUDA_SOUHAKU";
 			BulletInfo.accel = 0.8;
 			BulletInfo.size = 10;
@@ -148,19 +158,21 @@ public class Reimu extends UserChara{
 			BulletInfo.limitFrame = 40;
 			BulletInfo.imageID = bulletIID[FUDA_SOUHAKU];
 			for(int i = -4;i <= 4;i++) {
-				BulletInfo.fastParaSet_XYADSpd(charaX,charaY,charaShotAngle + i*PI/10,25,40);
+				BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE + i*PI/10,25,40);
 				THH.createBullet(this);
 			}
 			break;
 		}
 	}
 	@Override
-	public final void useEffect(int kind,double x,double y) {
-		super.useEffect(kind,x,y);
+	public final void setEffect(int kind,DynamInteractable source) {
+		THH.prepareEffectInfo();
+		EffectInfo.kind = kind;
 		switch(kind){
 		case LIGHTNING:
 			EffectInfo.name = "LIGHTNING";
-			EffectInfo.fastParaSet_XYADSpd(x,y,2*PI*random(),10,20);
+			EffectInfo.script = effectScripts[LIGHTNING];
+			EffectInfo.fastParaSet_XYADSpd(source.getX(),source.getY(),2*PI*random(),10,20);
 			EffectInfo.accel = 1.0;
 			EffectInfo.size = NONE;
 			EffectInfo.limitFrame = 2;
@@ -170,21 +182,14 @@ public class Reimu extends UserChara{
 			break;
 		}
 	}
-	@Override
-	public final void bulletIdle(Bullet bullet,boolean isCharaActive) {
-		switch(bullet.KIND) {
-		case FUDA_KOUHAKU:
-		case FUDA_SHIROKURO:
-		case FUDA_SOUHAKU:
-			super.bulletIdle(bullet, isCharaActive);
-			break;
-		}
+	private final BulletScript[] bulletScripts = new BulletScript[10];
+	{
+		bulletScripts[FUDA_KOUHAKU] = BulletInfo.DEFAULT_SCRIPT;
+		bulletScripts[FUDA_SHIROKURO] = BulletInfo.DEFAULT_SCRIPT;
+		bulletScripts[FUDA_SOUHAKU] = BulletInfo.DEFAULT_SCRIPT;
 	}
-	@Override
-	public final void effectIdle(Effect effect,boolean isCharaActive) {
-		switch(effect.KIND) {
-		default:
-			super.effectIdle(effect, isCharaActive);
-		}
+	private final EffectScript[] effectScripts = new EffectScript[10];
+	{
+		effectScripts[LIGHTNING] = EffectInfo.DEFAULT_SCRIPT;
 	}
 }

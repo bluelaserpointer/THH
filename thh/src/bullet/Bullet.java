@@ -8,12 +8,20 @@ import thh.Entity_double;
 import thh.THH;
 
 public class Bullet extends Entity_double implements DynamInteractable{
-	public final BulletSource SOURCE;
+	public final int UNIQUE_ID;
+	public static int nowMaxUniqueID = 0;
+	
+	private int idleExecuted = 0;
+	
+	public final DynamInteractable SOURCE; //an information source of user
+	public final BulletScript SCRIPT; //a script of unique behaviors
 	
 	public String name;
 	public final int
 		KIND,
-		SIZE;
+		SIZE,
+		INITIAL_TEAM,
+		INITIAL_ATK;
 	public int
 		team,
 		atk,
@@ -33,18 +41,20 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	private final int
 		IMAGE_ID;
 	public final boolean
+		HIT_ENEMY,
 		IS_LASER;
-	 
-	public Bullet(BulletSource source) {
+	public Bullet(DynamInteractable source) {
 		super(BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
+		UNIQUE_ID = nowMaxUniqueID++;
 		this.SOURCE = source;
+		this.SCRIPT = BulletInfo.script;
 		name = BulletInfo.name;
 		KIND = BulletInfo.kind;
 		SIZE = BulletInfo.size;
 		LIMIT_FRAME = BulletInfo.limitFrame;
 		LIMIT_RANGE = BulletInfo.limitRange;
-		team = BulletInfo.team;
-		atk = BulletInfo.atk;
+		INITIAL_TEAM = team = BulletInfo.team;
+		INITIAL_ATK = atk = BulletInfo.atk;
 		offSet = BulletInfo.offSet;
 		penetration = BulletInfo.penetration;
 		reflection = BulletInfo.reflection;
@@ -53,19 +63,21 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		ySpeed = BulletInfo.ySpeed;
 		angle = BulletInfo.angle;
 		IMAGE_ID = BulletInfo.imageID;
+		HIT_ENEMY = BulletInfo.hitEnemy;
 		IS_LASER = BulletInfo.isLaser;
 	}
-		
 	public Bullet(Bullet bullet) {
 		super(BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
+		UNIQUE_ID = nowMaxUniqueID++;
 		this.SOURCE = bullet.SOURCE;
+		this.SCRIPT = bullet.SCRIPT;
 		name = bullet.name;
 		KIND = bullet.KIND;
 		SIZE = bullet.SIZE;
 		LIMIT_FRAME = bullet.LIMIT_FRAME;
 		LIMIT_RANGE = bullet.LIMIT_RANGE;
-		team = bullet.team;
-		atk = bullet.atk;
+		INITIAL_TEAM = team = bullet.team;
+		INITIAL_ATK = atk = bullet.atk;
 		offSet = bullet.offSet;
 		penetration = bullet.penetration;
 		reflection = bullet.reflection;
@@ -74,18 +86,22 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		ySpeed = bullet.ySpeed;
 		angle = bullet.angle;
 		IMAGE_ID = bullet.IMAGE_ID;
+		HIT_ENEMY = bullet.HIT_ENEMY;
 		IS_LASER = bullet.IS_LASER;
 	}
 
 	public final boolean idle() {
 		//LifeSpan & Range
-		if(LIMIT_FRAME <= THH.getPassedFrame(super.INITIAL_FRAME)) {
-			SOURCE.bulletOutOfLifeSpan(this);
+		if(LIMIT_FRAME <= THH.getPassedFrame(super.INITIAL_FRAME) && SCRIPT.bulletOutOfLifeSpan(this)) {
 			THH.deleteBullet(this);
 			return false;
 		}
-		if(LIMIT_RANGE <= movedDistance){
-			SOURCE.bulletOutOfRange(this);
+		if(LIMIT_RANGE <= movedDistance && SCRIPT.bulletOutOfRange(this)){
+			THH.deleteBullet(this);
+			return false;
+		}
+		//OutOfStage
+		if(!THH.inStage((int)x, (int)y)){
 			THH.deleteBullet(this);
 			return false;
 		}
@@ -98,22 +114,24 @@ public class Bullet extends Entity_double implements DynamInteractable{
 			ySpeed *= ACCEL;
 		}
 		//Penetration & Reflection
-		if(SOURCE.bulletIfHitLandscape(this,(int)x,(int)y)){
+		if(SCRIPT.bulletIfHitLandscape(this,(int)x,(int)y)){
 			if(reflection > 0) {
 				reflection--;
 				//edit
-			}else
-				SOURCE.bulletOutOfReflection(this);
+			}else {
+				if(SCRIPT.bulletOutOfReflection(this))
+					THH.deleteBullet(this);
+			}
 		}
 		//Damaging
-		for(Chara chara : THH.callBulletEngage(this)) {
-			if(chara.getTeam() != team && atk > 0) {
-				chara.damage_amount(atk);
-				SOURCE.bulletHitObject(this);
-				if(penetration > 0)
-					penetration--;
-				else
-					SOURCE.bulletOutOfPenetration(this);
+		for(Chara chara : THH.callBulletEngage(THH.getCharacters_team(team,!HIT_ENEMY),this)) {
+			chara.damage_amount(atk);
+			SCRIPT.bulletHitObject(this);
+			if(penetration > 0)
+				penetration--;
+			else {
+				if(SCRIPT.bulletOutOfPenetration(this))
+					THH.deleteBullet(this);
 			}
 		}
 		return true;
@@ -138,6 +156,18 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		this.y = y;
 	}
 	@Override
+	public final void setAngle(double angle) {
+		this.angle = angle;
+	}
+	@Override
+	public final void setXSpeed(double xSpeed) {
+		this.xSpeed = xSpeed;
+	}
+	@Override
+	public final void setYSpeed(double ySpeed) {
+		this.ySpeed = ySpeed;
+	}
+	@Override
 	public final void setSpeed(double xSpeed,double ySpeed) {
 		this.xSpeed = xSpeed;this.ySpeed = ySpeed;
 	}
@@ -150,6 +180,9 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		this.xSpeed *= rate;this.ySpeed *= rate;
 	}
 	//information
+	public final int getIdleCount() {
+		return idleExecuted;
+	}
 	public final int getPenetration() {
 		return penetration;
 	}
@@ -163,6 +196,10 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	@Override
 	public final double getY() {
 		return y;
+	}
+	@Override
+	public final double getAngle() {
+		return angle;
 	}
 	@Override
 	public final boolean isMovable() {
@@ -186,10 +223,15 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		return xSpeed == 0.0 && ySpeed == 0.0;
 	}
 	@Override
+	public final double getXSpeed() {
+		return xSpeed;
+	}
+	@Override
+	public final double getYSpeed() {
+		return ySpeed;
+	}
+	@Override
 	public final double getSpeed() {
 		return sqrt(xSpeed*xSpeed + ySpeed*ySpeed);
-	}
-	public final void setSpeedX(double value) {
-		xSpeed = value;
 	}
 }

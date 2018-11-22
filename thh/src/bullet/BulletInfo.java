@@ -6,9 +6,11 @@ import static java.lang.Math.sin;
 import thh.THH;
 
 public final class BulletInfo {
-	private final static int 
+	private final static int
 		NONE = thh.THH.NONE,
 		MAX = thh.THH.MAX;
+	public static final BulletScript DEFAULT_SCRIPT = new BulletScript();
+	public static BulletScript script;
 	public static String name;
 	public static int
 		nowFrame,
@@ -27,10 +29,12 @@ public final class BulletInfo {
 	public static int
 		imageID;
 	public static boolean
+		hitEnemy,
 		isLaser;
 	
 	public static final void clear() {
 		name = THH.NOT_NAMED;
+		script = DEFAULT_SCRIPT;
 		kind = NONE;
 		size = 0;
 		team = NONE;
@@ -45,6 +49,7 @@ public final class BulletInfo {
 		accel = 1.0;
 		angle = 0.0;
 		imageID = NONE;
+		hitEnemy = true;
 		isLaser = false;
 	}
 	public static final void fastParaSet_XYADSpd(double gunnerX,double gunnerY,double angle,double distance,double speed){

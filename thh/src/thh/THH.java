@@ -9,10 +9,8 @@ import javax.swing.*;
 
 import bullet.Bullet;
 import bullet.BulletInfo;
-import bullet.BulletSource;
 import effect.Effect;
 import effect.EffectInfo;
-import effect.EffectSource;
 import engine.Engine_THH1;
 import stage.ControlExpansion;
 import stage.Stage;
@@ -36,6 +34,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		GAME_VERSION = "Ver beta1.0.0";
 	public static final int
 		NONE = -999999999, //値なし
+		ALL = -NONE,
 		MAX = Integer.MAX_VALUE, //最大
 		MIN = Integer.MIN_VALUE; //最小
 
@@ -90,17 +89,17 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	private static int gameFrame;
 	
 	//キャラクター情報
-	private static Chara[] battleCharaClass = new Chara[0];
+	private static Chara[] characters = new Chara[0];
 	
 	//stage
 	private static StageEngine engine = new Engine_THH1();
 	private static Stage stage;
 	
 	//bullet data
-	private static final ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+	private static final ArrayListEx<Bullet> bullets = new ArrayListEx<Bullet>();
 	
 	//effect data
-	private static final ArrayList<Effect> effects = new ArrayList<Effect>();
+	private static final ArrayListEx<Effect> effects = new ArrayListEx<Effect>();
 	
 	//event data
 	private static final ArrayDeque<String> messageStr = new ArrayDeque<String>();
@@ -181,7 +180,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	private final BufferedImage offImage = new BufferedImage(defaultScreenW,defaultScreenH,BufferedImage.TYPE_INT_ARGB_PRE); //僟僽儖僶僢僼傽僉儍儞僶僗
 	private Graphics2D g2;
 	private final Font basicFont = createFont("font/upcibi.ttf").deriveFont(Font.BOLD + Font.ITALIC,30.0f),commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN,15.0f);
-	public static final BasicStroke stroke1 = new BasicStroke(1f),stroke5 = new BasicStroke(5f);
+	public static final BasicStroke stroke1 = new BasicStroke(1f),stroke3 = new BasicStroke(3f),stroke5 = new BasicStroke(5f);
 	private static final Color HPWarningColor = new Color(255,120,120),debugTextColor = new Color(200,200,200,160);
 	private final Rectangle2D screenRect = new Rectangle2D.Double(0,0,defaultScreenW,defaultScreenH);
 	
@@ -206,53 +205,38 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		//stageAction
 		engine.idle(g2,stopEventKind);
 		////////////////////////////////////////////////////////////////////////
-		//charaAction
-		switch(stopEventKind) {
-		case STOP:
-			for(Chara chara : battleCharaClass)
-				chara.idle(Chara.PASSIVE_CONS);
-			break;
-		case FREEZE:
-			for(Chara chara : battleCharaClass)
-				chara.idle(Chara.PAINT_FREEZED);
-			break;
-		default:
-			for(Chara chara : battleCharaClass) {
-				chara.idle();
-				chara.resetSingleOrder();
-			}
-		}
-		////////////////////////////////////////////////////////////////////////
 		//bulletAction&effectAction
+		bullets.setIterator(0);
+		effects.setIterator(0);
 		switch(stopEventKind) {
 		case STOP:
-			for(int i = 0;i < bullets.size();i++) {
-				final Bullet bullet = bullets.get(i);
-				bullet.SOURCE.bulletAnimationPaint(bullet);
+			while(bullets.hasNext()) {
+				final Bullet bullet = bullets.next();
+				bullet.SCRIPT.bulletAnimationPaint(bullet);
 			}
-			for(int i = 0;i < effects.size();i++) {
-				final Effect effect = effects.get(i);
-				effect.SOURCE.effectAnimationPaint(effect);
+			while(effects.hasNext()) {
+				final Effect effect = effects.next();
+				effect.SCRIPT.effectAnimationPaint(effect);
 			}
 			break;
 		case FREEZE:
-			for(int i = 0;i < bullets.size();i++) {
-				final Bullet bullet = bullets.get(i);
-				bullet.SOURCE.bulletPaint(bullet);
+			while(bullets.hasNext()) {
+				final Bullet bullet = bullets.next();
+				bullet.SCRIPT.bulletPaint(bullet);
 			}
-			for(int i = 0;i < effects.size();i++) {
-				final Effect effect = effects.get(i);
-				effect.SOURCE.effectPaint(effect);
+			while(effects.hasNext()) {
+				final Effect effect = effects.next();
+				effect.SCRIPT.effectPaint(effect);
 			}
 			break;
 		default:
-			for(int i = 0;i < bullets.size();i++) {
-				final Bullet bullet = bullets.get(i);
-				bullet.SOURCE.bulletIdle(bullet,true);
+			while(bullets.hasNext()) {
+				final Bullet bullet = bullets.next();
+				bullet.SCRIPT.bulletIdle(bullet);
 			}
-			for(int i = 0;i < effects.size();i++) {
-				final Effect effect = effects.get(i);
-				effect.SOURCE.effectIdle(effect,true);
+			while(effects.hasNext()) {
+				final Effect effect = effects.next();
+				effect.SCRIPT.effectIdle(effect);
 			}
 		}
 		///////////////////////////////////////////////////////////////
@@ -294,6 +278,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			}
 			//debug ////////////////////////
 			if(debugMode){
+				//grid
 				g2.setColor(debugTextColor);
 				g2.setFont(basicFont);
 				g2.setStroke(stroke1);
@@ -301,10 +286,18 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 					g2.drawLine(i,0,i,defaultScreenH);
 				for(int i = 100;i < defaultScreenH;i += 100)
 					g2.drawLine(0,i,defaultScreenW,i);
+				//Origin
+				g2.setColor(debugTextColor);
+				g2.setStroke(stroke1);
+				g2.drawOval(TRANSLATE_X - 35, TRANSLATE_Y - 35, 70, 70);
+				g2.drawOval(TRANSLATE_X - 25, TRANSLATE_Y - 25, 50, 50);
+				g2.drawOval(TRANSLATE_X - 15, TRANSLATE_Y - 15, 30, 30);
+				//mouseCoordinate
+				g2.setColor(debugTextColor);
 				g2.setStroke(stroke5);
 				g2.drawString(mouseX + "," + mouseY,mouseX + 20,mouseY + 20);
 				//entityInfo
-				g2.drawString("Chara:" + battleCharaClass.length + " EF:" + effects.size() + " B:" + bullets.size(),30,100);
+				g2.drawString("Chara:" + characters.length + " EF:" + effects.size() + " B:" + bullets.size(),30,100);
 				g2.drawString("LoadTime(ms):" + loadTime_total,30,120);
 				//g2.drawString("EM:" + loadTime_enemy + " ET:" + loadTime_entity + " G:" + loadTime_gimmick + " EF:" + loadTime_effect + " B:" + loadTime_bullet + " I:" + loadTime_item + " W: " + loadTime_weapon + " Other: " + loadTime_other,30,140);
 				g2.drawString("GameTime(ms):" + gameFrame,30,160);
@@ -315,7 +308,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 				g2.setStroke(stroke5);
 				g2.drawString("(" + (mouseX - viewX) + "," + (mouseY - viewY) + ")",mouseX + 20,mouseY + 40);
 				//charaInfo
-				for(Chara chara : battleCharaClass) {
+				for(Chara chara : characters) {
 					final int X = (int)chara.getX(),Y = (int)chara.getY();
 					g2.setStroke(stroke1);
 					g2.drawRect(X + viewX - 50, Y + viewY - 50, 100,100);
@@ -333,29 +326,75 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	public static final Chara[] callBulletEngage(Bullet bullet) {
-		return engine.callBulletEngage(bullet);
+		return engine.callBulletEngage(getCharacters_team(bullet.team,false),bullet);
 	}
-	//information-chara
-	public static final Chara[] getCharaClass() {
-		return battleCharaClass;
+	public static final Chara[] callBulletEngage(Chara[] characters,Bullet bullet) {
+		return engine.callBulletEngage(characters,bullet);
 	}
-	public static final Chara getCharaClass(int charaID) {
-		return battleCharaClass[charaID];
+	//idle-character
+	public static final void defaultCharaIdle(Chara[] characters) {
+		switch(stopEventKind) {
+		case STOP:
+			for(Chara chara : characters)
+				chara.idle(Chara.PASSIVE_CONS);
+			break;
+		case FREEZE:
+			for(Chara chara : characters)
+				chara.idle(Chara.PAINT_FREEZED);
+			break;
+		default:
+			for(Chara chara : characters) {
+				chara.idle();
+				chara.resetSingleOrder();
+			}
+		}
+	}
+	public static final void defaultCharaIdle(Chara chara) {
+		switch(stopEventKind) {
+		case STOP:
+			chara.idle(Chara.PASSIVE_CONS);
+			break;
+		case FREEZE:
+			chara.idle(Chara.PAINT_FREEZED);
+			break;
+		default:
+			chara.idle();
+			chara.resetSingleOrder();
+		}
+	}
+	//information-characters
+	public static final Chara[] getCharacters() {
+		return characters;
+	}
+	public static final Chara getCharacters(int charaID) {
+		return characters[charaID];
+	}
+	public static final Chara[] getCharacters_team(int team,boolean white) {
+		final Chara[] charaArray = new Chara[characters.length];
+		int founded = 0;
+		for(Chara chara : characters) {
+			if(white == isSameTeam(team,chara.getTeam()))
+				charaArray[founded++] = chara;
+		}
+		return Arrays.copyOf(charaArray, founded);
+	}
+	public static final Chara[] getCharacters_team(int team) {
+		return getCharacters_team(team,true);
 	}
 	public static final int getCharaAmount() {
-		return battleCharaClass.length;
+		return characters.length;
 	}
 	public static final int getCharaTeam(int charaID) {
-		return battleCharaClass[charaID].getTeam();
+		return characters[charaID].getTeam();
 	}
 	public static final boolean charaIsVisibleFrom(int charaID,int x,int y) {
-		return battleCharaClass[charaID].isVisibleFrom(x, y);
+		return characters[charaID].isVisibleFrom(x, y);
 	}
 	public static final double getCharaX(int charaID) {
-		return battleCharaClass[charaID].getX();
+		return characters[charaID].getX();
 	}
 	public static final double getCharaY(int charaID) {
-		return battleCharaClass[charaID].getY();
+		return characters[charaID].getY();
 	}
 	//information-stage
 	public static final Stage getStage() {
@@ -372,6 +411,10 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final int toStageCodY(int screenY) {
 		return viewY - screenY;
+	}
+	//information-team
+	public static final boolean isSameTeam(int team1,int team2) {
+		return team1 == team2 && team1 != NONE || team1 == ALL || team2 == ALL;
 	}
 	//information-GUI
 	public static final int getScreenW(){
@@ -396,22 +439,22 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	//control-bullet
 	public static final boolean deleteBullet(Bullet bullet) {
-		if(bullet.SOURCE.deleteBullet(bullet))
+		if(bullet.SCRIPT.deleteBullet(bullet))
 			return bullets.remove(bullet);
 		return false;
 	}
 	public static final boolean deleteEffect(Effect effect) {
-		if(effect.SOURCE.deleteEffect(effect))
+		if(effect.SCRIPT.deleteEffect(effect))
 			return effects.remove(effect);
 		return false;
 	}
 	/*public final void rollCharaTurn(){
-		if(++chara == battleCharaClass.length)
+		if(++chara == characters.length)
 			chara = 0;
-		battleCharaClass[chara].turnStarted();
+		characters[chara].turnStarted();
 	}*/
-	public final void paintHPArc(int x,int y,int hp,int maxHP) {
-		g2.setStroke(stroke5);
+	public final void paintHPArc(int x,int y,int radius,int hp,int maxHP) {
+		g2.setStroke(stroke3);
 		if((double)hp/(double)maxHP > 0.75) //HPが少なくなるごとに色が変化
 			g2.setColor(Color.CYAN); //水色
 		else if((double)hp/(double)maxHP > 0.50)
@@ -422,16 +465,16 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			g2.setColor(Color.RED); //赤色
 		else
 			g2.setColor(HPWarningColor);
-		g2.drawString(String.valueOf(hp),x + (hp >= 10 ? 61 : 67),y + 60);
+		g2.drawString(String.valueOf(hp),x + (int)(radius*1.1) + (hp >= 10 ? 0 : 6),y + (int)(radius*1.1));
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.drawArc(x - 65,y - 65,130,130,90,(int)((double)hp/(double)maxHP*360));
+		g2.drawArc(x - radius,y - radius,radius*2,radius*2,90,(int)((double)hp/(double)maxHP*360));
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
 	}
 	public final int receiveDamageInSquare(int team,int hp,int x,int y,int size){ //自処理被弾(弾消滅)
 		for(Bullet bullet : bullets){
 			if(team != bullet.team && bullet.atk > 0 && squreCollision((int)bullet.x,(int)bullet.y,bullet.SIZE,x,y,size)){ //衝突
 				hp -= bullet.atk;
-				bullet.SOURCE.bulletHitObject(bullet);
+				bullet.SCRIPT.bulletHitObject(bullet);
 				if(hp <= 0)
 					break;
 			}
@@ -442,7 +485,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		for(Bullet bullet : bullets){
 			if(team != bullet.team && bullet.atk > 0 && circleCollision((int)bullet.x,(int)bullet.y,bullet.SIZE,x,y,size)){ //衝突
 				hp -= bullet.atk;
-				bullet.SOURCE.bulletHitObject(bullet);
+				bullet.SCRIPT.bulletHitObject(bullet);
 				if(hp <= 0)
 					break;
 			}
@@ -503,20 +546,6 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		case MouseEvent.BUTTON3:
 			mouseRightPress = true;
 			mouseRightPressedFrame = gameFrame;
-			if(isNoStopEvent()) {
-				if(key_1 || key_2 || key_3 || key_4) {
-					if(key_1 && battleCharaClass.length >= 1)
-						battleCharaClass[0].dodgeOrder = true;
-					if(key_2 && battleCharaClass.length >= 2)
-						battleCharaClass[1].dodgeOrder = true;
-					if(key_3 && battleCharaClass.length >= 3)
-						battleCharaClass[2].dodgeOrder = true;
-					if(key_4 && battleCharaClass.length >= 4)
-						battleCharaClass[3].dodgeOrder = true;
-				}else
-					for(Chara chara : battleCharaClass)
-						chara.dodgeOrder = true;
-			}
 			break;
 		}
 	}
@@ -524,16 +553,12 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		switch(e.getButton()) {
 		case MouseEvent.BUTTON1:
 			mouseLeftPress = false;
-			for(Chara chara : battleCharaClass)
-				chara.attackOrder = false;
 			break;
 		case MouseEvent.BUTTON2:
 			mouseMiddlePress = false;
 			break;
 		case MouseEvent.BUTTON3:
 			mouseRightPress = false;
-			for(Chara chara : battleCharaClass)
-				chara.moveOrder = false;
 			break;
 		}
 	}
@@ -586,26 +611,18 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		switch(KEY_CODE){
 		case VK_1:
 			key_1 = true;
-			if(isNoStopEvent() && getPassedTime(key_1_time) < 200 && battleCharaClass.length >= 1)
-				battleCharaClass[0].spellOrder = true;
 			key_1_time = getNowTime();
 			break;
 		case VK_2:
 			key_2 = true;
-			if(isNoStopEvent() && getPassedTime(key_2_time) < 200 && battleCharaClass.length >= 2)
-				battleCharaClass[1].spellOrder = true;
 			key_2_time = getNowTime();
 			break;
 		case VK_3:
 			key_3 = true;
-			if(isNoStopEvent() && getPassedTime(key_3_time) < 200 && battleCharaClass.length >= 3)
-				battleCharaClass[2].spellOrder = true;
 			key_3_time = getNowTime();
 			break;
 		case VK_4:
 			key_4 = true;
-			if(isNoStopEvent() && getPassedTime(key_4_time) < 200 && battleCharaClass.length >= 4)
-				battleCharaClass[3].spellOrder = true;
 			key_4_time = getNowTime();
 			break;
 		case VK_W:
@@ -685,14 +702,14 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	//generation
-	public final static void createBullet(BulletSource source){ //弾生成
+	public final static void createBullet(DynamInteractable source){ //弾生成
 		bullets.add(new Bullet(source));
 	}
-	public final static void createBullet(BulletSource source,int amount) {
+	public final static void createBullet(DynamInteractable source,int amount) {
 		for(int i = 0;i < amount;i++)
 			bullets.add(new Bullet(source));
 	}
-	public final static void createBullet_RoundDesign(BulletSource source,int amount,double gunnerX,double gunnerY,double radius){
+	public final static void createBullet_RoundDesign(DynamInteractable source,int amount,double gunnerX,double gunnerY,double radius){
 		final double ANGLE = 2*PI/amount;
 		for(int i = 0;i < amount;i++){
 			BulletInfo.x = gunnerX + radius*cos(ANGLE*i);
@@ -700,14 +717,27 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			createBullet(source);
 		}
 	}
-	public final static void createEffect(EffectSource source){ //弾生成
+	public final static void createBullet_BurstDesign(DynamInteractable source,int amount,double gunnerX,double gunnerY,double radius,int speed){
+		final double BASE_ANGLE = 2*PI/amount;
+		for(int i = 0;i < amount;i++){
+			final double ANGLE = BASE_ANGLE*i;
+			final double COS_ANGLE = cos(ANGLE),SIN_ANGLE = sin(ANGLE);
+			BulletInfo.x = gunnerX + radius*COS_ANGLE;
+			BulletInfo.y = gunnerY + radius*SIN_ANGLE;
+			BulletInfo.angle = ANGLE;
+			BulletInfo.xSpeed = speed*COS_ANGLE;
+			BulletInfo.ySpeed = speed*SIN_ANGLE;
+			createBullet(source);
+		}
+	}
+	public final static void createEffect(DynamInteractable source){ //弾生成
 		effects.add(new Effect(source));
 	}
-	public final static void createEffect(EffectSource source,int amount) {
+	public final static void createEffect(DynamInteractable source,int amount) {
 		for(int i = 0;i < amount;i++)
 			effects.add(new Effect(source));
 	}
-	public final static void createEffect_RoundDesign(EffectSource source,int amount,double gunnerX,double gunnerY,double radius){
+	public final static void createEffect_RoundDesign(DynamInteractable source,int amount,double gunnerX,double gunnerY,double radius){
 		final double ANGLE = 2*PI/amount;
 		for(int i = 0;i < amount;i++){
 			EffectInfo.x = gunnerX + radius*cos(ANGLE*i);
@@ -740,10 +770,9 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		BulletInfo.clear();
 		BulletInfo.nowFrame = gameFrame;
 	}
-	public static final void prepareEffectInfo(int charaID) {
+	public static final void prepareEffectInfo() {
 		EffectInfo.clear();
 		EffectInfo.nowFrame = gameFrame;
-		EffectInfo.source = charaID;
 	}
 	public final void addKeyListener(KeyListener e) {
 		myFrame.addKeyListener(e);
@@ -782,7 +811,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		gameFrame = 0;
 		
 		System.out.println("add characters to the game");
-		battleCharaClass = engine.charaSetup();
+		characters = engine.charaSetup();
 		stage = engine.stageSetup();
 		engine.openStage();
 	}
@@ -1003,7 +1032,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return result;
 	}
 	public static final double[] toDoubleArray(ArrayList<Double> arrayList) {
-		final Integer[] array = arrayList.toArray(new Integer[0]);
+		final Double[] array = arrayList.toArray(new Double[0]);
 		final double[] result = new double[array.length];
 		for(int i = 0;i < array.length;i++) {
 			result[i] = array[i];

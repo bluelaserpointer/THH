@@ -1,6 +1,6 @@
 package chara;
 
-import bullet.BulletInfo;
+import thh.DynamInteractable;
 import thh.THH;
 import weapon.Weapon;
 
@@ -32,13 +32,13 @@ public class Fairy extends UserChara{
 		weaponController.defaultIdle();
 		for(int i = 0;i < THH.getCharaAmount();i++) {
 			if(THH.charaIsVisibleFrom(i,(int)charaX,(int)charaY)) {
-				if(weaponController.trigger()) {
-					THH.prepareBulletInfo();
-					BulletInfo.kind = EnemyBulletLibrary.lightBall_S;
-					BulletInfo.team = charaTeam;
-					EnemyBulletLibrary.inputBulletInfo(EnemyBulletLibrary.lightBall_S,bulletIID[0],(int)charaX,(int)charaY,(int)THH.getCharaX(i),(int)THH.getCharaY(i));
-				}
+				if(weaponController.trigger())
+					EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.lightBall_ROUND,bulletIID[0],(int)charaX,(int)charaY,(int)THH.getCharaX(i),(int)THH.getCharaY(i));
 			}
 		}
 	}
+	@Override
+	public void setEffect(int kind,DynamInteractable source) {}
+	@Override
+	public void setBullet(int kind,DynamInteractable source) {}
 }

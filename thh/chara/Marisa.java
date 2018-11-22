@@ -5,8 +5,10 @@ import static java.lang.Math.random;
 
 import bullet.Bullet;
 import bullet.BulletInfo;
-import effect.Effect;
+import bullet.BulletScript;
 import effect.EffectInfo;
+import effect.EffectScript;
+import thh.DynamInteractable;
 import thh.THH;
 import weapon.Weapon;
 import weapon.WeaponInfo;
@@ -23,7 +25,6 @@ public class Marisa extends UserChara{
 	//weapon&bullet kind name
 	static final int
 		MILLKY_WAY = 0,NARROW_SPARK = 1,REUSE_BOMB = 2,MAGIC_MISSILE = 3;
-	private final Weapon weaponController[] = new Weapon[10];
 	//effect kind name
 	private static final int LIGHTNING = 0,NARROW_SPARK_HE = 1;
 	
@@ -52,7 +53,7 @@ public class Marisa extends UserChara{
 	public final void battleStarted(){
 		//test area
 		//weaponSlot[0] = REUSE_BOMB;
-		weaponSlot[0] = MAGIC_MISSILE;
+		weaponSlot[0] = REUSE_BOMB;
 		spellSlot[0] = NARROW_SPARK;
 		spellSlot[1] = REUSE_BOMB;
 		////weaponLoad
@@ -109,15 +110,29 @@ public class Marisa extends UserChara{
 	}
 	//bullet
 	@Override
-	public final void useWeapon(int kind) {
-		super.useWeapon(kind);
+	public final boolean useWeapon(int kind) {
+		return weaponController[kind].trigger();
+	}
+	@Override
+	public final void setBullet(int kind,DynamInteractable source) {
+		THH.prepareBulletInfo();
+		BulletInfo.kind = kind;
 		BulletInfo.team = charaTeam;
+		final double X,Y,ANGLE;
+		if(source == this) {
+			X = charaX;
+			Y = charaY;
+			ANGLE = charaShotAngle;
+		}else {
+			X = source.getX();
+			Y = source.getY();
+			ANGLE = source.getAngle();
+		}
 		switch(kind){
 		case MILLKY_WAY:
-			if(!weaponController[MILLKY_WAY].trigger())
-				break;
 			BulletInfo.name = "MILLKY_WAY";
-			BulletInfo.fastParaSet_ASpd(charaShotAngle,20);
+			BulletInfo.script = bulletScripts[MILLKY_WAY];
+			BulletInfo.fastParaSet_ASpd(ANGLE,20);
 			BulletInfo.accel = 1.0;
 			BulletInfo.size = 30;
 			BulletInfo.atk = 40;
@@ -127,16 +142,17 @@ public class Marisa extends UserChara{
 			BulletInfo.limitFrame = 200;
 			BulletInfo.limitRange = MAX;
 			BulletInfo.imageID = bulletIID[MILLKY_WAY];
-			THH.createBullet_RoundDesign(this,8,charaX,charaY,50);
+			THH.createBullet_RoundDesign(source,8,X,Y,50);
 			break;
 		case NARROW_SPARK:
-			if(!weaponController[NARROW_SPARK].trigger())
-				break;
 			//message
-			THH.addMessage(this,charaID,"KOIFU [MasterSpark]");
-			THH.addMessage(this,charaID,"TEST MESSAGE 2");
+			if(this == source) {
+				THH.addMessage(this,charaID,"KOIFU [MasterSpark]");
+				THH.addMessage(this,charaID,"TEST MESSAGE 2");
+			}
 			BulletInfo.name = "NARROW_SPARK";
-			BulletInfo.fastParaSet_XYADSpd(charaX,charaY,charaShotAngle,0,thh.getImageByID(bulletIID[NARROW_SPARK]).getWidth(null));
+			BulletInfo.script = bulletScripts[NARROW_SPARK];
+			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE,0,thh.getImageByID(bulletIID[NARROW_SPARK]).getWidth(null));
 			BulletInfo.accel = 1.0;
 			BulletInfo.size = 50;
 			BulletInfo.atk = 5;
@@ -147,13 +163,12 @@ public class Marisa extends UserChara{
 			BulletInfo.limitRange = MAX;
 			BulletInfo.imageID = bulletIID[NARROW_SPARK];
 			BulletInfo.isLaser = true;
-			THH.createBullet(this);
+			THH.createBullet(source);
 			break;
 		case REUSE_BOMB:
-			if(!weaponController[REUSE_BOMB].trigger())
-				break;
 			BulletInfo.name = "REUSE_BOMB";
-			BulletInfo.fastParaSet_ASpd(charaShotAngle,40);
+			BulletInfo.script = bulletScripts[REUSE_BOMB];
+			BulletInfo.fastParaSet_ASpd(ANGLE,40);
 			BulletInfo.accel = 0.98;
 			BulletInfo.size = 30;
 			BulletInfo.atk = 40;
@@ -163,13 +178,12 @@ public class Marisa extends UserChara{
 			BulletInfo.limitFrame = 200;
 			BulletInfo.limitRange = MAX;
 			BulletInfo.imageID = bulletIID[REUSE_BOMB];
-			THH.createBullet_RoundDesign(this,3,charaX,charaY,50);
+			THH.createBullet_RoundDesign(source,3,X,Y,50);
 			break;
 		case MAGIC_MISSILE:
-			if(!weaponController[MAGIC_MISSILE].trigger())
-				break;
 			BulletInfo.name = "MAGIC_MISSILE";
-			BulletInfo.fastParaSet_XYADSpd(charaX,charaY,charaShotAngle + THH.random2(-PI/36, PI/36),10,10);
+			BulletInfo.script = bulletScripts[MAGIC_MISSILE];
+			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE + THH.random2(-PI/36, PI/36),10,10);
 			BulletInfo.accel = 1.2;
 			BulletInfo.size = 50;
 			BulletInfo.atk = 200;
@@ -179,17 +193,18 @@ public class Marisa extends UserChara{
 			BulletInfo.limitFrame = 2000;
 			BulletInfo.limitRange = MAX;
 			BulletInfo.imageID = bulletIID[MAGIC_MISSILE];
-			THH.createBullet(this);
+			THH.createBullet(source);
 			break;
 		}
 	}
 	@Override
-	public final void useEffect(int kind,double x,double y) {
-		super.useEffect(kind,x,y);
+	public final void setEffect(int kind,DynamInteractable source) {
+		THH.prepareEffectInfo();
+		EffectInfo.kind = kind;
 		switch(kind){
 		case LIGHTNING:
 			EffectInfo.name = "LIGHTNING";
-			EffectInfo.fastParaSet_XYADSpd(x,y,2*PI*random(),10,20);
+			EffectInfo.fastParaSet_XYADSpd(source.getX(),source.getY(),2*PI*random(),10,20);
 			EffectInfo.accel = 1.0;
 			EffectInfo.size = NONE;
 			EffectInfo.limitFrame = 2;
@@ -199,35 +214,32 @@ public class Marisa extends UserChara{
 			break;
 		}
 	}
-	@Override
-	public final void bulletIdle(Bullet bullet,boolean isCharaActive) {
-		switch(bullet.KIND) {
-		case MILLKY_WAY:
-			super.bulletIdle(bullet, isCharaActive);
-			break;
-		case NARROW_SPARK: //laser action
-			while(THH.inStage((int)bullet.x,(int)bullet.y) && bullet.idle())
+	private final BulletScript[] bulletScripts = new BulletScript[10];
+	{
+		bulletScripts[MILLKY_WAY] = BulletInfo.DEFAULT_SCRIPT;
+		bulletScripts[NARROW_SPARK] = new BulletScript() {
+			@Override
+			public final void bulletIdle(Bullet bullet) {
+				while(THH.inStage((int)bullet.getX(),(int)bullet.getY()) && bullet.idle())
+					bullet.paint();
+				bullet.setX(bullet.SOURCE.getX());
+				bullet.setX(bullet.SOURCE.getY());
+			}
+		};
+		bulletScripts[REUSE_BOMB] = new BulletScript() {
+			@Override
+			public final void bulletIdle(Bullet bullet) {
+				bullet.idle();
+				bullet.addSpeed(0.0,1.1);
 				bullet.paint();
-			bullet.x = charaX;
-			bullet.y = charaY;
-			break;
-		case REUSE_BOMB:
-			bullet.idle();
-			bullet.addSpeed(0.0,1.1);
-			bullet.paint();
-			if(random() < 0.2)
-				useEffect(LIGHTNING,bullet.x,bullet.y);
-			break;
-		case MAGIC_MISSILE:
-			super.bulletIdle(bullet, isCharaActive);
-			break;
-		}
+				if(random() < 0.2)
+					setEffect(LIGHTNING,(DynamInteractable)bullet);
+			}
+		};
+		bulletScripts[MAGIC_MISSILE] = BulletInfo.DEFAULT_SCRIPT;
 	}
-	@Override
-	public final void effectIdle(Effect effect,boolean isCharaActive) {
-		switch(effect.KIND) {
-		default:
-			super.effectIdle(effect, isCharaActive);
-		}
+	private final EffectScript[] effectScripts = new EffectScript[10];
+	{
+		effectScripts[LIGHTNING] = EffectInfo.DEFAULT_SCRIPT;
 	}
 }

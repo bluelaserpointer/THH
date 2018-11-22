@@ -1,39 +1,28 @@
 package bullet;
 
-import thh.THH;
+import thh.DynamInteractable;
 
-public interface BulletSource {
-	
+public interface BulletSource extends DynamInteractable{
+	//bulletEvent
+	public static final int IDLE = 0,PAINT = 1,ANIMATION_PAINT = 2,OUT_LIFE_SPAN = 3,OUT_RANGE = 4,OUT_PENETRATION = 5,OUT_REFLECTION = 6,HIT_LANDSCAPE = 7,HIT_TARGET = 8,DELETE = 9;
 	//idle
-	public default void bulletIdle(Bullet bullet,boolean isCharaActive) { //Include painting
-		bullet.idle();
-		bullet.paint();
-	}
-	public default void bulletAnimationPaint(Bullet bullet) {
-		this.bulletPaint(bullet);
-	}
-	public default void bulletPaint(Bullet bullet) {
-		bullet.paint();
-	}
-	
-	//event
-	public default void bulletOutOfLifeSpan(Bullet bullet) {}
-	public default void bulletOutOfRange(Bullet bullet) {}
-	public default void bulletOutOfPenetration(Bullet bullet) {
-		if(!bullet.IS_LASER)
-			THH.deleteBullet(bullet);
-	}
-	public default void bulletOutOfReflection(Bullet bullet) {
-		if(!bullet.IS_LASER)
-			THH.deleteBullet(bullet);
-	}
-	public default void bulletHitObject(Bullet bullet) {}
-	public default boolean bulletIfHitLandscape(Bullet bullet,int x,int y){
-		return THH.hitLandscape(x,y,10,10);
-	}
-	
-	//judge
-	public default boolean deleteBullet(Bullet bullet){
+	public default boolean bulletEvent(int event) {
+		/*
+		switch(event) {
+		case IDLE:
+		case PAINT:
+		case OUT_LIFE_SPAN:
+		case OUT_RANGE:
+		case OUT_PENETRATION:
+		case OUT_REFLECTION:
+		case HIT_LANDSCAPE:
+		case HIT_TARGET:
+		case DELETE:
+		}
+		*/
 		return true;
 	}
+
+	//control
+	public void setBullet(int kind,DynamInteractable source);
 }

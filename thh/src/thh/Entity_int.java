@@ -3,7 +3,7 @@ package thh;
 public abstract class Entity_int {
 	public final int INITIAL_FRAME;
 	public final int INITIAL_X,INITIAL_Y;
-	public int x,y;
+	protected int x,y;
 	public Entity_int() {
 		INITIAL_FRAME = 0;
 		INITIAL_X = 0;

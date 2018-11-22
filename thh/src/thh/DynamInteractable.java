@@ -5,11 +5,17 @@ public interface DynamInteractable {
 	public abstract double getX();
 	public abstract double getY();
 	public default void setXY(double x,double y) {
-		this.setX(x);
-		this.setY(y);
+		setX(x);
+		setY(y);
 	}
-	public default void setX(double x) {}
-	public default void setY(double y) {}
+	public abstract void setX(double x);
+	public abstract void setY(double y);
+	public default void addXY(double x,double y) {
+		setX(getX() + x);
+		setY(getY() + y);
+	}
+	public abstract double getAngle();
+	public abstract void setAngle(double angle);
 	public abstract boolean isMovable();
 	public default boolean inStage() {
 		return THH.inStage((int)getX(),(int)getY());
@@ -23,10 +29,23 @@ public interface DynamInteractable {
 	}
 	//speed
 	public default boolean isStop() {
-		return this.getSpeed() == 0.0;
+		return this.getXSpeed() == 0.0 && this.getYSpeed() == 0.0;
 	}
-	public abstract double getSpeed();
-	public default void setSpeed(double xSpeed,double ySpeed) {}
-	public default void addSpeed(double xSpeed,double ySpeed) {}
+	public abstract double getXSpeed();
+	public abstract double getYSpeed();
+	public default double getSpeed() {
+		final double XSPD = getXSpeed(),YSPD = getYSpeed();
+		return Math.sqrt(XSPD*XSPD + YSPD*YSPD);
+	}
+	public abstract void setXSpeed(double xSpeed);
+	public abstract void setYSpeed(double ySpeed);
+	public default void setSpeed(double xSpeed,double ySpeed) {
+		setXSpeed(xSpeed);
+		setYSpeed(ySpeed);
+	}
+	public default void addSpeed(double xSpeed,double ySpeed) {
+		setXSpeed(getXSpeed() + xSpeed);
+		setYSpeed(getYSpeed() + ySpeed);
+	}
 	public default void acceleration(double rate) {}
 }

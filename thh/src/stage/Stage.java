@@ -1,20 +1,16 @@
 package stage;
 
 import java.awt.Polygon;
-import java.util.ArrayList;
 
 import structure.Structure;
 import thh.Chara;
 import thh.THH;
 
 public class Stage {
-	private final int
-		NONE = THH.NONE;
 	//stage
 	private String name;
 	private double gravity;
 	private int stageW,stageH;
-	private int stageFrame;
 	//structure
 	private Structure[] primeStructures; //多数派
 	private Structure[] subStructures; //少数派

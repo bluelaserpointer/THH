@@ -6,10 +6,11 @@ public class EffectInfo {
 	private final static int 
 		NONE = thh.THH.NONE,
 		MAX = thh.THH.MAX;
+	public static final EffectScript DEFAULT_SCRIPT = new EffectScript();
+	public static EffectScript script;
 	public static String name;
 	public static int
 		nowFrame,
-		source,
 		kind,
 		size,
 		limitFrame,
@@ -21,6 +22,7 @@ public class EffectInfo {
 		imageID;
 	
 	public static final void clear() {
+		script = DEFAULT_SCRIPT;
 		name = THH.NOT_NAMED;
 		kind = NONE;
 		size = NONE;

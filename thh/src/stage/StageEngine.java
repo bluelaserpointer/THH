@@ -1,6 +1,7 @@
 package stage;
 
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 
 import bullet.Bullet;
 import thh.Chara;
@@ -28,7 +29,7 @@ public abstract class StageEngine{
 	
 	//control
 	public abstract void resetStage();
-	public abstract Chara[] callBulletEngage(Bullet bullet);
+	public abstract Chara[] callBulletEngage(Chara[] characters,Bullet bullet);
 	public abstract boolean deleteChara(Chara chara);
 	
 	//information
