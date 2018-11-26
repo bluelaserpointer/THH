@@ -13,7 +13,7 @@ import weapon.WeaponInfo;
 
 public class Reimu extends UserChara{
 	{
-		charaSize = 70;
+		charaSize = 10;
 	}
 	@Override
 	public final String getName() {
@@ -51,30 +51,22 @@ public class Reimu extends UserChara{
 	public final void battleStarted(){
 		//test area
 		weaponSlot[0] = FUDA_KOUHAKU;
-		spellSlot[0] = FUDA_SHIROKURO;
-		spellSlot[1] = FUDA_SOUHAKU;
+		spellSlot[0] = FUDA_SOUHAKU;
 		////weaponLoad
 		//FUDA_KOUHAKU
 		WeaponInfo.clear();
 		WeaponInfo.name = "FUDA_KOUHAKU";
 		WeaponInfo.coolTime = 1;
-		WeaponInfo.reloadTime = 100;
-		WeaponInfo.magazineSize = 180;
-		WeaponInfo.magazineConsumption = 2;
 		weaponController[FUDA_KOUHAKU] = new Weapon();
 		//FUDA_SHIROKURO
 		WeaponInfo.clear();
 		WeaponInfo.name = "FUDA_SHIROKURO";
 		WeaponInfo.coolTime = 2;
-		WeaponInfo.reloadTime = 100;
-		WeaponInfo.magazineSize = 180;
-		WeaponInfo.magazineConsumption = 2;
 		weaponController[FUDA_SHIROKURO] = new Weapon();
 		//FUDA_SOUHAKU
 		WeaponInfo.clear();
 		WeaponInfo.name = "FUDA_SOUHAKU";
 		WeaponInfo.coolTime = 12;
-		WeaponInfo.magazineSize = MAX;
 		weaponController[FUDA_SOUHAKU] = new Weapon();
 		/////////////////////
 		slot_spell = 0;
@@ -120,7 +112,7 @@ public class Reimu extends UserChara{
 		switch(kind){
 		case FUDA_KOUHAKU:
 			BulletInfo.name = "FUDA_KOUHAKU";
-			BulletInfo.size = 20;
+			BulletInfo.size = 10;
 			BulletInfo.atk = 30;
 			BulletInfo.offSet = 5;
 			BulletInfo.limitFrame = 200;
@@ -141,11 +133,11 @@ public class Reimu extends UserChara{
 			BulletInfo.reflection = 1;
 			BulletInfo.limitFrame = 200;
 			BulletInfo.imageID = bulletIID[FUDA_SHIROKURO];
-			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE,10,4);
+			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE,10,40);
 			THH.createBullet(this);
-			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE - PI/18,10,4);
+			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE - PI/18,10,40);
 			THH.createBullet(this);
-			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE + PI/18,10,4);
+			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE + PI/18,10,40);
 			THH.createBullet(this);
 			break;
 		case FUDA_SOUHAKU:

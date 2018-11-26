@@ -9,7 +9,7 @@ import weapon.Weapon;
 import weapon.WeaponInfo;
 
 public class EnemyBulletLibrary extends BulletAgent{
-	public static final int lightBall_S = 0,lightBall_ROUND = 1;
+	public static final int lightBall_S = 0,lightBall_ROUND = 1,BLACK_SLASH_BURST = 2,HEAL_SHOTGUN = 3;
 	
 	public static Weapon getWeaponController(int bulletKind) {
 		WeaponInfo.clear();
@@ -20,6 +20,18 @@ public class EnemyBulletLibrary extends BulletAgent{
 			WeaponInfo.coolTime = 5;
 			WeaponInfo.magazineSize = 6;
 			WeaponInfo.reloadTime = 100;
+			return new Weapon();
+		case HEAL_SHOTGUN:
+			WeaponInfo.name = "HEAL_SHOTGUN";
+			WeaponInfo.coolTime = 5;
+			WeaponInfo.magazineSize = 3;
+			WeaponInfo.reloadTime = 20;
+			return new Weapon();
+		case BLACK_SLASH_BURST:
+			WeaponInfo.name = "BLACK_SLASH_BURST";
+			WeaponInfo.coolTime = 5;
+			WeaponInfo.magazineSize = 1;
+			WeaponInfo.reloadTime = 40;
 			return new Weapon();
 		default:
 			return null;
@@ -44,6 +56,30 @@ public class EnemyBulletLibrary extends BulletAgent{
 			BulletInfo.atk = 20;
 			BulletInfo.imageID = bulletIID;
 			THH.createBullet_BurstDesign(source,16,x,y,10,15);
+			break;
+		case HEAL_SHOTGUN:
+			BulletInfo.name = "HEAL_SHOTGUN";
+			BulletInfo.kind = HEAL_SHOTGUN;
+			BulletInfo.atk = -20;
+			BulletInfo.limitRange = 150;
+			BulletInfo.imageID = bulletIID;
+			THH.createBullet_BurstDesign(source,16,x,y,10,15);
+			break;
+		case BLACK_SLASH_BURST:
+			BulletInfo.name = "lightBall_ROUND";
+			BulletInfo.kind = lightBall_ROUND;
+			BulletInfo.size = 10;
+			BulletInfo.atk = 20;
+			BulletInfo.offSet = 3;
+			BulletInfo.reflection = 1;
+			BulletInfo.limitFrame = 200;
+			BulletInfo.imageID = bulletIID;
+			BulletInfo.fastParaSet_XYADSpd(x,y,ANGLE,10,40);
+			THH.createBullet(source);
+			BulletInfo.fastParaSet_XYADSpd(x,y,ANGLE - PI/18,10,40);
+			THH.createBullet(source);
+			BulletInfo.fastParaSet_XYADSpd(x,y,ANGLE + PI/18,10,40);
+			THH.createBullet(source);
 			break;
 		}
 	}

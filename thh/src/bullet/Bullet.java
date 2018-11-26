@@ -89,22 +89,49 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		HIT_ENEMY = bullet.HIT_ENEMY;
 		IS_LASER = bullet.IS_LASER;
 	}
-
 	public final boolean idle() {
-		//LifeSpan & Range
-		if(LIMIT_FRAME <= THH.getPassedFrame(super.INITIAL_FRAME) && SCRIPT.bulletOutOfLifeSpan(this)) {
-			THH.deleteBullet(this);
+		if(allDeleteCheck())
 			return false;
-		}
-		if(LIMIT_RANGE <= movedDistance && SCRIPT.bulletOutOfRange(this)){
+		dynam();
+		return true;
+	}
+	public final boolean allDeleteCheck() {
+		if(lifeSpanCheck())
+			return true;
+		if(rangeCheck())
+			return true;
+		if(inStageCheck())
+			return true;
+		return false;
+	}
+	public final boolean lifeSpanCheck() {
+		return lifeSpanCheck(LIMIT_FRAME);
+	}
+	public final boolean lifeSpanCheck(int limitFrame) {
+		if(limitFrame <= THH.getPassedFrame(super.INITIAL_FRAME) && SCRIPT.bulletOutOfLifeSpan(this)) {
 			THH.deleteBullet(this);
-			return false;
+			return true;
 		}
-		//OutOfStage
+		return false;
+	}
+	public final boolean rangeCheck() {
+		return lifeSpanCheck(LIMIT_FRAME);
+	}
+	public final boolean rangeCheck(int limitRange) {
+		if(limitRange <= movedDistance && SCRIPT.bulletOutOfRange(this)){
+			THH.deleteBullet(this);
+			return true;
+		}
+		return false;
+	}
+	public final boolean inStageCheck() {
 		if(!THH.inStage((int)x, (int)y)){
 			THH.deleteBullet(this);
-			return false;
+			return true;
 		}
+		return false;
+	}
+	public final void dynam() {
 		//Speed & Acceleration
 		x += xSpeed;
 		y += ySpeed;
@@ -134,7 +161,6 @@ public class Bullet extends Entity_double implements DynamInteractable{
 					THH.deleteBullet(this);
 			}
 		}
-		return true;
 	}
 	public final void paint() {
 		if(angle == 0.0)
@@ -158,22 +184,28 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	@Override
 	public final void setAngle(double angle) {
 		this.angle = angle;
+		final double SPEED = sqrt(xSpeed*xSpeed + ySpeed*ySpeed);
+		xSpeed = SPEED*cos(angle);ySpeed = SPEED*sin(angle);
 	}
 	@Override
 	public final void setXSpeed(double xSpeed) {
 		this.xSpeed = xSpeed;
+		angle = atan2(ySpeed,xSpeed);
 	}
 	@Override
 	public final void setYSpeed(double ySpeed) {
 		this.ySpeed = ySpeed;
+		angle = atan2(ySpeed,xSpeed);
 	}
 	@Override
 	public final void setSpeed(double xSpeed,double ySpeed) {
 		this.xSpeed = xSpeed;this.ySpeed = ySpeed;
+		angle = atan2(ySpeed,xSpeed);
 	}
 	@Override
 	public final void addSpeed(double xSpeed,double ySpeed) {
 		this.xSpeed += xSpeed;this.ySpeed += ySpeed;
+		angle = atan2(ySpeed,xSpeed);
 	}
 	@Override
 	public final void acceleration(double rate) {

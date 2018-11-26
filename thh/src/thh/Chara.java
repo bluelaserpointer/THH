@@ -67,6 +67,8 @@ public abstract class Chara implements BulletSource,EffectSource,MessageSource,D
 	public boolean isVisibleFrom(int x,int y) {
 		return true;
 	}
+	//hp
+	public abstract void setHP(int hp);
 	//decrease
 	public abstract int decreaseME_amount(int amount);
 	public abstract int decreaseME_rate(double rate);

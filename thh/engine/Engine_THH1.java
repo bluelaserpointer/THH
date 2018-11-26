@@ -23,8 +23,8 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	private final Stage[] stages = new Stage[1];
 	private int nowStage;
 	
-	public final int ENEMY = 100;
-	final int FORMATION_MOVE_SPD = 20;
+	public static final int FRIEND = 0,ENEMY = 100;
+	final int F_MOVE_SPD = 20;
 	
 	int formationsX[],formationsY[];
 	int formationCenterX,formationCenterY;
@@ -40,16 +40,16 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 			chara.loadSoundData();
 		}
 		//formation
-		formationCenterX = THH.getScreenW()/2;formationCenterY = THH.getScreenH() - 100;
+		formationCenterX = THH.getScreenW()/2;formationCenterY = THH.getScreenH()/2;
 		formationsX = new int[2];
 		formationsY = new int[2];
-		formationsX[0] = -50;formationsY[0] = 0;
-		formationsX[1] = +50;formationsY[1] = 0;
+		formationsX[0] = -15;formationsY[0] = 0;
+		formationsX[1] = +15;formationsY[1] = 0;
 		//friend
 		friendCharaClass[0].battleStarted();
 		friendCharaClass[1].battleStarted();
-		friendCharaClass[0].spawn(0,0,formationCenterX + formationsX[0],THH.getScreenH());
-		friendCharaClass[1].spawn(1,0,formationCenterX + formationsX[1],THH.getScreenH());
+		friendCharaClass[0].spawn(0,FRIEND,formationCenterX + formationsX[0],THH.getScreenH());
+		friendCharaClass[1].spawn(1,FRIEND,formationCenterX + formationsX[1],THH.getScreenH());
 		//action
 		ActionInfo.clear();
 		ActionInfo.addDstPlan(1000, THH.getScreenW() - 200, THH.getScreenH() + 100);
@@ -60,10 +60,22 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		enemy.loadImageData();
 		enemy.loadSoundData();
 		enemy.battleStarted();
-		enemy.spawn(0, ENEMY, 400, THH.random2(100, 150),1000);
+		enemy.spawn(0, ENEMY, 300, THH.random2(100, 150),1000);
 		enemyCharaClass.add(enemy);
+		Chara enemy2 = new WhiteMan();
+		enemy2.loadImageData();
+		enemy2.loadSoundData();
+		enemy2.battleStarted();
+		enemy2.spawn(1, ENEMY, 400, THH.random2(100, 150),50000);
+		enemyCharaClass.add(enemy2);
+		Chara enemy3 = new BlackMan();
+		enemy3.loadImageData();
+		enemy3.loadSoundData();
+		enemy3.battleStarted();
+		enemy3.spawn(1, ENEMY, 200, THH.random2(100, 150),10000);
+		enemyCharaClass.add(enemy3);
 		
-		return new Chara[]{friendCharaClass[0],friendCharaClass[1],enemy};
+		return new Chara[]{friendCharaClass[0],friendCharaClass[1],enemy,enemy2,enemy3};
 	}
 	@Override
 	public final Stage stageSetup() {
@@ -85,20 +97,23 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		g2.setStroke(THH.stroke3);
 		g2.draw(stages[nowStage].getLandPolygon());
 		if(stopEventKind == NONE) {
-			//scroll by key
+			//scroll by mouse
+			THH.viewTargetTo((THH.getMouseX() + formationCenterX)/2,(THH.getMouseY() + formationCenterY)/2);
+			THH.viewApproach_rate(40);
+			/*scroll by key
 			if(doScrollView) {
 				final int SCROLL_SPEED = 8;
 				if(ctrlEx.getCommandBool(CtrlEx_THH1.UP)) {
-					THH.moveView(0,-SCROLL_SPEED);
+					THH.viewMove(0,-SCROLL_SPEED);
 				}else if(ctrlEx.getCommandBool(CtrlEx_THH1.DOWN)) {
-					THH.moveView(0,SCROLL_SPEED);
+					THH.viewMove(0,SCROLL_SPEED);
 				}
 				if(ctrlEx.getCommandBool(CtrlEx_THH1.LEFT)) {
-					THH.moveView(-SCROLL_SPEED,0);
+					THH.viewMove(-SCROLL_SPEED,0);
 				}else if(ctrlEx.getCommandBool(CtrlEx_THH1.RIGHT)) {
-					THH.moveView(SCROLL_SPEED,0);
+					THH.viewMove(SCROLL_SPEED,0);
 				}
-			}
+			}*/
 			//gravity
 			if(doGravity) {
 				for(Chara chara : friendCharaClass)
@@ -117,25 +132,37 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 						continue;
 					}
 					THH.defaultCharaIdle(enemy);
-					final int FRAME = gameFrame % 240;
-					if(FRAME < 100)
-						enemyCharaClass.get(i).setSpeed(-5, 0);
-					else if(FRAME < 120)
-						enemyCharaClass.get(i).setSpeed(0, 0);
-					else if(FRAME < 220)
-						enemyCharaClass.get(i).setSpeed(5, 0);
-					else
-						enemyCharaClass.get(i).setSpeed(0, 0);
+					if(enemy.getName() == "FairyA") {
+						final int FRAME = gameFrame % 240;
+						if(FRAME < 100)
+							enemyCharaClass.get(i).setSpeed(-5, 0);
+						else if(FRAME < 120)
+							enemyCharaClass.get(i).setSpeed(0, 0);
+						else if(FRAME < 220)
+							enemyCharaClass.get(i).setSpeed(5, 0);
+						else
+							enemyCharaClass.get(i).setSpeed(0, 0);
+					}
 				}
 				//formation
-				if(ctrlEx.getCommandBool(CtrlEx_THH1.UP))
-					formationCenterY -= FORMATION_MOVE_SPD;
-				else if(ctrlEx.getCommandBool(CtrlEx_THH1.DOWN))
-					formationCenterY += FORMATION_MOVE_SPD;
-				if(ctrlEx.getCommandBool(CtrlEx_THH1.LEFT))
-					formationCenterX -= FORMATION_MOVE_SPD;
-				else if(ctrlEx.getCommandBool(CtrlEx_THH1.RIGHT))
-					formationCenterX += FORMATION_MOVE_SPD;
+				if(ctrlEx.getCommandBool(CtrlEx_THH1.UP)) {
+					formationCenterY -= F_MOVE_SPD;
+					THH.viewTargetMove(0,-F_MOVE_SPD);
+					THH.pureViewMove(0,-F_MOVE_SPD);
+				}else if(ctrlEx.getCommandBool(CtrlEx_THH1.DOWN)) {
+					formationCenterY += F_MOVE_SPD;
+					THH.viewTargetMove(0,F_MOVE_SPD);
+					THH.pureViewMove(0,F_MOVE_SPD);
+				}
+				if(ctrlEx.getCommandBool(CtrlEx_THH1.LEFT)) {
+					formationCenterX -= F_MOVE_SPD;
+					THH.viewTargetMove(-F_MOVE_SPD,0);
+					THH.pureViewMove(-F_MOVE_SPD,0);
+				}else if(ctrlEx.getCommandBool(CtrlEx_THH1.RIGHT)) {
+					formationCenterX += F_MOVE_SPD;
+					THH.viewTargetMove(F_MOVE_SPD,0);
+					THH.pureViewMove(F_MOVE_SPD,0);
+				}
 				for(int i = 0;i < friendCharaClass.length;i++)
 					friendCharaClass[i].moveTo(formationCenterX + formationsX[i], formationCenterY + formationsY[i]);
 				g2.setColor(Color.RED);
@@ -149,6 +176,8 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 					friendCharaClass[ctrlEx.spellUser].spellOrder = true;
 					ctrlEx.spellUser = NONE;
 				}
+				//entity
+				THH.defaultEntityIdle();
 				break;
 			}
 		}else if(stopEventKind == THH.STOP) {

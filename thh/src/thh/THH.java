@@ -79,7 +79,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	//¥¦¥£¥ó¥É¥¦évßB
 	private final int defaultScreenW = 1000,defaultScreenH = 600; //¥Ç¥Õ¥©¥ë¥È¥¦¥£¥ó¥É¥µ¥¤¥º
 	private static int screenW = 1000,screenH = 600;
-	private static int viewX,viewY;
+	private static double viewX,viewY,viewDstX,viewDstY;
 	
 	private int page,page_max; //¥Ú©`¥¸™CÄÜ
 	
@@ -199,47 +199,12 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			return;
 		g2.setColor(Color.WHITE);
 		g2.fill(screenRect);
-		final int TRANSLATE_X = viewX,TRANSLATE_Y = viewY;
+		final int TRANSLATE_X = (int)viewX,TRANSLATE_Y = (int)viewY;
 		g2.translate(TRANSLATE_X, TRANSLATE_Y);
 		////////////////////////////////////////////////////////////////////////
 		//stageAction
 		engine.idle(g2,stopEventKind);
 		////////////////////////////////////////////////////////////////////////
-		//bulletAction&effectAction
-		bullets.setIterator(0);
-		effects.setIterator(0);
-		switch(stopEventKind) {
-		case STOP:
-			while(bullets.hasNext()) {
-				final Bullet bullet = bullets.next();
-				bullet.SCRIPT.bulletAnimationPaint(bullet);
-			}
-			while(effects.hasNext()) {
-				final Effect effect = effects.next();
-				effect.SCRIPT.effectAnimationPaint(effect);
-			}
-			break;
-		case FREEZE:
-			while(bullets.hasNext()) {
-				final Bullet bullet = bullets.next();
-				bullet.SCRIPT.bulletPaint(bullet);
-			}
-			while(effects.hasNext()) {
-				final Effect effect = effects.next();
-				effect.SCRIPT.effectPaint(effect);
-			}
-			break;
-		default:
-			while(bullets.hasNext()) {
-				final Bullet bullet = bullets.next();
-				bullet.SCRIPT.bulletIdle(bullet);
-			}
-			while(effects.hasNext()) {
-				final Effect effect = effects.next();
-				effect.SCRIPT.effectIdle(effect);
-			}
-		}
-		///////////////////////////////////////////////////////////////
 		//GUIAction
 		g2.translate(-TRANSLATE_X, -TRANSLATE_Y);
 		{
@@ -309,12 +274,12 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 				g2.drawString("(" + (mouseX - viewX) + "," + (mouseY - viewY) + ")",mouseX + 20,mouseY + 40);
 				//charaInfo
 				for(Chara chara : characters) {
-					final int X = (int)chara.getX(),Y = (int)chara.getY();
+					final int SCREEN_X = (int)chara.getX() + (int)viewX,SCREEN_Y = (int)chara.getY() + (int)viewY;
 					g2.setStroke(stroke1);
-					g2.drawRect(X + viewX - 50, Y + viewY - 50, 100,100);
-					g2.drawLine(X + viewX + 50, Y + viewY - 50, X + viewX + 60, Y + viewY - 60);
+					g2.drawRect(SCREEN_X - 50, SCREEN_Y - 50, 100,100);
+					g2.drawLine(SCREEN_X + 50, SCREEN_Y - 50, SCREEN_X + 60, SCREEN_Y - 60);
 					g2.setStroke(stroke5);
-					g2.drawString(chara.getName(), X + viewX + 62, Y + viewY - 68);
+					g2.drawString(chara.getName(), SCREEN_X + 62, SCREEN_Y - 68);
 				}
 			}
 		}
@@ -349,6 +314,42 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			}
 		}
 	}
+	//idle-entity
+	public static final void defaultEntityIdle() {
+		bullets.setIterator(0);
+		effects.setIterator(0);
+		switch(stopEventKind) {
+		case STOP:
+			while(bullets.hasNext()) {
+				final Bullet bullet = bullets.next();
+				bullet.SCRIPT.bulletAnimationPaint(bullet);
+			}
+			while(effects.hasNext()) {
+				final Effect effect = effects.next();
+				effect.SCRIPT.effectAnimationPaint(effect);
+			}
+			break;
+		case FREEZE:
+			while(bullets.hasNext()) {
+				final Bullet bullet = bullets.next();
+				bullet.SCRIPT.bulletPaint(bullet);
+			}
+			while(effects.hasNext()) {
+				final Effect effect = effects.next();
+				effect.SCRIPT.effectPaint(effect);
+			}
+			break;
+		default:
+			while(bullets.hasNext()) {
+				final Bullet bullet = bullets.next();
+				bullet.SCRIPT.bulletIdle(bullet);
+			}
+			while(effects.hasNext()) {
+				final Effect effect = effects.next();
+				effect.SCRIPT.effectIdle(effect);
+			}
+		}
+	}
 	public static final void defaultCharaIdle(Chara chara) {
 		switch(stopEventKind) {
 		case STOP:
@@ -363,6 +364,13 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		}
 	}
 	//information-characters
+	public static final Chara getChara(String name) {
+		for(Chara chara : characters) {
+			if(chara.getName() == name)
+				return chara;
+		}
+		return null;
+	}
 	public static final Chara[] getCharacters() {
 		return characters;
 	}
@@ -381,6 +389,20 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public static final Chara[] getCharacters_team(int team) {
 		return getCharacters_team(team,true);
 	}
+	public static final Chara getNearstEnemy(int team,int x,int y) {
+		final Chara[] characters = getCharacters_team(team,true);
+		double nearstDistance = NONE;
+		Chara nearstChara = null;
+		for(Chara chara : characters) {
+			final double distance = abs(chara.getDistance(x, y));
+			if(nearstChara == null || distance < nearstDistance) {
+				nearstDistance = distance;
+				nearstChara = chara;
+			}
+		}
+		return nearstChara;
+		
+	}
 	public static final int getCharaAmount() {
 		return characters.length;
 	}
@@ -397,6 +419,9 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return characters[charaID].getY();
 	}
 	//information-stage
+	public static final StageEngine getEngine() {
+		return engine;
+	}
 	public static final Stage getStage() {
 		return stage;
 	}
@@ -406,10 +431,10 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public static final boolean inStage(int x,int y) {
 		return stage.inStage(x, y);
 	}
-	public static final int toStageCodX(int screenX) {
+	public static final double flitCodX(double screenX) {
 		return viewX - screenX;
 	}
-	public static final int toStageCodY(int screenY) {
+	public static final double flitCodY(double screenY) {
 		return viewY - screenY;
 	}
 	//information-team
@@ -433,9 +458,53 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 
 	//control
-	//control-gui
-	public static void moveView(int dx,int dy) {
-		viewX += dx;viewY += dy;
+	//control-viewPoint
+	public static void viewMove(int dx,int dy) {
+		viewX -= dx;viewY -= dy;
+		viewDstX -= dx;viewDstY -= dy;
+	}
+	public static void viewTo(int x,int y) {
+		viewDstX = viewX = -x + screenW/2;
+		viewDstY = viewY = -y + screenH/2;//mouseX - (int)viewX
+	}
+	public static void pureViewMove(int dx,int dy) {
+		viewX -= dx;viewY -= dy;
+	}
+	public static void pureViewTo(int x,int y) {
+		viewX = x;viewY = y;
+	}
+	public static void viewTargetTo(int x,int y) {
+		viewDstX = -x + screenW/2;viewDstY =  -y + screenH/2;
+	}
+	public static void viewTargetMove(int x,int y) {
+		viewDstX -= x;viewDstY -= y;
+	}
+	public static void viewApproach_speed(int speed) {
+		if(abs(viewDstX - viewX) < speed)
+			viewX = viewDstX;
+		else
+			viewX += viewX < viewDstX ? speed : -speed;
+		if(abs(viewDstY - viewY) < speed)
+			viewY = viewDstY;
+		else
+			viewY += viewY < viewDstY ? speed : -speed;
+	}
+	public static void viewApproach_rate(double rate) {
+		final double DX = (double)(viewDstX - viewX)/rate,DY = (double)(viewDstY - viewY)/rate;
+		if(-0.1 < DX && DX < 0.1)
+			viewX = viewDstX;
+		else
+			viewX += DX;
+		if(-0.1 < DY && DY < 0.1)
+			viewY = viewDstY;
+		else
+			viewY += DY;
+	}
+	public static double getViewX() {
+		return viewX;
+	}
+	public static double getViewY() {
+		return viewY;
 	}
 	//control-bullet
 	public static final boolean deleteBullet(Bullet bullet) {
@@ -540,8 +609,8 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			break;
 		case MouseEvent.BUTTON2:
 			mouseMiddlePress = true;
-			mouse2DragSX = mouseX - viewX;
-			mouse2DragSY = mouseY - viewY;
+			mouse2DragSX = mouseX - (int)viewX;
+			mouse2DragSY = mouseY - (int)viewY;
 			break;
 		case MouseEvent.BUTTON3:
 			mouseRightPress = true;
@@ -571,7 +640,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		final int x = e.getX(),y = e.getY();
 		mouseX = x;mouseY = y;
 		if(mouseMiddlePress) {
-			final int newRealX = x - viewX,newRealY = y - viewY;
+			final int newRealX = x - (int)viewX,newRealY = y - (int)viewY;
 			viewX += newRealX - mouse2DragSX;
 			viewY += newRealY - mouse2DragSY;
 			mouse2DragSX = newRealX;
@@ -579,10 +648,16 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		}
 	}
 	public static final int getMouseX(){
-		return mouseX - viewX;
+		return mouseX - (int)viewX;
 	}
 	public static final int getMouseY(){
-		return mouseY - viewY;
+		return mouseY - (int)viewY;
+	}
+	public static final int getMouseScreenX(){
+		return mouseX;
+	}
+	public static final int getMouseScreenY(){
+		return mouseY;
 	}
 	public final int getMousePressedFrame_left(){
 		return mouseLeftPressedFrame;

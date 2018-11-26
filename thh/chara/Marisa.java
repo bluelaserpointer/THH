@@ -15,7 +15,7 @@ import weapon.WeaponInfo;
 
 public class Marisa extends UserChara{
 	{
-		charaSize = 70;
+		charaSize = 10;
 	}
 	@Override
 	public final String getName() {
@@ -53,7 +53,7 @@ public class Marisa extends UserChara{
 	public final void battleStarted(){
 		//test area
 		//weaponSlot[0] = REUSE_BOMB;
-		weaponSlot[0] = REUSE_BOMB;
+		weaponSlot[0] = MAGIC_MISSILE;
 		spellSlot[0] = NARROW_SPARK;
 		spellSlot[1] = REUSE_BOMB;
 		////weaponLoad
@@ -61,31 +61,22 @@ public class Marisa extends UserChara{
 		WeaponInfo.clear();
 		WeaponInfo.name = "MILLKY_WAY";
 		WeaponInfo.coolTime = 10;
-		WeaponInfo.reloadTime = 100;
-		WeaponInfo.magazineSize = 180;
-		WeaponInfo.magazineConsumption = 6;
 		weaponController[MILLKY_WAY] = new Weapon();
 		//NARROW_SPARK
 		WeaponInfo.clear();
 		WeaponInfo.name = "NARROW_SPARK";
-		WeaponInfo.coolTime = 10;
-		WeaponInfo.reloadTime = 1000;
-		WeaponInfo.magazineSize = 2;
-		WeaponInfo.magazineConsumption = 1;
+		WeaponInfo.reloadTime = 150;
+		WeaponInfo.magazineSize = 1;
 		weaponController[NARROW_SPARK] = new Weapon();
 		//REUSE_BOMB
 		WeaponInfo.clear();
 		WeaponInfo.name = "REUSE_BOMB";
 		WeaponInfo.coolTime = 10;
-		WeaponInfo.reloadTime = 100;
-		WeaponInfo.magazineSize = 90;
-		WeaponInfo.magazineConsumption = 3;
 		weaponController[REUSE_BOMB] = new Weapon();
 		//MAGIC_MISSILE
 		WeaponInfo.clear();
 		WeaponInfo.name = "MAGIC_MISSILE";
 		WeaponInfo.coolTime = 30;
-		WeaponInfo.magazineSize = MAX;
 		weaponController[MAGIC_MISSILE] = new Weapon();
 		/////////////////////
 		slot_spell = 0;
@@ -146,20 +137,20 @@ public class Marisa extends UserChara{
 			break;
 		case NARROW_SPARK:
 			//message
-			if(this == source) {
-				THH.addMessage(this,charaID,"KOIFU [MasterSpark]");
-				THH.addMessage(this,charaID,"TEST MESSAGE 2");
-			}
+			//if(this == source) {
+			//	THH.addMessage(this,charaID,"KOIFU [MasterSpark]");
+			//	THH.addMessage(this,charaID,"TEST MESSAGE 2");
+			//}
 			BulletInfo.name = "NARROW_SPARK";
 			BulletInfo.script = bulletScripts[NARROW_SPARK];
 			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE,0,thh.getImageByID(bulletIID[NARROW_SPARK]).getWidth(null));
 			BulletInfo.accel = 1.0;
-			BulletInfo.size = 50;
-			BulletInfo.atk = 5;
+			BulletInfo.size = 15;
+			BulletInfo.atk = 10;
 			BulletInfo.offSet = 20;
 			BulletInfo.penetration = MAX;
 			BulletInfo.reflection = 3;
-			BulletInfo.limitFrame = 30;
+			BulletInfo.limitFrame = 80;
 			BulletInfo.limitRange = MAX;
 			BulletInfo.imageID = bulletIID[NARROW_SPARK];
 			BulletInfo.isLaser = true;
@@ -185,7 +176,7 @@ public class Marisa extends UserChara{
 			BulletInfo.script = bulletScripts[MAGIC_MISSILE];
 			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE + THH.random2(-PI/36, PI/36),10,10);
 			BulletInfo.accel = 1.2;
-			BulletInfo.size = 50;
+			BulletInfo.size = 20;
 			BulletInfo.atk = 200;
 			BulletInfo.offSet = 100;
 			BulletInfo.penetration = 0;
@@ -220,10 +211,14 @@ public class Marisa extends UserChara{
 		bulletScripts[NARROW_SPARK] = new BulletScript() {
 			@Override
 			public final void bulletIdle(Bullet bullet) {
-				while(THH.inStage((int)bullet.getX(),(int)bullet.getY()) && bullet.idle())
+				bullet.lifeSpanCheck();
+				while(THH.inStage((int)bullet.getX(),(int)bullet.getY())) {
+					bullet.dynam();
 					bullet.paint();
+				}
 				bullet.setX(bullet.SOURCE.getX());
-				bullet.setX(bullet.SOURCE.getY());
+				bullet.setY(bullet.SOURCE.getY());
+				bullet.setAngle(bullet.SOURCE.getAngle());
 			}
 		};
 		bulletScripts[REUSE_BOMB] = new BulletScript() {

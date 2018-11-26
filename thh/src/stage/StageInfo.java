@@ -23,7 +23,7 @@ public class StageInfo {
 	public static void clear() {
 		name = "<Not named>";
 		gravity = 0.0;
-		stageW = stageH = 2000;
+		stageW = stageH = 5000;
 		primeStructures = subStructures = new Structure[0];
 		primeCharas = subCharas = new Chara[0];
 		poliX = new int[]{0,0,300,400,500,600,700,700};

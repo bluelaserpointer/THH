@@ -14,7 +14,7 @@ public abstract class UserChara extends Chara {
 	// •–•»•Î•—©`•»ÈvﬂB
 	public int charaID, charaTeam, charaHP, charaME, charaBaseHP, charaBaseME, charaSpellCharge,
 			charaSize, charaStatus;
-	public double charaX, charaY, charaDstX, charaDstY,charaTargetY, charaSpeed = 10, charaXSpeed, charaYSpeed, charaShotAngle;
+	public double charaX, charaY, charaDstX, charaDstY,charaTargetY, charaSpeed = 30, charaXSpeed, charaYSpeed, charaShotAngle;
 	public boolean charaOnLand;
 
 	// Weapon
@@ -39,8 +39,8 @@ public abstract class UserChara extends Chara {
 		super.resetOrder();
 		this.charaID = charaID;
 		this.charaTeam = charaTeam;
-		charaX = x;
-		charaY = y;
+		charaDstX = charaX = x;
+		charaDstY = charaY = y;
 		charaXSpeed = charaYSpeed = 0.0;
 		charaStatus = NONE;
 		charaOnLand = false;
@@ -74,19 +74,18 @@ public abstract class UserChara extends Chara {
 		}
 		final int mouseX = THH.getMouseX(), mouseY = THH.getMouseY();
 		final double mouseAngle = atan2(mouseY - charaY, mouseX - charaX);
+		charaShotAngle = mouseAngle;
 		// dodge
 		if (super.dodgeOrder)
 			dodge(mouseX, mouseY);
 		// attack
 		if (super.attackOrder) {
-			charaShotAngle = mouseAngle;
 			final int weapon = weaponSlot[slot_weapon];
 			if (weapon != NONE && useWeapon(weapon))
 				setBullet(weapon,this);
 		}
 		// spell
 		if (super.spellOrder) {
-			charaShotAngle = mouseAngle;
 			final int spell = spellSlot[slot_spell];
 			if (spell != NONE && useWeapon(spell))
 				setBullet(spell,this);
@@ -98,7 +97,7 @@ public abstract class UserChara extends Chara {
 		}
 		final double DX = charaDstX - charaX,DY = charaDstY - charaY;
 		final double DISTANCE = sqrt(DX*DX + DY*DY);
-		if(DISTANCE < 10) {
+		if(DISTANCE <= charaSpeed) {
 			charaX = charaDstX;
 			charaY = charaDstY;
 		}else {
@@ -222,6 +221,11 @@ public abstract class UserChara extends Chara {
 	@Override
 	public final void setAngle(double angle) {
 		charaShotAngle = angle;
+	}
+	// hp
+	@Override
+	public final void setHP(int hp) {
+		charaHP = hp;
 	}
 	// acceleration
 	@Override

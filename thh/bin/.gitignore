@@ -1,7 +1,12 @@
-/thh/
-/engine/
-/stage/
+/action/
 /bullet/
-/image/
 /chara/
 /effect/
+/engine/
+/image/
+/library/
+/manifest
+/stage/
+/structure/
+/thh/
+/weapon/
