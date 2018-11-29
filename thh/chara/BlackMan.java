@@ -24,15 +24,18 @@ public class BlackMan extends UserChara{
 	public final void loadImageData(){ //»­ÏñÕi¤ßÞz¤ß
 		super.loadImageData();
 		charaIID = thh.loadImage("BlackBall.png");
-		bulletIID[0] = thh.loadImage("LightBallA.png");
+		bulletIID[0] = thh.loadImage("BlueLightBall.png");
+		bulletIID[1] = thh.loadImage("YellowLightBall.png");
 	}
 	@Override
 	public void activeCons() {
 		weaponController.defaultIdle();
 		for(int i = 0;i < THH.getCharaAmount();i++) {
 			if(THH.charaIsVisibleFrom(i,(int)charaX,(int)charaY)) {
-				if(weaponController.trigger())
+				if(weaponController.trigger()) {
 					EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.BLACK_SLASH_BURST,bulletIID[0],(int)charaX,(int)charaY,(int)THH.getCharaX(i),(int)THH.getCharaY(i));
+					EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.BLACK_SLASH_BURST,bulletIID[1],(int)charaX,(int)charaY,(int)THH.getCharaX(i),(int)THH.getCharaY(i));
+				}
 			}
 		}
 		Chara chara = THH.getNearstEnemy(Engine_THH1.FRIEND, (int)charaX, (int)charaY);

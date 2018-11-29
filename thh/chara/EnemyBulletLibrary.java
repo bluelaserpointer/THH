@@ -74,11 +74,12 @@ public class EnemyBulletLibrary extends BulletAgent{
 			BulletInfo.reflection = 1;
 			BulletInfo.limitFrame = 200;
 			BulletInfo.imageID = bulletIID;
-			BulletInfo.fastParaSet_XYADSpd(x,y,ANGLE,10,40);
+			final double DEG3 = PI/60,DEG10 = PI/18;
+			BulletInfo.fastParaSet_XYADSpd(x,y,ANGLE + THH.random2(-DEG3, DEG3),10,20);
 			THH.createBullet(source);
-			BulletInfo.fastParaSet_XYADSpd(x,y,ANGLE - PI/18,10,40);
+			BulletInfo.fastParaSet_XYADSpd(x,y,ANGLE - DEG10 + THH.random2(-DEG3, DEG3),10,20);
 			THH.createBullet(source);
-			BulletInfo.fastParaSet_XYADSpd(x,y,ANGLE + PI/18,10,40);
+			BulletInfo.fastParaSet_XYADSpd(x,y,ANGLE + DEG10 + THH.random2(-DEG3, DEG3),10,20);
 			THH.createBullet(source);
 			break;
 		}

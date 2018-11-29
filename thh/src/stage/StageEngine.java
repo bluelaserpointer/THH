@@ -1,7 +1,6 @@
 package stage;
 
 import java.awt.Graphics2D;
-import java.util.ArrayList;
 
 import bullet.Bullet;
 import thh.Chara;
@@ -16,10 +15,11 @@ public abstract class StageEngine{
 		MAX = THH.MAX,
 		MIN = THH.MIN;
 	
-	protected static final THH thh = THH.thh;
+	public static THH thh;
 	
 	
 	//initialization
+	public abstract void loadResource();
 	public abstract Chara[] charaSetup();
 	public abstract Stage stageSetup();
 	public abstract void openStage();

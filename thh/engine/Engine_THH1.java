@@ -31,7 +31,13 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	
 	private final CtrlEx_THH1 ctrlEx = new CtrlEx_THH1(this);
 	
+	int focusIID;
+	
 	//initialization
+	@Override
+	public final void loadResource() {
+		focusIID = thh.loadImage("focus.png");
+	}
 	@Override
 	public final Chara[] charaSetup() {
 		THH.addControlExpansion(ctrlEx);
@@ -97,23 +103,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		g2.setStroke(THH.stroke3);
 		g2.draw(stages[nowStage].getLandPolygon());
 		if(stopEventKind == NONE) {
-			//scroll by mouse
-			THH.viewTargetTo((THH.getMouseX() + formationCenterX)/2,(THH.getMouseY() + formationCenterY)/2);
-			THH.viewApproach_rate(40);
-			/*scroll by key
-			if(doScrollView) {
-				final int SCROLL_SPEED = 8;
-				if(ctrlEx.getCommandBool(CtrlEx_THH1.UP)) {
-					THH.viewMove(0,-SCROLL_SPEED);
-				}else if(ctrlEx.getCommandBool(CtrlEx_THH1.DOWN)) {
-					THH.viewMove(0,SCROLL_SPEED);
-				}
-				if(ctrlEx.getCommandBool(CtrlEx_THH1.LEFT)) {
-					THH.viewMove(-SCROLL_SPEED,0);
-				}else if(ctrlEx.getCommandBool(CtrlEx_THH1.RIGHT)) {
-					THH.viewMove(SCROLL_SPEED,0);
-				}
-			}*/
+			final int MOUSE_X = THH.getMouseX(),MOUSE_Y = THH.getMouseY();
 			//gravity
 			if(doGravity) {
 				for(Chara chara : friendCharaClass)
@@ -144,25 +134,6 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 							enemyCharaClass.get(i).setSpeed(0, 0);
 					}
 				}
-				//formation
-				if(ctrlEx.getCommandBool(CtrlEx_THH1.UP)) {
-					formationCenterY -= F_MOVE_SPD;
-					THH.viewTargetMove(0,-F_MOVE_SPD);
-					THH.pureViewMove(0,-F_MOVE_SPD);
-				}else if(ctrlEx.getCommandBool(CtrlEx_THH1.DOWN)) {
-					formationCenterY += F_MOVE_SPD;
-					THH.viewTargetMove(0,F_MOVE_SPD);
-					THH.pureViewMove(0,F_MOVE_SPD);
-				}
-				if(ctrlEx.getCommandBool(CtrlEx_THH1.LEFT)) {
-					formationCenterX -= F_MOVE_SPD;
-					THH.viewTargetMove(-F_MOVE_SPD,0);
-					THH.pureViewMove(-F_MOVE_SPD,0);
-				}else if(ctrlEx.getCommandBool(CtrlEx_THH1.RIGHT)) {
-					formationCenterX += F_MOVE_SPD;
-					THH.viewTargetMove(F_MOVE_SPD,0);
-					THH.pureViewMove(F_MOVE_SPD,0);
-				}
 				for(int i = 0;i < friendCharaClass.length;i++)
 					friendCharaClass[i].moveTo(formationCenterX + formationsX[i], formationCenterY + formationsY[i]);
 				g2.setColor(Color.RED);
@@ -179,6 +150,44 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 				//entity
 				THH.defaultEntityIdle();
 				break;
+			}
+			//focus
+			thh.drawImageTHH(focusIID,MOUSE_X,MOUSE_Y);
+			//scroll by mouse
+			THH.viewTargetTo((MOUSE_X + formationCenterX)/2,(MOUSE_Y + formationCenterY)/2);
+			THH.viewApproach_rate(40);
+			/*scroll by key
+			if(doScrollView) {
+				final int SCROLL_SPEED = 8;
+				if(ctrlEx.getCommandBool(CtrlEx_THH1.UP)) {
+					THH.viewMove(0,-SCROLL_SPEED);
+				}else if(ctrlEx.getCommandBool(CtrlEx_THH1.DOWN)) {
+					THH.viewMove(0,SCROLL_SPEED);
+				}
+				if(ctrlEx.getCommandBool(CtrlEx_THH1.LEFT)) {
+					THH.viewMove(-SCROLL_SPEED,0);
+				}else if(ctrlEx.getCommandBool(CtrlEx_THH1.RIGHT)) {
+					THH.viewMove(SCROLL_SPEED,0);
+				}
+			}*/
+			//formation
+			if(ctrlEx.getCommandBool(CtrlEx_THH1.UP)) {
+				formationCenterY -= F_MOVE_SPD;
+				THH.viewTargetMove(0,-F_MOVE_SPD);
+				THH.pureViewMove(0,-F_MOVE_SPD);
+			}else if(ctrlEx.getCommandBool(CtrlEx_THH1.DOWN)) {
+				formationCenterY += F_MOVE_SPD;
+				THH.viewTargetMove(0,F_MOVE_SPD);
+				THH.pureViewMove(0,F_MOVE_SPD);
+			}
+			if(ctrlEx.getCommandBool(CtrlEx_THH1.LEFT)) {
+				formationCenterX -= F_MOVE_SPD;
+				THH.viewTargetMove(-F_MOVE_SPD,0);
+				THH.pureViewMove(-F_MOVE_SPD,0);
+			}else if(ctrlEx.getCommandBool(CtrlEx_THH1.RIGHT)) {
+				formationCenterX += F_MOVE_SPD;
+				THH.viewTargetMove(F_MOVE_SPD,0);
+				THH.pureViewMove(F_MOVE_SPD,0);
 			}
 		}else if(stopEventKind == THH.STOP) {
 			for(int i = 0;i < enemyCharaClass.size();i++) {

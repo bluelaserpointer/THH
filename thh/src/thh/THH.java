@@ -125,7 +125,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	private final MediaTracker tracker;
 	public THH(){
 		thh = this;
-		Chara.thh = thh;
+		StageEngine.thh = Chara.thh = thh;
 		final long loadTime = System.currentTimeMillis();
 		//window setup
 		myFrame = new JFrame("–|·½ÁùÄ»Õh");
@@ -886,6 +886,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		gameFrame = 0;
 		
 		System.out.println("add characters to the game");
+		engine.loadResource();
 		characters = engine.charaSetup();
 		stage = engine.stageSetup();
 		engine.openStage();
