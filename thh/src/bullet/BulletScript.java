@@ -22,10 +22,7 @@ public class BulletScript {
 	public boolean bulletOutOfRange(Bullet bullet) {
 		return true;
 	}
-	public boolean bulletOutOfPenetration(Bullet bullet) {
-		return true;
-	}
-	public boolean bulletOutOfReflection(Bullet bullet) {
+	public boolean bulletOutOfDurability(Bullet bullet) {
 		return true;
 	}
 	public void bulletHitObject(Bullet bullet) {}

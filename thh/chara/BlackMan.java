@@ -24,8 +24,8 @@ public class BlackMan extends UserChara{
 	public final void loadImageData(){ //»­ÏñÕi¤ßÞz¤ß
 		super.loadImageData();
 		charaIID = thh.loadImage("BlackBall.png");
-		bulletIID[0] = thh.loadImage("BlueLightBall.png");
-		bulletIID[1] = thh.loadImage("YellowLightBall.png");
+		bulletIID[0] = thh.loadImage("FMJv2.png");
+		bulletIID[1] = thh.loadImage("RPGv2.png");
 	}
 	@Override
 	public void activeCons() {

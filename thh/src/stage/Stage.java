@@ -14,40 +14,46 @@ public class Stage {
 	//structure
 	private Structure[] primeStructures; //多数派
 	private Structure[] subStructures; //少数派
-	private int primeStructureTeam;
 	//chara
 	private Chara[] primeCharas; //多数派(敵など)
 	private Chara[] subCharas; //少数派
-	private int primeCharaTeam;
 	//testStage
-	private int[] poliX = {0,0,300,400,500,600,700,700,},poliY = {650,450,450,350,350,450,450,650};
-	private Polygon landPolygon = new Polygon(poliX,poliY,poliX.length);
+	private int[] poliX,poliY;
+	private Polygon landPolygon;
 	
 	{
 		reset();
 	}
 	//initialization
 	public Stage(){
-		name = StageInfo.name;
-		gravity = StageInfo.gravity;
-		stageW = StageInfo.stageW;
-		stageH = StageInfo.stageH;
+		load();
 	}
 	
 	//role
 	public final void load() {
+		name = StageInfo.name;
+		gravity = StageInfo.gravity;
+		stageW = StageInfo.stageW;
+		stageH = StageInfo.stageH;
+		poliX = StageInfo.poliX;
+		poliY = StageInfo.poliY;
+		landPolygon = new Polygon(poliX,poliY,poliX.length);
+		primeStructures = StageInfo.primeStructures;
+		subStructures = StageInfo.subStructures;
+		primeCharas = StageInfo.primeCharas;
+		subCharas = StageInfo.subCharas;
+	}
+	public final void save() {
 		StageInfo.name = name;
 		StageInfo.gravity = gravity;
 		StageInfo.stageW = stageW;
 		StageInfo.stageH = stageH;
+		StageInfo.poliX = poliX;
+		StageInfo.poliY = poliY;
 		StageInfo.primeStructures = primeStructures;
 		StageInfo.subStructures = subStructures;
-		if(primeStructures.length > 0)
-			primeStructureTeam = primeStructures[0].getTeam();
 		StageInfo.primeCharas = primeCharas;
 		StageInfo.subCharas = subCharas;
-		if(primeCharas.length > 0)
-			primeCharaTeam = primeCharas[0].getTeam();
 	}
 	//control
 	public final void reset() {
@@ -77,7 +83,6 @@ public class Stage {
 		return landPolygon;
 	}
 	public final boolean hitLandscape(int x,int y,int w,int h){
-		//return landPolygon.intersects(x - w/2,y + h/2,w,h);
 		for(Structure structure : primeStructures) {
 			if(structure.hitLandscape(x, y, w, h))
 				return true;
@@ -89,7 +94,7 @@ public class Stage {
 		return false;
 	}
 	public final boolean hitLandscape(int team,int x,int y,int w,int h){
-		if(THH.isRival(team,primeStructureTeam)) {
+		if(primeStructures.length > 0 && THH.isRival(team,primeStructures[0].getTeam())) {
 			for(Structure structure : primeStructures) {
 				if(structure.hitLandscape(x, y, w, h))
 					return true;

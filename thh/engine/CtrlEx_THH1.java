@@ -45,9 +45,9 @@ public class CtrlEx_THH1 extends ControlExpansion{
 	final long SPELL_TAP_DUR = 200L;
 	
 	private static final int COMMAND_AMOUNT = 6;
-	final int commandKeys[] = {VK_A,VK_W,VK_D,VK_S,MouseEvent.BUTTON1,NONE};
-	static final int LEFT = 0,UP = 1,RIGHT = 2,DOWN = 3,SHOT = 4,SPELL = 5;
-	final String commandNames[] = {"MOVE_LEFT","MOVE_UP","MOVE_RIGHT","MOVE_DOWN","SHOT","SPELL"};
+	final int commandKeys[] = {VK_A,VK_W,VK_D,VK_S,MouseEvent.BUTTON1,NONE,VK_SHIFT};
+	static final int LEFT = 0,UP = 1,RIGHT = 2,DOWN = 3,SHOT = 4,SPELL = 5,LEAP = 6;
+	final String commandNames[] = {"MOVE_LEFT","MOVE_UP","MOVE_RIGHT","MOVE_DOWN","SHOT","SPELL","LEAP"};
 	private final BitSet commandBools = new BitSet(COMMAND_AMOUNT);
 	private long key_1_time,key_2_time,key_3_time,key_4_time;
 	int spellUser;

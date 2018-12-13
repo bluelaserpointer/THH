@@ -9,7 +9,7 @@ import thh.THH;
 
 public class Bullet extends Entity_double implements DynamInteractable{
 	public final int UNIQUE_ID;
-	public static int nowMaxUniqueID = 0;
+	public static int nowMaxUniqueID = -1;
 	
 	private int idleExecuted = 0;
 	
@@ -45,7 +45,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		IS_LASER;
 	public Bullet(DynamInteractable source) {
 		super(BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
-		UNIQUE_ID = nowMaxUniqueID++;
+		UNIQUE_ID = ++nowMaxUniqueID;
 		this.SOURCE = source;
 		this.SCRIPT = BulletInfo.script;
 		name = BulletInfo.name;
@@ -68,7 +68,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	}
 	public Bullet(Bullet bullet) {
 		super(BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
-		UNIQUE_ID = nowMaxUniqueID++;
+		UNIQUE_ID = ++nowMaxUniqueID;
 		this.SOURCE = bullet.SOURCE;
 		this.SCRIPT = bullet.SCRIPT;
 		name = bullet.name;
@@ -142,11 +142,15 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		}
 		//Penetration & Reflection
 		if(SCRIPT.bulletIfHitLandscape(this,(int)x,(int)y)){
-			if(reflection > 0) {
-				reflection--;
-				//edit
+			if(penetration > 0) {
+				if(penetration != THH.MAX)
+					penetration--;
 			}else {
-				if(SCRIPT.bulletOutOfReflection(this))
+				if(reflection > 0) {
+					if(reflection != THH.MAX)
+						reflection--;
+					//edit reflection process
+				}else if(SCRIPT.bulletOutOfDurability(this))
 					THH.deleteBullet(this);
 			}
 		}
@@ -154,12 +158,11 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		for(Chara chara : THH.callBulletEngage(THH.getCharacters_team(team,!HIT_ENEMY),this)) {
 			chara.damage_amount(atk);
 			SCRIPT.bulletHitObject(this);
-			if(penetration > 0)
-				penetration--;
-			else {
-				if(SCRIPT.bulletOutOfPenetration(this))
-					THH.deleteBullet(this);
-			}
+			if(penetration > 0) {
+				if(penetration != THH.MAX)
+					penetration--;
+			}else if(SCRIPT.bulletOutOfDurability(this))
+				THH.deleteBullet(this);
 		}
 	}
 	public final void paint() {

@@ -18,6 +18,7 @@ import stage.StageEngine;
 
 import java.io.*;
 import java.net.*;
+import java.text.DecimalFormat;
 import java.util.*;
 import static java.lang.Math.*;
 
@@ -40,6 +41,10 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 
 	public static final String
 		NOT_NAMED = "<Not Named>";
+	
+	//pass
+
+	public final URL CHARA_DIC_URL = getClass().getResource("../chara");
 	
 	//システム関連
 	//File Pass
@@ -80,7 +85,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	private final int defaultScreenW = 1000,defaultScreenH = 600; //デフォルトウィンドサイズ
 	private static int screenW = 1000,screenH = 600;
 	private static double viewX,viewY,viewDstX,viewDstY;
-	
+
 	private int page,page_max; //ページ機能
 	
 	//タイム情報
@@ -121,6 +126,10 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public static void main(String args[]){
 		new THH();
 	}
+	/**
+	 * ロード完了したかを記録し、paintComponentの実行を抑制するのに使います。
+	 */
+	private boolean loadComplete;
 	private final JFrame myFrame;
 	private final MediaTracker tracker;
 	public THH(){
@@ -143,15 +152,14 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		tracker = new MediaTracker(this);
 		//setup
 		resetStage();
-		//System.out.println("loaded chara class: " + charaLibrary.length);
 		//image & sound length fit
 		arrayImage = Arrays.copyOf(arrayImage, arrayImage_maxID + 1);
 		arraySound = Arrays.copyOf(arraySound, arrayImage_maxID + 1);
 		try{
-			tracker.waitForAll(); //夋憸儘乕僪
+			tracker.waitForAll();
 		}catch(InterruptedException | NullPointerException e){}
 		
-		System.out.println("loadTimeReslut: " + (System.currentTimeMillis() - loadTime));//儘乕僪強梫帪娫寢壥昞帵
+		System.out.println("loadTimeReslut: " + (System.currentTimeMillis() - loadTime));
 		new Thread(this).start();
 		loadComplete = true;
 	}
@@ -176,17 +184,17 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		//}
 	}
 	
-	private boolean loadComplete;
 	private final BufferedImage offImage = new BufferedImage(defaultScreenW,defaultScreenH,BufferedImage.TYPE_INT_ARGB_PRE); //僟僽儖僶僢僼傽僉儍儞僶僗
 	private Graphics2D g2;
 	private final Font basicFont = createFont("font/upcibi.ttf").deriveFont(Font.BOLD + Font.ITALIC,30.0f),commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN,15.0f);
 	public static final BasicStroke stroke1 = new BasicStroke(1f),stroke3 = new BasicStroke(3f),stroke5 = new BasicStroke(5f);
 	private static final Color HPWarningColor = new Color(255,120,120),debugTextColor = new Color(200,200,200,160);
+	private final DecimalFormat DF00_00 = new DecimalFormat("00.00");
 	private final Rectangle2D screenRect = new Rectangle2D.Double(0,0,defaultScreenW,defaultScreenH);
 	
 	public void paintComponent(Graphics g){
 		final long LOAD_TIME_PAINTCOMPONENT = System.currentTimeMillis();
-		final int mouseX = THH.mouseX,mouseY = THH.mouseY;
+		final int MOUSE_X = THH.mouseX,MOUSE_Y = THH.mouseY;
 		super.paintComponent(g);
 		if(g2 == null){
 			g2 = offImage.createGraphics();
@@ -257,29 +265,47 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 				g2.drawOval(TRANSLATE_X - 35, TRANSLATE_Y - 35, 70, 70);
 				g2.drawOval(TRANSLATE_X - 25, TRANSLATE_Y - 25, 50, 50);
 				g2.drawOval(TRANSLATE_X - 15, TRANSLATE_Y - 15, 30, 30);
-				//mouseCoordinate
-				g2.setColor(debugTextColor);
-				g2.setStroke(stroke5);
-				g2.drawString(mouseX + "," + mouseY,mouseX + 20,mouseY + 20);
+				//stageEdge
+				g2.setStroke(stroke3);
+				final int STAGE_W = stage.getStageW(),STAGE_H = stage.getStageH();
+				{ //LXRX lines
+					final int LX = TRANSLATE_X,RX = TRANSLATE_X + STAGE_W;
+					for(int i = 0;i < 50;i++) {
+						final int Y = TRANSLATE_Y + STAGE_H*i/50;
+						g2.drawLine(LX - 20, Y - 20,LX + 20, Y + 20);
+						g2.drawLine(RX - 20, Y - 20,RX + 20, Y + 20);
+					}
+				}
+				{ //LYRY lines
+					final int LY = TRANSLATE_Y,RY = TRANSLATE_Y + STAGE_H;
+					for(int i = 0;i < 50;i++) {
+						final int X = TRANSLATE_X + STAGE_W*i/50;
+						g2.drawLine(X - 20, LY - 20, X + 20, LY + 20);
+						g2.drawLine(X - 20, RY - 20, X + 20, RY + 20);
+					}
+				}
 				//entityInfo
 				g2.drawString("Chara:" + characters.length + " EF:" + effects.size() + " B:" + bullets.size(),30,100);
 				g2.drawString("LoadTime(ms):" + loadTime_total,30,120);
 				//g2.drawString("EM:" + loadTime_enemy + " ET:" + loadTime_entity + " G:" + loadTime_gimmick + " EF:" + loadTime_effect + " B:" + loadTime_bullet + " I:" + loadTime_item + " W: " + loadTime_weapon + " Other: " + loadTime_other,30,140);
 				g2.drawString("GameTime(ms):" + gameFrame,30,160);
 				//mouseInfo
-				g2.setStroke(stroke1);
-				g2.drawLine(mouseX - 15, mouseY, mouseX + 15, mouseY);
-				g2.drawLine(mouseX, mouseY - 15, mouseX, mouseY + 15);
+				g2.setColor(debugTextColor);
 				g2.setStroke(stroke5);
-				g2.drawString("(" + (mouseX - viewX) + "," + (mouseY - viewY) + ")",mouseX + 20,mouseY + 40);
+				g2.drawString((int)MOUSE_X + "," + (int)MOUSE_Y,MOUSE_X + 20,MOUSE_Y + 20);
+				g2.setStroke(stroke1);
+				g2.drawLine(MOUSE_X - 15, MOUSE_Y, MOUSE_X + 15, MOUSE_Y);
+				g2.drawLine(MOUSE_X, MOUSE_Y - 15, MOUSE_X, MOUSE_Y + 15);
+				g2.setStroke(stroke5);
+				g2.drawString("(" + (MOUSE_X - (int)viewX) + "," + (MOUSE_Y - (int)viewY) + ")",MOUSE_X + 20,MOUSE_Y + 40);
 				//charaInfo
 				for(Chara chara : characters) {
-					final int SCREEN_X = (int)chara.getX() + (int)viewX,SCREEN_Y = (int)chara.getY() + (int)viewY;
+					final int RECT_X = (int)chara.getX() + (int)viewX,RECT_Y = (int)chara.getY() + (int)viewY;
 					g2.setStroke(stroke1);
-					g2.drawRect(SCREEN_X - 50, SCREEN_Y - 50, 100,100);
-					g2.drawLine(SCREEN_X + 50, SCREEN_Y - 50, SCREEN_X + 60, SCREEN_Y - 60);
+					g2.drawRect(RECT_X - 50, RECT_Y - 50, 100,100);
+					g2.drawLine(RECT_X + 50, RECT_Y - 50, RECT_X + 60, RECT_Y - 60);
 					g2.setStroke(stroke5);
-					g2.drawString(chara.getName(), SCREEN_X + 62, SCREEN_Y - 68);
+					g2.drawString(chara.getName(), RECT_X + 62, RECT_Y - 68);
 				}
 			}
 		}
@@ -517,11 +543,6 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			return effects.remove(effect);
 		return false;
 	}
-	/*public final void rollCharaTurn(){
-		if(++chara == characters.length)
-			chara = 0;
-		characters[chara].turnStarted();
-	}*/
 	public final void paintHPArc(int x,int y,int radius,int hp,int maxHP) {
 		g2.setStroke(stroke3);
 		if((double)hp/(double)maxHP > 0.75) //HPが少なくなるごとに色が変化
@@ -593,10 +614,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	
 	//input
 	private static int mouseX,mouseY;
-	private boolean mouseLeftPress,mouseMiddlePress,mouseRightPress;
-	private int mouseLeftPressedFrame,mouseMiddlePressedFrame,mouseRightPressedFrame;
 	private int mousePointing = NONE; //マウスがポイントしているもの
-	private static int mouse2DragSX,mouse2DragSY;
 	
 	public void mouseWheelMoved(MouseWheelEvent e){}
 	public void mouseEntered(MouseEvent e){}
@@ -604,33 +622,11 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public void mousePressed(MouseEvent e){
 		switch(e.getButton()) {
 		case MouseEvent.BUTTON1:
-			mouseLeftPress = true;
-			mouseLeftPressedFrame = gameFrame;
-			break;
-		case MouseEvent.BUTTON2:
-			mouseMiddlePress = true;
-			mouse2DragSX = mouseX - (int)viewX;
-			mouse2DragSY = mouseY - (int)viewY;
-			break;
-		case MouseEvent.BUTTON3:
-			mouseRightPress = true;
-			mouseRightPressedFrame = gameFrame;
+			
 			break;
 		}
 	}
-	public void mouseReleased(MouseEvent e){
-		switch(e.getButton()) {
-		case MouseEvent.BUTTON1:
-			mouseLeftPress = false;
-			break;
-		case MouseEvent.BUTTON2:
-			mouseMiddlePress = false;
-			break;
-		case MouseEvent.BUTTON3:
-			mouseRightPress = false;
-			break;
-		}
-	}
+	public void mouseReleased(MouseEvent e){}
 	public void mouseClicked(MouseEvent e){}
 	public void mouseMoved(MouseEvent e){
 		final int x = e.getX(),y = e.getY();
@@ -639,13 +635,6 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public void mouseDragged(MouseEvent e){
 		final int x = e.getX(),y = e.getY();
 		mouseX = x;mouseY = y;
-		if(mouseMiddlePress) {
-			final int newRealX = x - (int)viewX,newRealY = y - (int)viewY;
-			viewX += newRealX - mouse2DragSX;
-			viewY += newRealY - mouse2DragSY;
-			mouse2DragSX = newRealX;
-			mouse2DragSY = newRealY;
-		}
 	}
 	public static final int getMouseX(){
 		return mouseX - (int)viewX;
@@ -658,15 +647,6 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final int getMouseScreenY(){
 		return mouseY;
-	}
-	public final int getMousePressedFrame_left(){
-		return mouseLeftPressedFrame;
-	}
-	public final int getMousePressedFrame_middle(){
-		return mouseMiddlePressedFrame;
-	}
-	public final int getMousePressedFrame_right(){
-		return mouseRightPressedFrame;
 	}
 	public static final boolean isMouseInArea(int x,int y,int w,int h) {
 		return abs(x - mouseX + viewX) < w/2 && abs(y - mouseY + viewY) < h/2;
@@ -763,7 +743,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		}
 	}
 	public void keyTyped(KeyEvent e){}
-	class MyWindowAdapter extends WindowAdapter{
+	private final class MyWindowAdapter extends WindowAdapter{
 		public void windowClosing(WindowEvent e){
 			System.exit(0);
 		}
@@ -879,12 +859,13 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	final private void resetStage(){
 		bullets.clear();
 		effects.clear();
+		Bullet.nowMaxUniqueID = Effect.nowMaxUniqueID = -1;
 		messageSource.clear();
 		messageStr.clear();
 		messageEvent.clear();
 		ErrorCounter.clear();
 		gameFrame = 0;
-		
+		System.gc();
 		System.out.println("add characters to the game");
 		engine.loadResource();
 		characters = engine.charaSetup();
@@ -894,12 +875,11 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	
 	//ResourceLoad
 	/**
-	* 夋憸傪撉傒崬傓婎杮儊僜僢僪偱偡丅assets/image僼僅儖僟偐傜巜掕僷僗傪扵偟傑偡丅僄儔乕偑婲偒偨嵺丄僄儔乕応強偺柤慜傪昞帵偝偣傞偙偲偑偱偒傑偡丅
-	* 捛壛僐乕僪側偳偼偙偺儊僜僢僪傪巊偭偰捛壛夋憸傪撉傒崬傑偣傞偙偲偑偱偒傑偡丅
-	* @param url 夋憸僷僗
-	* @param errorSource 撉傒崬傒僄儔乕偺嵺丄昞帵偝偣傞僄儔乕応強偺柤慜丂(椺:loadImage("img.png","揋夋憸撉傒崬傒")
-	* @return 夋憸Image抣
-	* @since ~beta7.0
+	* 画像を読み込むメソッドです
+	* @param url 画像ファイル名
+	* @param errorSource エラー出力時の表示メッセージ
+	* @return 統合化ImageID
+	* @since alpha1.0
 	*/
 	public final int loadImage(String url,String errorSource){ //夋憸撉傒崬傒儊僜僢僪
 		//old URL
@@ -934,23 +914,19 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return arrayImage_maxID;
 	}
 	/**
-	* 夋憸傪撉傒崬傓婎杮儊僜僢僪偱偡丅assets/image僼僅儖僟偐傜巜掕僷僗傪扵偟傑偡丅
-	* 捛壛僐乕僪側偳偼偙偺儊僜僢僪傪巊偭偰捛壛夋憸傪撉傒崬傑偣傞偙偲偑偱偒傑偡丅
-	* 僄儔乕尦偺巜掕傪徣棯偟偨僶乕僕儑儞偱偡丅
-	* @param url 夋憸僷僗
-	* @return 夋憸Image抣
-	* @since ~beta7.0
+	* 画像を読み込むメソッドです
+	* @param url 画像ファイル名
+	* @return 統合化ImageID
+	* @since alpha1.0
 	*/
 	public final int loadImage(String url){ //夋憸撉傒崬傒儊僜僢僪
 		return this.loadImage(url,null);
 	}
 	/**
-	* 壒惡傪撉傒崬傓婎杮儊僜僢僪偱偡丅assets/sound僼僅儖僟偐傜巜掕僷僗傪扵偟傑偡丅
-	* 捛壛僐乕僪側偳偼偙偺儊僜僢僪傪巊偭偰捛壛壒惡傪撉傒崬傑偣傞偙偲偑偱偒傑偡丅
-	* 偙偺偲偒敪惗偟偨僄儔乕偼SoundClip傛傝曬崘偝傟傑偡丅
-	* @param url 夋憸僷僗
-	* @return 壒惡SoundClip抣
-	* @since beta8.0
+	* サウンドファイルを読み込むメソッドです
+	* @param url サウンドファイル名
+	* @return 統合化SoundClipID
+	* @since alpha1.0
 	*/
 	public final int loadSound(String url){ //夋憸撉傒崬傒儊僜僢僪
 		//old URL
@@ -972,7 +948,13 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		arraySound[arraySound_maxID] = new SoundClip("/sound/" + url);
 		return arraySound_maxID;
 	}
-	
+
+	/**
+	* フォントを読み込むメソッドです
+	* @param url フォントファイル名
+	* @return Font
+	* @since alpha1.0
+	*/
 	public final Font createFont(String filename){
 		try{
 			return Font.createFont(Font.TRUETYPE_FONT,getClass().getResourceAsStream("/" + filename));
@@ -982,7 +964,6 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		}
 	}
 	
-	public final URL CHARA_DIC_URL = getClass().getResource("../chara");
 	public final Chara[] loadAllChara(URL url) {
 		final FilenameFilter classFilter = new FilenameFilter(){
 			public boolean accept(File dir,String name){
@@ -1139,13 +1120,13 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return str;
 	}
 	/**
-	* 文字列をtokenで分割して配列で返す、String.splitメソッドのブレスコ版です。
+	* 文字列をtokenで分割して配列で返す、String.splitメソッドのTHH版です。
 	* 分割された文字は、さらに前後の半角/全角空白を除去されます。
 	* 指定された文字列がnullであったときは空配列が返され、例外は投げません。
 	* @param str 分割される文字列
 	* @param token 分割に使うトークン
 	* @return 分割された文字配列
-	* @since beta8.0
+	* @since alpha1.0
 	*/
 	public final static String[] split2(String str,String token){
 		if(!isActualString(str))
@@ -1173,12 +1154,12 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	/**
 	* このint値は特別な意味が含まれない実数値ゾーンであるかを調べます。
-	* BreakScopeでは一部の変数に特殊な意味を持たせた数値を代入し、違った挙動を示すような仕組みがあります。
+	* THHでは一部の変数に特殊な意味を持たせた数値を代入し、違った挙動を示すような仕組みがあります。
 	* (例：gimmickHPは定数MAXのとき破壊不能,定数NONEのとき衝突判定なし)
 	* 実数値と混同しないため、このゾーンは限界値付近であることが多いようになっています。
 	* @param value 調べる値
 	* @return 実数値であるときtrue,そうでなければfalse
-	* @since beta8.0
+	* @since alpha1.0
 	*/
 	public final static boolean isActualNumber(int value){
 		switch(value){
@@ -1196,13 +1177,13 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	/**
 	* このdouble値は特別な意味が含まれない実数値ゾーンであるかを調べます。
-	* BreakScopeでは一部の変数に特殊な意味を持たせた数値を代入し、違った挙動を示すような仕組みがあります。
+	* THHでは一部の変数に特殊な意味を持たせた数値を代入し、違った挙動を示すような仕組みがあります。
 	* (例：gimmickHPが定数MAXのとき破壊不能,定数NONEのとき衝突判定なし)
 	* 実数値と混同しないため、このゾーンは限界値付近であることが多いようになっています。
 	* なお、NaNや[NEGATIVE/POSITIVE]_INFINITYでもfalseが返ってきます。
 	* @param value 調べる値
 	* @return 実数値とであるときtrue,そうでなければfalse
-	* @since beta8.0
+	* @since alpha1.0
 	*/
 	public final static boolean isActualNumber(double value){
 		if(	value == Double.NaN ||
@@ -1215,11 +1196,10 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	/**
 	* 度をラジアンへ変換しますが、実数値ではない値を保持します。
-	* たとえば、コンフィグ内の角度項目で指定できる"TARGET"や"SELF"などの特殊値はこのメソッドを通しても値は変化しません。
-	* 内部的には実際の掛け算で求めています。
+	* たとえば、"NONE"や"Double.NEGATIVE_INFINITY"などの特殊値はこのメソッドを通しても値は変化しません。
 	* @param ラジアンに変換する数値
 	* @return 変換された値
-	* @since beta9.0
+	* @since alpha1.0
 	*/
 	public final static double toRadians2(double degress){
 		if(isActualNumber(degress))
@@ -1240,16 +1220,14 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		else
 			return Math.random()*(value2 - value1) + value1;
 	}
-	//儊僢僙乕僕僂傿儞僪僂宯
+	//message window
 	/**
-	* 寈崘僂傿儞僪僂偺昞帵傪峴偄傑偡丅
-	*丂傑偨丄偙偺僂傿儞僪僂傪昞帵偟偰偄偨帪娫傪曉偟傑偡丅
-	* 偙偺娫偵僀儀儞僩偑僎乕儉偱偁偭偨応崌丄億乕僘夋柺偵堏峴偡傞偙偲偑偁傝傑偡丅
-	* 撪晹揑偵偼JOptionPane.showMessageDialog儊僜僢僪傪屇傫偱偄傑偡丅
-	* @param message 昞帵偡傞寈崘
-	* @param title 僟僀傾儘僌偺僞僀僩儖暥帤楍
-	* @return 僟僀傾儘僌偑暵偠傜傟傞傑偱偺宱夁帪娫
-	* @since beta9.0
+	* 警告ウィンドウを表示します。
+	* この間のフレーム数のカウントが返されます。
+	* @param message メッセージ
+	* @param title メッセージタイトル
+	* @return 停止した時間
+	* @since alpha1.0
 	*/
 	public static final long warningBox(String message,String title){
 		long openTime = System.currentTimeMillis();

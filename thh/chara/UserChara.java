@@ -152,13 +152,13 @@ public abstract class UserChara extends Chara {
 	}
 	@Override
 	public void teleportRel(int x,int y) {
-		charaX += x;
-		charaY += y;
+		charaDstX += x;charaX += x;
+		charaDstY += y;charaY += y;
 	}
 	@Override
 	public void teleportTo(int x,int y) {
-		charaX = x;
-		charaY = y;
+		charaDstX = charaX = x;
+		charaDstY = charaY = y;
 	}
 	private Action actionPlan;
 	private int initialFrame;

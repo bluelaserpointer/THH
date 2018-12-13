@@ -7,6 +7,9 @@ import thh.Entity_double;
 import thh.THH;
 
 public class Effect extends Entity_double{
+	public final int UNIQUE_ID;
+	public static int nowMaxUniqueID = -1;
+	
 	public final DynamInteractable SOURCE;
 	public final EffectScript SCRIPT;
 	
@@ -28,6 +31,7 @@ public class Effect extends Entity_double{
 	
 	public Effect(DynamInteractable source) {
 		super(EffectInfo.x,EffectInfo.y,EffectInfo.nowFrame);
+		UNIQUE_ID = ++nowMaxUniqueID;
 		this.SOURCE = source;
 		this.SCRIPT = EffectInfo.script;
 		name = EffectInfo.name;
@@ -43,6 +47,7 @@ public class Effect extends Entity_double{
 	}
 	
 	public Effect(Effect effect) {
+		UNIQUE_ID = ++nowMaxUniqueID;
 		SOURCE = effect.SOURCE;
 		SCRIPT = effect.SCRIPT;
 		name = effect.name;
