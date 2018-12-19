@@ -33,7 +33,7 @@ public class Effect extends Entity_double{
 		super(EffectInfo.x,EffectInfo.y,EffectInfo.nowFrame);
 		UNIQUE_ID = ++nowMaxUniqueID;
 		this.SOURCE = source;
-		this.SCRIPT = EffectInfo.script;
+		this.SCRIPT = EffectInfo.script != null ? EffectInfo.script : EffectInfo.DEFAULT_SCRIPT;
 		name = EffectInfo.name;
 		KIND = EffectInfo.kind;
 		SIZE = EffectInfo.size;
@@ -49,7 +49,7 @@ public class Effect extends Entity_double{
 	public Effect(Effect effect) {
 		UNIQUE_ID = ++nowMaxUniqueID;
 		SOURCE = effect.SOURCE;
-		SCRIPT = effect.SCRIPT;
+		SCRIPT = effect.SCRIPT != null ? effect.SCRIPT : EffectInfo.DEFAULT_SCRIPT;
 		name = effect.name;
 		KIND = effect.KIND;
 		SIZE = effect.SIZE;

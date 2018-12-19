@@ -46,8 +46,8 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	public Bullet(DynamInteractable source) {
 		super(BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
 		UNIQUE_ID = ++nowMaxUniqueID;
-		this.SOURCE = source;
-		this.SCRIPT = BulletInfo.script;
+		SOURCE = source;
+		SCRIPT = BulletInfo.script != null ? BulletInfo.script : BulletInfo.DEFAULT_SCRIPT;
 		name = BulletInfo.name;
 		KIND = BulletInfo.kind;
 		SIZE = BulletInfo.size;
@@ -69,8 +69,8 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	public Bullet(Bullet bullet) {
 		super(BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
 		UNIQUE_ID = ++nowMaxUniqueID;
-		this.SOURCE = bullet.SOURCE;
-		this.SCRIPT = bullet.SCRIPT;
+		SOURCE = bullet.SOURCE;
+		SCRIPT = bullet.SCRIPT != null ? bullet.SCRIPT : BulletInfo.DEFAULT_SCRIPT;
 		name = bullet.name;
 		KIND = bullet.KIND;
 		SIZE = bullet.SIZE;
@@ -142,6 +142,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		}
 		//Penetration & Reflection
 		if(SCRIPT.bulletIfHitLandscape(this,(int)x,(int)y)){
+			SCRIPT.bulletHitObject(this);
 			if(penetration > 0) {
 				if(penetration != THH.MAX)
 					penetration--;

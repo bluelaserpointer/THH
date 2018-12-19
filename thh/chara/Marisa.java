@@ -26,7 +26,7 @@ public class Marisa extends UserChara{
 	static final int
 		MILLKY_WAY = 0,NARROW_SPARK = 1,REUSE_BOMB = 2,MAGIC_MISSILE = 3;
 	//effect kind name
-	private static final int LIGHTNING = 0,NARROW_SPARK_HE = 1;
+	private static final int LIGHTNING = 0,SPARK_HIT_EF = 1;
 	
 	//GUI
 		
@@ -41,7 +41,7 @@ public class Marisa extends UserChara{
 		bulletIID[REUSE_BOMB] = thh.loadImage("ReuseBomb.png");
 		bulletIID[MAGIC_MISSILE] = thh.loadImage("MagicMissile.png");
 		effectIID[LIGHTNING] = thh.loadImage("ReuseBomb_Effect.png");
-		effectIID[NARROW_SPARK_HE] = thh.loadImage("NarrowSpark_HitEffect.png");
+		effectIID[SPARK_HIT_EF] = thh.loadImage("NarrowSpark_HitEffect.png");
 	}
 	
 	@Override
@@ -192,6 +192,7 @@ public class Marisa extends UserChara{
 	public final void setEffect(int kind,DynamInteractable source) {
 		THH.prepareEffectInfo();
 		EffectInfo.kind = kind;
+		final double X = source.getX(),Y = source.getY();
 		switch(kind){
 		case LIGHTNING:
 			EffectInfo.name = "LIGHTNING";
@@ -202,6 +203,19 @@ public class Marisa extends UserChara{
 			EffectInfo.limitRange = MAX;
 			EffectInfo.imageID = effectIID[LIGHTNING];
 			THH.createEffect(this);
+			break;
+		case SPARK_HIT_EF:
+			EffectInfo.name = "SPARK_HIT_EF";
+			EffectInfo.script = effectScripts[SPARK_HIT_EF];
+			EffectInfo.accel = 1.0;
+			EffectInfo.size = NONE;
+			EffectInfo.limitFrame = 3;
+			EffectInfo.limitRange = MAX;
+			EffectInfo.imageID = effectIID[SPARK_HIT_EF];
+			for(int i = 0;i < 5;i++) {
+				EffectInfo.fastParaSet_XYADSpd(X,Y,2*PI*random(),10,THH.random2(0,12));
+				THH.createEffect(this);
+			}
 			break;
 		}
 	}
@@ -219,6 +233,10 @@ public class Marisa extends UserChara{
 				bullet.setX(bullet.SOURCE.getX());
 				bullet.setY(bullet.SOURCE.getY());
 				bullet.setAngle(bullet.SOURCE.getAngle());
+			}
+			@Override
+			public final void bulletHitObject(Bullet bullet) {
+				setEffect(SPARK_HIT_EF, bullet);
 			}
 		};
 		bulletScripts[REUSE_BOMB] = new BulletScript() {

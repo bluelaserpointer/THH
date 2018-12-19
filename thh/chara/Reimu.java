@@ -2,6 +2,7 @@ package chara;
 
 import static java.lang.Math.*;
 
+import bullet.Bullet;
 import bullet.BulletInfo;
 import bullet.BulletScript;
 import effect.EffectInfo;
@@ -25,7 +26,7 @@ public class Reimu extends UserChara{
 		FUDA_KOUHAKU = 0,FUDA_SHIROKURO = 1,FUDA_SOUHAKU = 2;
 	private final Weapon weaponController[] = new Weapon[10];
 	//effect kind name
-	private final int LIGHTNING = 0,FUDA_SHIROKURO_HE = 1;
+	private final int LIGHTNING = 0,FUDA_HIT_EF = 1;
 	
 	//GUI
 		
@@ -39,7 +40,7 @@ public class Reimu extends UserChara{
 		bulletIID[FUDA_SHIROKURO] = thh.loadImage("ShirokuroNoFuda.png");
 		bulletIID[FUDA_SOUHAKU] = thh.loadImage("SouhakuNoFuda.png");
 		effectIID[LIGHTNING] = thh.loadImage("ReuseBomb_Effect.png");
-		effectIID[FUDA_SHIROKURO_HE] = thh.loadImage("NarrowSpark_HitEffect.png");
+		effectIID[FUDA_HIT_EF] = thh.loadImage("FudaHitEffect.png");
 	}
 	
 	@Override
@@ -112,6 +113,7 @@ public class Reimu extends UserChara{
 		switch(kind){
 		case FUDA_KOUHAKU:
 			BulletInfo.name = "FUDA_KOUHAKU";
+			BulletInfo.script = bulletScripts[FUDA_KOUHAKU];
 			BulletInfo.size = 10;
 			BulletInfo.atk = 30;
 			BulletInfo.offSet = 5;
@@ -127,6 +129,7 @@ public class Reimu extends UserChara{
 			break;
 		case FUDA_SHIROKURO:
 			BulletInfo.name = "FUDA_SHIROKURO";
+			BulletInfo.script = bulletScripts[FUDA_SHIROKURO];
 			BulletInfo.size = 10;
 			BulletInfo.atk = 20;
 			BulletInfo.offSet = 3;
@@ -142,6 +145,7 @@ public class Reimu extends UserChara{
 			break;
 		case FUDA_SOUHAKU:
 			BulletInfo.name = "FUDA_SOUHAKU";
+			BulletInfo.script = bulletScripts[FUDA_SOUHAKU];
 			BulletInfo.accel = 0.8;
 			BulletInfo.size = 10;
 			BulletInfo.atk = 25;
@@ -160,11 +164,12 @@ public class Reimu extends UserChara{
 	public final void setEffect(int kind,DynamInteractable source) {
 		THH.prepareEffectInfo();
 		EffectInfo.kind = kind;
+		final double X = source.getX(),Y = source.getY();
 		switch(kind){
 		case LIGHTNING:
 			EffectInfo.name = "LIGHTNING";
 			EffectInfo.script = effectScripts[LIGHTNING];
-			EffectInfo.fastParaSet_XYADSpd(source.getX(),source.getY(),2*PI*random(),10,20);
+			EffectInfo.fastParaSet_XYADSpd(X,Y,2*PI*random(),10,20);
 			EffectInfo.accel = 1.0;
 			EffectInfo.size = NONE;
 			EffectInfo.limitFrame = 2;
@@ -172,16 +177,35 @@ public class Reimu extends UserChara{
 			EffectInfo.imageID = effectIID[LIGHTNING];
 			THH.createEffect(this);
 			break;
+		case FUDA_HIT_EF:
+			EffectInfo.name = "FUDA_HIT_EF";
+			EffectInfo.script = effectScripts[FUDA_HIT_EF];
+			EffectInfo.accel = 1.0;
+			EffectInfo.size = NONE;
+			EffectInfo.limitFrame = 3;
+			EffectInfo.limitRange = MAX;
+			EffectInfo.imageID = effectIID[FUDA_HIT_EF];
+			for(int i = 0;i < 10;i++) {
+				EffectInfo.fastParaSet_XYADSpd(X,Y,2*PI*random(),10,THH.random2(0,12));
+				THH.createEffect(this);
+			}
+			break;
 		}
 	}
 	private final BulletScript[] bulletScripts = new BulletScript[10];
 	{
-		bulletScripts[FUDA_KOUHAKU] = BulletInfo.DEFAULT_SCRIPT;
+		bulletScripts[FUDA_KOUHAKU] = new BulletScript() {
+			@Override
+			public final void bulletHitObject(Bullet bullet) {
+				setEffect(FUDA_HIT_EF,(DynamInteractable)bullet);
+			}
+		};
 		bulletScripts[FUDA_SHIROKURO] = BulletInfo.DEFAULT_SCRIPT;
 		bulletScripts[FUDA_SOUHAKU] = BulletInfo.DEFAULT_SCRIPT;
 	}
 	private final EffectScript[] effectScripts = new EffectScript[10];
 	{
 		effectScripts[LIGHTNING] = EffectInfo.DEFAULT_SCRIPT;
+		effectScripts[FUDA_HIT_EF] = EffectInfo.DEFAULT_SCRIPT;
 	}
 }
