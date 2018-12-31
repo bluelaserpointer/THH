@@ -57,7 +57,7 @@ public class Reimu extends UserChara{
 		//FUDA_KOUHAKU
 		WeaponInfo.clear();
 		WeaponInfo.name = "FUDA_KOUHAKU";
-		WeaponInfo.coolTime = 1;
+		WeaponInfo.coolTime = 6;
 		weaponController[FUDA_KOUHAKU] = new Weapon();
 		//FUDA_SHIROKURO
 		WeaponInfo.clear();
@@ -73,15 +73,15 @@ public class Reimu extends UserChara{
 		slot_spell = 0;
 	}
 	@Override
-	public final void spawn(int charaID,int charaTeam,int x,int y){ //初期化処理
-		super.spawn(charaID,charaTeam,x,y);
+	public final void respawn(int charaID,int charaTeam,int x,int y){ //初期化処理
+		super.respawn(charaID,charaTeam,x,y);
 		charaHP = super.charaBaseHP = 10000;
 		charaME = charaBaseME = 100;
 		for(Weapon ver : weaponController) {
 			if(ver != null)
 				ver.reset();
 		}
-	}	
+	}
 	@Override
 	public void activeCons() {
 		super.activeCons();
@@ -100,31 +100,22 @@ public class Reimu extends UserChara{
 		THH.prepareBulletInfo();
 		BulletInfo.kind = kind;
 		BulletInfo.team = charaTeam;
-		final double X,Y,ANGLE;
-		if(source == this) {
-			X = charaX;
-			Y = charaY;
-			ANGLE = charaShotAngle;
-		}else {
-			X = source.getX();
-			Y = source.getY();
-			ANGLE = source.getAngle();
-		}
 		switch(kind){
 		case FUDA_KOUHAKU:
 			BulletInfo.name = "FUDA_KOUHAKU";
 			BulletInfo.script = bulletScripts[FUDA_KOUHAKU];
 			BulletInfo.size = 10;
-			BulletInfo.atk = 30;
+			BulletInfo.atk = 15;
 			BulletInfo.offSet = 5;
 			BulletInfo.limitFrame = 200;
-			BulletInfo.limitRange = MAX;
 			BulletInfo.imageID = bulletIID[FUDA_KOUHAKU];
-			final double DX = 50*cos(ANGLE + PI/2),DY = 50*sin(ANGLE + PI/2);
-			final double SHOT_ANGLE = ANGLE + THH.random2(-PI/50, PI/50);
-			BulletInfo.fastParaSet_XYADSpd(X + DX,Y + DY,SHOT_ANGLE,10,40);
+			BulletInfo.fastParaSet_SourceDXYSpd(source,0,14,24);
 			THH.createBullet(this);
-			BulletInfo.fastParaSet_XYADSpd(X - DX,Y - DY,SHOT_ANGLE,10,40);
+			BulletInfo.fastParaSet_SourceDXYSpd(source,8,21,24);
+			THH.createBullet(this);
+			BulletInfo.fastParaSet_SourceDXYSpd(source,-8,21,24);
+			THH.createBullet(this);
+			BulletInfo.fastParaSet_SourceDXYSpd(source,0,28,24);
 			THH.createBullet(this);
 			break;
 		case FUDA_SHIROKURO:
@@ -136,25 +127,25 @@ public class Reimu extends UserChara{
 			BulletInfo.reflection = 1;
 			BulletInfo.limitFrame = 200;
 			BulletInfo.imageID = bulletIID[FUDA_SHIROKURO];
-			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE,10,40);
+			BulletInfo.fastParaSet_SourceDSpd(source,10,40);
 			THH.createBullet(this);
-			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE - PI/18,10,40);
+			BulletInfo.fastParaSet_SourceADSpd(source,-PI/18,10,40);
 			THH.createBullet(this);
-			BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE + PI/18,10,40);
+			BulletInfo.fastParaSet_SourceADSpd(source,PI/18,10,40);
 			THH.createBullet(this);
 			break;
 		case FUDA_SOUHAKU:
 			BulletInfo.name = "FUDA_SOUHAKU";
 			BulletInfo.script = bulletScripts[FUDA_SOUHAKU];
 			BulletInfo.accel = 0.8;
-			BulletInfo.size = 10;
+			BulletInfo.size = 15;
 			BulletInfo.atk = 25;
 			BulletInfo.offSet = 25;
 			BulletInfo.reflection = 1;
 			BulletInfo.limitFrame = 40;
 			BulletInfo.imageID = bulletIID[FUDA_SOUHAKU];
 			for(int i = -4;i <= 4;i++) {
-				BulletInfo.fastParaSet_XYADSpd(X,Y,ANGLE + i*PI/10,25,40);
+				BulletInfo.fastParaSet_SourceADSpd(source,i*PI/10,25,40);
 				THH.createBullet(this);
 			}
 			break;
@@ -164,12 +155,11 @@ public class Reimu extends UserChara{
 	public final void setEffect(int kind,DynamInteractable source) {
 		THH.prepareEffectInfo();
 		EffectInfo.kind = kind;
-		final double X = source.getX(),Y = source.getY();
 		switch(kind){
 		case LIGHTNING:
 			EffectInfo.name = "LIGHTNING";
 			EffectInfo.script = effectScripts[LIGHTNING];
-			EffectInfo.fastParaSet_XYADSpd(X,Y,2*PI*random(),10,20);
+			EffectInfo.fastParaSet_SourceADSpd(source,2*PI*random(),10,20);
 			EffectInfo.accel = 1.0;
 			EffectInfo.size = NONE;
 			EffectInfo.limitFrame = 2;
@@ -180,13 +170,13 @@ public class Reimu extends UserChara{
 		case FUDA_HIT_EF:
 			EffectInfo.name = "FUDA_HIT_EF";
 			EffectInfo.script = effectScripts[FUDA_HIT_EF];
-			EffectInfo.accel = 1.0;
+			EffectInfo.accel = 0.5;
 			EffectInfo.size = NONE;
-			EffectInfo.limitFrame = 3;
+			EffectInfo.limitFrame = 4;
 			EffectInfo.limitRange = MAX;
 			EffectInfo.imageID = effectIID[FUDA_HIT_EF];
-			for(int i = 0;i < 10;i++) {
-				EffectInfo.fastParaSet_XYADSpd(X,Y,2*PI*random(),10,THH.random2(0,12));
+			for(int i = 0;i < 15;i++) {
+				EffectInfo.fastParaSet_SourceADSpd(source,2*PI*random(),10,THH.random2(0,24));
 				THH.createEffect(this);
 			}
 			break;

@@ -40,12 +40,11 @@ public class EnemyBulletLibrary extends BulletAgent{
 	public static void inputBulletInfo(Chara source,int bulletKind,int bulletIID,int x,int y,int targetX,int targetY) {
 		THH.prepareBulletInfo();
 		BulletInfo.team = source.getTeam();
-		final double ANGLE = atan2(targetY - y,targetX - x);
 		switch(bulletKind) {
 		case lightBall_S:
 			BulletInfo.name = "lightBall_S";
 			BulletInfo.kind = lightBall_S;
-			BulletInfo.fastParaSet_XYADSpd(x,y,ANGLE,10,15);
+			BulletInfo.fastParaSet_SourceDSpd(source,10,3);
 			BulletInfo.atk = 20;
 			BulletInfo.imageID = bulletIID;
 			THH.createBullet(source);
@@ -55,7 +54,7 @@ public class EnemyBulletLibrary extends BulletAgent{
 			BulletInfo.kind = lightBall_ROUND;
 			BulletInfo.atk = 20;
 			BulletInfo.imageID = bulletIID;
-			THH.createBullet_BurstDesign(source,16,x,y,10,15);
+			BulletInfo.createBullet_BurstDesign(source,x,y,10,5,5);
 			break;
 		case HEAL_SHOTGUN:
 			BulletInfo.name = "HEAL_SHOTGUN";
@@ -63,10 +62,10 @@ public class EnemyBulletLibrary extends BulletAgent{
 			BulletInfo.atk = -20;
 			BulletInfo.limitRange = 150;
 			BulletInfo.imageID = bulletIID;
-			THH.createBullet_BurstDesign(source,16,x,y,10,15);
+			BulletInfo.createBullet_BurstDesign(source,x,y,10,16,15);
 			break;
 		case BLACK_SLASH_BURST:
-			BulletInfo.name = "lightBall_ROUND";
+			BulletInfo.name = "BLACK_SLASH_BURST";
 			BulletInfo.kind = lightBall_ROUND;
 			BulletInfo.size = 10;
 			BulletInfo.atk = 20;
@@ -74,12 +73,12 @@ public class EnemyBulletLibrary extends BulletAgent{
 			BulletInfo.reflection = 1;
 			BulletInfo.limitFrame = 200;
 			BulletInfo.imageID = bulletIID;
-			final double DEG3 = PI/60,DEG10 = PI/18;
-			BulletInfo.fastParaSet_XYADSpd(x,y,ANGLE + THH.random2(-DEG3, DEG3),10,20);
+			final double DEG10 = PI/18;
+			BulletInfo.fastParaSet_SourceDSpd(source,10,20);
 			THH.createBullet(source);
-			BulletInfo.fastParaSet_XYADSpd(x,y,ANGLE - DEG10 + THH.random2(-DEG3, DEG3),10,20);
+			BulletInfo.fastParaSet_SourceADSpd(source,-DEG10,10,20);
 			THH.createBullet(source);
-			BulletInfo.fastParaSet_XYADSpd(x,y,ANGLE + DEG10 + THH.random2(-DEG3, DEG3),10,20);
+			BulletInfo.fastParaSet_SourceADSpd(source,DEG10,10,20);
 			THH.createBullet(source);
 			break;
 		}

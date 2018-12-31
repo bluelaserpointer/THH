@@ -1,5 +1,10 @@
 package effect;
 
+import static java.lang.Math.PI;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
+import thh.DynamInteractable;
 import thh.THH;
 
 public class EffectInfo {
@@ -34,6 +39,15 @@ public class EffectInfo {
 		angle = 0.0;
 		imageID = NONE;
 	}
+	public static void fastParaSet_SourceADSpd(DynamInteractable source,double angle,int distance,int speed) {
+		fastParaSet_XYADSpd(source.getX(),source.getY(),source.getAngle() + angle,distance,speed);
+	}
+	public static void fastParaSet_SourceDSpd(DynamInteractable source,int distance,int speed) {
+		fastParaSet_XYADSpd(source.getX(),source.getY(),source.getAngle(),distance,speed);
+	}
+	public static void fastParaSet_SourceSpd(DynamInteractable source,int speed) {
+		fastParaSet_XYADSpd(source.getX(),source.getY(),source.getAngle(),0,speed);
+	}
 	public static void fastParaSet_XYADSpd(double x,double y,double angle,int distance,int speed) {
 		final double cos_angle = Math.cos(angle),sin_angle = Math.sin(angle);
 		EffectInfo.angle = angle;
@@ -46,5 +60,15 @@ public class EffectInfo {
 		EffectInfo.angle = angle;
 		EffectInfo.xSpeed = (int)(speed*Math.cos(angle));
 		EffectInfo.ySpeed = (int)(speed*Math.sin(angle));
+	}
+	
+	//generation
+	public final static void createEffect_RoundDesign(DynamInteractable source,int amount,double gunnerX,double gunnerY,double radius){
+		final double ANGLE = 2*PI/amount;
+		for(int i = 0;i < amount;i++){
+			EffectInfo.x = gunnerX + radius*cos(ANGLE*i);
+			EffectInfo.y = gunnerY + radius*sin(ANGLE*i);
+			THH.createEffect(source);
+		}
 	}
 }

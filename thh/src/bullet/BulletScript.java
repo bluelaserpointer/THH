@@ -5,14 +5,14 @@ import thh.THH;
 public class BulletScript {
 
 	public void bulletIdle(Bullet bullet) { //Include painting
-		if(bullet.idle())
-			bullet.paint();
+		if(bullet.defaultIdle())
+			bulletPaint(bullet);
 	}
 	public void bulletAnimationPaint(Bullet bullet) {
 		this.bulletPaint(bullet);
 	}
 	public void bulletPaint(Bullet bullet) {
-		bullet.paint();
+		bullet.defaultPaint();
 	}
 	
 	//event
@@ -27,7 +27,7 @@ public class BulletScript {
 	}
 	public void bulletHitObject(Bullet bullet) {}
 	public boolean bulletIfHitLandscape(Bullet bullet,int x,int y){
-		return THH.hitLandscape(x,y,10,10);
+		return THH.hitLandscape(x,y,bullet.SIZE);
 	}
 	
 	//judge

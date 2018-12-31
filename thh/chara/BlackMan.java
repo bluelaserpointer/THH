@@ -40,8 +40,10 @@ public class BlackMan extends UserChara{
 		}
 		Chara chara = THH.getNearstEnemy(Engine_THH1.FRIEND, (int)charaX, (int)charaY);
 		if(chara != null) {
-			charaDstX = chara.getX();
-			charaDstY = chara.getY();
+			final double X = chara.getX(),Y = chara.getY();
+			charaDstX = X;
+			charaDstY = Y;
+			charaAngle = Math.atan2(Y - charaY,X - charaX); 
 		}
 		/*dynam*/ {
 			final double DX = charaDstX - charaX,DY = charaDstY - charaY;

@@ -451,8 +451,13 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public static final Stage getStage() {
 		return stage;
 	}
-	public static final boolean hitLandscape(int x,int y,int w,int h) {
-		return stage.hitLandscape(x, y, w, h);
+	public static final boolean hitLandscape(int x,int y,int size) {
+		if(size <= 0)
+			return false;
+		if(size <= 2)
+			return stage.hitLandscape(x, y, 1, 1);
+		final int HALF_SIZE = size/2;
+		return stage.hitLandscape(x, y, HALF_SIZE, HALF_SIZE);
 	}
 	public static final boolean inStage(int x,int y) {
 		return stage.inStage(x, y);
@@ -760,46 +765,10 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public final static void createBullet(DynamInteractable source){ //弾生成
 		bullets.add(new Bullet(source));
 	}
-	public final static void createBullet(DynamInteractable source,int amount) {
-		for(int i = 0;i < amount;i++)
-			bullets.add(new Bullet(source));
-	}
-	public final static void createBullet_RoundDesign(DynamInteractable source,int amount,double gunnerX,double gunnerY,double radius){
-		final double ANGLE = 2*PI/amount;
-		for(int i = 0;i < amount;i++){
-			BulletInfo.x = gunnerX + radius*cos(ANGLE*i);
-			BulletInfo.y = gunnerY + radius*sin(ANGLE*i);
-			createBullet(source);
-		}
-	}
-	public final static void createBullet_BurstDesign(DynamInteractable source,int amount,double gunnerX,double gunnerY,double radius,int speed){
-		final double BASE_ANGLE = 2*PI/amount;
-		for(int i = 0;i < amount;i++){
-			final double ANGLE = BASE_ANGLE*i;
-			final double COS_ANGLE = cos(ANGLE),SIN_ANGLE = sin(ANGLE);
-			BulletInfo.x = gunnerX + radius*COS_ANGLE;
-			BulletInfo.y = gunnerY + radius*SIN_ANGLE;
-			BulletInfo.angle = ANGLE;
-			BulletInfo.xSpeed = speed*COS_ANGLE;
-			BulletInfo.ySpeed = speed*SIN_ANGLE;
-			createBullet(source);
-		}
-	}
 	public final static void createEffect(DynamInteractable source){ //弾生成
 		effects.add(new Effect(source));
 	}
-	public final static void createEffect(DynamInteractable source,int amount) {
-		for(int i = 0;i < amount;i++)
-			effects.add(new Effect(source));
-	}
-	public final static void createEffect_RoundDesign(DynamInteractable source,int amount,double gunnerX,double gunnerY,double radius){
-		final double ANGLE = 2*PI/amount;
-		for(int i = 0;i < amount;i++){
-			EffectInfo.x = gunnerX + radius*cos(ANGLE*i);
-			EffectInfo.y = gunnerY + radius*sin(ANGLE*i);
-			createEffect(source);
-		}
-	}
+
 	public static final int getNowFrame() {
 		return gameFrame;
 	}
@@ -1052,6 +1021,12 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public final void drawImageTHH_center(int imgID,int x,int y){
 		this.drawImageTHH_center(arrayImage[imgID],x,y);
 	}
+	public static final void setImageAlpha() {
+		thh.g2.setComposite(AlphaComposite.SrcOver);
+	}
+	public static final void setImageAlpha(float alpha) {
+		thh.g2.setComposite(AlphaComposite.SrcOver.derive(alpha));
+	}
 	public static final Graphics2D getGraphics2D() {
 		return thh.g2;
 	}
@@ -1209,16 +1184,33 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	public final static int random2(int value1,int value2) {
-		if(value1 > value2)
+		if(value1 == value2)
+			return value1;
+		else if(value1 > value2)
 			return new Random().nextInt(abs(value1 - value2)) + value2;
 		else
 			return new Random().nextInt(abs(value2 - value1)) + value1;
 	}
+	public final static int random2(int value) {
+		if(value == 0)
+			return 0;
+		if(value < 0)
+			value *= -1;
+		return new Random().nextInt(value*2) - value;
+	}
 	public final static double random2(double value1,double value2) {
-		if(value1 > value2)
+		if(value1 == value2)
+			return value1;
+		else if(value1 > value2)
 			return Math.random()*(value1 - value2) + value2;
 		else
 			return Math.random()*(value2 - value1) + value1;
+	}
+	public final static double random2(double value) {
+		if(value == 0.0)
+			return 0.0;
+		else
+			return Math.random()*value*2 - value;
 	}
 	//message window
 	/**

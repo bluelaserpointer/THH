@@ -13,7 +13,6 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	
 	private int idleExecuted = 0;
 	
-	public final DynamInteractable SOURCE; //an information source of user
 	public final BulletScript SCRIPT; //a script of unique behaviors
 	
 	public String name;
@@ -44,9 +43,8 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		HIT_ENEMY,
 		IS_LASER;
 	public Bullet(DynamInteractable source) {
-		super(BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
+		super(source,BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
 		UNIQUE_ID = ++nowMaxUniqueID;
-		SOURCE = source;
 		SCRIPT = BulletInfo.script != null ? BulletInfo.script : BulletInfo.DEFAULT_SCRIPT;
 		name = BulletInfo.name;
 		KIND = BulletInfo.kind;
@@ -67,9 +65,8 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		IS_LASER = BulletInfo.isLaser;
 	}
 	public Bullet(Bullet bullet) {
-		super(BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
+		super(bullet.SOURCE,BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
 		UNIQUE_ID = ++nowMaxUniqueID;
-		SOURCE = bullet.SOURCE;
 		SCRIPT = bullet.SCRIPT != null ? bullet.SCRIPT : BulletInfo.DEFAULT_SCRIPT;
 		name = bullet.name;
 		KIND = bullet.KIND;
@@ -89,7 +86,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		HIT_ENEMY = bullet.HIT_ENEMY;
 		IS_LASER = bullet.IS_LASER;
 	}
-	public final boolean idle() {
+	public final boolean defaultIdle() {
 		if(allDeleteCheck())
 			return false;
 		dynam();
@@ -131,8 +128,17 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		}
 		return false;
 	}
-	public final void dynam() {
-		//Speed & Acceleration
+	public final boolean dynam() {
+		return dynam(true,THH.MAX);
+	}
+	public final boolean dynam(boolean doHit) {
+		return dynam(doHit,THH.MAX);
+	}
+	public final boolean dynam(int maxGap) {
+		return dynam(true,maxGap);
+	}
+	public final boolean dynam(boolean doHit,int maxGap) {
+		//speed & acceleration
 		x += xSpeed;
 		y += ySpeed;
 		movedDistance += sqrt(xSpeed*xSpeed + ySpeed*ySpeed);
@@ -140,7 +146,9 @@ public class Bullet extends Entity_double implements DynamInteractable{
 			xSpeed *= ACCEL;
 			ySpeed *= ACCEL;
 		}
-		//Penetration & Reflection
+		if(!doHit)
+			return true;
+		//landscape collision
 		if(SCRIPT.bulletIfHitLandscape(this,(int)x,(int)y)){
 			SCRIPT.bulletHitObject(this);
 			if(penetration > 0) {
@@ -151,22 +159,27 @@ public class Bullet extends Entity_double implements DynamInteractable{
 					if(reflection != THH.MAX)
 						reflection--;
 					//edit reflection process
-				}else if(SCRIPT.bulletOutOfDurability(this))
+				}else if(SCRIPT.bulletOutOfDurability(this)) {
 					THH.deleteBullet(this);
+					return false;
+				}
 			}
 		}
-		//Damaging
+		//entity collision
 		for(Chara chara : THH.callBulletEngage(THH.getCharacters_team(team,!HIT_ENEMY),this)) {
 			chara.damage_amount(atk);
 			SCRIPT.bulletHitObject(this);
 			if(penetration > 0) {
 				if(penetration != THH.MAX)
 					penetration--;
-			}else if(SCRIPT.bulletOutOfDurability(this))
+			}else if(SCRIPT.bulletOutOfDurability(this)) {
 				THH.deleteBullet(this);
+				return false;
+			}
 		}
+		return true;
 	}
-	public final void paint() {
+	public final void defaultPaint() {
 		if(angle == 0.0)
 			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
 		else

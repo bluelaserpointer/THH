@@ -10,7 +10,6 @@ public class Effect extends Entity_double{
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;
 	
-	public final DynamInteractable SOURCE;
 	public final EffectScript SCRIPT;
 	
 	public String name;
@@ -30,9 +29,8 @@ public class Effect extends Entity_double{
 		IMAGE_ID;
 	
 	public Effect(DynamInteractable source) {
-		super(EffectInfo.x,EffectInfo.y,EffectInfo.nowFrame);
+		super(source,EffectInfo.x,EffectInfo.y,EffectInfo.nowFrame);
 		UNIQUE_ID = ++nowMaxUniqueID;
-		this.SOURCE = source;
 		this.SCRIPT = EffectInfo.script != null ? EffectInfo.script : EffectInfo.DEFAULT_SCRIPT;
 		name = EffectInfo.name;
 		KIND = EffectInfo.kind;
@@ -47,8 +45,8 @@ public class Effect extends Entity_double{
 	}
 	
 	public Effect(Effect effect) {
+		super(effect.SOURCE,EffectInfo.x,EffectInfo.y,EffectInfo.nowFrame);
 		UNIQUE_ID = ++nowMaxUniqueID;
-		SOURCE = effect.SOURCE;
 		SCRIPT = effect.SCRIPT != null ? effect.SCRIPT : EffectInfo.DEFAULT_SCRIPT;
 		name = effect.name;
 		KIND = effect.KIND;
@@ -61,8 +59,11 @@ public class Effect extends Entity_double{
 		angle = effect.angle;
 		IMAGE_ID = effect.IMAGE_ID;
 	}
-
-	public final boolean idle() {
+	
+	public final void spin(double angle) {
+		this.angle += angle;
+	}
+	public final boolean defaultIdle() {
 		//LifeSpan & Range
 		if(LIMIT_FRAME <= THH.getPassedFrame(super.INITIAL_FRAME)) {
 			SCRIPT.effectOutOfLifeSpan(this);
@@ -89,7 +90,7 @@ public class Effect extends Entity_double{
 		}
 		return true;
 	}
-	public final void paint() {
+	public final void defaultPaint() {
 		if(angle == 0)
 			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
 		else

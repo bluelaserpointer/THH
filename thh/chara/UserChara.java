@@ -6,6 +6,7 @@ import action.Action;
 import action.ActionInfo;
 import bullet.Bullet;
 import thh.Chara;
+import thh.DynamInteractable;
 import thh.THH;
 import weapon.Weapon;
 
@@ -14,7 +15,8 @@ public abstract class UserChara extends Chara {
 	// バトルパート関連
 	public int charaID, charaTeam, charaHP, charaME, charaBaseHP, charaBaseME, charaSpellCharge,
 			charaSize, charaStatus;
-	public double charaX, charaY, charaDstX, charaDstY,charaTargetY, charaSpeed = 30, charaXSpeed, charaYSpeed, charaShotAngle;
+	public double charaX, charaY, charaDstX, charaDstY, charaSpeed = 30, charaXSpeed, charaYSpeed, charaAngle;
+	public double charaLastXSpd, charaLastYSpd;
 	public boolean charaOnLand;
 
 	// Weapon
@@ -35,21 +37,22 @@ public abstract class UserChara extends Chara {
 	}
 
 	@Override
-	public void spawn(int charaID, int charaTeam, int x, int y) { // 初期化処理
+	public void respawn(int charaID, int charaTeam, int x, int y) { // 初期化処理
 		super.resetOrder();
 		this.charaID = charaID;
 		this.charaTeam = charaTeam;
 		charaDstX = charaX = x;
 		charaDstY = charaY = y;
 		charaXSpeed = charaYSpeed = 0.0;
+		charaLastXSpd = charaLastYSpd = 0.0;
 		charaStatus = NONE;
 		charaOnLand = false;
 		slot_spell = 0;
 	}
 	@Override
-	public void spawn(int charaID, int charaTeam, int x, int y,int hp) { // 初期化処理2
+	public void respawn(int charaID, int charaTeam, int x, int y,int hp) { // 初期化処理2
 		charaHP = charaBaseHP = hp;
-		this.spawn(charaID, charaTeam, x, y);
+		this.respawn(charaID, charaTeam, x, y);
 	}
 	@Override
 	public void dynam() {
@@ -57,6 +60,8 @@ public abstract class UserChara extends Chara {
 			return;
 		charaX += charaXSpeed;
 		charaY += charaYSpeed;
+		charaLastXSpd += charaXSpeed;
+		charaLastYSpd += charaYSpeed;
 		if (charaXSpeed < -0.5 || 0.5 < charaXSpeed)
 			charaXSpeed *= 0.9;
 		else
@@ -74,7 +79,7 @@ public abstract class UserChara extends Chara {
 		}
 		final int mouseX = THH.getMouseX(), mouseY = THH.getMouseY();
 		final double mouseAngle = atan2(mouseY - charaY, mouseX - charaX);
-		charaShotAngle = mouseAngle;
+		charaAngle = mouseAngle;
 		// dodge
 		if (super.dodgeOrder)
 			dodge(mouseX, mouseY);
@@ -83,6 +88,7 @@ public abstract class UserChara extends Chara {
 			final int weapon = weaponSlot[slot_weapon];
 			if (weapon != NONE && useWeapon(weapon))
 				setBullet(weapon,this);
+			charaLastXSpd = charaLastYSpd = 0.0;
 		}
 		// spell
 		if (super.spellOrder) {
@@ -152,11 +158,13 @@ public abstract class UserChara extends Chara {
 	}
 	@Override
 	public void teleportRel(int x,int y) {
-		charaDstX += x;charaX += x;
-		charaDstY += y;charaY += y;
+		charaDstX += x;charaX += x;charaLastXSpd += x;
+		charaDstY += y;charaY += y;charaLastYSpd += y;
 	}
 	@Override
 	public void teleportTo(int x,int y) {
+		charaLastXSpd += x - charaX;
+		charaLastYSpd += y - charaY;
 		charaDstX = charaX = x;
 		charaDstY = charaY = y;
 	}
@@ -186,8 +194,8 @@ public abstract class UserChara extends Chara {
 					setBullet(weaponSlot[slot_weapon],this);
 					break;
 				case ActionInfo.SPEED:
-					charaX += X;
-					charaY += Y;
+					charaX += X;charaLastXSpd += X;
+					charaY += Y;charaLastYSpd += Y;
 					break;
 				}
 			}
@@ -203,24 +211,30 @@ public abstract class UserChara extends Chara {
 	//XY
 	@Override
 	public void setX(double x) {
+		charaLastXSpd += x - charaX;
 		charaX = x;
 	}
 	@Override
 	public void setY(double y) {
+		charaLastYSpd += y - charaY;
 		charaY = y;
 	}
 	@Override
 	public void setXY(double x,double y) {
+		charaLastXSpd += x - charaX;
+		charaLastYSpd += y - charaY;
 		charaX = x;charaY = y;
 	}
 	@Override
 	public void addXY(double x,double y) {
+		charaLastXSpd += x;
+		charaLastYSpd += y;
 		charaX += x;charaY += y;
 	}
 	// angle
 	@Override
 	public final void setAngle(double angle) {
-		charaShotAngle = angle;
+		charaAngle = angle;
 	}
 	// hp
 	@Override
@@ -255,11 +269,11 @@ public abstract class UserChara extends Chara {
 	@Override
 	public final void gravity(double g) {
 		if (!charaOnLand) {
-			if (THH.hitLandscape((int) charaX - 10, (int) charaY + 40, 20, 20)) {
+			if (THH.hitLandscape((int) charaX - 10, (int) charaY + 40, 20)) {
 				charaYSpeed = 0.0;
 				do {
 					charaY -= 1.0;
-				} while (THH.hitLandscape((int) charaX - 10, (int) charaY + 30, 20, 10));
+				} while (THH.hitLandscape((int) charaX - 10, (int) charaY + 30, 20));
 				if (charaXSpeed == 0.0)
 					charaOnLand = true;
 			}else
@@ -376,9 +390,11 @@ public abstract class UserChara extends Chara {
 	}
 	@Override
 	public final double getAngle() {
-		return charaShotAngle;
+		return charaAngle;
 	}
 	public boolean useWeapon(int kind) {
 		return true;
 	}
+	public abstract void setBullet(int kind,DynamInteractable source);
+	public abstract void setEffect(int kind,DynamInteractable source);
 }

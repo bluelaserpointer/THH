@@ -18,13 +18,13 @@ import thh.MessageSource;
 import thh.THH;
 
 public class Engine_THH1 extends StageEngine implements MessageSource,ActionSource{
-	private final UserChara[] friendCharaClass = {new Marisa(),new Reimu()};
+	private final UserChara[] friendCharaClass = new UserChara[2];
 	private final ArrayList<Chara> enemyCharaClass = new ArrayList<Chara>();
 	private final Stage[] stages = new Stage[1];
 	private int nowStage;
 	
 	public static final int FRIEND = 0,ENEMY = 100;
-	final int F_MOVE_SPD = 20;
+	final int F_MOVE_SPD = 8;
 	
 	int formationsX[],formationsY[];
 	int formationCenterX,formationCenterY;
@@ -40,11 +40,8 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	}
 	@Override
 	public final Chara[] charaSetup() {
+		//control
 		THH.addControlExpansion(ctrlEx);
-		for(Chara chara : friendCharaClass) {
-			chara.loadImageData();
-			chara.loadSoundData();
-		}
 		//formation
 		formationCenterX = THH.getScreenW()/2;formationCenterY = THH.getScreenH()/2;
 		formationsX = new int[2];
@@ -52,36 +49,27 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		formationsX[0] = -15;formationsY[0] = 0;
 		formationsX[1] = +15;formationsY[1] = 0;
 		//friend
-		friendCharaClass[0].battleStarted();
-		friendCharaClass[1].battleStarted();
-		friendCharaClass[0].spawn(0,FRIEND,formationCenterX + formationsX[0],THH.getScreenH());
-		friendCharaClass[1].spawn(1,FRIEND,formationCenterX + formationsX[1],THH.getScreenH());
+		friendCharaClass[0] = (UserChara)new Marisa().initialSpawn(0,FRIEND,formationCenterX + formationsX[0],THH.getScreenH());
+		friendCharaClass[1] = (UserChara)new Reimu().initialSpawn(1,FRIEND,formationCenterX + formationsX[1],THH.getScreenH());
 		//action
 		ActionInfo.clear();
 		ActionInfo.addDstPlan(1000, THH.getScreenW() - 200, THH.getScreenH() + 100);
 		ActionInfo.addDstPlan(1000, THH.getScreenW() + 200, THH.getScreenH() + 100);
 		final Action moveLeftToRight200 = new Action(this);
 		//enemy
-		Chara enemy = new Fairy();
-		enemy.loadImageData();
-		enemy.loadSoundData();
-		enemy.battleStarted();
-		enemy.spawn(0, ENEMY, 300, THH.random2(100, 150),1000);
-		enemyCharaClass.add(enemy);
-		Chara enemy2 = new WhiteMan();
-		enemy2.loadImageData();
-		enemy2.loadSoundData();
-		enemy2.battleStarted();
-		enemy2.spawn(1, ENEMY, 400, THH.random2(100, 150),50000);
-		enemyCharaClass.add(enemy2);
-		Chara enemy3 = new BlackMan();
-		enemy3.loadImageData();
-		enemy3.loadSoundData();
-		enemy3.battleStarted();
-		enemy3.spawn(1, ENEMY, 200, THH.random2(100, 150),10000);
-		enemyCharaClass.add(enemy3);
+		enemyCharaClass.add(new Fairy().initialSpawn(0, ENEMY, 300, 100,2500));
+		enemyCharaClass.add(new Fairy().initialSpawn(0, ENEMY, 700, 20,2500));
+		enemyCharaClass.add(new Fairy().initialSpawn(0, ENEMY, 1200, 300,2500));
+		enemyCharaClass.add(new Fairy().initialSpawn(0, ENEMY, 1800, 700,2500));
+		enemyCharaClass.add(new WhiteMan().initialSpawn(1, ENEMY, 400, THH.random2(100, 150),50000));
+		enemyCharaClass.add(new BlackMan().initialSpawn(1, ENEMY, 200, THH.random2(100, 150),10000));
 		
-		return new Chara[]{friendCharaClass[0],friendCharaClass[1],enemy,enemy2,enemy3};
+		//result
+		final ArrayList<Chara> allCharaClass = new ArrayList<Chara>();
+		allCharaClass.add(friendCharaClass[0]);
+		allCharaClass.add(friendCharaClass[1]);
+		allCharaClass.addAll(enemyCharaClass);
+		return allCharaClass.toArray(new Chara[0]);
 	}
 	@Override
 	public final Stage stageSetup() {
@@ -99,9 +87,17 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	@Override
 	public final void idle(Graphics2D g2,int stopEventKind) {
 		gameFrame++;
+		//stagePaint
+		//background
+		g2.setColor(new Color(45,239,124));
+		g2.fillRect(0,0,stages[nowStage].getStageW(),stages[nowStage].getStageH());
+		//landscape
+		g2.setColor(Color.LIGHT_GRAY);
+		g2.fill(stages[nowStage].getLandPolygon());
 		g2.setColor(Color.GRAY);
 		g2.setStroke(THH.stroke3);
 		g2.draw(stages[nowStage].getLandPolygon());
+		////////////////
 		if(stopEventKind == NONE) {
 			final int MOUSE_X = THH.getMouseX(),MOUSE_Y = THH.getMouseY();
 			//gravity

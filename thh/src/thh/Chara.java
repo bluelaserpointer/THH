@@ -2,10 +2,8 @@ package thh;
 
 import action.Action;
 import bullet.Bullet;
-import bullet.BulletSource;
-import effect.EffectSource;
 
-public abstract class Chara implements BulletSource,EffectSource,MessageSource,DynamInteractable{
+public abstract class Chara implements MessageSource,DynamInteractable{
 	//•’•£©`•Î•…
 	//•∑•π•∆•‡ÈvﬂB
 	protected static final int
@@ -19,18 +17,32 @@ public abstract class Chara implements BulletSource,EffectSource,MessageSource,D
 	//•·•Ω•√•…
 	
 	//Initialization
-	public void battleStarted(){}
-	public abstract void spawn(int charaID,int charaTeam,int spawnX,int spawnY);
-	public abstract void spawn(int charaID,int charaTeam,int spawnX,int spawnY,int hp);
+	public final Chara initialSpawn(int charaID,int charaTeam,int spawnX,int spawnY) {
+		loadImageData();
+		loadSoundData();
+		battleStarted();
+		respawn(charaID,charaTeam,spawnX,spawnY);
+		return this;
+	}
+	public final Chara initialSpawn(int charaID,int charaTeam,int spawnX,int spawnY,int hp) {
+		loadImageData();
+		loadSoundData();
+		battleStarted();
+		respawn(charaID,charaTeam,spawnX,spawnY,hp);
+		return this;
+	}
+	public abstract void respawn(int charaID,int charaTeam,int spawnX,int spawnY);
+	public abstract void respawn(int charaID,int charaTeam,int spawnX,int spawnY,int hp);
 	public void loadImageData(){} //ª≠œÒ’i§ﬂﬁz§ﬂ
 	public void loadSoundData(){} //•µ•¶•Û•…’i§ﬂﬁz§ﬂ
+	public void battleStarted(){}
 	
 	//idles
 	public static final int ACITIVE_CONS = 0,PASSIVE_CONS = 1,DYNAM = 2,PAINT_ANIMATED = 3,PAINT_FREEZED = 4,STOP_ALL = 5;
 	public final void idle() {
 		this.idle(ACITIVE_CONS);
 	}
-	public final void idle(int stopLevel) {
+	public void idle(int stopLevel) {
 		switch(stopLevel) {
 		case 0:
 			activeCons();
