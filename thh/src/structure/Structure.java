@@ -1,5 +1,9 @@
 package structure;
 
+import java.awt.Graphics2D;
+import java.awt.geom.Line2D;
+
+import thh.DynamInteractable;
 import thh.ErrorCounter;
 import thh.THH;
 
@@ -32,9 +36,22 @@ public abstract class Structure{
 	public void dynam() {};
 	public void paint(boolean doAnimation) {};
 	
-	public abstract boolean hitLandscape(int x,int y,int w,int h);
-	public boolean hitLandscape(int team,int x,int y,int w,int h) {
-		return THH.isRival(team,getTeam()) && hitLandscape(x,y,w,h);
+	//role
+	public abstract void doFill(Graphics2D g2);
+	public abstract void doDraw(Graphics2D g2);
+	
+	//information
+	public abstract boolean contains(int x,int y,int w,int h);
+	public boolean hit(int team,int x,int y,int w,int h) {
+		return THH.isRival(team,getTeam()) && contains(x,y,w,h);
+	}
+	public abstract boolean intersectsLine(Line2D line);
+	public final boolean intersectsLine(double x1,double y1,double x2,double y2) {
+		return intersectsLine(new Line2D.Double(x1,y1,x2,y2));
+	}
+	public final boolean intersectsLine(DynamInteractable d1,DynamInteractable d2) {
+		return intersectsLine(d1.getX(),d1.getY(),d2.getX(),d2.getY());
 	}
 	public abstract int getTeam();
+	
 }

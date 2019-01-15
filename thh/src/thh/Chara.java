@@ -67,6 +67,11 @@ public abstract class Chara implements MessageSource,DynamInteractable{
 	public void dynam() {};
 	public void paint(boolean doAnimation) {};
 	
+	//tool
+	public final boolean underLoS(Chara chara) {
+		return THH.getStage().underLoS(this, chara);
+	}
+	
 	//control
 	//move
 	public abstract void moveRel(int dx,int dy);

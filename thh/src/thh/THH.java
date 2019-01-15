@@ -451,6 +451,9 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public static final Stage getStage() {
 		return stage;
 	}
+	public final boolean underLoS(DynamInteractable e1,DynamInteractable e2) {
+		return stage.underLoS(e1, e2);
+	}
 	public static final boolean hitLandscape(int x,int y,int size) {
 		if(size <= 0)
 			return false;
@@ -789,6 +792,9 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static boolean isNoStopEvent() {
 		return !freezeScreen && stopEventKind == NONE;
+	}
+	public static boolean isFreezeScreen() {
+		return freezeScreen;
 	}
 	public static final void prepareBulletInfo() {
 		BulletInfo.clear();

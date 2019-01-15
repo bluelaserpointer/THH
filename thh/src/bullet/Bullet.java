@@ -185,6 +185,11 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		else
 			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);
 	}
+	//tool
+	public int getPassedFrame() {
+		return THH.getPassedFrame(INITIAL_FRAME);
+	}
+	
 	//control
 	@Override
 	public final void setXY(double x,double y) {

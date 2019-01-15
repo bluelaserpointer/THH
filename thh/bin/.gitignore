@@ -1,9 +1,13 @@
-/image/
+/.classpath
+/.project
+/.settings/
+/_config_1.0/
 /action/
 /bullet/
 /chara/
 /effect/
 /engine/
+/image/
 /library/
 /manifest
 /stage/

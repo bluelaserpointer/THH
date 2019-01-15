@@ -28,7 +28,7 @@ public abstract class Tile extends Structure{
 		IMAGE_ID = imageIID;
 	}
 	@Override
-	public boolean hitLandscape(int x,int y,int w,int h) {
+	public boolean contains(int x,int y,int w,int h) {
 		final int LENGTH = tileX.size();
 		for(int i = 0;i < LENGTH;i++) {
 			if(THH.rectangleCollision(tileX.get(i), tileY.get(i), TILE_SIZE, TILE_SIZE, x, y, w, h))

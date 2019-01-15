@@ -13,6 +13,7 @@ import chara.*;
 import stage.Stage;
 import stage.StageEngine;
 import stage.StageInfo;
+import structure.Structure;
 import thh.Chara;
 import thh.MessageSource;
 import thh.THH;
@@ -29,14 +30,27 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	int formationsX[],formationsY[];
 	int formationCenterX,formationCenterY;
 	
+	//images
+	//stageObject
+	private int vegImageIID[] = new int[5];
+	
 	private final CtrlEx_THH1 ctrlEx = new CtrlEx_THH1(this);
 	
 	int focusIID;
+	
+	//editMode
+	static boolean editMode;
 	
 	//initialization
 	@Override
 	public final void loadResource() {
 		focusIID = thh.loadImage("focus.png");
+		vegImageIID[0] = thh.loadImage("veg_leaf.png");
+		vegImageIID[1] = thh.loadImage("veg_flower.png");
+		vegImageIID[2] = thh.loadImage("veg_leaf2.png");
+		vegImageIID[3] = thh.loadImage("veg_stone.png");
+		vegImageIID[4] = thh.loadImage("veg_leaf3.png");
+		Editor.freeShapeIID = thh.loadImage("gui_editor/FreeShape.png");
 	}
 	@Override
 	public final Chara[] charaSetup() {
@@ -89,14 +103,29 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		gameFrame++;
 		//stagePaint
 		//background
-		g2.setColor(new Color(45,239,124));
+		g2.setColor(new Color(112,173,71));
 		g2.fillRect(0,0,stages[nowStage].getStageW(),stages[nowStage].getStageH());
 		//landscape
 		g2.setColor(Color.LIGHT_GRAY);
-		g2.fill(stages[nowStage].getLandPolygon());
+		for(Structure ver : stages[nowStage].getPrimeStructures())
+			ver.doFill(g2);
+		for(Structure ver : stages[nowStage].getSubStructures())
+			ver.doFill(g2);
 		g2.setColor(Color.GRAY);
 		g2.setStroke(THH.stroke3);
-		g2.draw(stages[nowStage].getLandPolygon());
+		for(Structure ver : stages[nowStage].getPrimeStructures())
+			ver.doDraw(g2);
+		for(Structure ver : stages[nowStage].getSubStructures())
+			ver.doDraw(g2);
+		//vegitation
+		thh.drawImageTHH_center(vegImageIID[3], 1172, 886,1.3);
+		thh.drawImageTHH_center(vegImageIID[0], 1200, 800,1.0);
+		thh.drawImageTHH_center(vegImageIID[0], 1800, 350,1.4);
+		thh.drawImageTHH_center(vegImageIID[0], 1160, 870,1.7);
+		thh.drawImageTHH_center(vegImageIID[1], 1180, 830,1.3);
+		thh.drawImageTHH_center(vegImageIID[2], 1102, 815,1.3);
+		thh.drawImageTHH_center(vegImageIID[2], 1122, 826,1.3);
+		thh.drawImageTHH_center(vegImageIID[4], 822, 886,1.3);
 		////////////////
 		if(stopEventKind == NONE) {
 			final int MOUSE_X = THH.getMouseX(),MOUSE_Y = THH.getMouseY();
@@ -195,6 +224,10 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 				enemy.idle(Chara.PAINT_FREEZED);
 			}
 		}
+		//editor
+		if(editMode) {
+			Editor.doEditorPaint(g2);
+		}
 	}
 	
 	//control
@@ -227,4 +260,15 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	}
 	private boolean doScrollView = true;
 	private boolean doGravity = false;
+	
+	private static final class Editor{
+		//gui
+		private static int freeShapeIID;
+		//role
+		static void doEditorPaint(Graphics2D g2) {
+			g2.setColor(Color.GREEN);
+			g2.drawString("EDIT_MODE", 20, 20);
+			THH.thh.drawImageTHH(freeShapeIID,80,200);
+		}
+	}
 }

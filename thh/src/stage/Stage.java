@@ -1,9 +1,8 @@
 package stage;
 
-import java.awt.Polygon;
-
 import structure.Structure;
 import thh.Chara;
+import thh.DynamInteractable;
 import thh.THH;
 
 public class Stage {
@@ -17,9 +16,6 @@ public class Stage {
 	//chara
 	private Chara[] primeCharas; //多数派(敵など)
 	private Chara[] subCharas; //少数派
-	//testStage
-	private int[] poliX,poliY;
-	private Polygon landPolygon;
 	
 	{
 		reset();
@@ -35,9 +31,6 @@ public class Stage {
 		gravity = StageInfo.gravity;
 		stageW = StageInfo.stageW;
 		stageH = StageInfo.stageH;
-		poliX = StageInfo.poliX;
-		poliY = StageInfo.poliY;
-		landPolygon = new Polygon(poliX,poliY,poliX.length);
 		primeStructures = StageInfo.primeStructures;
 		subStructures = StageInfo.subStructures;
 		primeCharas = StageInfo.primeCharas;
@@ -48,8 +41,6 @@ public class Stage {
 		StageInfo.gravity = gravity;
 		StageInfo.stageW = stageW;
 		StageInfo.stageH = stageH;
-		StageInfo.poliX = poliX;
-		StageInfo.poliY = poliY;
 		StageInfo.primeStructures = primeStructures;
 		StageInfo.subStructures = subStructures;
 		StageInfo.primeCharas = primeCharas;
@@ -64,11 +55,11 @@ public class Stage {
 	public final String getStageName() {
 		return name;
 	}
-	public final boolean hasGravity() {
-		return gravity != 0;
+	public final Structure[] getPrimeStructures() {
+		return primeStructures;
 	}
-	public final double getGravity() {
-		return gravity;
+	public final Structure[] getSubStructures() {
+		return subStructures;
 	}
 	public final int getStageW() {
 		return stageW;
@@ -76,19 +67,33 @@ public class Stage {
 	public final int getStageH() {
 		return stageH;
 	}
+	public final boolean hasGravity() {
+		return gravity != 0;
+	}
+	public final double getGravity() {
+		return gravity;
+	}
 	public final boolean inStage(int x,int y) {
 		return 0 <= x && x < stageW && 0 <= y && y < stageH;
 	}
-	public final Polygon getLandPolygon() {
-		return landPolygon;
+	public final boolean underLoS(DynamInteractable d1,DynamInteractable d2) {
+		for(Structure ver : primeStructures) {
+			if(ver.intersectsLine(d1,d2))
+				return false;
+		}
+		for(Structure ver : subStructures) {
+			if(ver.intersectsLine(d1,d2))
+				return false;
+		}
+		return false;
 	}
 	public final boolean hitLandscape(int x,int y,int w,int h){
 		for(Structure structure : primeStructures) {
-			if(structure.hitLandscape(x, y, w, h))
+			if(structure.contains(x, y, w, h))
 				return true;
 		}
 		for(Structure structure : subStructures) {
-			if(structure.hitLandscape(x, y, w, h))
+			if(structure.contains(x, y, w, h))
 				return true;
 		}
 		return false;
@@ -96,12 +101,12 @@ public class Stage {
 	public final boolean hitLandscape(int team,int x,int y,int w,int h){
 		if(primeStructures.length > 0 && THH.isRival(team,primeStructures[0].getTeam())) {
 			for(Structure structure : primeStructures) {
-				if(structure.hitLandscape(x, y, w, h))
+				if(structure.contains(x, y, w, h))
 					return true;
 			}
 		}
 		for(Structure structure : subStructures) {
-			if(structure.hitLandscape(team,x, y, w, h))
+			if(structure.hit(team,x, y, w, h))
 				return true;
 		}
 		return false;

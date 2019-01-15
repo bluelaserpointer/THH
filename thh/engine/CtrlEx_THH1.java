@@ -88,6 +88,11 @@ public class CtrlEx_THH1 extends ControlExpansion{
 				battleCharaClass[3].spellOrder = true;
 			key_4_time = THH.getNowTime();
 			break;
+		case VK_F5:
+			Engine_THH1.editMode = false;
+		case VK_F6:
+			if(THH.isFreezeScreen())
+				Engine_THH1.editMode = !Engine_THH1.editMode;
 		}
 	}
 	@Override
