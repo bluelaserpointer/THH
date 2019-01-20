@@ -19,6 +19,7 @@ public abstract class StageEngine{
 	
 	
 	//initialization
+	public abstract ControlExpansion getCtrl_ex();
 	public abstract void loadResource();
 	public abstract Chara[] charaSetup();
 	public abstract Stage stageSetup();

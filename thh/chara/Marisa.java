@@ -12,7 +12,7 @@ import weapon.WeaponInfo;
 
 public class Marisa extends UserChara{
 	{
-		charaSize = 10;
+		charaSize = 20;
 	}
 	@Override
 	public final String getName() {
@@ -276,24 +276,24 @@ public class Marisa extends UserChara{
 	{
 		effectScripts[MISSILE_TRACE1_EF] = new EffectScript() {
 			@Override
-			public final void effectPaint(Effect effect) {
+			public final void effectNoAnmPaint(Effect effect) {
 				effectFadePaint(effect);
 			}
 		};
 		effectScripts[MISSILE_TRACE2_EF] = new EffectScript() {
 			@Override
-			public final void effectPaint(Effect effect) {
+			public final void effectNoAnmPaint(Effect effect) {
 				THH.setImageAlpha((float)(1.0 - (double)THH.getPassedFrame(effect.INITIAL_FRAME)/effect.LIMIT_FRAME));
 				effect.spin(0.05);
-				super.effectPaint(effect);
+				super.effectNoAnmPaint(effect);
 				THH.setImageAlpha();
 			}
 		};
 		effectScripts[MISSILE_HIT_EF] = new EffectScript() {
 			@Override
-			public final void effectPaint(Effect effect) {
+			public final void effectNoAnmPaint(Effect effect) {
 				THH.setImageAlpha((float)(1.0 - (double)THH.getPassedFrame(effect.INITIAL_FRAME)/effect.LIMIT_FRAME));
-				super.effectPaint(effect);
+				super.effectNoAnmPaint(effect);
 				THH.setImageAlpha();
 			}
 		};

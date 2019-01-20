@@ -35,14 +35,14 @@ public class Splash {
 	}
 	private static final EffectScript splash_script = new EffectScript() {
 		@Override
-		public final void effectPaint(Effect effect) {
+		public final void effectNoAnmPaint(Effect effect) {
 			if(doImageRotate) {
 				THH.setImageAlpha((float)(1.0 - (double)THH.getPassedFrame(effect.INITIAL_FRAME)/effect.LIMIT_FRAME));
 				effect.defaultPaint();
 				THH.setImageAlpha();
 			}else {
 				THH.setImageAlpha((float)(1.0 - (double)THH.getPassedFrame(effect.INITIAL_FRAME)/effect.LIMIT_FRAME));
-				THH.thh.drawImageTHH_center(imageID, (int)effect.getX(), (int)effect.getY());
+				THH.drawImageTHH_center(imageID, (int)effect.getX(), (int)effect.getY());
 				THH.setImageAlpha();
 			}
 		}

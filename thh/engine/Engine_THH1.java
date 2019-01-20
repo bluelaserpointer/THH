@@ -10,6 +10,7 @@ import action.ActionInfo;
 import action.ActionSource;
 import bullet.Bullet;
 import chara.*;
+import stage.ControlExpansion;
 import stage.Stage;
 import stage.StageEngine;
 import stage.StageInfo;
@@ -19,9 +20,9 @@ import thh.MessageSource;
 import thh.THH;
 
 public class Engine_THH1 extends StageEngine implements MessageSource,ActionSource{
-	private final UserChara[] friendCharaClass = new UserChara[2];
-	private final ArrayList<Chara> enemyCharaClass = new ArrayList<Chara>();
-	private final Stage[] stages = new Stage[1];
+	private static final UserChara[] friendCharaClass = new UserChara[2];
+	private static final ArrayList<Chara> enemyCharaClass = new ArrayList<Chara>();
+	private static final Stage[] stages = new Stage[1];
 	private int nowStage;
 	
 	public static final int FRIEND = 0,ENEMY = 100;
@@ -34,7 +35,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	//stageObject
 	private int vegImageIID[] = new int[5];
 	
-	private final CtrlEx_THH1 ctrlEx = new CtrlEx_THH1(this);
+	private static final CtrlEx_THH1 ctrlEx = new CtrlEx_THH1();
 	
 	int focusIID;
 	
@@ -42,6 +43,10 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	static boolean editMode;
 	
 	//initialization
+	@Override
+	public final ControlExpansion getCtrl_ex() {
+		return ctrlEx;
+	}
 	@Override
 	public final void loadResource() {
 		focusIID = thh.loadImage("focus.png");
@@ -54,8 +59,6 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	}
 	@Override
 	public final Chara[] charaSetup() {
-		//control
-		THH.addControlExpansion(ctrlEx);
 		//formation
 		formationCenterX = THH.getScreenW()/2;formationCenterY = THH.getScreenH()/2;
 		formationsX = new int[2];
@@ -118,17 +121,17 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		for(Structure ver : stages[nowStage].getSubStructures())
 			ver.doDraw(g2);
 		//vegitation
-		thh.drawImageTHH_center(vegImageIID[3], 1172, 886,1.3);
-		thh.drawImageTHH_center(vegImageIID[0], 1200, 800,1.0);
-		thh.drawImageTHH_center(vegImageIID[0], 1800, 350,1.4);
-		thh.drawImageTHH_center(vegImageIID[0], 1160, 870,1.7);
-		thh.drawImageTHH_center(vegImageIID[1], 1180, 830,1.3);
-		thh.drawImageTHH_center(vegImageIID[2], 1102, 815,1.3);
-		thh.drawImageTHH_center(vegImageIID[2], 1122, 826,1.3);
-		thh.drawImageTHH_center(vegImageIID[4], 822, 886,1.3);
+		THH.drawImageTHH_center(vegImageIID[3], 1172, 886,1.3);
+		THH.drawImageTHH_center(vegImageIID[0], 1200, 800,1.0);
+		THH.drawImageTHH_center(vegImageIID[0], 1800, 350,1.4);
+		THH.drawImageTHH_center(vegImageIID[0], 1160, 870,1.7);
+		THH.drawImageTHH_center(vegImageIID[1], 1180, 830,1.3);
+		THH.drawImageTHH_center(vegImageIID[2], 1102, 815,1.3);
+		THH.drawImageTHH_center(vegImageIID[2], 1122, 826,1.3);
+		THH.drawImageTHH_center(vegImageIID[4], 822, 886,1.3);
 		////////////////
+		final int MOUSE_X = THH.getMouseX(),MOUSE_Y = THH.getMouseY();
 		if(stopEventKind == NONE) {
-			final int MOUSE_X = THH.getMouseX(),MOUSE_Y = THH.getMouseY();
 			//gravity
 			if(doGravity) {
 				for(Chara chara : friendCharaClass)
@@ -174,25 +177,14 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 				for(Chara chara : friendCharaClass)
 					chara.attackOrder = ctrlEx.getCommandBool(CtrlEx_THH1.SHOT);
 				//spell
-				if(ctrlEx.pullCommandBool(CtrlEx_THH1.SPELL)) {
-					if(ctrlEx.spellUser < friendCharaClass.length) {
-						friendCharaClass[ctrlEx.spellUser].spellOrder = true;
-						ctrlEx.spellUser = NONE;
+				{
+					int spellUser;
+					while((spellUser = ctrlEx.pullSpellUser()) != NONE) {
+						if(spellUser < friendCharaClass.length)
+							friendCharaClass[spellUser].spellOrder = true;
 					}
 				}
-				//entity
-				THH.defaultEntityIdle();
 				break;
-			}
-			//focus
-			g2.setColor(new Color(10,200,10,100));
-			g2.setStroke(THH.stroke1);
-			g2.drawLine(formationCenterX,formationCenterY,MOUSE_X,MOUSE_Y);
-			thh.drawImageTHH(focusIID,MOUSE_X,MOUSE_Y);
-			//scroll by mouse
-			if(doScrollView) {
-				THH.viewTargetTo((MOUSE_X + formationCenterX)/2,(MOUSE_Y + formationCenterY)/2);
-				THH.viewApproach_rate(10);
 			}
 			//formation
 			if(ctrlEx.getCommandBool(CtrlEx_THH1.UP)) {
@@ -213,16 +205,20 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 				THH.viewTargetMove(F_MOVE_SPD,0);
 				THH.pureViewMove(F_MOVE_SPD,0);
 			}
-		}else if(stopEventKind == THH.STOP) {
-			for(int i = 0;i < enemyCharaClass.size();i++) {
-				final Chara enemy = enemyCharaClass.get(i);
-				enemy.idle(Chara.PASSIVE_CONS);
-			}
-		}else if(stopEventKind == THH.FREEZE) {
-			for(int i = 0;i < enemyCharaClass.size();i++) {
-				final Chara enemy = enemyCharaClass.get(i);
-				enemy.idle(Chara.PAINT_FREEZED);
-			}
+		}else if(stopEventKind == THH.STOP || stopEventKind == THH.NO_ANM_STOP) {
+			THH.defaultCharaIdle(friendCharaClass);
+			THH.defaultCharaIdle(enemyCharaClass);
+		}
+		THH.defaultEntityIdle();
+		//focus
+		g2.setColor(new Color(10,200,10,100));
+		g2.setStroke(THH.stroke1);
+		g2.drawLine(formationCenterX,formationCenterY,MOUSE_X,MOUSE_Y);
+		THH.drawImageTHH_center(focusIID,MOUSE_X,MOUSE_Y);
+		//scroll by mouse
+		if(stopEventKind == NONE && doScrollView) {
+			THH.viewTargetTo((MOUSE_X + formationCenterX)/2,(MOUSE_Y + formationCenterY)/2);
+			THH.viewApproach_rate(10);
 		}
 		//editor
 		if(editMode) {
@@ -255,7 +251,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	public final int getGameFrame() {
 		return gameFrame;
 	}
-	final Chara[] getUserChara() {
+	final static Chara[] getUserChara() {
 		return friendCharaClass;
 	}
 	private boolean doScrollView = true;
@@ -266,9 +262,11 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		private static int freeShapeIID;
 		//role
 		static void doEditorPaint(Graphics2D g2) {
-			g2.setColor(Color.GREEN);
+			THH.translate(true);
+			g2.setColor(Color.WHITE);
 			g2.drawString("EDIT_MODE", 20, 20);
-			THH.thh.drawImageTHH(freeShapeIID,80,200);
+			THH.drawImageTHH_center(freeShapeIID,80,200);
+			THH.translate(false);
 		}
 	}
 }

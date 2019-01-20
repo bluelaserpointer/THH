@@ -6,12 +6,12 @@ public class BulletScript {
 
 	public void bulletIdle(Bullet bullet) { //Include painting
 		if(bullet.defaultIdle())
-			bulletPaint(bullet);
-	}
-	public void bulletAnimationPaint(Bullet bullet) {
-		this.bulletPaint(bullet);
+			bulletNoAnmPaint(bullet);
 	}
 	public void bulletPaint(Bullet bullet) {
+		this.bulletNoAnmPaint(bullet);
+	}
+	public void bulletNoAnmPaint(Bullet bullet) {
 		bullet.defaultPaint();
 	}
 	

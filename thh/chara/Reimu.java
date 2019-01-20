@@ -14,7 +14,7 @@ import weapon.WeaponInfo;
 
 public class Reimu extends UserChara{
 	{
-		charaSize = 10;
+		charaSize = 20;
 	}
 	@Override
 	public final String getName() {

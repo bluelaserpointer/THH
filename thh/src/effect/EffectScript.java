@@ -6,12 +6,12 @@ public class EffectScript {
 	//idle
 	public void effectIdle(Effect effect) { //Include painting
 		if(effect.defaultIdle())
-			effectPaint(effect);
-	}
-	public void effectAnimationPaint(Effect effect) {
-		this.effectPaint(effect);
+			effectNoAnmPaint(effect);
 	}
 	public void effectPaint(Effect effect) {
+		this.effectNoAnmPaint(effect);
+	}
+	public void effectNoAnmPaint(Effect effect) {
 		effect.defaultPaint();
 	}
 	

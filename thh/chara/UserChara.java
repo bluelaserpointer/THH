@@ -140,7 +140,7 @@ public abstract class UserChara extends Chara {
 	public void paint(boolean doAnimation) {
 		if(charaHP <= 0)
 			return;
-		thh.drawImageTHH(charaIID, (int) charaX, (int) charaY);
+		THH.drawImageTHH_center(charaIID, (int) charaX, (int) charaY);
 		thh.paintHPArc((int) charaX, (int) charaY, 20,charaHP, charaBaseHP);
 	}
 	

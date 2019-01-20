@@ -92,8 +92,8 @@ public class Effect extends Entity_double{
 	}
 	public final void defaultPaint() {
 		if(angle == 0)
-			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
+			THH.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
 		else
-			THH.thh.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);
+			THH.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);
 	}
 }

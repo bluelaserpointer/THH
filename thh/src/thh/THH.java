@@ -77,9 +77,8 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	
 	//stopEvent
 	private static int stopEventKind = NONE;
-	public static final int STOP = 0,FREEZE = 1;
-	private static int stopEventReason;
-	public static final int MESSAGE = 0,SPELL = 1;
+	public static final int STOP = 0,NO_ANM_STOP = 1;
+	private static boolean messageStop,spellStop;
 	
 	//ウィンドウ関連
 	private final int defaultScreenW = 1000,defaultScreenH = 600; //デフォルトウィンドサイズ
@@ -99,6 +98,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	//stage
 	private static StageEngine engine = new Engine_THH1();
 	private static Stage stage;
+	private static ControlExpansion ctrlEx = engine.getCtrl_ex();
 	
 	//bullet data
 	private static final ArrayListEx<Bullet> bullets = new ArrayListEx<Bullet>();
@@ -113,7 +113,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	private int messageIterator;
 
 	//ResourceSystem
-	private Image[] arrayImage = new Image[128];
+	private static Image[] arrayImage = new Image[128];
 	private String[] arrayImageURL = new String[128];
 	private int arrayImage_maxID = -1;
 	private SoundClip[] arraySound = new SoundClip[128];
@@ -172,12 +172,12 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 				try{
 					Thread.sleep(25L);
 				}catch(InterruptedException e){}
-				if(freezeScreen)
-					continue;
-				systemFrame++;
-				if(stopEventKind == NONE)
-					gameFrame++;
-				repaint();
+				if(!freezeScreen) {
+					repaint();
+					systemFrame++;
+					if(stopEventKind == NONE)
+						gameFrame++;
+				}
 			}
 		//}catch(Exception e){
 			//JOptionPane.showMessageDialog(null, "怽偟栿偁傝傑偣傫偑丄僄儔乕偑敪惗偟傑偟偨丅\n僄儔乕僐乕僪丗" + e.toString(),"僄儔乕",JOptionPane.ERROR_MESSAGE);
@@ -217,15 +217,14 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		g2.translate(-TRANSLATE_X, -TRANSLATE_Y);
 		{
 			//message system///////////////
-			if(stopEventKind != NONE && stopEventReason == MESSAGE) {
+			if(messageStop) {
 				if(messageStr.size() > 0) {
 					if(messageIterator > messageStr.getFirst().length() - 1){
 						if(key_enter) { //next message order
 							messageStr.remove();
-							final MessageSource SOURCE = messageSource.remove();
 							final int EVENT = messageEvent.remove();
 							if(EVENT != NONE)
-								SOURCE.eventNotice(EVENT);
+								messageSource.remove().eventNotice(EVENT);
 							messageIterator = 0;
 							key_enter = false;
 						}
@@ -242,7 +241,8 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 						g2.drawString(messageStr.getFirst().substring(0, messageIterator), 150, 450);
 					}
 				}else { //finished reading
-					stopEventKind = stopEventReason = NONE;
+					stopEventKind = NONE;
+					messageStop = false;
 					messageIterator = 0;
 					messageStr.clear();
 					messageSource.clear();
@@ -309,9 +309,6 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 				}
 			}
 		}
-		//UI昤夋
-		g2.setColor(Color.GRAY);
-		g2.fillRect(0,0,defaultScreenW,40);
 		g.drawImage(offImage,0,0,screenW,screenH,this);
 		loadTime_total = System.currentTimeMillis() - LOAD_TIME_PAINTCOMPONENT;
 	}
@@ -329,7 +326,24 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			for(Chara chara : characters)
 				chara.idle(Chara.PASSIVE_CONS);
 			break;
-		case FREEZE:
+		case NO_ANM_STOP:
+			for(Chara chara : characters)
+				chara.idle(Chara.PAINT_FREEZED);
+			break;
+		default:
+			for(Chara chara : characters) {
+				chara.idle();
+				chara.resetSingleOrder();
+			}
+		}
+	}
+	public static final void defaultCharaIdle(ArrayList<Chara> characters) {
+		switch(stopEventKind) {
+		case STOP:
+			for(Chara chara : characters)
+				chara.idle(Chara.PASSIVE_CONS);
+			break;
+		case NO_ANM_STOP:
 			for(Chara chara : characters)
 				chara.idle(Chara.PAINT_FREEZED);
 			break;
@@ -348,21 +362,21 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		case STOP:
 			while(bullets.hasNext()) {
 				final Bullet bullet = bullets.next();
-				bullet.SCRIPT.bulletAnimationPaint(bullet);
-			}
-			while(effects.hasNext()) {
-				final Effect effect = effects.next();
-				effect.SCRIPT.effectAnimationPaint(effect);
-			}
-			break;
-		case FREEZE:
-			while(bullets.hasNext()) {
-				final Bullet bullet = bullets.next();
 				bullet.SCRIPT.bulletPaint(bullet);
 			}
 			while(effects.hasNext()) {
 				final Effect effect = effects.next();
 				effect.SCRIPT.effectPaint(effect);
+			}
+			break;
+		case NO_ANM_STOP:
+			while(bullets.hasNext()) {
+				final Bullet bullet = bullets.next();
+				bullet.SCRIPT.bulletNoAnmPaint(bullet);
+			}
+			while(effects.hasNext()) {
+				final Effect effect = effects.next();
+				effect.SCRIPT.effectNoAnmPaint(effect);
 			}
 			break;
 		default:
@@ -381,7 +395,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		case STOP:
 			chara.idle(Chara.PASSIVE_CONS);
 			break;
-		case FREEZE:
+		case NO_ANM_STOP:
 			chara.idle(Chara.PAINT_FREEZED);
 			break;
 		default:
@@ -559,7 +573,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			g2.setColor(Color.GREEN); //緑色
 		else if((double)hp/(double)maxHP > 0.25)
 			g2.setColor(Color.YELLOW); //黄色
-		else if((double)hp/(double)maxHP > 0.10 || systemFrame % 4 < 2)
+		else if((double)hp/(double)maxHP > 0.10 || gameFrame % 4 < 2)
 			g2.setColor(Color.RED); //赤色
 		else
 			g2.setColor(HPWarningColor);
@@ -608,14 +622,14 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return Arrays.copyOf(foundIDs,foundAmount);
 	}
-	public final static boolean squreCollision(int x1,int y1,int size1,int x2,int y2,int size2) {
+	public static final boolean squreCollision(int x1,int y1,int size1,int x2,int y2,int size2) {
 		final int halfSize = (size1 + size2)/2;
 		return abs(x1 - x2) < halfSize && abs(y1 - y2) < halfSize;
 	}
-	public final static boolean rectangleCollision(int x1,int y1,int w1,int h1,int x2,int y2,int w2,int h2) {
+	public static final boolean rectangleCollision(int x1,int y1,int w1,int h1,int x2,int y2,int w2,int h2) {
 		return abs(x1 - x2) < (w1 + w2)/2 && abs(y1 - y2) < (h1 + h2)/2;
 	}
-	public final static boolean circleCollision(int x1,int y1,int size1,int x2,int y2,int size2) {
+	public static final boolean circleCollision(int x1,int y1,int size1,int x2,int y2,int size2) {
 		final double DX = x1 - x1,DY = y1 - y2,RANGE = size1 + size2;
 		return DX*DX + DY*DY <= RANGE*RANGE;
 	}
@@ -624,25 +638,33 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	private static int mouseX,mouseY;
 	private int mousePointing = NONE; //マウスがポイントしているもの
 	
-	public void mouseWheelMoved(MouseWheelEvent e){}
-	public void mouseEntered(MouseEvent e){}
-	public void mouseExited(MouseEvent e){}
-	public void mousePressed(MouseEvent e){
-		switch(e.getButton()) {
-		case MouseEvent.BUTTON1:
-			
-			break;
+	public void mouseWheelMoved(MouseWheelEvent e){
+		ctrlEx.mouseWheelMoved(e);
 		}
+	public void mouseEntered(MouseEvent e){
+		ctrlEx.mouseEntered(e);
+		}
+	public void mouseExited(MouseEvent e){
+		ctrlEx.mouseExited(e);
+		}
+	public void mousePressed(MouseEvent e){
+		ctrlEx.mousePressed(e);
 	}
-	public void mouseReleased(MouseEvent e){}
-	public void mouseClicked(MouseEvent e){}
+	public void mouseReleased(MouseEvent e){
+		ctrlEx.mouseReleased(e);
+	}
+	public void mouseClicked(MouseEvent e){
+		ctrlEx.mouseClicked(e);
+		}
 	public void mouseMoved(MouseEvent e){
 		final int x = e.getX(),y = e.getY();
 		mouseX = x;mouseY = y;
+		ctrlEx.mouseMoved(e);
 	}
 	public void mouseDragged(MouseEvent e){
 		final int x = e.getX(),y = e.getY();
 		mouseX = x;mouseY = y;
+		ctrlEx.mouseDragged(e);
 	}
 	public static final int getMouseX(){
 		return mouseX - (int)viewX;
@@ -714,6 +736,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			freezeScreen = !freezeScreen;
 			break;
 		}
+		ctrlEx.keyPressed(e);
 	}
 	public void keyReleased(KeyEvent e){
 		switch(e.getKeyCode()){
@@ -749,8 +772,11 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			key_enter = false;
 			break;
 		}
+		ctrlEx.keyReleased(e);
 	}
-	public void keyTyped(KeyEvent e){}
+	public void keyTyped(KeyEvent e){
+		ctrlEx.keyTyped(e);
+	}
 	private final class MyWindowAdapter extends WindowAdapter{
 		public void windowClosing(WindowEvent e){
 			System.exit(0);
@@ -764,11 +790,25 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return keyInputFrame[keyCode];
 	}
 	
+	//control
+	public static final void freezeScreen() {
+		freezeScreen = true;
+	}
+	public static final void stopScreen() {
+		stopEventKind = STOP;
+	}
+	public static final void stopScreen_noAnm() {
+		stopEventKind = NO_ANM_STOP;
+	}
+	public static final void clearStopEvent() {
+		stopEventKind = NONE;
+	}
+	
 	//generation
-	public final static void createBullet(DynamInteractable source){ //弾生成
+	public static final void createBullet(DynamInteractable source){ //弾生成
 		bullets.add(new Bullet(source));
 	}
-	public final static void createEffect(DynamInteractable source){ //弾生成
+	public static final void createEffect(DynamInteractable source){ //弾生成
 		effects.add(new Effect(source));
 	}
 
@@ -811,23 +851,17 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	//event
 	public static final void addMessage(MessageSource source,String message) {
 		stopEventKind = STOP;
-		stopEventReason = MESSAGE;
+		messageStop = true;
 		messageSource.add(source);
 		messageStr.add(message);
 		messageEvent.add(THH.NONE);
 	}
 	public static final void addMessage(MessageSource source,int event,String message) {
 		stopEventKind = STOP;
-		stopEventReason = MESSAGE;
+		messageStop = true;
 		messageSource.add(source);
 		messageStr.add(message);
 		messageEvent.add(event);
-	}
-	public static final void addControlExpansion(ControlExpansion ctrlEX) {
-		thh.addMouseMotionListener(ctrlEX);
-		thh.addMouseListener(ctrlEX);
-		thh.addMouseWheelListener(ctrlEX);
-		thh.myFrame.addKeyListener(ctrlEX);
 	}
 	
 	//premade stage test area
@@ -976,56 +1010,82 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return Arrays.copyOf(charaClass,classAmount);
 	}
 	
+	//PaintTool
+	public static final void translate(boolean forGUI) {
+		if(forGUI)
+			thh.g2.translate(-viewX,-viewY);
+		else
+			thh.g2.translate(viewX,viewY);
+	}
 	//Paint
 	/**
-	* 巜掕偟偨夋憸傪THH傊昤夋偡傞婎杮儊僜僢僪偱偡丅
-	* @param img 昤夋夋憸
-	* @param x 昤夋埵抲x
-	* @param y 昤夋埵抲y
-	* @since beta8.0
+	* x,yが画像の左上角となるように描画します。
+	* @param img 画像
+	* @param x 中心x座標
+	* @param y 中心y座標
+	* @param w 横幅
+	* @param h 立幅
+	* @since alpha1.0
 	*/
-	public final void drawImageTHH(Image img,int x,int y){
-		g2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,this);
-	}
-	public final void drawImageTHH(int imgID,int x,int y){
-		if(0 <= imgID && imgID < arrayImage.length)
-			this.drawImageTHH(arrayImage[imgID],x,y);
+	public static final void drawImageTHH(Image img,int x,int y,int w,int h){
+		thh.g2.drawImage(img,x - w/2,y - h/2,w,h,thh);
 	}
 	/**
-	* 巜掕悺朄偱巜掕偟偨夋憸傪THH傊昤夋偡傞婎杮儊僜僢僪偱偡丅w,h傕愝掕偱偒傑偡丅
-	* @param img 昤夋夋憸
-	* @param x 昤夋埵抲x
-	* @param y 昤夋埵抲y
-	* @param w 墶暆
-	* @param h 廲暆
-	* @since beta8.0
+	* x,yが画像の左上角となるように描画します。
+	* @param imgID 画像ID
+	* @param x 中心x座標
+	* @param y 中心y座標
+	* @param w 横幅
+	* @param h 立幅
+	* @since alpha1.0
 	*/
-	public final void drawImageTHH(Image img,int x,int y,int w,int h){
-		g2.drawImage(img,x,y,w,h,this);
-	}
-	public final void drawImageTHH(int imgID,int x,int y,int w,int h){
-		this.drawImageTHH(arrayImage[imgID],x,y,w,h);
+	public static final void drawImageTHH(int imgID,int x,int y,int w,int h){
+		drawImageTHH(arrayImage[imgID],x - w/2,y - h/2,w,h);
 	}
 	/**
-	* 巜掕嵗昗傪拞怱偲偟偰巜掕偟偨夋憸傪THH偵昤夋偡傞婎杮儊僜僢僪偱偡丅
-	* @param img 昤夋夋憸
-	* @param x 昤夋拞怱埵抲x
-	* @param y 昤夋拞怱埵抲y
-	* @since beta8.0
+	* x,yが画像の中心となるように描画し、かつ指定角度で回転させます。
+	* @param img 画像
+	* @param x 中心x座標
+	* @param y 中心y座標
+	* @param angle 回転角度
+	* @since alpha1.0
 	*/
-	public final void drawImageTHH_center(Image img,int x,int y,double angle){
-		g2.rotate(angle,x,y);
-		g2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,this);
-		g2.rotate(-angle,x,y);
+	public static final void drawImageTHH_center(Image img,int x,int y,double angle){
+		final Graphics2D G2 = thh.g2;
+		G2.rotate(angle,x,y);
+		G2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,thh);
+		G2.rotate(-angle,x,y);
 	}
-	public final void drawImageTHH_center(int imgID,int x,int y,double angle) {
-		this.drawImageTHH_center(arrayImage[imgID],x,y,angle);
+	/**
+	* x,yが画像の中心となるように描画し、かつ指定角度で回転させます。
+	* @param imgID 画像ID
+	* @param x 中心x座標
+	* @param y 中心y座標
+	* @param angle 回転角度
+	* @since alpha1.0
+	*/
+	public static final void drawImageTHH_center(int imgID,int x,int y,double angle) {
+		drawImageTHH_center(arrayImage[imgID],x,y,angle);
 	}
-	public final void drawImageTHH_center(Image img,int x,int y){
-		g2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,this);
+	/**
+	* x,yが画像の中心となるように描画します。
+	* @param img 画像
+	* @param x 中心x座標
+	* @param y 中心y座標
+	* @since alpha1.0
+	*/
+	public static final void drawImageTHH_center(Image img,int x,int y){
+		thh.g2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,thh);
 	}
-	public final void drawImageTHH_center(int imgID,int x,int y){
-		this.drawImageTHH_center(arrayImage[imgID],x,y);
+	/**
+	* x,yが画像の中心となるように描画します。
+	* @param imgID 画像ID
+	* @param x 中心x座標
+	* @param y 中心y座標
+	* @since alpha1.0
+	*/
+	public static final void drawImageTHH_center(int imgID,int x,int y){
+		drawImageTHH_center(arrayImage[imgID],x,y);
 	}
 	public static final void setImageAlpha() {
 		thh.g2.setComposite(AlphaComposite.SrcOver);
@@ -1077,7 +1137,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return result;
 	}
-	public final static String trim2(String str){
+	public static final String trim2(String str){
 		if(str == null || str.length() == 0)
 			return "";
 		for(int i = 0;;i++){
@@ -1109,7 +1169,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	* @return 分割された文字配列
 	* @since alpha1.0
 	*/
-	public final static String[] split2(String str,String token){
+	public static final String[] split2(String str,String token){
 		if(!isActualString(str))
 			return new String[0];
 		final String[] strs = str.split(token);
@@ -1120,7 +1180,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	/**
 	* String値が無効値ではないことを検証します。
 	*/
-	public final static boolean isActualString(String value){
+	public static final boolean isActualString(String value){
 		if(value != null && !value.isEmpty() && !value.equalsIgnoreCase("NONE"))
 			return true;
 		return false;
@@ -1128,7 +1188,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	/**
 	* String配列が無効値ではないことを検証します。
 	*/
-	public final static boolean isActualString(String[] value){
+	public static final boolean isActualString(String[] value){
 		if(value != null && value.length > 0 && !value[0].isEmpty() && !value[0].equalsIgnoreCase("NONE"))
 			return true;
 		return false;
@@ -1142,7 +1202,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	* @return 実数値であるときtrue,そうでなければfalse
 	* @since alpha1.0
 	*/
-	public final static boolean isActualNumber(int value){
+	public static final boolean isActualNumber(int value){
 		switch(value){
 		case NONE:
 		case MAX:
@@ -1166,7 +1226,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	* @return 実数値とであるときtrue,そうでなければfalse
 	* @since alpha1.0
 	*/
-	public final static boolean isActualNumber(double value){
+	public static final boolean isActualNumber(double value){
 		if(	value == Double.NaN ||
 			value == Double.NEGATIVE_INFINITY ||
 			value == Double.POSITIVE_INFINITY ||
@@ -1182,14 +1242,14 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	* @return 変換された値
 	* @since alpha1.0
 	*/
-	public final static double toRadians2(double degress){
+	public static final double toRadians2(double degress){
 		if(isActualNumber(degress))
 			return degress*PI/180;
 		else
 			return degress;
 	}
 	
-	public final static int random2(int value1,int value2) {
+	public static final int random2(int value1,int value2) {
 		if(value1 == value2)
 			return value1;
 		else if(value1 > value2)
@@ -1197,14 +1257,14 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		else
 			return new Random().nextInt(abs(value2 - value1)) + value1;
 	}
-	public final static int random2(int value) {
+	public static final int random2(int value) {
 		if(value == 0)
 			return 0;
 		if(value < 0)
 			value *= -1;
 		return new Random().nextInt(value*2) - value;
 	}
-	public final static double random2(double value1,double value2) {
+	public static final double random2(double value1,double value2) {
 		if(value1 == value2)
 			return value1;
 		else if(value1 > value2)
@@ -1212,7 +1272,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		else
 			return Math.random()*(value2 - value1) + value1;
 	}
-	public final static double random2(double value) {
+	public static final double random2(double value) {
 		if(value == 0.0)
 			return 0.0;
 		else
