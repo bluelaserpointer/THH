@@ -1051,6 +1051,8 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	* @since alpha1.0
 	*/
 	public static final void drawImageTHH_center(Image img,int x,int y,double angle){
+		if(img == null)
+			return;
 		final Graphics2D G2 = thh.g2;
 		G2.rotate(angle,x,y);
 		G2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,thh);

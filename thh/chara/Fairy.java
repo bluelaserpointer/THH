@@ -11,6 +11,7 @@ public class Fairy extends UserChara{
 	private int targetX,targetY;
 	private final Weapon weaponController = EnemyBulletLibrary.getWeaponController(EnemyBulletLibrary.lightBall_S);
 	private final int bulletIID[] = new int[10];
+	private int magicCircleIID;
 	@Override
 	public final String getName() {
 		return "FairyA";
@@ -20,6 +21,7 @@ public class Fairy extends UserChara{
 	public final void loadImageData(){ //»­ÏñÕi¤ßÞz¤ß
 		super.loadImageData();
 		charaIID = thh.loadImage("YouseiA.png");
+		magicCircleIID = thh.loadImage("MagicCircleBlue.png");
 		bulletIID[0] = thh.loadImage("LightBallA.png");
 	}
 	@Override
@@ -36,6 +38,13 @@ public class Fairy extends UserChara{
 					EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.lightBall_ROUND,bulletIID[0],(int)charaX,(int)charaY,(int)THH.getCharaX(i),(int)THH.getCharaY(i));
 			}
 		}
+	}
+	@Override
+	public void paint(boolean doAnimation) {
+		if(charaHP <= 0)
+			return;
+		super.paintMode_magicCircle(magicCircleIID);
+		thh.paintHPArc((int) charaX, (int) charaY, 20,charaHP, charaBaseHP);
 	}
 	@Override
 	public void setEffect(int kind,DynamInteractable source) {}

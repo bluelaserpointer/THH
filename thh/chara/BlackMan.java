@@ -11,7 +11,7 @@ import weapon.Weapon;
 public class BlackMan extends UserChara{
 	{
 		charaSize = 120;
-		charaSpeed = 3;
+		charaSpeed = 2;
 	}
 	private final Weapon weaponController = EnemyBulletLibrary.getWeaponController(EnemyBulletLibrary.lightBall_S);
 	private final int bulletIID[] = new int[10];

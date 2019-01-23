@@ -86,6 +86,9 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		HIT_ENEMY = bullet.HIT_ENEMY;
 		IS_LASER = bullet.IS_LASER;
 	}
+	public final void spin(double angle) {
+		this.angle += angle;
+	}
 	public final boolean defaultIdle() {
 		if(allDeleteCheck())
 			return false;

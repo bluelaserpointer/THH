@@ -26,7 +26,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	private int nowStage;
 	
 	public static final int FRIEND = 0,ENEMY = 100;
-	final int F_MOVE_SPD = 8;
+	final int F_MOVE_SPD = 6;
 	
 	int formationsX[],formationsY[];
 	int formationCenterX,formationCenterY;
@@ -37,7 +37,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	
 	private static final CtrlEx_THH1 ctrlEx = new CtrlEx_THH1();
 	
-	int focusIID;
+	int focusIID,magicCircleIID;
 	
 	//editMode
 	static boolean editMode;
@@ -50,6 +50,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	@Override
 	public final void loadResource() {
 		focusIID = thh.loadImage("focus.png");
+		magicCircleIID = thh.loadImage("MagicCircle.png");
 		vegImageIID[0] = thh.loadImage("veg_leaf.png");
 		vegImageIID[1] = thh.loadImage("veg_flower.png");
 		vegImageIID[2] = thh.loadImage("veg_leaf2.png");
@@ -130,6 +131,10 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		THH.drawImageTHH_center(vegImageIID[2], 1122, 826,1.3);
 		THH.drawImageTHH_center(vegImageIID[4], 822, 886,1.3);
 		////////////////
+		THH.drawImageTHH_center(magicCircleIID, formationCenterX, formationCenterY, (double)THH.getNowFrame()/35.0);
+		g2.setColor(Color.RED);
+		g2.fillOval(formationCenterX - 2, formationCenterY - 2, 5, 5);
+		////////////////
 		final int MOUSE_X = THH.getMouseX(),MOUSE_Y = THH.getMouseY();
 		if(stopEventKind == NONE) {
 			//gravity
@@ -164,12 +169,14 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 							enemyCharaClass.get(i).setSpeed(0, 0);
 					}
 				}
-				g2.setColor(Color.RED);
-				g2.setStroke(THH.stroke3);
-				g2.drawOval(formationCenterX - 5, formationCenterY - 5, 10, 10);
 				//leap
-				if(ctrlEx.pullCommandBool(CtrlEx_THH1.LEAP)){
-					formationCenterX = MOUSE_X;formationCenterY = MOUSE_Y;
+				if(ctrlEx.getCommandBool(CtrlEx_THH1.LEAP)){
+					final int DX = MOUSE_X - formationCenterX,DY = MOUSE_Y - formationCenterY;
+					//if(DX*DX + DY*DY < 5000) {
+						formationCenterX = MOUSE_X;formationCenterY = MOUSE_Y;
+					//}else {
+						//formationCenterX += (double)DX/10.0;formationCenterY += (double)DY/10.0;
+					//}
 					for(int i = 0;i < friendCharaClass.length;i++)
 						friendCharaClass[i].teleportTo(formationCenterX + formationsX[i], formationCenterY + formationsY[i]);
 				}
@@ -211,8 +218,8 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		}
 		THH.defaultEntityIdle();
 		//focus
-		g2.setColor(new Color(10,200,10,100));
-		g2.setStroke(THH.stroke1);
+		g2.setColor(new Color(200,120,10,100));
+		g2.setStroke(THH.stroke3);
 		g2.drawLine(formationCenterX,formationCenterY,MOUSE_X,MOUSE_Y);
 		THH.drawImageTHH_center(focusIID,MOUSE_X,MOUSE_Y);
 		//scroll by mouse

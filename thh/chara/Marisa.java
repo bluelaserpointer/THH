@@ -40,8 +40,8 @@ public class Marisa extends UserChara{
 		bulletIID[MAGIC_MISSILE] = thh.loadImage("MagicMissile.png");
 		effectIID[LIGHTNING] = thh.loadImage("ReuseBomb_Effect.png");
 		effectIID[SPARK_HIT_EF] = thh.loadImage("NarrowSpark_HitEffect.png");
-		effectIID[MISSILE_TRACE1_EF] = thh.loadImage("StarEffect1.png");
-		effectIID[MISSILE_TRACE2_EF] = thh.loadImage("StarEffect2.png");
+		effectIID[MISSILE_TRACE1_EF] = thh.loadImage("StarEffect2.png");
+		effectIID[MISSILE_TRACE2_EF] = thh.loadImage("MagicMissile.png");
 		effectIID[MISSILE_HIT_EF] = thh.loadImage("MissileHitEffect.png");
 	}
 	
@@ -132,11 +132,11 @@ public class Marisa extends UserChara{
 			BulletInfo.script = bulletScripts[NARROW_SPARK];
 			BulletInfo.fastParaSet_SourceSpd(source,thh.getImageByID(bulletIID[NARROW_SPARK]).getWidth(null));
 			BulletInfo.size = 15;
-			BulletInfo.atk = 4;
+			BulletInfo.atk = 8;
 			BulletInfo.offSet = 20;
 			BulletInfo.penetration = MAX;
 			BulletInfo.reflection = 3;
-			BulletInfo.limitFrame = 80;
+			BulletInfo.limitFrame = 40;
 			BulletInfo.imageID = bulletIID[NARROW_SPARK];
 			BulletInfo.isLaser = true;
 			THH.createBullet(source);
@@ -156,9 +156,9 @@ public class Marisa extends UserChara{
 		case MAGIC_MISSILE:
 			BulletInfo.name = "MAGIC_MISSILE";
 			BulletInfo.script = bulletScripts[MAGIC_MISSILE];
-			BulletInfo.accel = 1.11;
+			BulletInfo.accel = 1.07;
 			BulletInfo.size = 20;
-			BulletInfo.atk = 700;
+			BulletInfo.atk = 500;
 			BulletInfo.offSet = 100;
 			BulletInfo.limitFrame = 2000;
 			BulletInfo.imageID = bulletIID[MAGIC_MISSILE];
@@ -192,8 +192,7 @@ public class Marisa extends UserChara{
 			THH.createEffect(this);
 			break;
 		case MISSILE_TRACE1_EF:
-		case MISSILE_TRACE2_EF:
-			EffectInfo.name = "MISSILE_TRACE_EF";
+			EffectInfo.name = "MISSILE_TRACE1_EF";
 			EffectInfo.script = effectScripts[MISSILE_TRACE1_EF];
 			EffectInfo.accel = 0.8;
 			EffectInfo.size = NONE;
@@ -203,6 +202,17 @@ public class Marisa extends UserChara{
 				EffectInfo.fastParaSet_SourceADSpd(source,2*PI*random(),10,THH.random2(0,12));
 				THH.createEffect(this);
 			}
+			break;
+		case MISSILE_TRACE2_EF:
+			EffectInfo.name = "MISSILE_TRACE2_EF";
+			EffectInfo.script = effectScripts[MISSILE_TRACE2_EF];
+			EffectInfo.size = NONE;
+			EffectInfo.limitFrame = 7;
+			EffectInfo.x = source.getX();
+			EffectInfo.y = source.getY();
+			EffectInfo.angle = source.getAngle();
+			EffectInfo.imageID = effectIID[kind];
+			THH.createEffect(this);
 			break;
 		case MISSILE_HIT_EF:
 			EffectInfo.name = "MISSILE_HIT_EF";
@@ -252,7 +262,9 @@ public class Marisa extends UserChara{
 			@Override
 			public final void bulletIdle(Bullet bullet) {
 				for(int i = 0;i < 2;i++)
-					setEffect(MISSILE_TRACE2_EF,bullet);
+					setEffect(MISSILE_TRACE1_EF,bullet);
+				setEffect(MISSILE_TRACE2_EF,bullet);
+				bullet.spin(0.5);
 				super.bulletIdle(bullet);
 				/*int count = (int)(bullet.getSpeed()/bullet.SIZE);
 				do{
@@ -284,7 +296,6 @@ public class Marisa extends UserChara{
 			@Override
 			public final void effectNoAnmPaint(Effect effect) {
 				THH.setImageAlpha((float)(1.0 - (double)THH.getPassedFrame(effect.INITIAL_FRAME)/effect.LIMIT_FRAME));
-				effect.spin(0.05);
 				super.effectNoAnmPaint(effect);
 				THH.setImageAlpha();
 			}

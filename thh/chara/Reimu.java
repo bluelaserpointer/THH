@@ -28,7 +28,7 @@ public class Reimu extends UserChara{
 	//effect kind name
 	private final int LIGHTNING = 0,FUDA_HIT_EF = 1;
 	
-	//GUI
+	//Images
 		
 	//Sounds
 	
@@ -105,17 +105,17 @@ public class Reimu extends UserChara{
 			BulletInfo.name = "FUDA_KOUHAKU";
 			BulletInfo.script = bulletScripts[FUDA_KOUHAKU];
 			BulletInfo.size = 10;
-			BulletInfo.atk = 15;
+			BulletInfo.atk = 50;
 			BulletInfo.offSet = 5;
 			BulletInfo.limitFrame = 200;
 			BulletInfo.imageID = bulletIID[FUDA_KOUHAKU];
-			BulletInfo.fastParaSet_SourceDXYSpd(source,0,14,24);
+			BulletInfo.fastParaSet_SourceDXYSpd(source,7,16,28);
 			THH.createBullet(this);
-			BulletInfo.fastParaSet_SourceDXYSpd(source,8,21,24);
+			BulletInfo.fastParaSet_SourceDXYSpd(source,5,21,28);
 			THH.createBullet(this);
-			BulletInfo.fastParaSet_SourceDXYSpd(source,-8,21,24);
+			BulletInfo.fastParaSet_SourceDXYSpd(source,-5,21,28);
 			THH.createBullet(this);
-			BulletInfo.fastParaSet_SourceDXYSpd(source,0,28,24);
+			BulletInfo.fastParaSet_SourceDXYSpd(source,-7,16,28);
 			THH.createBullet(this);
 			break;
 		case FUDA_SHIROKURO:
@@ -176,7 +176,7 @@ public class Reimu extends UserChara{
 			EffectInfo.limitRange = MAX;
 			EffectInfo.imageID = effectIID[FUDA_HIT_EF];
 			for(int i = 0;i < 15;i++) {
-				EffectInfo.fastParaSet_SourceADSpd(source,2*PI*random(),10,THH.random2(0,24));
+				EffectInfo.fastParaSet_SourceADSpd(source,2*PI*random(),10,THH.random2(0,22));
 				THH.createEffect(this);
 			}
 			break;

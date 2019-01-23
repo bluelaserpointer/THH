@@ -143,6 +143,10 @@ public abstract class UserChara extends Chara {
 		THH.drawImageTHH_center(charaIID, (int) charaX, (int) charaY);
 		thh.paintHPArc((int) charaX, (int) charaY, 20,charaHP, charaBaseHP);
 	}
+	protected final void paintMode_magicCircle(int magicCircleIID) {
+		THH.drawImageTHH_center(magicCircleIID, (int)charaX, (int)charaY, (double)THH.getNowFrame()/35.0);
+		THH.drawImageTHH_center(charaIID, (int) charaX, (int) charaY);
+	}
 	
 	// control
 	// move
