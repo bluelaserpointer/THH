@@ -1,8 +1,7 @@
 package bullet;
 
-import static java.lang.Math.*;
-
 import thh.Chara;
+import thh.Dynam;
 import thh.DynamInteractable;
 import thh.Entity_double;
 import thh.THH;
@@ -14,6 +13,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	private int idleExecuted = 0;
 	
 	public final BulletScript SCRIPT; //a script of unique behaviors
+	public final Dynam dynam;
 	
 	public String name;
 	public final int
@@ -34,9 +34,6 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		movedDistance;
 	private final double
 		ACCEL;
-	private double
-		xSpeed,ySpeed,
-		angle;
 	private final int
 		IMAGE_ID;
 	public final boolean
@@ -44,6 +41,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		IS_LASER;
 	public Bullet(DynamInteractable source) {
 		super(source,BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
+		dynam = new Dynam(BulletInfo.x,BulletInfo.y,BulletInfo.xSpeed,BulletInfo.ySpeed,BulletInfo.angle);
 		UNIQUE_ID = ++nowMaxUniqueID;
 		SCRIPT = BulletInfo.script != null ? BulletInfo.script : BulletInfo.DEFAULT_SCRIPT;
 		name = BulletInfo.name;
@@ -57,15 +55,13 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		penetration = BulletInfo.penetration;
 		reflection = BulletInfo.reflection;
 		ACCEL = BulletInfo.accel;
-		xSpeed = BulletInfo.xSpeed;
-		ySpeed = BulletInfo.ySpeed;
-		angle = BulletInfo.angle;
 		IMAGE_ID = BulletInfo.imageID;
 		HIT_ENEMY = BulletInfo.hitEnemy;
 		IS_LASER = BulletInfo.isLaser;
 	}
 	public Bullet(Bullet bullet) {
 		super(bullet.SOURCE,BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
+		dynam = bullet.dynam.clone();
 		UNIQUE_ID = ++nowMaxUniqueID;
 		SCRIPT = bullet.SCRIPT != null ? bullet.SCRIPT : BulletInfo.DEFAULT_SCRIPT;
 		name = bullet.name;
@@ -79,15 +75,9 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		penetration = bullet.penetration;
 		reflection = bullet.reflection;
 		ACCEL = bullet.ACCEL;
-		xSpeed = bullet.xSpeed;
-		ySpeed = bullet.ySpeed;
-		angle = bullet.angle;
 		IMAGE_ID = bullet.IMAGE_ID;
 		HIT_ENEMY = bullet.HIT_ENEMY;
 		IS_LASER = bullet.IS_LASER;
-	}
-	public final void spin(double angle) {
-		this.angle += angle;
 	}
 	public final boolean defaultIdle() {
 		if(allDeleteCheck())
@@ -125,7 +115,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		return false;
 	}
 	public final boolean inStageCheck() {
-		if(!THH.inStage((int)x, (int)y)){
+		if(!dynam.inStage()){
 			THH.deleteBullet(this);
 			return true;
 		}
@@ -142,17 +132,12 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	}
 	public final boolean dynam(boolean doHit,int maxGap) {
 		//speed & acceleration
-		x += xSpeed;
-		y += ySpeed;
-		movedDistance += sqrt(xSpeed*xSpeed + ySpeed*ySpeed);
-		if(ACCEL != 1.0) {
-			xSpeed *= ACCEL;
-			ySpeed *= ACCEL;
-		}
+		dynam.move();
+		dynam.accelerate(ACCEL);
 		if(!doHit)
 			return true;
 		//landscape collision
-		if(SCRIPT.bulletIfHitLandscape(this,(int)x,(int)y)){
+		if(SCRIPT.bulletIfHitLandscape(this,(int)dynam.getX(),(int)dynam.getY())){
 			SCRIPT.bulletHitObject(this);
 			if(penetration > 0) {
 				if(penetration != THH.MAX)
@@ -183,10 +168,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		return true;
 	}
 	public final void defaultPaint() {
-		if(angle == 0.0)
-			THH.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
-		else
-			THH.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);
+		THH.drawImageTHH_center(IMAGE_ID, (int)dynam.getX(),(int)dynam.getY(), dynam.getAngle());
 	}
 	//tool
 	public int getPassedFrame() {
@@ -195,47 +177,14 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	
 	//control
 	@Override
-	public final void setXY(double x,double y) {
-		this.x = x;this.y = y;
+	public Dynam getDynam() {
+		return dynam;
 	}
 	@Override
-	public final void setX(double x) {
-		this.x = x;
+	public boolean isMovable() {
+		return true;
 	}
-	@Override
-	public final void setY(double y) {
-		this.y = y;
-	}
-	@Override
-	public final void setAngle(double angle) {
-		this.angle = angle;
-		final double SPEED = sqrt(xSpeed*xSpeed + ySpeed*ySpeed);
-		xSpeed = SPEED*cos(angle);ySpeed = SPEED*sin(angle);
-	}
-	@Override
-	public final void setXSpeed(double xSpeed) {
-		this.xSpeed = xSpeed;
-		angle = atan2(ySpeed,xSpeed);
-	}
-	@Override
-	public final void setYSpeed(double ySpeed) {
-		this.ySpeed = ySpeed;
-		angle = atan2(ySpeed,xSpeed);
-	}
-	@Override
-	public final void setSpeed(double xSpeed,double ySpeed) {
-		this.xSpeed = xSpeed;this.ySpeed = ySpeed;
-		angle = atan2(ySpeed,xSpeed);
-	}
-	@Override
-	public final void addSpeed(double xSpeed,double ySpeed) {
-		this.xSpeed += xSpeed;this.ySpeed += ySpeed;
-		angle = atan2(ySpeed,xSpeed);
-	}
-	@Override
-	public final void acceleration(double rate) {
-		this.xSpeed *= rate;this.ySpeed *= rate;
-	}
+	
 	//information
 	public final int getIdleCount() {
 		return idleExecuted;
@@ -245,50 +194,5 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	}
 	public final int getReflection() {
 		return reflection;
-	}
-	@Override
-	public final double getX() {
-		return x;
-	}
-	@Override
-	public final double getY() {
-		return y;
-	}
-	@Override
-	public final double getAngle() {
-		return angle;
-	}
-	@Override
-	public final boolean isMovable() {
-		return true;
-	}
-	@Override
-	public final boolean inStage() {
-		return THH.inStage((int)x,(int)y);
-	}
-	@Override
-	public final boolean inArea(int x,int y,int w,int h) {
-		return abs(x - this.x) < w && abs(y - this.y) < h;
-	}
-	@Override
-	public final double getDistance(double x,double y) {
-		final double XD = x - this.x,YD = y - this.y;
-		return sqrt(XD*XD + YD*YD);
-	}
-	@Override
-	public final boolean isStop() {
-		return xSpeed == 0.0 && ySpeed == 0.0;
-	}
-	@Override
-	public final double getXSpeed() {
-		return xSpeed;
-	}
-	@Override
-	public final double getYSpeed() {
-		return ySpeed;
-	}
-	@Override
-	public final double getSpeed() {
-		return sqrt(xSpeed*xSpeed + ySpeed*ySpeed);
 	}
 }

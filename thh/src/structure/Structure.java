@@ -3,6 +3,7 @@ package structure;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 
+import thh.Dynam;
 import thh.DynamInteractable;
 import thh.ErrorCounter;
 import thh.THH;
@@ -50,7 +51,8 @@ public abstract class Structure{
 		return intersectsLine(new Line2D.Double(x1,y1,x2,y2));
 	}
 	public final boolean intersectsLine(DynamInteractable d1,DynamInteractable d2) {
-		return intersectsLine(d1.getX(),d1.getY(),d2.getX(),d2.getY());
+		final Dynam D1 = d1.getDynam(),D2 = d2.getDynam();
+		return intersectsLine(D1.getX(),D1.getY(),D2.getX(),D2.getY());
 	}
 	public abstract int getTeam();
 	

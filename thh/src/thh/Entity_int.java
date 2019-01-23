@@ -3,7 +3,6 @@ package thh;
 public abstract class Entity_int {
 	public final int INITIAL_FRAME;
 	public final int INITIAL_X,INITIAL_Y;
-	protected int x,y;
 	public Entity_int() {
 		INITIAL_FRAME = 0;
 		INITIAL_X = 0;
@@ -11,13 +10,13 @@ public abstract class Entity_int {
 	}
 	public Entity_int(int x,int y) {
 		INITIAL_FRAME = THH.getNowFrame();
-		INITIAL_X = this.x = x;
-		INITIAL_Y = this.y = y;
+		INITIAL_X = x;
+		INITIAL_Y =  y;
 	}
 	public Entity_int(int x,int y,int nowFrame) {
 		INITIAL_FRAME = nowFrame;
-		INITIAL_X = this.x = x;
-		INITIAL_Y = this.y = y;
+		INITIAL_X = x;
+		INITIAL_Y = y;
 	}
 	abstract public boolean idle();
 	abstract public void paint();

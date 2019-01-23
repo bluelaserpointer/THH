@@ -4,6 +4,7 @@ import static java.lang.Math.PI;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
+import thh.Dynam;
 import thh.DynamInteractable;
 import thh.THH;
 
@@ -55,19 +56,34 @@ public final class BulletInfo {
 		BulletInfo.ySpeed += ySpeed;
 	}
 	public static final void fastParaSet_SourceADXYSpd(DynamInteractable source,double angle,double dx,double dy,double speed) {
-		fastParaSet_XYADXYSpd(source.getX(),source.getY(),source.getAngle() + angle,dx,dy,speed);
+		fastParaSet_SourceADXYSpd(source.getDynam(),angle,dx,dy,speed);
+	}
+	public static final void fastParaSet_SourceADXYSpd(Dynam dynam,double angle,double dx,double dy,double speed) {
+		fastParaSet_XYADXYSpd(dynam.getX(),dynam.getY(),dynam.getAngle() + angle,dx,dy,speed);
 	}
 	public static final void fastParaSet_SourceDXYSpd(DynamInteractable source,double dx,double dy,double speed) {
-		fastParaSet_XYADXYSpd(source.getX(),source.getY(),source.getAngle(),dx,dy,speed);
+		fastParaSet_SourceDXYSpd(source.getDynam(),dx,dy,speed);
+	}
+	public static final void fastParaSet_SourceDXYSpd(Dynam dynam,double dx,double dy,double speed) {
+		fastParaSet_XYADXYSpd(dynam.getX(),dynam.getY(),dynam.getAngle(),dx,dy,speed);
 	}
 	public static final void fastParaSet_SourceADSpd(DynamInteractable source,double angle,double distance,double speed) {
-		fastParaSet_XYADXYSpd(source.getX(),source.getY(),source.getAngle() + angle,0,distance,speed);
+		fastParaSet_SourceADSpd(source.getDynam(),angle,distance,speed);
+	}
+	public static final void fastParaSet_SourceADSpd(Dynam dynam,double angle,double distance,double speed) {
+		fastParaSet_XYADXYSpd(dynam.getX(),dynam.getY(),dynam.getAngle() + angle,0,distance,speed);
 	}
 	public static final void fastParaSet_SourceDSpd(DynamInteractable source,double distance,double speed) {
-		fastParaSet_XYADXYSpd(source.getX(),source.getY(),source.getAngle(),0,distance,speed);
+		fastParaSet_SourceDSpd(source.getDynam(),distance,speed);
+	}
+	public static final void fastParaSet_SourceDSpd(Dynam dynam,double distance,double speed) {
+		fastParaSet_XYADXYSpd(dynam.getX(),dynam.getY(),dynam.getAngle(),0,distance,speed);
 	}
 	public static final void fastParaSet_SourceSpd(DynamInteractable source,double speed) {
-		fastParaSet_XYASpd(source.getX(),source.getY(),source.getAngle(),speed);
+		fastParaSet_SourceSpd(source.getDynam(),speed);
+	}
+	public static final void fastParaSet_SourceSpd(Dynam dynam,double speed) {
+		fastParaSet_XYASpd(dynam.getX(),dynam.getY(),dynam.getAngle(),speed);
 	}
 	public static final void fastParaSet_XYASpd(double launchX,double launchY,double angle,double speed){
 		final double cos_angle = cos(angle),sin_angle = sin(angle);
@@ -101,13 +117,16 @@ public final class BulletInfo {
 		ySpeed = speed*sin_angle;
 	}
 	public static final void fastParaSet_onlySpd_SourceSpd(DynamInteractable source,double speed){
-		BulletInfo.angle = source.getAngle();
+		fastParaSet_onlySpd_SourceSpd(source.getDynam(),speed);
+	}
+	public static final void fastParaSet_onlySpd_SourceSpd(Dynam dynam,double speed){
+		BulletInfo.angle = dynam.getAngle();
 		xSpeed = speed*cos(angle);
 		ySpeed = speed*sin(angle);
 	}
 	//create
 	public final static void createBullet_RoundDesign(DynamInteractable source,double radius,int amount) {
-		createBullet_RoundDesign(source,source.getX(),source.getY(),radius,amount);
+		createBullet_RoundDesign(source,source.getDynam().getX(),source.getDynam().getY(),radius,amount);
 	}
 	public final static void createBullet_RoundDesign(DynamInteractable source,double gunnerX,double gunnerY,double radius,int amount){
 		final double ANGLE = 2*PI/amount;

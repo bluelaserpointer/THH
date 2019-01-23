@@ -13,6 +13,7 @@ public abstract class Chara implements MessageSource,DynamInteractable{
 		MIN = THH.MIN;
 		
 	protected static THH thh;
+	public final Dynam dynam = new Dynam();
 	
 	//メソッド
 	
@@ -73,6 +74,9 @@ public abstract class Chara implements MessageSource,DynamInteractable{
 	}
 	
 	//control
+	public final Dynam getDynam() {
+		return dynam;
+	}
 	//move
 	public abstract void moveRel(int dx,int dy);
 	public abstract void moveTo(int x,int y);

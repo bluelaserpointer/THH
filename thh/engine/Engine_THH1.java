@@ -160,18 +160,18 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 					if(enemy.getName() == "FairyA") {
 						final int FRAME = gameFrame % 240;
 						if(FRAME < 100)
-							enemyCharaClass.get(i).setSpeed(-5, 0);
+							enemyCharaClass.get(i).dynam.setSpeed(-5, 0);
 						else if(FRAME < 120)
-							enemyCharaClass.get(i).setSpeed(0, 0);
+							enemyCharaClass.get(i).dynam.setSpeed(0, 0);
 						else if(FRAME < 220)
-							enemyCharaClass.get(i).setSpeed(5, 0);
+							enemyCharaClass.get(i).dynam.setSpeed(5, 0);
 						else
-							enemyCharaClass.get(i).setSpeed(0, 0);
+							enemyCharaClass.get(i).dynam.setSpeed(0, 0);
 					}
 				}
 				//leap
 				if(ctrlEx.getCommandBool(CtrlEx_THH1.LEAP)){
-					final int DX = MOUSE_X - formationCenterX,DY = MOUSE_Y - formationCenterY;
+					//final int DX = MOUSE_X - formationCenterX,DY = MOUSE_Y - formationCenterY;
 					//if(DX*DX + DY*DY < 5000) {
 						formationCenterX = MOUSE_X;formationCenterY = MOUSE_Y;
 					//}else {

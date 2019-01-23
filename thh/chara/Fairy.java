@@ -8,7 +8,6 @@ public class Fairy extends UserChara{
 	{
 		charaSize = 70;
 	}
-	private int targetX,targetY;
 	private final Weapon weaponController = EnemyBulletLibrary.getWeaponController(EnemyBulletLibrary.lightBall_S);
 	private final int bulletIID[] = new int[10];
 	private int magicCircleIID;
@@ -26,16 +25,11 @@ public class Fairy extends UserChara{
 	}
 	@Override
 	public void activeCons() {
-		final double DX = targetX - charaX,DY = targetY - charaY;
-		if(DX < -2 && 2 < DX) {
-			charaX += DX/20;
-			charaY += DY/20;
-		}
 		weaponController.defaultIdle();
 		for(int i = 0;i < THH.getCharaAmount();i++) {
-			if(THH.charaIsVisibleFrom(i,(int)charaX,(int)charaY)) {
+			if(THH.charaIsVisibleFrom(i,(int)dynam.getX(),(int)dynam.getY())) {
 				if(weaponController.trigger())
-					EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.lightBall_ROUND,bulletIID[0],(int)charaX,(int)charaY,(int)THH.getCharaX(i),(int)THH.getCharaY(i));
+					EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.lightBall_ROUND,bulletIID[0],(int)dynam.getX(),(int)dynam.getY(),(int)THH.getCharaX(i),(int)THH.getCharaY(i));
 			}
 		}
 	}
@@ -44,7 +38,7 @@ public class Fairy extends UserChara{
 		if(charaHP <= 0)
 			return;
 		super.paintMode_magicCircle(magicCircleIID);
-		thh.paintHPArc((int) charaX, (int) charaY, 20,charaHP, charaBaseHP);
+		thh.paintHPArc((int) dynam.getX(), (int) dynam.getY(), 20,charaHP, charaBaseHP);
 	}
 	@Override
 	public void setEffect(int kind,DynamInteractable source) {}

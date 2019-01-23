@@ -3,6 +3,7 @@ package effect;
 import static java.lang.Math.PI;
 import static java.lang.Math.random;
 
+import thh.Dynam;
 import thh.DynamInteractable;
 import thh.THH;
 
@@ -29,7 +30,8 @@ public class Splash {
 		EffectInfo.limitRange = THH.MAX;
 		EffectInfo.imageID = imageID;
 		for(int i = 0;i < amount;i++) {
-			EffectInfo.fastParaSet_XYADSpd(source.getX(),source.getY(),2*PI*random(),10,THH.random2(0,maxSpeed));
+			final Dynam SOURCE_DYNAM = source.getDynam();
+			EffectInfo.fastParaSet_XYADSpd(SOURCE_DYNAM.getX(),SOURCE_DYNAM.getY(),2*PI*random(),10,THH.random2(0,maxSpeed));
 			THH.createEffect(source);
 		}
 	}
@@ -42,7 +44,7 @@ public class Splash {
 				THH.setImageAlpha();
 			}else {
 				THH.setImageAlpha((float)(1.0 - (double)THH.getPassedFrame(effect.INITIAL_FRAME)/effect.LIMIT_FRAME));
-				THH.drawImageTHH_center(imageID, (int)effect.getX(), (int)effect.getY());
+				THH.drawImageTHH_center(imageID, (int)effect.dynam.getX(), (int)effect.dynam.getY());
 				THH.setImageAlpha();
 			}
 		}

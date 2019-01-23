@@ -5,6 +5,7 @@ import static java.lang.Math.random;
 
 import bullet.*;
 import effect.*;
+import thh.Dynam;
 import thh.DynamInteractable;
 import thh.THH;
 import weapon.Weapon;
@@ -171,6 +172,7 @@ public class Marisa extends UserChara{
 	public final void setEffect(int kind,DynamInteractable source) {
 		THH.prepareEffectInfo();
 		EffectInfo.kind = kind;
+		final Dynam SOURCE_DYNAM = source.getDynam();
 		switch(kind){
 		case LIGHTNING:
 			EffectInfo.name = "LIGHTNING";
@@ -208,9 +210,9 @@ public class Marisa extends UserChara{
 			EffectInfo.script = effectScripts[MISSILE_TRACE2_EF];
 			EffectInfo.size = NONE;
 			EffectInfo.limitFrame = 7;
-			EffectInfo.x = source.getX();
-			EffectInfo.y = source.getY();
-			EffectInfo.angle = source.getAngle();
+			EffectInfo.x = SOURCE_DYNAM.getX();
+			EffectInfo.y = SOURCE_DYNAM.getY();
+			EffectInfo.angle = SOURCE_DYNAM.getAngle();
 			EffectInfo.imageID = effectIID[kind];
 			THH.createEffect(this);
 			break;
@@ -235,13 +237,14 @@ public class Marisa extends UserChara{
 			public final void bulletIdle(Bullet bullet) {
 				bullet.lifeSpanCheck();
 				int count = 0;
-				while(THH.inStage((int)bullet.getX(),(int)bullet.getY())) {
+				while(bullet.dynam.inStage()) {
 					bullet.dynam(++count % 5 == 0);
 					bullet.defaultPaint();
 				}
-				bullet.setX(bullet.SOURCE.getX());
-				bullet.setY(bullet.SOURCE.getY());
-				bullet.setAngle(bullet.SOURCE.getAngle());
+				final Dynam SOURCE_DYANM = bullet.SOURCE.getDynam();
+				bullet.dynam.setX(SOURCE_DYANM.getX());
+				bullet.dynam.setY(SOURCE_DYANM.getY());
+				bullet.dynam.setAngle(SOURCE_DYANM.getAngle());
 			}
 			@Override
 			public final void bulletHitObject(Bullet bullet) {
@@ -252,7 +255,7 @@ public class Marisa extends UserChara{
 			@Override
 			public final void bulletIdle(Bullet bullet) {
 				bullet.defaultIdle();
-				bullet.addSpeed(0.0,1.1);
+				bullet.dynam.addSpeed(0.0,1.1);
 				bullet.defaultPaint();
 				if(random() < 0.2)
 					setEffect(LIGHTNING,(DynamInteractable)bullet);
@@ -264,7 +267,6 @@ public class Marisa extends UserChara{
 				for(int i = 0;i < 2;i++)
 					setEffect(MISSILE_TRACE1_EF,bullet);
 				setEffect(MISSILE_TRACE2_EF,bullet);
-				bullet.spin(0.5);
 				super.bulletIdle(bullet);
 				/*int count = (int)(bullet.getSpeed()/bullet.SIZE);
 				do{

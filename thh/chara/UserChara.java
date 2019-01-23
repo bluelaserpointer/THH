@@ -1,6 +1,5 @@
 package chara;
 
-import static java.lang.Math.*;
 
 import action.Action;
 import action.ActionInfo;
@@ -15,7 +14,7 @@ public abstract class UserChara extends Chara {
 	// •–•»•Î•—©`•»ÈvﬂB
 	public int charaID, charaTeam, charaHP, charaME, charaBaseHP, charaBaseME, charaSpellCharge,
 			charaSize, charaStatus;
-	public double charaX, charaY, charaDstX, charaDstY, charaSpeed = 30, charaXSpeed, charaYSpeed, charaAngle;
+	public double charaDstX, charaDstY, charaSpeed = 30;
 	public double charaLastXSpd, charaLastYSpd;
 	public boolean charaOnLand;
 
@@ -41,9 +40,8 @@ public abstract class UserChara extends Chara {
 		super.resetOrder();
 		this.charaID = charaID;
 		this.charaTeam = charaTeam;
-		charaDstX = charaX = x;
-		charaDstY = charaY = y;
-		charaXSpeed = charaYSpeed = 0.0;
+		super.dynam.clear();
+		super.dynam.setXY(charaDstX = x, charaDstY = y);
 		charaLastXSpd = charaLastYSpd = 0.0;
 		charaStatus = NONE;
 		charaOnLand = false;
@@ -58,18 +56,10 @@ public abstract class UserChara extends Chara {
 	public void dynam() {
 		if(!isMovable())
 			return;
-		charaX += charaXSpeed;
-		charaY += charaYSpeed;
-		charaLastXSpd += charaXSpeed;
-		charaLastYSpd += charaYSpeed;
-		if (charaXSpeed < -0.5 || 0.5 < charaXSpeed)
-			charaXSpeed *= 0.9;
-		else
-			charaXSpeed = 0.0;
-		if (charaYSpeed < -0.5 || 0.5 < charaYSpeed)
-			charaYSpeed *= 0.9;
-		else
-			charaYSpeed = 0.0;
+		dynam.move();
+		charaLastXSpd += dynam.getXSpeed();
+		charaLastYSpd += dynam.getYSpeed();
+		dynam.accelerate(0.9);
 	}
 	@Override
 	public void activeCons() {
@@ -78,8 +68,7 @@ public abstract class UserChara extends Chara {
 			return;
 		}
 		final int mouseX = THH.getMouseX(), mouseY = THH.getMouseY();
-		final double mouseAngle = atan2(mouseY - charaY, mouseX - charaX);
-		charaAngle = mouseAngle;
+		dynam.setAngle(dynam.getMouseAngle());
 		// dodge
 		if (super.dodgeOrder)
 			dodge(mouseX, mouseY);
@@ -98,19 +87,9 @@ public abstract class UserChara extends Chara {
 		}
 		// move
 		if (super.moveOrder) {
-			charaX += (mouseX - charaX) / 10;
-			charaY += (mouseY - charaY) / 10;
+			//under edit
 		}
-		final double DX = charaDstX - charaX,DY = charaDstY - charaY;
-		final double DISTANCE = sqrt(DX*DX + DY*DY);
-		if(DISTANCE <= charaSpeed) {
-			charaX = charaDstX;
-			charaY = charaDstY;
-		}else {
-			final double RATE = charaSpeed/DISTANCE;
-			charaX += DX*RATE;
-			charaY += DY*RATE;
-		}
+		dynam.approach(charaDstX, charaDstY, charaSpeed);
 		// weaponChange
 		int roll = super.weaponChangeOrder;
 		if (roll != 0) {
@@ -140,12 +119,14 @@ public abstract class UserChara extends Chara {
 	public void paint(boolean doAnimation) {
 		if(charaHP <= 0)
 			return;
-		THH.drawImageTHH_center(charaIID, (int) charaX, (int) charaY);
-		thh.paintHPArc((int) charaX, (int) charaY, 20,charaHP, charaBaseHP);
+		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
+		THH.drawImageTHH_center(charaIID, X, Y);
+		thh.paintHPArc(X, Y, 20,charaHP, charaBaseHP);
 	}
 	protected final void paintMode_magicCircle(int magicCircleIID) {
-		THH.drawImageTHH_center(magicCircleIID, (int)charaX, (int)charaY, (double)THH.getNowFrame()/35.0);
-		THH.drawImageTHH_center(charaIID, (int) charaX, (int) charaY);
+		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
+		THH.drawImageTHH_center(magicCircleIID, X, Y, (double)THH.getNowFrame()/35.0);
+		THH.drawImageTHH_center(charaIID, X, Y);
 	}
 	
 	// control
@@ -162,15 +143,15 @@ public abstract class UserChara extends Chara {
 	}
 	@Override
 	public void teleportRel(int x,int y) {
-		charaDstX += x;charaX += x;charaLastXSpd += x;
-		charaDstY += y;charaY += y;charaLastYSpd += y;
+		dynam.addXY(x, y);
+		charaDstX += x;charaLastXSpd += x;
+		charaDstY += y;charaLastYSpd += y;
 	}
 	@Override
 	public void teleportTo(int x,int y) {
-		charaLastXSpd += x - charaX;
-		charaLastYSpd += y - charaY;
-		charaDstX = charaX = x;
-		charaDstY = charaY = y;
+		dynam.setXY(charaDstX = x, charaDstY = y);
+		charaLastXSpd += x - dynam.getX();
+		charaLastYSpd += y - dynam.getY();
 	}
 	private Action actionPlan;
 	private int initialFrame;
@@ -191,15 +172,16 @@ public abstract class UserChara extends Chara {
 					charaDstY = Y;
 					break;
 				case ActionInfo.MOVE:
-					charaDstX = charaX + X;
-					charaDstY = charaY + Y;
+					charaDstX = dynam.getX() + X;
+					charaDstY = dynam.getY() + Y;
 					break;
 				case ActionInfo.ATTACK:
 					setBullet(weaponSlot[slot_weapon],this);
 					break;
 				case ActionInfo.SPEED:
-					charaX += X;charaLastXSpd += X;
-					charaY += Y;charaLastYSpd += Y;
+					dynam.addXY(X,Y);
+					charaLastXSpd += X;
+					charaLastYSpd += Y;
 					break;
 				}
 			}
@@ -209,80 +191,21 @@ public abstract class UserChara extends Chara {
 	// judge
 	@Override
 	public final boolean bulletEngage(Bullet bullet) {
-		return charaHP > 0 && THH.squreCollision((int) charaX, (int) charaY, charaSize, (int) bullet.getX(), (int) bullet.getY(), bullet.SIZE)
+		return charaHP > 0 && THH.squreCollision((int) dynam.getX(), (int) dynam.getY(), charaSize, (int) bullet.dynam.getX(),(int)bullet.dynam.getY(), bullet.SIZE)
 				&& (bullet.team == charaTeam ^ bullet.atk >= 0);
-	}
-	//XY
-	@Override
-	public void setX(double x) {
-		charaLastXSpd += x - charaX;
-		charaX = x;
-	}
-	@Override
-	public void setY(double y) {
-		charaLastYSpd += y - charaY;
-		charaY = y;
-	}
-	@Override
-	public void setXY(double x,double y) {
-		charaLastXSpd += x - charaX;
-		charaLastYSpd += y - charaY;
-		charaX = x;charaY = y;
-	}
-	@Override
-	public void addXY(double x,double y) {
-		charaLastXSpd += x;
-		charaLastYSpd += y;
-		charaX += x;charaY += y;
-	}
-	// angle
-	@Override
-	public final void setAngle(double angle) {
-		charaAngle = angle;
 	}
 	// hp
 	@Override
 	public final void setHP(int hp) {
 		charaHP = hp;
 	}
-	// acceleration
-	@Override
-	public final void setXSpeed(double xSpeed) {
-		charaXSpeed = xSpeed;
-	}
-	@Override
-	public final void setYSpeed(double ySpeed) {
-		charaYSpeed = ySpeed;
-	}
-	@Override
-	public final void setSpeed(double xPower, double yPower) {
-		charaXSpeed = xPower;
-		charaYSpeed = yPower;
-	}
-	@Override
-	public final void addSpeed(double xPower, double yPower) {
-		charaXSpeed += xPower;
-		charaYSpeed += yPower;
-	}
 	private final void dodge(double targetX, double targetY) {
-		final double ANGLE = atan2(targetY - charaY, targetX - charaX);
-		charaXSpeed += 40 * cos(ANGLE);
-		charaYSpeed += 40 * sin(ANGLE);
+		dynam.addSpeed_DA(40, dynam.getAngle(targetX,targetY));
 		charaOnLand = false;
 	}
 	@Override
 	public final void gravity(double g) {
-		if (!charaOnLand) {
-			if (THH.hitLandscape((int) charaX - 10, (int) charaY + 40, 20)) {
-				charaYSpeed = 0.0;
-				do {
-					charaY -= 1.0;
-				} while (THH.hitLandscape((int) charaX - 10, (int) charaY + 30, 20));
-				if (charaXSpeed == 0.0)
-					charaOnLand = true;
-			}else
-				charaYSpeed += g;
-		}
+		dynam.gravity(g);
 	}
 
 	// decrease
@@ -352,49 +275,8 @@ public abstract class UserChara extends Chara {
 		return charaStatus;
 	}
 	@Override
-	public final double getX() {
-		return charaX;
-	}
-	@Override
-	public final double getY() {
-		return charaY;
-	}
-	@Override
-	public final boolean inStage() {
-		return THH.inStage((int)charaX,(int)charaY);
-	}
-	@Override
-	public final boolean inArea(int x,int y,int w,int h) {
-		return abs(x - charaX) < w && abs(y - charaY) < h;
-	}
-	@Override
-	public final double getDistance(double x,double y) {
-		final double XD = x - charaX,YD = y - charaY;
-		return sqrt(XD*XD + YD*YD);
-	}
-	@Override
-	public final double getXSpeed() {
-		return charaXSpeed;
-	}
-	@Override
-	public final double getYSpeed() {
-		return charaYSpeed;
-	}
-	@Override
-	public final double getSpeed() {
-		return sqrt(charaXSpeed*charaXSpeed + charaYSpeed*charaYSpeed);
-	}
-	@Override
-	public final boolean isStop() {
-		return charaXSpeed == 0.0 && charaYSpeed == 0.0;
-	}
-	@Override
 	public boolean isMovable() {
 		return true;
-	}
-	@Override
-	public final double getAngle() {
-		return charaAngle;
 	}
 	public boolean useWeapon(int kind) {
 		return true;

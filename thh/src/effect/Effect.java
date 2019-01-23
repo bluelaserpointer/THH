@@ -1,7 +1,6 @@
 package effect;
 
-import static java.lang.Math.*;
-
+import thh.Dynam;
 import thh.DynamInteractable;
 import thh.Entity_double;
 import thh.THH;
@@ -11,6 +10,7 @@ public class Effect extends Entity_double{
 	public static int nowMaxUniqueID = -1;
 	
 	public final EffectScript SCRIPT;
+	public final Dynam dynam;
 	
 	public String name;
 	public final int
@@ -22,14 +22,12 @@ public class Effect extends Entity_double{
 		movedDistance;
 	private final double
 		ACCEL;
-	private double
-		xSpeed,ySpeed,
-		angle;
 	private final int
 		IMAGE_ID;
 	
 	public Effect(DynamInteractable source) {
 		super(source,EffectInfo.x,EffectInfo.y,EffectInfo.nowFrame);
+		dynam = new Dynam(EffectInfo.x,EffectInfo.y,EffectInfo.xSpeed,EffectInfo.ySpeed,EffectInfo.angle);
 		UNIQUE_ID = ++nowMaxUniqueID;
 		this.SCRIPT = EffectInfo.script != null ? EffectInfo.script : EffectInfo.DEFAULT_SCRIPT;
 		name = EffectInfo.name;
@@ -38,14 +36,12 @@ public class Effect extends Entity_double{
 		LIMIT_FRAME = EffectInfo.limitFrame;
 		LIMIT_RANGE = EffectInfo.limitRange;
 		ACCEL = EffectInfo.accel;
-		xSpeed = EffectInfo.xSpeed;
-		ySpeed = EffectInfo.ySpeed;
-		angle = EffectInfo.angle;
 		IMAGE_ID = EffectInfo.imageID;
 	}
 	
 	public Effect(Effect effect) {
 		super(effect.SOURCE,EffectInfo.x,EffectInfo.y,EffectInfo.nowFrame);
+		dynam = effect.dynam.clone();
 		UNIQUE_ID = ++nowMaxUniqueID;
 		SCRIPT = effect.SCRIPT != null ? effect.SCRIPT : EffectInfo.DEFAULT_SCRIPT;
 		name = effect.name;
@@ -54,15 +50,9 @@ public class Effect extends Entity_double{
 		LIMIT_FRAME = effect.LIMIT_FRAME;
 		LIMIT_RANGE = effect.LIMIT_RANGE;
 		ACCEL = effect.ACCEL;
-		xSpeed = effect.xSpeed;
-		ySpeed = effect.ySpeed;
-		angle = effect.angle;
 		IMAGE_ID = effect.IMAGE_ID;
 	}
 	
-	public final void spin(double angle) {
-		this.angle += angle;
-	}
 	public final boolean defaultIdle() {
 		//LifeSpan & Range
 		if(LIMIT_FRAME <= THH.getPassedFrame(super.INITIAL_FRAME)) {
@@ -76,24 +66,16 @@ public class Effect extends Entity_double{
 			return false;
 		}
 		//OutOfStage
-		if(!THH.inStage((int)x, (int)y)){
+		if(!dynam.inStage()){
 			THH.deleteEffect(this);
 			return false;
 		}
 		//Speed & Acceleration
-		x += xSpeed;
-		y += ySpeed;
-		movedDistance += sqrt(xSpeed*xSpeed + ySpeed*ySpeed);
-		if(ACCEL != 1.0) {
-			xSpeed *= ACCEL;
-			ySpeed *= ACCEL;
-		}
+		dynam.move();
+		dynam.accelerate(ACCEL);
 		return true;
 	}
 	public final void defaultPaint() {
-		if(angle == 0)
-			THH.drawImageTHH_center(IMAGE_ID, (int)x, (int)y);
-		else
-			THH.drawImageTHH_center(IMAGE_ID, (int)x, (int)y, angle);
+		THH.drawImageTHH_center(IMAGE_ID, (int)dynam.getX(), (int)dynam.getY(), dynam.getAngle());
 	}
 }

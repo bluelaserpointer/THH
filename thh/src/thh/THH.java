@@ -300,7 +300,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 				g2.drawString("(" + (MOUSE_X - (int)viewX) + "," + (MOUSE_Y - (int)viewY) + ")",MOUSE_X + 20,MOUSE_Y + 40);
 				//charaInfo
 				for(Chara chara : characters) {
-					final int RECT_X = (int)chara.getX() + (int)viewX,RECT_Y = (int)chara.getY() + (int)viewY;
+					final int RECT_X = (int)chara.getDynam().getX() + (int)viewX,RECT_Y = (int)chara.getDynam().getY() + (int)viewY;
 					g2.setStroke(stroke1);
 					g2.drawRect(RECT_X - 50, RECT_Y - 50, 100,100);
 					g2.drawLine(RECT_X + 50, RECT_Y - 50, RECT_X + 60, RECT_Y - 60);
@@ -434,7 +434,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		double nearstDistance = NONE;
 		Chara nearstChara = null;
 		for(Chara chara : characters) {
-			final double distance = abs(chara.getDistance(x, y));
+			final double distance = abs(chara.getDynam().getDistance(x, y));
 			if(nearstChara == null || distance < nearstDistance) {
 				nearstDistance = distance;
 				nearstChara = chara;
@@ -453,10 +453,10 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return characters[charaID].isVisibleFrom(x, y);
 	}
 	public static final double getCharaX(int charaID) {
-		return characters[charaID].getX();
+		return characters[charaID].getDynam().getX();
 	}
 	public static final double getCharaY(int charaID) {
-		return characters[charaID].getY();
+		return characters[charaID].getDynam().getY();
 	}
 	//information-stage
 	public static final StageEngine getEngine() {
@@ -584,7 +584,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public final int receiveDamageInSquare(int team,int hp,int x,int y,int size){ //自処理被弾(弾消滅)
 		for(Bullet bullet : bullets){
-			if(team != bullet.team && bullet.atk > 0 && squreCollision((int)bullet.x,(int)bullet.y,bullet.SIZE,x,y,size)){ //衝突
+			if(team != bullet.team && bullet.atk > 0 && squreCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)){ //衝突
 				hp -= bullet.atk;
 				bullet.SCRIPT.bulletHitObject(bullet);
 				if(hp <= 0)
@@ -595,7 +595,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public final int receiveBulletInCircle(int hp,int x,int y,int size,int team){ //自処理被弾(弾消滅)
 		for(Bullet bullet : bullets){
-			if(team != bullet.team && bullet.atk > 0 && circleCollision((int)bullet.x,(int)bullet.y,bullet.SIZE,x,y,size)){ //衝突
+			if(team != bullet.team && bullet.atk > 0 && circleCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)){ //衝突
 				hp -= bullet.atk;
 				bullet.SCRIPT.bulletHitObject(bullet);
 				if(hp <= 0)
@@ -607,7 +607,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public final Bullet searchBulletInSquare_single(int x,int y,int size,int team){
 		for(int i = 0;i < bullets.size();i++){
 			final Bullet bullet = bullets.get(i);
-			if(team != bullet.team && squreCollision((int)bullet.x,(int)bullet.y,bullet.SIZE,x,y,size)) //衝突
+			if(team != bullet.team && squreCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)) //衝突
 				return bullet; //return ID
 		}
 		return null; //Not found
@@ -617,7 +617,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		int foundAmount =  0;
 		for(int i = 0;i < bullets.size();i++){
 			final Bullet bullet = bullets.get(i);
-			if(team != bullet.team && squreCollision((int)bullet.x,(int)bullet.y,bullet.SIZE,x,y,size)) //衝突
+			if(team != bullet.team && squreCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)) //衝突
 				foundIDs[foundAmount++] = bullet; //record ID
 		}
 		return Arrays.copyOf(foundIDs,foundAmount);
@@ -1054,9 +1054,12 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		if(img == null)
 			return;
 		final Graphics2D G2 = thh.g2;
-		G2.rotate(angle,x,y);
-		G2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,thh);
-		G2.rotate(-angle,x,y);
+		if(angle != 0.0) {
+			G2.rotate(angle,x,y);
+			G2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,thh);
+			G2.rotate(-angle,x,y);
+		}else
+			G2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,thh);
 	}
 	/**
 	* x,yが画像の中心となるように描画し、かつ指定角度で回転させます。

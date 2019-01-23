@@ -4,6 +4,7 @@ import static java.lang.Math.PI;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
+import thh.Dynam;
 import thh.DynamInteractable;
 import thh.THH;
 
@@ -40,13 +41,16 @@ public class EffectInfo {
 		imageID = NONE;
 	}
 	public static void fastParaSet_SourceADSpd(DynamInteractable source,double angle,int distance,int speed) {
-		fastParaSet_XYADSpd(source.getX(),source.getY(),source.getAngle() + angle,distance,speed);
+		final Dynam SOURCE_DYNAM = source.getDynam();
+		fastParaSet_XYADSpd(SOURCE_DYNAM.getX(),SOURCE_DYNAM.getY(),SOURCE_DYNAM.getAngle() + angle,distance,speed);
 	}
 	public static void fastParaSet_SourceDSpd(DynamInteractable source,int distance,int speed) {
-		fastParaSet_XYADSpd(source.getX(),source.getY(),source.getAngle(),distance,speed);
+		final Dynam SOURCE_DYNAM = source.getDynam();
+		fastParaSet_XYADSpd(SOURCE_DYNAM.getX(),SOURCE_DYNAM.getY(),SOURCE_DYNAM.getAngle(),distance,speed);
 	}
 	public static void fastParaSet_SourceSpd(DynamInteractable source,int speed) {
-		fastParaSet_XYADSpd(source.getX(),source.getY(),source.getAngle(),0,speed);
+		final Dynam SOURCE_DYNAM = source.getDynam();
+		fastParaSet_XYADSpd(SOURCE_DYNAM.getX(),SOURCE_DYNAM.getY(),SOURCE_DYNAM.getAngle(),0,speed);
 	}
 	public static void fastParaSet_XYADSpd(double x,double y,double angle,int distance,int speed) {
 		final double cos_angle = Math.cos(angle),sin_angle = Math.sin(angle);
