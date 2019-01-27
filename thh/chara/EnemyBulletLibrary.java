@@ -3,7 +3,6 @@ package chara;
 import static java.lang.Math.*;
 import bullet.BulletAgent;
 import bullet.BulletInfo;
-import thh.Chara;
 import thh.THH;
 import weapon.Weapon;
 import weapon.WeaponInfo;

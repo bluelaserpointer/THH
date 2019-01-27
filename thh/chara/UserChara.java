@@ -4,18 +4,17 @@ package chara;
 import action.Action;
 import action.ActionInfo;
 import bullet.Bullet;
-import thh.Chara;
+import chara.Chara;
 import thh.DynamInteractable;
 import thh.THH;
 import weapon.Weapon;
 
 public abstract class UserChara extends Chara {
 
-	// ¥Ð¥È¥ë¥Ñ©`¥ÈévßB
+	// ï¿½Ð¥È¥ï¿½Ñ©`ï¿½ï¿½ï¿½vï¿½B
 	public int charaID, charaTeam, charaHP, charaME, charaBaseHP, charaBaseME, charaSpellCharge,
 			charaSize, charaStatus;
 	public double charaDstX, charaDstY, charaSpeed = 30;
-	public double charaLastXSpd, charaLastYSpd;
 	public boolean charaOnLand;
 
 	// Weapon
@@ -25,6 +24,7 @@ public abstract class UserChara extends Chara {
 	protected final Weapon weaponController[] = new Weapon[10];
 
 	// GUI
+	public int faceIID;
 
 	// Resource
 	// Images
@@ -32,23 +32,22 @@ public abstract class UserChara extends Chara {
 	public final int bulletIID[] = new int[weapon_max], effectIID[] = new int[10];
 
 	@Override
-	public void loadImageData() { // »­ÏñÕi¤ßÞz¤ß
+	public void loadImageData() { // ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½zï¿½ï¿½
 	}
 
 	@Override
-	public void respawn(int charaID, int charaTeam, int x, int y) { // ³õÆÚ»¯„IÀí
+	public void respawn(int charaID, int charaTeam, int x, int y) { // ï¿½ï¿½ï¿½Ú»ï¿½ï¿½Iï¿½ï¿½
 		super.resetOrder();
 		this.charaID = charaID;
 		this.charaTeam = charaTeam;
 		super.dynam.clear();
 		super.dynam.setXY(charaDstX = x, charaDstY = y);
-		charaLastXSpd = charaLastYSpd = 0.0;
 		charaStatus = NONE;
 		charaOnLand = false;
 		slot_spell = 0;
 	}
 	@Override
-	public void respawn(int charaID, int charaTeam, int x, int y,int hp) { // ³õÆÚ»¯„IÀí2
+	public void respawn(int charaID, int charaTeam, int x, int y,int hp) { // ï¿½ï¿½ï¿½Ú»ï¿½ï¿½Iï¿½ï¿½2
 		charaHP = charaBaseHP = hp;
 		this.respawn(charaID, charaTeam, x, y);
 	}
@@ -57,8 +56,6 @@ public abstract class UserChara extends Chara {
 		if(!isMovable())
 			return;
 		dynam.move();
-		charaLastXSpd += dynam.getXSpeed();
-		charaLastYSpd += dynam.getYSpeed();
 		dynam.accelerate(0.9);
 	}
 	@Override
@@ -77,7 +74,6 @@ public abstract class UserChara extends Chara {
 			final int weapon = weaponSlot[slot_weapon];
 			if (weapon != NONE && useWeapon(weapon))
 				setBullet(weapon,this);
-			charaLastXSpd = charaLastYSpd = 0.0;
 		}
 		// spell
 		if (super.spellOrder) {
@@ -121,7 +117,7 @@ public abstract class UserChara extends Chara {
 			return;
 		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
 		THH.drawImageTHH_center(charaIID, X, Y);
-		thh.paintHPArc(X, Y, 20,charaHP, charaBaseHP);
+		THH.paintHPArc(X, Y, 20,charaHP, charaBaseHP);
 	}
 	protected final void paintMode_magicCircle(int magicCircleIID) {
 		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
@@ -144,14 +140,12 @@ public abstract class UserChara extends Chara {
 	@Override
 	public void teleportRel(int x,int y) {
 		dynam.addXY(x, y);
-		charaDstX += x;charaLastXSpd += x;
-		charaDstY += y;charaLastYSpd += y;
+		charaDstX += x;
+		charaDstY += y;
 	}
 	@Override
 	public void teleportTo(int x,int y) {
 		dynam.setXY(charaDstX = x, charaDstY = y);
-		charaLastXSpd += x - dynam.getX();
-		charaLastYSpd += y - dynam.getY();
 	}
 	private Action actionPlan;
 	private int initialFrame;
@@ -180,8 +174,6 @@ public abstract class UserChara extends Chara {
 					break;
 				case ActionInfo.SPEED:
 					dynam.addXY(X,Y);
-					charaLastXSpd += X;
-					charaLastYSpd += Y;
 					break;
 				}
 			}

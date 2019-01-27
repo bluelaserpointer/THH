@@ -9,6 +9,7 @@ import javax.swing.*;
 
 import bullet.Bullet;
 import bullet.BulletInfo;
+import chara.Chara;
 import effect.Effect;
 import effect.EffectInfo;
 import engine.Engine_THH1;
@@ -31,23 +32,20 @@ import static java.lang.Math.*;
 public final class THH extends JPanel implements MouseListener,MouseMotionListener,MouseWheelListener,KeyListener,Runnable{
 	private static final long serialVersionUID = 123412351L;
 
+	public static THH thh;
+	
 	static final String
 		GAME_VERSION = "Ver beta1.0.0";
 	public static final int
-		NONE = -999999999, //‚¤Ê¤·
+		NONE = -999999999, //ï½ï½¤ï¾Šï½¤ï½·
 		ALL = -NONE,
-		MAX = Integer.MAX_VALUE, //×î´ó
-		MIN = Integer.MIN_VALUE; //×îĞ¡
-
+		MAX = Integer.MAX_VALUE,
+		MIN = Integer.MIN_VALUE;
 	public static final String
 		NOT_NAMED = "<Not Named>";
 	
-	//pass
-
-	public final URL CHARA_DIC_URL = getClass().getResource("../chara");
-	
-	//¥·¥¹¥Æ¥àévßB
 	//File Pass
+	public final URL CHARA_DIC_URL = getClass().getResource("../chara");
 	final String
 		ASSETS_URL = "assets",
 		CHARA_FOLDERS_URL = "assets/chara",
@@ -57,13 +55,11 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	
 	//debug
 	private static boolean freezeScreen;
-
 	private boolean debugMode;
 	private long loadTime_total;
-	
 	public static String errorPoint = "NONE";
 	
-	//¥¤¥Ù¥ó¥ÈévßB
+	//event
 	public final int 
 		OPENING = 1000,
 		TITLE = 2000,
@@ -73,32 +69,33 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		ACTION_PART = 6000,
 		BATTLE = 7000,BATTLE_PAUSE = 7001,
 		EVENT_PART = 8000;
-	private int mainEvent = OPENING; //¥¤¥Ù¥ó¥ÈÑ}ºÏÇéˆó(¥¤¥Ù¥ó¥È·Nî+¥¤¥Ù¥ó¥È¥Ç©`¥¿)
+	private int mainEvent = OPENING; //ï½¥ï½¤ï½¥ï¾™ï½¥îŠ˜ï¾ˆï¾‘}ï½ºï¾ï¾‡é©¤ï¿½(ï½¥ï½¤ï½¥ï¾™ï½¥îŠ˜ï¾ˆï½·Nè­¿+ï½¥ï½¤ï½¥ï¾™ï½¥îŠ˜ï¾ˆï½¥ï¾‡ï½©`ï½¥ï½¿)
 	
 	//stopEvent
 	private static int stopEventKind = NONE;
 	public static final int STOP = 0,NO_ANM_STOP = 1;
 	private static boolean messageStop,spellStop;
 	
-	//¥¦¥£¥ó¥É¥¦évßB
-	private final int defaultScreenW = 1000,defaultScreenH = 600; //¥Ç¥Õ¥©¥ë¥È¥¦¥£¥ó¥É¥µ¥¤¥º
+	//screen
+	private final int defaultScreenW = 1000,defaultScreenH = 600;
 	private static int screenW = 1000,screenH = 600;
 	private static double viewX,viewY,viewDstX,viewDstY;
 
-	private int page,page_max; //¥Ú©`¥¸™CÄÜ
+	//page
+	private int page,page_max; //ï½¥ï¾šï½©`ï½¥ï½¸åƒ‚ï¾„ï¾œ
 	
-	//¥¿¥¤¥àÇéˆó
-	private int clearFrame; //¥²©`¥àév‚S•rég
-	private static int systemFrame; //¬FÔÚ¥Õ¥ì©`¥à
+	//frame
+	private int clearFrame; //ï½¥ï½²ï½©`ï½¥çºvï¼”ç“¶é¦®
+	private static int systemFrame; //ï½¬Fï¾”ï¾šï½¥ï¾•ï½¥ï¿½ï½©`ï½¥ï¿½
 	private static int gameFrame;
-	
-	//¥­¥ã¥é¥¯¥¿©`Çéˆó
-	private static Chara[] characters = new Chara[0];
 	
 	//stage
 	private static StageEngine engine = new Engine_THH1();
 	private static Stage stage;
 	private static ControlExpansion ctrlEx = engine.getCtrl_ex();
+
+	//character data
+	private static Chara[] characters = new Chara[0];
 	
 	//bullet data
 	private static final ArrayListEx<Bullet> bullets = new ArrayListEx<Bullet>();
@@ -114,30 +111,26 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 
 	//ResourceSystem
 	private static Image[] arrayImage = new Image[128];
-	private String[] arrayImageURL = new String[128];
-	private int arrayImage_maxID = -1;
-	private SoundClip[] arraySound = new SoundClip[128];
-	private String[] arraySoundURL = new String[128];
-	private int arraySound_maxID = -1;
-	
-	public static THH thh;
+	private static String[] arrayImageURL = new String[128];
+	private static int arrayImage_maxID = -1;
+	private static SoundClip[] arraySound = new SoundClip[128];
+	private static String[] arraySoundURL = new String[128];
+	private static int arraySound_maxID = -1;
 	
 	//Initialize methods/////////////
 	public static void main(String args[]){
 		new THH();
 	}
-	/**
-	 * ¥í©`¥ÉÍêÁË¤·¤¿¤«¤òÓ›åh¤·¡¢paintComponent¤ÎŒgĞĞ¤òÒÖÖÆ¤¹¤ë¤Î¤ËÊ¹¤¤¤Ş¤¹¡£
-	 */
+	
 	private boolean loadComplete;
 	private final JFrame myFrame;
 	private final MediaTracker tracker;
 	public THH(){
 		thh = this;
-		StageEngine.thh = Chara.thh = thh;
+		StageEngine.thh = thh;
 		final long loadTime = System.currentTimeMillis();
 		//window setup
-		myFrame = new JFrame("–|·½ÁùÄ»Õh");
+		myFrame = new JFrame("ç¿»ï½·ï½½ï¾î›ªæŸ´ï½»ï¾•h");
 		myFrame.add(this,BorderLayout.CENTER);
 		myFrame.addWindowListener(new MyWindowAdapter());
 		addMouseMotionListener(this);
@@ -180,11 +173,11 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 				}
 			}
 		//}catch(Exception e){
-			//JOptionPane.showMessageDialog(null, "\‚µ–ó‚ ‚è‚Ü‚¹‚ñ‚ªAƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½B\nƒGƒ‰[ƒR[ƒhF" + e.toString(),"ƒGƒ‰[",JOptionPane.ERROR_MESSAGE);
+			//JOptionPane.showMessageDialog(null, "ç”³ã—è¨³ã‚ã‚Šã¾ã›ã‚“ãŒã€ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸã€‚\nã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰ï¼š" + e.toString(),"ã‚¨ãƒ©ãƒ¼",JOptionPane.ERROR_MESSAGE);
 		//}
 	}
 	
-	private final BufferedImage offImage = new BufferedImage(defaultScreenW,defaultScreenH,BufferedImage.TYPE_INT_ARGB_PRE); //ƒ_ƒuƒ‹ƒoƒbƒtƒ@ƒLƒƒƒ“ƒoƒX
+	private final BufferedImage offImage = new BufferedImage(defaultScreenW,defaultScreenH,BufferedImage.TYPE_INT_ARGB_PRE); //ãƒ€ãƒ–ãƒ«ãƒãƒƒãƒ•ã‚¡ã‚­ãƒ£ãƒ³ãƒã‚¹
 	private Graphics2D g2;
 	private final Font basicFont = createFont("font/upcibi.ttf").deriveFont(Font.BOLD + Font.ITALIC,30.0f),commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN,15.0f);
 	public static final BasicStroke stroke1 = new BasicStroke(1f),stroke3 = new BasicStroke(3f),stroke5 = new BasicStroke(5f);
@@ -207,14 +200,15 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			return;
 		g2.setColor(Color.WHITE);
 		g2.fill(screenRect);
-		final int TRANSLATE_X = (int)viewX,TRANSLATE_Y = (int)viewY;
-		g2.translate(TRANSLATE_X, TRANSLATE_Y);
+		final double TRANSLATE_X_double = viewX,TRANSLATE_Y_double = viewY;
+		final int TRANSLATE_X = (int)TRANSLATE_X_double,TRANSLATE_Y = (int)TRANSLATE_Y_double;
+		g2.translate(TRANSLATE_X_double, TRANSLATE_Y_double);
 		////////////////////////////////////////////////////////////////////////
 		//stageAction
 		engine.idle(g2,stopEventKind);
 		////////////////////////////////////////////////////////////////////////
 		//GUIAction
-		g2.translate(-TRANSLATE_X, -TRANSLATE_Y);
+		g2.translate(-TRANSLATE_X_double, -TRANSLATE_Y_double);
 		{
 			//message system///////////////
 			if(messageStop) {
@@ -449,8 +443,34 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	public static final int getCharaTeam(int charaID) {
 		return characters[charaID].getTeam();
 	}
-	public static final boolean charaIsVisibleFrom(int charaID,int x,int y) {
-		return characters[charaID].isVisibleFrom(x, y);
+	public static final Chara[] getVisibleEnemies(Chara chara) {
+		final Dynam DYNAM = chara.dynam;
+		final ArrayList<Chara> visibleEnemies = new ArrayList<Chara>();
+		for(Chara enemy : getCharacters_team(chara.getTeam(),false)) {
+			if(enemy.dynam.isVisible(DYNAM))
+				visibleEnemies.add(enemy);
+		}
+		return visibleEnemies.toArray(new Chara[0]);
+	}
+	public static final Chara getNearstVisibleEnemy(Chara chara) {
+		final Dynam DYNAM = chara.dynam;
+		Chara neastVisibleEnemy = null;
+		double enemyDistance = MAX;
+		for(Chara enemy : getCharacters_team(chara.getTeam(),false)) {
+			if(enemyDistance == MAX) {
+				if(DYNAM.isVisible(enemy.dynam)) {
+					neastVisibleEnemy = enemy;
+					enemyDistance = DYNAM.getDistance(enemy.dynam);
+				}
+			}else {
+				final double DISTANCE = DYNAM.getDistance(enemy.dynam);
+				if(enemyDistance > DISTANCE && DYNAM.isVisible(enemy.dynam)) {
+					neastVisibleEnemy = enemy;
+					enemyDistance = DISTANCE;
+				}
+			}
+		}
+		return neastVisibleEnemy;
 	}
 	public static final double getCharaX(int charaID) {
 		return characters[charaID].getDynam().getX();
@@ -464,9 +484,6 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final Stage getStage() {
 		return stage;
-	}
-	public final boolean underLoS(DynamInteractable e1,DynamInteractable e2) {
-		return stage.underLoS(e1, e2);
 	}
 	public static final boolean hitLandscape(int x,int y,int size) {
 		if(size <= 0)
@@ -501,7 +518,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return abs(viewX - x) < screenW && abs(viewY - y) < screenH;
 	}
 	//information-resource
-	public final Image getImageByID(int imageID) {
+	public static final Image getImageByID(int imageID) {
 		return arrayImage[imageID];
 	}
 
@@ -565,49 +582,50 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			return effects.remove(effect);
 		return false;
 	}
-	public final void paintHPArc(int x,int y,int radius,int hp,int maxHP) {
-		g2.setStroke(stroke3);
-		if((double)hp/(double)maxHP > 0.75) //HP¤¬ÉÙ¤Ê¤¯¤Ê¤ë¤´¤È¤ËÉ«¤¬‰ä»¯
-			g2.setColor(Color.CYAN); //Ë®É«
+	public static final void paintHPArc(int x,int y,int radius,int hp,int maxHP) {
+		final Graphics2D G2 = thh.g2;
+		G2.setStroke(stroke3);
+		if((double)hp/(double)maxHP > 0.75) //HPï½¤ï½¬ï¾‰ï¾™ï½¤ï¾Šï½¤ï½¯ï½¤ï¾Šï½¤ï¿½ï½¤ï½´ï½¤ï¾ˆï½¤ï¾‹ï¾‰ï½«ï½¤ï½¬æˆ‘ï½»ï½¯
+			G2.setColor(Color.CYAN); //ï¾‹ï½®ï¾‰ï½«
 		else if((double)hp/(double)maxHP > 0.50)
-			g2.setColor(Color.GREEN); //¾vÉ«
+			G2.setColor(Color.GREEN); //ï½¾vï¾‰ï½«
 		else if((double)hp/(double)maxHP > 0.25)
-			g2.setColor(Color.YELLOW); //»ÆÉ«
+			G2.setColor(Color.YELLOW); //ï½»ï¾†ï¾‰ï½«
 		else if((double)hp/(double)maxHP > 0.10 || gameFrame % 4 < 2)
-			g2.setColor(Color.RED); //³àÉ«
+			G2.setColor(Color.RED); //ï½³çŒ–ï½«
 		else
-			g2.setColor(HPWarningColor);
-		g2.drawString(String.valueOf(hp),x + (int)(radius*1.1) + (hp >= 10 ? 0 : 6),y + (int)(radius*1.1));
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.drawArc(x - radius,y - radius,radius*2,radius*2,90,(int)((double)hp/(double)maxHP*360));
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
+			G2.setColor(HPWarningColor);
+		G2.drawString(String.valueOf(hp),x + (int)(radius*1.1) + (hp >= 10 ? 0 : 6),y + (int)(radius*1.1));
+		G2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+		G2.drawArc(x - radius,y - radius,radius*2,radius*2,90,(int)((double)hp/(double)maxHP*360));
+		G2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
 	}
-	public final int receiveDamageInSquare(int team,int hp,int x,int y,int size){ //×Ô„IÀí±»(Ïûœç)
+	public final int receiveDamageInSquare(int team,int hp,int x,int y,int size){ //ï¾—ï¾”Ğ˜ï¾€æ•ï½»åº¶(åº¶ï¾è•«ï¿½)
 		for(Bullet bullet : bullets){
-			if(team != bullet.team && bullet.atk > 0 && squreCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)){ //ĞnÍ»
+			if(team != bullet.team && bullet.atk > 0 && squreCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)){ //ï¾nï¾ï½»
 				hp -= bullet.atk;
 				bullet.SCRIPT.bulletHitObject(bullet);
 				if(hp <= 0)
 					break;
 			}
 		}
-		return hp; //²Ğ¤Ã¤¿HP¤ò·µ¤¹
+		return hp; //ï½²ï¾ï½¤ï¾ƒï½¤ï½¿HPï½¤î‡®ï½µï½¤ï½¹
 	}
-	public final int receiveBulletInCircle(int hp,int x,int y,int size,int team){ //×Ô„IÀí±»(Ïûœç)
+	public final int receiveBulletInCircle(int hp,int x,int y,int size,int team){ //ï¾—ï¾”Ğ˜ï¾€æ•ï½»åº¶(åº¶ï¾è•«ï¿½)
 		for(Bullet bullet : bullets){
-			if(team != bullet.team && bullet.atk > 0 && circleCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)){ //ĞnÍ»
+			if(team != bullet.team && bullet.atk > 0 && circleCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)){ //ï¾nï¾ï½»
 				hp -= bullet.atk;
 				bullet.SCRIPT.bulletHitObject(bullet);
 				if(hp <= 0)
 					break;
 			}
 		}
-		return hp; //²Ğ¤Ã¤¿HP¤ò·µ¤¹
+		return hp; //ï½²ï¾ï½¤ï¾ƒï½¤ï½¿HPï½¤î‡®ï½µï½¤ï½¹
 	}
 	public final Bullet searchBulletInSquare_single(int x,int y,int size,int team){
 		for(int i = 0;i < bullets.size();i++){
 			final Bullet bullet = bullets.get(i);
-			if(team != bullet.team && squreCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)) //ĞnÍ»
+			if(team != bullet.team && squreCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)) //ï¾nï¾ï½»
 				return bullet; //return ID
 		}
 		return null; //Not found
@@ -617,7 +635,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		int foundAmount =  0;
 		for(int i = 0;i < bullets.size();i++){
 			final Bullet bullet = bullets.get(i);
-			if(team != bullet.team && squreCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)) //ĞnÍ»
+			if(team != bullet.team && squreCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)) //ï¾nï¾ï½»
 				foundIDs[foundAmount++] = bullet; //record ID
 		}
 		return Arrays.copyOf(foundIDs,foundAmount);
@@ -636,7 +654,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	
 	//input
 	private static int mouseX,mouseY;
-	private int mousePointing = NONE; //¥Ş¥¦¥¹¤¬¥İ¥¤¥ó¥È¤·¤Æ¤¤¤ë¤â¤Î
+	private int mousePointing = NONE; //ï½¥ï¾ï½¥ï½¦ï½¥ï½¹ï½¤ï½¬ï½¥ï¾ï½¥ï½¤ï½¥îŠ˜ï¾ˆï½¤ï½·ï½¤ï¾†ï½¤ï½¤ï½¤ï¿½ï½¤ç­…ï¾
 	
 	public void mouseWheelMoved(MouseWheelEvent e){
 		ctrlEx.mouseWheelMoved(e);
@@ -685,7 +703,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		final Image img = arrayImage[imgID];
 		return isMouseInArea(x,y,img.getWidth(null),img.getHeight(null));
 	}
-	//ƒL[î•ñ
+	//ã‚­ãƒ¼æƒ…å ±
 	private boolean key_1,key_2,key_3,key_4;
 	private long key_1_time,key_2_time,key_3_time,key_4_time;
 	private boolean key_W,key_A,key_S,key_D,key_enter;
@@ -805,10 +823,10 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	//generation
-	public static final void createBullet(DynamInteractable source){ //Éú³É
+	public static final void createBullet(DynamInteractable source){ //åº¶ï¾‰åµ­ï¾‰
 		bullets.add(new Bullet(source));
 	}
-	public static final void createEffect(DynamInteractable source){ //Éú³É
+	public static final void createEffect(DynamInteractable source){ //åº¶ï¾‰åµ­ï¾‰
 		effects.add(new Effect(source));
 	}
 
@@ -884,16 +902,16 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	
 	//ResourceLoad
 	/**
-	* »­Ïñ¤òÕi¤ßŞz¤à¥á¥½¥Ã¥É¤Ç¤¹
-	* @param url »­Ïñ¥Õ¥¡¥¤¥ëÃû
-	* @param errorSource ¥¨¥é©`³öÁ¦•r¤Î±íÊ¾¥á¥Ã¥»©`¥¸
-	* @return ½yºÏ»¯ImageID
+	* ï½»ï½­ï¾î„ŸîˆŒiï½¤ï¾Ÿï¾zï½¤çˆ­çšˆï½½ï½¥ï¾ƒï½¥ï¾‰ï½¤ï¾‡ï½¤ï½¹
+	* @param url ï½»ï½­ï¾î„ ï¾•ï½¥ï½¡ï½¥ï½¤ï½¥ï¿½ï¾ƒï¿½
+	* @param errorSource ï½¥ï½¨ï½¥é¬©`ï½³î“¨ï½¦ç“¶ï½¤ï¾ï½±æ¡„ï½¾ï½¥çšˆï¾ƒï½¥ï½»ï½©`ï½¥ï½¸
+	* @return ï½½yï½ºï¾ï½»ï½¯ImageID
 	* @since alpha1.0
 	*/
-	public final int loadImage(String url,String errorSource){ //‰æ‘œ“Ç‚İ‚İƒƒ\ƒbƒh
+	public static final int loadImage(String url,String errorSource){ //ç”»åƒèª­ã¿è¾¼ã¿ãƒ¡ã‚½ãƒƒãƒ‰
 		//old URL
 		for(int id = 0;id < arrayImageURL.length;id++){
-			if(url.equals(arrayImageURL[id])) //URLµÇåhœg¤ß
+			if(url.equals(arrayImageURL[id])) //URLï½µï¾‡ä¹•å¾ƒï½¤ï¾Ÿ
 				return id;
 		}
 		//new URL
@@ -903,44 +921,44 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		}
 		Image img = null;
 		try{
-			img = createImage((ImageProducer)getClass().getResource("/image/" + url).getContent());
-			tracker.addImage(img,1);
-		}catch(IOException | NullPointerException e){ //ˆÙí-“Ç‚İ‚İ¸”s
+			img = thh.createImage((ImageProducer)thh.getClass().getResource("/image/" + url).getContent());
+			thh.tracker.addImage(img,1);
+		}catch(IOException | NullPointerException e){ //ç•°å¸¸-èª­ã¿è¾¼ã¿å¤±æ•—
 			if(errorSource != null && !errorSource.isEmpty())
-				warningBox("»­Ïñ\"" + url + "\"¤¬¥í©`¥É¤Ç¤­¤Ş¤»¤ó¤Ç¤·¤¿¡£¤³¤Î»­Ïñ¤ÏÃè»­¤µ¤ì¤Ş¤»¤ó¡£\nˆöËù£º" + errorSource,"Õi¤ßŞz¤ß¥¨¥é©`");
+				warningBox("Image " + url + " is not found and could not be loaded.Error code: " + errorSource,"ImageLoadingError");
 			else
-				warningBox("»­Ïñ\"" + url + "\"¤¬¥í©`¥É¤Ç¤­¤Ş¤»¤ó¤Ç¤·¤¿¡£¤³¤Î»­Ïñ¤ÏÃè»­¤µ¤ì¤Ş¤»¤ó¡£\nˆöËù£ºÖ¸¶¨¤Ê¤·","Õi¤ßŞz¤ß¥¨¥é©`");
-			arrayImage[arrayImage_maxID] = createImage(1,1);
+				warningBox("Image " + url + " is not found and could not be loaded.","ImageLoadingError");
+			arrayImage[arrayImage_maxID] = thh.createImage(1,1);
 		}
 		//save URL
-		arrayImage_maxID++; //»­ÏñURLÊı¤ò‰ˆ¤ä¤¹
-		if(arrayImage_maxID == arrayImage.length){ //ÊÖ„ÓÅäÁĞÑÓéL
+		arrayImage_maxID++; //ï½»ï½­ï¾îƒ‘RLï¾Šï¿½ï½¤î‡€æ„›è€ï½¹
+		if(arrayImage_maxID == arrayImage.length){ //ï¾Šï¾–ï¿½ï¾“ï¾…è½ï¾ï¾‘ï¾“é¤ƒ
 			arrayImage = Arrays.copyOf(arrayImage,arrayImage_maxID*2);
 			arrayImageURL = Arrays.copyOf(arrayImageURL,arrayImage_maxID*2);
 		}
-		arrayImageURL[arrayImage_maxID] = url; //¤³¤Î»­ÏñURL¤òµÇåh
-		arrayImage[arrayImage_maxID] = img; //¤³¤Î»­Ïñ¤òµÇåh
+		arrayImageURL[arrayImage_maxID] = url; //ï½¤ï½³ï½¤ï¾ï½»ï½­ï¾îƒ‘RLï½¤î‡¬ï¾‡ä¹•
+		arrayImage[arrayImage_maxID] = img; //ï½¤ï½³ï½¤ï¾ï½»ï½­ï¾î„Ÿî‡¬ï¾‡ä¹•
 		return arrayImage_maxID;
 	}
 	/**
-	* »­Ïñ¤òÕi¤ßŞz¤à¥á¥½¥Ã¥É¤Ç¤¹
-	* @param url »­Ïñ¥Õ¥¡¥¤¥ëÃû
-	* @return ½yºÏ»¯ImageID
+	* ï½»ï½­ï¾î„ŸîˆŒiï½¤ï¾Ÿï¾zï½¤çˆ­çšˆï½½ï½¥ï¾ƒï½¥ï¾‰ï½¤ï¾‡ï½¤ï½¹
+	* @param url ï½»ï½­ï¾î„ ï¾•ï½¥ï½¡ï½¥ï½¤ï½¥ï¿½ï¾ƒï¿½
+	* @return ï½½yï½ºï¾ï½»ï½¯ImageID
 	* @since alpha1.0
 	*/
-	public final int loadImage(String url){ //‰æ‘œ“Ç‚İ‚İƒƒ\ƒbƒh
-		return this.loadImage(url,null);
+	public static final int loadImage(String url){ //ç”»åƒèª­ã¿è¾¼ã¿ãƒ¡ã‚½ãƒƒãƒ‰
+		return loadImage(url,null);
 	}
 	/**
-	* ¥µ¥¦¥ó¥É¥Õ¥¡¥¤¥ë¤òÕi¤ßŞz¤à¥á¥½¥Ã¥É¤Ç¤¹
-	* @param url ¥µ¥¦¥ó¥É¥Õ¥¡¥¤¥ëÃû
-	* @return ½yºÏ»¯SoundClipID
+	* ï½¥ï½µï½¥ï½¦ï½¥îŠ˜ï¾‰ï½¥ï¾•ï½¥ï½¡ï½¥ï½¤ï½¥ï¿½ï½¤îˆŒiï½¤ï¾Ÿï¾zï½¤çˆ­çšˆï½½ï½¥ï¾ƒï½¥ï¾‰ï½¤ï¾‡ï½¤ï½¹
+	* @param url ï½¥ï½µï½¥ï½¦ï½¥îŠ˜ï¾‰ï½¥ï¾•ï½¥ï½¡ï½¥ï½¤ï½¥ï¿½ï¾ƒï¿½
+	* @return ï½½yï½ºï¾ï½»ï½¯SoundClipID
 	* @since alpha1.0
 	*/
-	public final int loadSound(String url){ //‰æ‘œ“Ç‚İ‚İƒƒ\ƒbƒh
+	public final int loadSound(String url){ //ç”»åƒèª­ã¿è¾¼ã¿ãƒ¡ã‚½ãƒƒãƒ‰
 		//old URL
 		for(int id = 0;id < arraySoundURL.length;id++){
-			if(url.equals(arraySoundURL[id])) //URLµÇåhœg¤ß
+			if(url.equals(arraySoundURL[id])) //URLï½µï¾‡ä¹•å¾ƒï½¤ï¾Ÿ
 				return id;
 		}
 		//save new URL
@@ -948,19 +966,19 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			arraySound = Arrays.copyOf(arraySound, arraySound.length*2);
 			arraySoundURL = Arrays.copyOf(arraySoundURL, arraySoundURL.length*2);
 		}
-		arraySound_maxID++; //URLÊı¤ò‰ˆ¤ä¤¹
-		if(arraySound_maxID == arraySound.length){ //ÊÖ„ÓÅäÁĞÑÓéL
+		arraySound_maxID++; //URLï¾Šï¿½ï½¤î‡€æ„›è€ï½¹
+		if(arraySound_maxID == arraySound.length){ //ï¾Šï¾–ï¿½ï¾“ï¾…è½ï¾ï¾‘ï¾“é¤ƒ
 			arraySound = Arrays.copyOf(arraySound,arraySound_maxID*2);
 			arraySoundURL = Arrays.copyOf(arraySoundURL,arraySound_maxID*2);
 		}
-		arraySoundURL[arraySound_maxID] = url; //¤³¤ÎURL¤òµÇåh
+		arraySoundURL[arraySound_maxID] = url; //ï½¤ï½³ï½¤ï¾URLï½¤î‡¬ï¾‡ä¹•
 		arraySound[arraySound_maxID] = new SoundClip("/sound/" + url);
 		return arraySound_maxID;
 	}
 
 	/**
-	* ¥Õ¥©¥ó¥È¤òÕi¤ßŞz¤à¥á¥½¥Ã¥É¤Ç¤¹
-	* @param url ¥Õ¥©¥ó¥È¥Õ¥¡¥¤¥ëÃû
+	* ï½¥ï¾•ï½¥ï½©ï½¥îŠ˜ï¾ˆï½¤îˆŒiï½¤ï¾Ÿï¾zï½¤çˆ­çšˆï½½ï½¥ï¾ƒï½¥ï¾‰ï½¤ï¾‡ï½¤ï½¹
+	* @param url ï½¥ï¾•ï½¥ï½©ï½¥îŠ˜ï¾ˆï½¥ï¾•ï½¥ï½¡ï½¥ï½¤ï½¥ï¿½ï¾ƒï¿½
 	* @return Font
 	* @since alpha1.0
 	*/
@@ -984,10 +1002,10 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			charaFolder = new File(url.toURI());
 		}catch(URISyntaxException e){
 		}catch(NullPointerException e) {
-			System.out.println("¥Õ¥¡¥¤¥ë˜‹Ôì¤Ë†–î}¤¬°kÉú¤·¤Æ¤¤¤Ş¤¹¡£");
+			System.out.println("ï½¥ï¾•ï½¥ï½¡ï½¥ï½¤ï½¥ï¿½ï¿½æ¬½ï¿½ï½¤ï¾‹ï¿½çŸ¢}ï½¤ï½¬ï½°kï¾‰å¦¤ï½·ï½¤ï¾†ï½¤ï½¤ï½¤ï¾ï½¤ï½¹ï½¡ï½£");
 		}
 		if(charaFolder == null){
-			System.out.println("chara¥Õ¥©¥ë¥À¤¬ÒŠ¤Ä¤«¤ê¤Ş¤»¤ó");
+			System.out.println("charaï½¥ï¾•ï½¥ï½©ï½¥ï¿½ï½¥ï¾€ï½¤ï½¬ï¾’ä¾ƒï¾„ï½¤ï½«ï½¤ç†™ï¾ï½¤ï½»ï½¤ï¿½");
 			return new Chara[0];
 		}
 		int classAmount = 0;
@@ -1011,7 +1029,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	//PaintTool
-	public static final void translate(boolean forGUI) {
+	public static final void translateForGUI(boolean forGUI) {
 		if(forGUI)
 			thh.g2.translate(-viewX,-viewY);
 		else
@@ -1019,35 +1037,35 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	//Paint
 	/**
-	* x,y¤¬»­Ïñ¤Î×óÉÏ½Ç¤È¤Ê¤ë¤è¤¦¤ËÃè»­¤·¤Ş¤¹¡£
-	* @param img »­Ïñ
-	* @param x ÖĞĞÄx×ù˜Ë
-	* @param y ÖĞĞÄy×ù˜Ë
-	* @param w ºá·ù
-	* @param h Á¢·ù
+	* x,yï½¤ï½¬ï½»ï½­ï¾î„Ÿï¾ï¾—îŠ¼ï¾ï½½ï¾‡ï½¤ï¾ˆï½¤ï¾Šï½¤ï¿½ï½¤éšï½¦ï½¤ï¾‹ï¾ƒéœ†ï½­ï½¤ï½·ï½¤ï¾ï½¤ï½¹ï½¡ï½£
+	* @param img ï½»ï½­ï¾ï¿½
+	* @param x ï¾–ï¾ï¾ï¾„xï¾—î›³ï¾‹
+	* @param y ï¾–ï¾ï¾ï¾„yï¾—î›³ï¾‹
+	* @param w ï½ºç›¥ï¿½
+	* @param h ï¾ï½¢ï½·ï¿½
 	* @since alpha1.0
 	*/
 	public static final void drawImageTHH(Image img,int x,int y,int w,int h){
 		thh.g2.drawImage(img,x - w/2,y - h/2,w,h,thh);
 	}
 	/**
-	* x,y¤¬»­Ïñ¤Î×óÉÏ½Ç¤È¤Ê¤ë¤è¤¦¤ËÃè»­¤·¤Ş¤¹¡£
-	* @param imgID »­ÏñID
-	* @param x ÖĞĞÄx×ù˜Ë
-	* @param y ÖĞĞÄy×ù˜Ë
-	* @param w ºá·ù
-	* @param h Á¢·ù
+	* x,yï½¤ï½¬ï½»ï½­ï¾î„Ÿï¾ï¾—îŠ¼ï¾ï½½ï¾‡ï½¤ï¾ˆï½¤ï¾Šï½¤ï¿½ï½¤éšï½¦ï½¤ï¾‹ï¾ƒéœ†ï½­ï½¤ï½·ï½¤ï¾ï½¤ï½¹ï½¡ï½£
+	* @param imgID ï½»ï½­ï¾îƒ…D
+	* @param x ï¾–ï¾ï¾ï¾„xï¾—î›³ï¾‹
+	* @param y ï¾–ï¾ï¾ï¾„yï¾—î›³ï¾‹
+	* @param w ï½ºç›¥ï¿½
+	* @param h ï¾ï½¢ï½·ï¿½
 	* @since alpha1.0
 	*/
 	public static final void drawImageTHH(int imgID,int x,int y,int w,int h){
 		drawImageTHH(arrayImage[imgID],x - w/2,y - h/2,w,h);
 	}
 	/**
-	* x,y¤¬»­Ïñ¤ÎÖĞĞÄ¤È¤Ê¤ë¤è¤¦¤ËÃè»­¤·¡¢¤«¤ÄÖ¸¶¨½Ç¶È¤Ç»ØÜ¤µ¤»¤Ş¤¹¡£
-	* @param img »­Ïñ
-	* @param x ÖĞĞÄx×ù˜Ë
-	* @param y ÖĞĞÄy×ù˜Ë
-	* @param angle »ØÜ½Ç¶È
+	* x,yï½¤ï½¬ï½»ï½­ï¾î„Ÿï¾ï¾–ï¾ï¾ï¾„ï½¤ï¾ˆï½¤ï¾Šï½¤ï¿½ï½¤éšï½¦ï½¤ï¾‹ï¾ƒéœ†ï½­ï½¤ï½·ï½¡ï½¢ï½¤ï½«ï½¤ï¾„ï¾–ï½¸ï½¶ï½¨ï½½ï¾‡ï½¶ï¾ˆï½¤ï¾‡ï½»ï¾˜ï¾œæ¤„ï½µï½¤ï½»ï½¤ï¾ï½¤ï½¹ï½¡ï½£
+	* @param img ï½»ï½­ï¾ï¿½
+	* @param x ï¾–ï¾ï¾ï¾„xï¾—î›³ï¾‹
+	* @param y ï¾–ï¾ï¾ï¾„yï¾—î›³ï¾‹
+	* @param angle ï½»ï¾˜ï¾œæ¤°ï¾‡ï½¶ï¾ˆ
 	* @since alpha1.0
 	*/
 	public static final void drawImageTHH_center(Image img,int x,int y,double angle){
@@ -1062,31 +1080,31 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			G2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,thh);
 	}
 	/**
-	* x,y¤¬»­Ïñ¤ÎÖĞĞÄ¤È¤Ê¤ë¤è¤¦¤ËÃè»­¤·¡¢¤«¤ÄÖ¸¶¨½Ç¶È¤Ç»ØÜ¤µ¤»¤Ş¤¹¡£
-	* @param imgID »­ÏñID
-	* @param x ÖĞĞÄx×ù˜Ë
-	* @param y ÖĞĞÄy×ù˜Ë
-	* @param angle »ØÜ½Ç¶È
+	* x,yï½¤ï½¬ï½»ï½­ï¾î„Ÿï¾ï¾–ï¾ï¾ï¾„ï½¤ï¾ˆï½¤ï¾Šï½¤ï¿½ï½¤éšï½¦ï½¤ï¾‹ï¾ƒéœ†ï½­ï½¤ï½·ï½¡ï½¢ï½¤ï½«ï½¤ï¾„ï¾–ï½¸ï½¶ï½¨ï½½ï¾‡ï½¶ï¾ˆï½¤ï¾‡ï½»ï¾˜ï¾œæ¤„ï½µï½¤ï½»ï½¤ï¾ï½¤ï½¹ï½¡ï½£
+	* @param imgID ï½»ï½­ï¾îƒ…D
+	* @param x ï¾–ï¾ï¾ï¾„xï¾—î›³ï¾‹
+	* @param y ï¾–ï¾ï¾ï¾„yï¾—î›³ï¾‹
+	* @param angle ï½»ï¾˜ï¾œæ¤°ï¾‡ï½¶ï¾ˆ
 	* @since alpha1.0
 	*/
 	public static final void drawImageTHH_center(int imgID,int x,int y,double angle) {
 		drawImageTHH_center(arrayImage[imgID],x,y,angle);
 	}
 	/**
-	* x,y¤¬»­Ïñ¤ÎÖĞĞÄ¤È¤Ê¤ë¤è¤¦¤ËÃè»­¤·¤Ş¤¹¡£
-	* @param img »­Ïñ
-	* @param x ÖĞĞÄx×ù˜Ë
-	* @param y ÖĞĞÄy×ù˜Ë
+	* x,yï½¤ï½¬ï½»ï½­ï¾î„Ÿï¾ï¾–ï¾ï¾ï¾„ï½¤ï¾ˆï½¤ï¾Šï½¤ï¿½ï½¤éšï½¦ï½¤ï¾‹ï¾ƒéœ†ï½­ï½¤ï½·ï½¤ï¾ï½¤ï½¹ï½¡ï½£
+	* @param img ï½»ï½­ï¾ï¿½
+	* @param x ï¾–ï¾ï¾ï¾„xï¾—î›³ï¾‹
+	* @param y ï¾–ï¾ï¾ï¾„yï¾—î›³ï¾‹
 	* @since alpha1.0
 	*/
 	public static final void drawImageTHH_center(Image img,int x,int y){
 		thh.g2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,thh);
 	}
 	/**
-	* x,y¤¬»­Ïñ¤ÎÖĞĞÄ¤È¤Ê¤ë¤è¤¦¤ËÃè»­¤·¤Ş¤¹¡£
-	* @param imgID »­ÏñID
-	* @param x ÖĞĞÄx×ù˜Ë
-	* @param y ÖĞĞÄy×ù˜Ë
+	* x,yï½¤ï½¬ï½»ï½­ï¾î„Ÿï¾ï¾–ï¾ï¾ï¾„ï½¤ï¾ˆï½¤ï¾Šï½¤ï¿½ï½¤éšï½¦ï½¤ï¾‹ï¾ƒéœ†ï½­ï½¤ï½·ï½¤ï¾ï½¤ï½¹ï½¡ï½£
+	* @param imgID ï½»ï½­ï¾îƒ…D
+	* @param x ï¾–ï¾ï¾ï¾„xï¾—î›³ï¾‹
+	* @param y ï¾–ï¾ï¾ï¾„yï¾—î›³ï¾‹
 	* @since alpha1.0
 	*/
 	public static final void drawImageTHH_center(int imgID,int x,int y){
@@ -1118,7 +1136,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return team1 == NONE || team1 != team2;
 	}
 	//math & string
-	public static final double angleFormat(double radian){ //ƒ‰ƒWƒAƒ“®—ƒƒ\ƒbƒh -PI~+PI‚É’¼‚·
+	public static final double angleFormat(double radian){ //ãƒ©ã‚¸ã‚¢ãƒ³æ•´ç†ãƒ¡ã‚½ãƒƒãƒ‰ -PI~+PIã«ç›´ã™
 		radian %= PI*2;
 		if(radian > PI)
 			radian -= PI*2;
@@ -1149,7 +1167,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			if(i >= str.length())
 				return "";
 			final char c = str.charAt(i);
-			if(c == ' ' || c == '¡¡')
+			if(c == ' ' || c == 'ã€€')
 				continue;
 			else{
 				str = str.substring(i);
@@ -1158,7 +1176,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		}
 		for(int i = str.length() - 1;i >= 0;i--){
 			final char c = str.charAt(i);
-			if(c == ' ' || c == '¡¡')
+			if(c == ' ' || c == 'ã€€')
 				continue;
 			else
 				return str.substring(0,i + 1);
@@ -1166,12 +1184,12 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return str;
 	}
 	/**
-	* ÎÄ×ÖÁĞ¤òtoken¤Ç·Ö¸î¤·¤ÆÅäÁĞ¤Ç·µ¤¹¡¢String.split¥á¥½¥Ã¥É¤ÎTHH°æ¤Ç¤¹¡£
-	* ·Ö¸î¤µ¤ì¤¿ÎÄ×Ö¤Ï¡¢¤µ¤é¤ËÇ°áá¤Î°ë½Ç/È«½Ç¿Õ°×¤ò³ıÈ¥¤µ¤ì¤Ş¤¹¡£
-	* Ö¸¶¨¤µ¤ì¤¿ÎÄ×ÖÁĞ¤¬null¤Ç¤¢¤Ã¤¿¤È¤­¤Ï¿ÕÅäÁĞ¤¬·µ¤µ¤ì¡¢ÀıÍâ¤ÏÍ¶¤²¤Ş¤»¤ó¡£
-	* @param str ·Ö¸î¤µ¤ì¤ëÎÄ×ÖÁĞ
-	* @param token ·Ö¸î¤ËÊ¹¤¦¥È©`¥¯¥ó
-	* @return ·Ö¸î¤µ¤ì¤¿ÎÄ×ÖÅäÁĞ
+	* ï¾ï¾„ï¾—ï¾–ï¾ï¾ï½¤î†¬okenï½¤ï¾‡ï½·ï¾–ï½¸é‡¥ï½·ï½¤ï¾†ï¾…è½ï¾ï½¤ï¾‡ï½·ï½µï½¤ï½¹ï½¡ï½¢String.splitï½¥çšˆï½½ï½¥ï¾ƒï½¥ï¾‰ï½¤ï¾THHï½°è®€ï¾‡ï½¤ï½¹ï½¡ï½£
+	* ï½·ï¾–ï½¸é‡¥ï½µï½¤ï¿½ï½¤ï½¿ï¾ï¾„ï¾—ï¾–ï½¤ï¾ï½¡ï½¢ï½¤ï½µï½¤é¬¢ï¾‹ï¾‡ï½°çŸ£ï½¤ï¾ï½°ï¿½ï½½ï¾‡/ï¾ˆï½«ï½½ï¾‡ï½¿ï¾•ï½°ï¾—ï½¤î‡ªï¿½ï¾ˆï½¥ï½¤ï½µï½¤ï¿½ï½¤ï¾ï½¤ï½¹ï½¡ï½£
+	* ï¾–ï½¸ï½¶ï½¨ï½¤ï½µï½¤ï¿½ï½¤ï½¿ï¾ï¾„ï¾—ï¾–ï¾ï¾ï½¤ï½¬nullï½¤ï¾‡ï½¤ï½¢ï½¤ï¾ƒï½¤ï½¿ï½¤ï¾ˆï½¤ï½­ï½¤ï¾ï½¿ï¾•ï¾…è½ï¾ï½¤ï½¬ï½·ï½µï½¤ï½µï½¤ï¿½ï½¡ï½¢ï¾€ï¿½ï¾ç­…ï¾ï¾ï½¶ï½¤ï½²ï½¤ï¾ï½¤ï½»ï½¤îŠ”ï½£
+	* @param str ï½·ï¾–ï½¸é‡¥ï½µï½¤ï¿½ï½¤ï¿½ï¾ï¾„ï¾—ï¾–ï¾ï¾
+	* @param token ï½·ï¾–ï½¸é‡¥ï¾‹ï¾Šï½¹ï½¤ï½¦ï½¥ï¾ˆï½©`ï½¥ï½¯ï½¥ï¿½
+	* @return ï½·ï¾–ï½¸é‡¥ï½µï½¤ï¿½ï½¤ï½¿ï¾ï¾„ï¾—ï¾–ï¾…è½ï¾
 	* @since alpha1.0
 	*/
 	public static final String[] split2(String str,String token){
@@ -1183,7 +1201,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return strs;
 	}
 	/**
-	* String‚¤¬Ÿo„¿‚¤Ç¤Ï¤Ê¤¤¤³¤È¤ò—ÊÔ^¤·¤Ş¤¹¡£
+	* Stringï½ï½¤ï½¬æ®ªï¿½ï½¿ï½ï½¤ï¾‡ï½¤ï¾ï½¤ï¾Šï½¤ï½¤ï½¤ï½³ï½¤ï¾ˆï½¤î‡ï¾Šï¾”^ï½¤ï½·ï½¤ï¾ï½¤ï½¹ï½¡ï½£
 	*/
 	public static final boolean isActualString(String value){
 		if(value != null && !value.isEmpty() && !value.equalsIgnoreCase("NONE"))
@@ -1191,7 +1209,7 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return false;
 	}
 	/**
-	* StringÅäÁĞ¤¬Ÿo„¿‚¤Ç¤Ï¤Ê¤¤¤³¤È¤ò—ÊÔ^¤·¤Ş¤¹¡£
+	* Stringï¾…è½ï¾ï½¤ï½¬æ®ªï¿½ï½¿ï½ï½¤ï¾‡ï½¤ï¾ï½¤ï¾Šï½¤ï½¤ï½¤ï½³ï½¤ï¾ˆï½¤î‡ï¾Šï¾”^ï½¤ï½·ï½¤ï¾ï½¤ï½¹ï½¡ï½£
 	*/
 	public static final boolean isActualString(String[] value){
 		if(value != null && value.length > 0 && !value[0].isEmpty() && !value[0].equalsIgnoreCase("NONE"))
@@ -1199,12 +1217,12 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return false;
 	}
 	/**
-	* ¤³¤Îint‚¤ÏÌØ„e¤ÊÒâÎ¶¤¬º¬¤Ş¤ì¤Ê¤¤ŒgÊı‚¥¾©`¥ó¤Ç¤¢¤ë¤«¤òÕ{¤Ù¤Ş¤¹¡£
-	* THH¤Ç¤ÏÒ»²¿¤Î‰äÊı¤ËÌØÊâ¤ÊÒâÎ¶¤ò³Ö¤¿¤»¤¿Êı‚¤ò´úÈë¤·¡¢ß`¤Ã¤¿’¤„Ó¤òÊ¾¤¹¤è¤¦¤ÊÊË½M¤ß¤¬¤¢¤ê¤Ş¤¹¡£
-	* (Àı£ºgimmickHP¤Ï¶¨ÊıMAX¤Î¤È¤­ÆÆ‰²²»ÄÜ,¶¨ÊıNONE¤Î¤È¤­ĞnÍ»ÅĞ¶¨¤Ê¤·)
-	* ŒgÊı‚¤È»ìÍ¬¤·¤Ê¤¤¤¿¤á¡¢¤³¤Î¥¾©`¥ó¤ÏÏŞ½ç‚¸¶½ü¤Ç¤¢¤ë¤³¤È¤¬¶à¤¤¤è¤¦¤Ë¤Ê¤Ã¤Æ¤¤¤Ş¤¹¡£
-	* @param value Õ{¤Ù¤ë‚
-	* @return ŒgÊı‚¤Ç¤¢¤ë¤È¤­true,¤½¤¦¤Ç¤Ê¤±¤ì¤Ğfalse
+	* ï½¤ï½³ï½¤ï¾intï½ï½¤ï¾ï¾Œï¾˜ï¿½eï½¤ï¾Šï¾’ç°§ï½¶ï½¤ï½¬ï½ºï½¬ï½¤ï¾ï½¤ï¿½ï½¤ï¾Šï½¤ï½¤æºï¾Šï¿½ï½ï½¥ï½¾ï½©`ï½¥îŠ—ï¾‡ï½¤ï½¢ï½¤ï¿½ï½¤ï½«ï½¤îˆŒ{ï½¤ï¾™ï½¤ï¾ï½¤ï½¹ï½¡ï½£
+	* THHï½¤ï¾‡ï½¤ï¾ï¾’ï½»ï½²ï½¿ï½¤ï¾æˆ‘ï¾Šï¿½ï½¤ï¾‹ï¾Œï¾˜ï¾Šç­…ï¾Šï¾’ç°§ï½¶ï½¤î‡ªï¾–ï½¤ï½¿ï½¤ï½»ï½¤ï½¿ï¾Šï¿½ï½ï½¤î‡«æŠ¦ï¿½ï½¤ï½·ï½¡ï½¢ï¾Ÿ`ï½¤ï¾ƒï½¤ï½¿å½«ï¿½ï¾“ï½¤îˆï½¾ï½¤ï½¹ï½¤éšï½¦ï½¤ï¾Šï¾Šï¾‹ï½½Mï½¤ï¾Ÿï½¤ï½¬ï½¤ï½¢ï½¤ç†™ï¾ï½¤ï½¹ï½¡ï½£
+	* (ï¾€ï¿½ï½£ï½ºgimmickHPï½¤ï¾ï½¶ï½¨ï¾Šï¿½MAXï½¤ï¾ï½¤ï¾ˆï½¤ï½­ï¾†ï¾†ç‰¡ï½²ï½»ï¾„ï¾œ,ï½¶ï½¨ï¾Šï¿½NONEï½¤ï¾ï½¤ï¾ˆï½¤ï½­ï¾nï¾ï½»ï¾…ï¾ï½¶ï½¨ï½¤ï¾Šï½¤ï½·)
+	* æºï¾Šï¿½ï½ï½¤ï¾ˆï½»ï¿½ï¾ï½¬ï½¤ï½·ï½¤ï¾Šï½¤ï½¤ï½¤ï½¿ï½¤ç™¸ï½¢ï½¤ï½³ï½¤ï¾ï½¥ï½¾ï½©`ï½¥îŠ—ï¾ï¾ï¾ï½½è½¤å¤±ï½¶ï½½ï¿½ï½¤ï¾‡ï½¤ï½¢ï½¤ï¿½ï½¤ï½³ï½¤ï¾ˆï½¤ï½¬ï½¶çˆ¨ï½¤ï½¤éšï½¦ï½¤ï¾‹ï½¤ï¾Šï½¤ï¾ƒï½¤ï¾†ï½¤ï½¤ï½¤ï¾ï½¤ï½¹ï½¡ï½£
+	* @param value ï¾•{ï½¤ï¾™ï½¤ï¿½ï½
+	* @return æºï¾Šï¿½ï½ï½¤ï¾‡ï½¤ï½¢ï½¤ï¿½ï½¤ï¾ˆï½¤ï½­true,ï½¤ï½½ï½¤ï½¦ï½¤ï¾‡ï½¤ï¾Šï½¤ï½±ï½¤ï¿½ï½¤ï¾false
 	* @since alpha1.0
 	*/
 	public static final boolean isActualNumber(int value){
@@ -1222,13 +1240,13 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 		return true;
 	}
 	/**
-	* ¤³¤Îdouble‚¤ÏÌØ„e¤ÊÒâÎ¶¤¬º¬¤Ş¤ì¤Ê¤¤ŒgÊı‚¥¾©`¥ó¤Ç¤¢¤ë¤«¤òÕ{¤Ù¤Ş¤¹¡£
-	* THH¤Ç¤ÏÒ»²¿¤Î‰äÊı¤ËÌØÊâ¤ÊÒâÎ¶¤ò³Ö¤¿¤»¤¿Êı‚¤ò´úÈë¤·¡¢ß`¤Ã¤¿’¤„Ó¤òÊ¾¤¹¤è¤¦¤ÊÊË½M¤ß¤¬¤¢¤ê¤Ş¤¹¡£
-	* (Àı£ºgimmickHP¤¬¶¨ÊıMAX¤Î¤È¤­ÆÆ‰²²»ÄÜ,¶¨ÊıNONE¤Î¤È¤­ĞnÍ»ÅĞ¶¨¤Ê¤·)
-	* ŒgÊı‚¤È»ìÍ¬¤·¤Ê¤¤¤¿¤á¡¢¤³¤Î¥¾©`¥ó¤ÏÏŞ½ç‚¸¶½ü¤Ç¤¢¤ë¤³¤È¤¬¶à¤¤¤è¤¦¤Ë¤Ê¤Ã¤Æ¤¤¤Ş¤¹¡£
-	* ¤Ê¤ª¡¢NaN¤ä[NEGATIVE/POSITIVE]_INFINITY¤Ç¤âfalse¤¬·µ¤Ã¤Æ¤­¤Ş¤¹¡£
-	* @param value Õ{¤Ù¤ë‚
-	* @return ŒgÊı‚¤È¤Ç¤¢¤ë¤È¤­true,¤½¤¦¤Ç¤Ê¤±¤ì¤Ğfalse
+	* ï½¤ï½³ï½¤ï¾doubleï½ï½¤ï¾ï¾Œï¾˜ï¿½eï½¤ï¾Šï¾’ç°§ï½¶ï½¤ï½¬ï½ºï½¬ï½¤ï¾ï½¤ï¿½ï½¤ï¾Šï½¤ï½¤æºï¾Šï¿½ï½ï½¥ï½¾ï½©`ï½¥îŠ—ï¾‡ï½¤ï½¢ï½¤ï¿½ï½¤ï½«ï½¤îˆŒ{ï½¤ï¾™ï½¤ï¾ï½¤ï½¹ï½¡ï½£
+	* THHï½¤ï¾‡ï½¤ï¾ï¾’ï½»ï½²ï½¿ï½¤ï¾æˆ‘ï¾Šï¿½ï½¤ï¾‹ï¾Œï¾˜ï¾Šç­…ï¾Šï¾’ç°§ï½¶ï½¤î‡ªï¾–ï½¤ï½¿ï½¤ï½»ï½¤ï½¿ï¾Šï¿½ï½ï½¤î‡«æŠ¦ï¿½ï½¤ï½·ï½¡ï½¢ï¾Ÿ`ï½¤ï¾ƒï½¤ï½¿å½«ï¿½ï¾“ï½¤îˆï½¾ï½¤ï½¹ï½¤éšï½¦ï½¤ï¾Šï¾Šï¾‹ï½½Mï½¤ï¾Ÿï½¤ï½¬ï½¤ï½¢ï½¤ç†™ï¾ï½¤ï½¹ï½¡ï½£
+	* (ï¾€ï¿½ï½£ï½ºgimmickHPï½¤ï½¬ï½¶ï½¨ï¾Šï¿½MAXï½¤ï¾ï½¤ï¾ˆï½¤ï½­ï¾†ï¾†ç‰¡ï½²ï½»ï¾„ï¾œ,ï½¶ï½¨ï¾Šï¿½NONEï½¤ï¾ï½¤ï¾ˆï½¤ï½­ï¾nï¾ï½»ï¾…ï¾ï½¶ï½¨ï½¤ï¾Šï½¤ï½·)
+	* æºï¾Šï¿½ï½ï½¤ï¾ˆï½»ï¿½ï¾ï½¬ï½¤ï½·ï½¤ï¾Šï½¤ï½¤ï½¤ï½¿ï½¤ç™¸ï½¢ï½¤ï½³ï½¤ï¾ï½¥ï½¾ï½©`ï½¥îŠ—ï¾ï¾ï¾ï½½è½¤å¤±ï½¶ï½½ï¿½ï½¤ï¾‡ï½¤ï½¢ï½¤ï¿½ï½¤ï½³ï½¤ï¾ˆï½¤ï½¬ï½¶çˆ¨ï½¤ï½¤éšï½¦ï½¤ï¾‹ï½¤ï¾Šï½¤ï¾ƒï½¤ï¾†ï½¤ï½¤ï½¤ï¾ï½¤ï½¹ï½¡ï½£
+	* ï½¤ï¾Šï½¤ï½ªï½¡ï½¢NaNï½¤è†½NEGATIVE/POSITIVE]_INFINITYï½¤ï¾‡ï½¤ç¨ alseï½¤ï½¬ï½·ï½µï½¤ï¾ƒï½¤ï¾†ï½¤ï½­ï½¤ï¾ï½¤ï½¹ï½¡ï½£
+	* @param value ï¾•{ï½¤ï¾™ï½¤ï¿½ï½
+	* @return æºï¾Šï¿½ï½ï½¤ï¾ˆï½¤ï¾‡ï½¤ï½¢ï½¤ï¿½ï½¤ï¾ˆï½¤ï½­true,ï½¤ï½½ï½¤ï½¦ï½¤ï¾‡ï½¤ï¾Šï½¤ï½±ï½¤ï¿½ï½¤ï¾false
 	* @since alpha1.0
 	*/
 	public static final boolean isActualNumber(double value){
@@ -1241,10 +1259,10 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 			return true;
 	}
 	/**
-	* ¶È¤ò¥é¥¸¥¢¥ó¤Ø‰ä“Q¤·¤Ş¤¹¤¬¡¢ŒgÊı‚¤Ç¤Ï¤Ê¤¤‚¤ò±£³Ö¤·¤Ş¤¹¡£
-	* ¤¿¤È¤¨¤Ğ¡¢"NONE"¤ä"Double.NEGATIVE_INFINITY"¤Ê¤É¤ÎÌØÊâ‚¤Ï¤³¤Î¥á¥½¥Ã¥É¤òÍ¨¤·¤Æ¤â‚¤Ï‰ä»¯¤·¤Ş¤»¤ó¡£
-	* @param ¥é¥¸¥¢¥ó¤Ë‰ä“Q¤¹¤ëÊı‚
-	* @return ‰ä“Q¤µ¤ì¤¿‚
+	* ï½¶ï¾ˆï½¤î‡œé¬£ï½¸ï½¥ï½¢ï½¥îŠ—ï¾˜æˆ‘è½ï½¤ï½·ï½¤ï¾ï½¤ï½¹ï½¤ï½¬ï½¡ï½¢æºï¾Šï¿½ï½ï½¤ï¾‡ï½¤ï¾ï½¤ï¾Šï½¤ï½¤ï½ï½¤î‡¨ï½£ï½³ï¾–ï½¤ï½·ï½¤ï¾ï½¤ï½¹ï½¡ï½£
+	* ï½¤ï½¿ï½¤ï¾ˆï½¤ï½¨ï½¤ï¾ï½¡ï½¢"NONE"ï½¤ï¿½"Double.NEGATIVE_INFINITY"ï½¤ï¾Šï½¤ï¾‰ï½¤ï¾ï¾Œï¾˜ï¾Šç«„ç—”ï¾ï½¤ï½³ï½¤ï¾ï½¥çšˆï½½ï½¥ï¾ƒï½¥ï¾‰ï½¤îˆ„ï½¨ï½¤ï½·ï½¤ï¾†ï½¤ç«„ç—”ï¾æˆ‘ï½»ï½¯ï½¤ï½·ï½¤ï¾ï½¤ï½»ï½¤îŠ”ï½£
+	* @param ï½¥é¬£ï½¸ï½¥ï½¢ï½¥îŠ—ï¾‹æˆ‘è½ï½¤ï½¹ï½¤ï¿½ï¾Šï¿½ï½
+	* @return æˆ‘è½ï½¤ï½µï½¤ï¿½ï½¤ï½¿ï½
 	* @since alpha1.0
 	*/
 	public static final double toRadians2(double degress){
@@ -1285,11 +1303,11 @@ public final class THH extends JPanel implements MouseListener,MouseMotionListen
 	}
 	//message window
 	/**
-	* ¾¯¸æ¥¦¥£¥ó¥É¥¦¤ò±íÊ¾¤·¤Ş¤¹¡£
-	* ¤³¤Îég¤Î¥Õ¥ì©`¥àÊı¤Î¥«¥¦¥ó¥È¤¬·µ¤µ¤ì¤Ş¤¹¡£
-	* @param message ¥á¥Ã¥»©`¥¸
-	* @param title ¥á¥Ã¥»©`¥¸¥¿¥¤¥È¥ë
-	* @return Í£Ö¹¤·¤¿•rég
+	* ï½¾ï½¯ï½¸è®Œï½¦ï½¥ï½£ï½¥îŠ˜ï¾‰ï½¥ï½¦ï½¤î‡¨æ¡„ï½¾ï½¤ï½·ï½¤ï¾ï½¤ï½¹ï½¡ï½£
+	* ï½¤ï½³ï½¤ï¾é¦®ï½¤ï¾ï½¥ï¾•ï½¥ï¿½ï½©`ï½¥çŒï¿½ï½¤ï¾ï½¥ï½«ï½¥ï½¦ï½¥îŠ˜ï¾ˆï½¤ï½¬ï½·ï½µï½¤ï½µï½¤ï¿½ï½¤ï¾ï½¤ï½¹ï½¡ï½£
+	* @param message ï½¥çšˆï¾ƒï½¥ï½»ï½©`ï½¥ï½¸
+	* @param title ï½¥çšˆï¾ƒï½¥ï½»ï½©`ï½¥ï½¸ï½¥ï½¿ï½¥ï½¤ï½¥ï¾ˆï½¥ï¿½
+	* @return ï¾ï½£ï¾–ï½¹ï½¤ï½·ï½¤ï½¿ç“¶é¦®
 	* @since alpha1.0
 	*/
 	public static final long warningBox(String message,String title){

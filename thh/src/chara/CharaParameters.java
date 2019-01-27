@@ -1,8 +1,8 @@
-package thh;
+package chara;
 
 import java.util.ArrayList;
 
-public class VariableParameter {
+public class CharaParameters {
 	public final int BASE_HP;
 	public final int BASE_SPD;
 	public final int BASE_ATK;
@@ -14,11 +14,12 @@ public class VariableParameter {
 	public int atk;
 	public int agi;
 	public int agiGage;
-	public final int HP = 0,HP_CHANGE = 1,SPD = 2,ATK = 3,AGI = 4,AGI_GAGE = 5;
+	public int stunFrame;
+	public final int HP = 0,HP_CHANGE = 1,SPD = 2,ATK = 3,AGI = 4,AGI_GAGE = 5,STUN = 6;
 	public final ArrayList<Buff> skillEffect = new ArrayList<Buff>();
 	public final ArrayList<Buff> buffs = new ArrayList<Buff>();
 	
-	public VariableParameter(int hp,int spd,int atk,int agi) {
+	public CharaParameters(int hp,int spd,int atk,int agi) {
 		BASE_HP = this.hp = hp;
 		this.hpChange = 0;
 		BASE_SPD = this.spd = spd;
@@ -37,5 +38,12 @@ public class VariableParameter {
 		agiGage = hpChange = 0;
 		for(Buff buff : skillEffect)
 			buff.setBuff(this);
+	}
+	
+	public boolean pullStun() {
+		if(stunFrame <= 0)
+			return false;
+		stunFrame--;
+		return true;
 	}
 }

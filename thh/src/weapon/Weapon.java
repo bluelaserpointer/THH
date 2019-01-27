@@ -1,24 +1,23 @@
 package weapon;
 /**
- * ╔фУ─╜y╓╞е╖е╣е╞ердЄ╫╘╖╓д╟╫ўдъд┐дпд╩дд╚╦╙├д╦╫ў│╔д╡дьд▐д╖д┐бг
- * BulletдфEffectд╬д╚днд╚═мд╕дшджд╦бвд▐д║WeaponInfoд╦е╫еэе╤е╞егдЄ╙Ы╚ыд╖д╞длдщбвд│д╬епеще╣д╬едеєе╣е┐еєе╣дЄ╔·│╔д╖д╞дпд└д╡ддбг
+ * class for performing character's attack delay
  */
 public class Weapon {
 	protected final static int 
 		NONE = thh.THH.NONE,
 		MAX = thh.THH.MAX;
 	protected final int
-		COOL_TIME, //╬ф╞ўд╬е╖ече├е╚Ъ░д╦▒╪╥кд╩епй`еые┐едер
-		COOL_SPEED, //╬ф╞ўд╬е╒еьй`ерЪ░епй`еыВО
-		RELOAD_TIME, //╬ф╞ўд╬еъеэй`е╔д╦▒╪╥кд╩Хrщg
-		RELOAD_SPEED, //╬ф╞ўд╬е╒еьй`ерЪ░еъеэй`е╔ВО
-		MAGAZINE_SIZE, //╬ф╞ўд╬ПОВ}╚▌┴┐
-		MAGAZINE_CONSUMPTION, //╬ф╞ўд╬е╖ече├е╚Ъ░д╬ПО╦a╧√┘M
+		COOL_TIME, //
+		COOL_SPEED, //
+		RELOAD_TIME, //
+		RELOAD_SPEED, //
+		MAGAZINE_SIZE, //
+		MAGAZINE_CONSUMPTION, //
 		RELOAD_OPTION;
 	protected int
-		coolProcess, //епй`еы▀M╨╨ВО
-		reloadProcess, //еъеэй`е╔▀M╨╨ВО
-		magazine; //ПОВ}─┌▓╨ПО
+		coolProcess, //
+		reloadProcess, //
+		magazine; //
 	public Weapon() {
 		COOL_TIME = WeaponInfo.coolTime;
 		COOL_SPEED = WeaponInfo.coolSpeed;
@@ -69,9 +68,9 @@ public class Weapon {
 		return this.trigger(MAGAZINE_CONSUMPTION);
 	}
 	/**
-	 * ╬ф╞ўд╬епй`еые└ежеєдЄ▀Mдсд▐д╣бг
-	 * @param cool епй`еые└ежеє╝╙╦уВО
-	 * @return д│д╬есе╜е├е╔д╟епй`еые└ежеєдм═ъ┴╦д╖д┐дл
+	 * я┐╜я┐╜я┐╜я┐╜я┐╜╬ея┐╜я┐╜`я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜Mя┐╜я┐╜▐дя┐╜я┐╜я┐╜
+	 * @param cool я┐╜я┐╜я┐╜`я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜уВО
+	 * @return я┐╜я┐╜я┐╜╬есе╜я┐╜├е╔д╟ея┐╜я┐╜`я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜╦дя┐╜я┐╜я┐╜я┐╜я┐╜
 	 */
 	public boolean coolAdd(int cool) {
 		if(reloadProcess == NONE && coolProcess < COOL_TIME) {
@@ -81,9 +80,9 @@ public class Weapon {
 		return false;
 	}
 	/**
-	 * ╬ф╞ўд╬еъеэй`е╔дЄ▀Mдсд▐д╣бг
-	 * @param value еъеэй`е╔▀M╨╨╢╚╝╙╦уВО
-	 * @return д│д╬есе╜е├е╔д╟еъеэй`е╔дм═ъ┴╦д╖д┐дл
+	 * я┐╜я┐╜я┐╜я┐╜я┐╜╬ея┐╜я┐╜`я┐╜╔дя┐╜я┐╜Mя┐╜я┐╜▐дя┐╜я┐╜я┐╜
+	 * @param value я┐╜я┐╜я┐╜`я┐╜я┐╜я┐╜Mя┐╜╨╢╚╝я┐╜я┐╜уВО
+	 * @return я┐╜я┐╜я┐╜╬есе╜я┐╜├е╔д╟ея┐╜я┐╜`я┐╜╔дя┐╜я┐╜я┐╜я┐╜╦дя┐╜я┐╜я┐╜я┐╜я┐╜
 	 */
 	public boolean reloadAdd(int value) {
 		if(reloadProcess != NONE) {
@@ -98,8 +97,8 @@ public class Weapon {
 		return false;
 	}
 	/**
-	 * ╬ф╞ўд╬▓╨ПОдЄ╚л▓┐╚бдъ│Ўд╖д▐д╣бг
-	 * @return ╚бдъ│Ўд╖д┐ПОд╬┴┐
+	 * я┐╜я┐╜я┐╜я┐╜я┐╜╬▓╨Пя┐╜я┐╜я┐╜╚ля┐╜я┐╜╚бя┐╜я┐╜я┐╜я┐╜я┐╜я┐╜▐дя┐╜я┐╜я┐╜
+	 * @return ╚бя┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜
 	 */
 	public int unload() {
 		final int temp = magazine;
@@ -107,8 +106,8 @@ public class Weapon {
 		return temp;
 	}
 	/**
-	 * ╬ф╞ўд╬еъеэй`е╔дЄ╨╨ддд▐д╣бг
-	 * @return ╫░╠юд╦╩╣дядьд┐ПОд╬┴┐
+	 * я┐╜я┐╜я┐╜я┐╜я┐╜╬ея┐╜я┐╜`я┐╜╔дя┐╜я┐╜╨дя┐╜я┐╜▐дя┐╜я┐╜я┐╜
+	 * @return ╫░я┐╜я┐╜я┐╜╩╣я┐╜я┐╜ьд┐я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜
 	 */
 	public int reload() {
 		if(RELOAD_TIME == 0)

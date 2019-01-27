@@ -32,22 +32,23 @@ public class Marisa extends UserChara{
 	//Sounds
 	
 	@Override
-	public final void loadImageData(){ //ª≠œÒ’i§ﬂﬁz§ﬂ
+	public final void loadImageData(){ //ÔΩªÔΩ≠ÔæèÓÖêiÔΩ§ÔæüÔæûzÔΩ§Ôæü
 		super.loadImageData();
-		charaIID = thh.loadImage("Marisa.png");
-		bulletIID[MILLKY_WAY] = thh.loadImage("MillkyWay.png");
-		bulletIID[NARROW_SPARK] = thh.loadImage("NarrowSpark_2.png");
-		bulletIID[REUSE_BOMB] = thh.loadImage("ReuseBomb.png");
-		bulletIID[MAGIC_MISSILE] = thh.loadImage("MagicMissile.png");
-		effectIID[LIGHTNING] = thh.loadImage("ReuseBomb_Effect.png");
-		effectIID[SPARK_HIT_EF] = thh.loadImage("NarrowSpark_HitEffect.png");
-		effectIID[MISSILE_TRACE1_EF] = thh.loadImage("StarEffect2.png");
-		effectIID[MISSILE_TRACE2_EF] = thh.loadImage("MagicMissile.png");
-		effectIID[MISSILE_HIT_EF] = thh.loadImage("MissileHitEffect.png");
+		charaIID = THH.loadImage("Marisa.png");
+		faceIID = THH.loadImage("MarisaIcon.png");
+		bulletIID[MILLKY_WAY] = THH.loadImage("MillkyWay.png");
+		bulletIID[NARROW_SPARK] = THH.loadImage("NarrowSpark_2.png");
+		bulletIID[REUSE_BOMB] = THH.loadImage("ReuseBomb.png");
+		bulletIID[MAGIC_MISSILE] = THH.loadImage("MagicMissile.png");
+		effectIID[LIGHTNING] = THH.loadImage("ReuseBomb_Effect.png");
+		effectIID[SPARK_HIT_EF] = THH.loadImage("NarrowSpark_HitEffect.png");
+		effectIID[MISSILE_TRACE1_EF] = THH.loadImage("StarEffect2.png");
+		effectIID[MISSILE_TRACE2_EF] = THH.loadImage("MagicMissile.png");
+		effectIID[MISSILE_HIT_EF] = THH.loadImage("MissileHitEffect.png");
 	}
 	
 	@Override
-	public final void loadSoundData(){ //•µ•¶•Û•…’i§ﬂﬁz§ﬂ
+	public final void loadSoundData(){
 	}
 	
 	//Initialization
@@ -84,7 +85,7 @@ public class Marisa extends UserChara{
 		slot_spell = 0;
 	}
 	@Override
-	public final void respawn(int charaID,int charaTeam,int x,int y){ //≥ı∆⁄ªØÑI¿Ì
+	public final void respawn(int charaID,int charaTeam,int x,int y){ //ÔΩ≥Óê±ÔæöÔΩªÔΩØ–òÔæÄÔøΩ
 		super.respawn(charaID,charaTeam,x,y);
 		charaHP = super.charaBaseHP = 10000;
 		charaME = charaBaseME = 100;
@@ -131,7 +132,7 @@ public class Marisa extends UserChara{
 			//}
 			BulletInfo.name = "NARROW_SPARK";
 			BulletInfo.script = bulletScripts[NARROW_SPARK];
-			BulletInfo.fastParaSet_SourceSpd(source,thh.getImageByID(bulletIID[NARROW_SPARK]).getWidth(null));
+			BulletInfo.fastParaSet_SourceSpd(source,THH.getImageByID(bulletIID[NARROW_SPARK]).getWidth(null));
 			BulletInfo.size = 15;
 			BulletInfo.atk = 8;
 			BulletInfo.offSet = 20;

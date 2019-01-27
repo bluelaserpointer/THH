@@ -1,6 +1,6 @@
 package bullet;
 
-import thh.Chara;
+import chara.Chara;
 import thh.Dynam;
 import thh.DynamInteractable;
 import thh.Entity_double;
@@ -30,8 +30,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		LIMIT_RANGE;
 	private int
 		penetration,
-		reflection,
-		movedDistance;
+		reflection;
 	private final double
 		ACCEL;
 	private final int
@@ -108,7 +107,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		return lifeSpanCheck(LIMIT_FRAME);
 	}
 	public final boolean rangeCheck(int limitRange) {
-		if(limitRange <= movedDistance && SCRIPT.bulletOutOfRange(this)){
+		if(limitRange <= dynam.getMovedDistance() && SCRIPT.bulletOutOfRange(this)){
 			THH.deleteBullet(this);
 			return true;
 		}

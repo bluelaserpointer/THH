@@ -18,8 +18,6 @@ public class Effect extends Entity_double{
 		SIZE,
 		LIMIT_FRAME,
 		LIMIT_RANGE;
-	private int
-		movedDistance;
 	private final double
 		ACCEL;
 	private final int
@@ -60,7 +58,7 @@ public class Effect extends Entity_double{
 			THH.deleteEffect(this);
 			return false;
 		}
-		if(LIMIT_RANGE <= movedDistance){
+		if(LIMIT_RANGE <= dynam.getMovedDistance()){
 			SCRIPT.effectOutOfRange(this);
 			THH.deleteEffect(this);
 			return false;

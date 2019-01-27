@@ -3,12 +3,10 @@ package stage;
 import java.awt.Graphics2D;
 
 import bullet.Bullet;
-import thh.Chara;
+import chara.Chara;
 import thh.THH;
 
 public abstract class StageEngine{
-	//•’•£©`•Î•…
-	//•∑•π•∆•‡ÈvﬂB
 	protected final static int
 		//system
 		NONE = THH.NONE,

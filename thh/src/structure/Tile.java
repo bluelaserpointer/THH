@@ -14,7 +14,7 @@ public abstract class Tile extends Structure{
 	
 	public Tile(int[] tileX,int[] tileY,int tileSize,int imageIID) {
 		if(tileX.length != tileY.length) {
-			ErrorCounter.put("Tileの不正使用：tileX.length = " + tileX.length + ", tileY.length = " + tileY.length);
+			ErrorCounter.put("Tile's constructer called Illegally: tileX.length = " + tileX.length + ", tileY.length = " + tileY.length);
 			if(tileX.length < tileY.length)
 				tileY = Arrays.copyOf(tileY, tileX.length);
 			else

@@ -33,18 +33,19 @@ public class Reimu extends UserChara{
 	//Sounds
 	
 	@Override
-	public final void loadImageData(){ //»­ÏñÕi¤ßÞz¤ß
+	public final void loadImageData(){ //ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½zï¿½ï¿½
 		super.loadImageData();
-		charaIID = thh.loadImage("Reimu.png");
-		bulletIID[FUDA_KOUHAKU] = thh.loadImage("KouhakuNoFuda.png");
-		bulletIID[FUDA_SHIROKURO] = thh.loadImage("ShirokuroNoFuda.png");
-		bulletIID[FUDA_SOUHAKU] = thh.loadImage("SouhakuNoFuda.png");
-		effectIID[LIGHTNING] = thh.loadImage("ReuseBomb_Effect.png");
-		effectIID[FUDA_HIT_EF] = thh.loadImage("FudaHitEffect.png");
+		charaIID = THH.loadImage("Reimu.png");
+		faceIID = THH.loadImage("ReimuIcon.png");
+		bulletIID[FUDA_KOUHAKU] = THH.loadImage("KouhakuNoFuda.png");
+		bulletIID[FUDA_SHIROKURO] = THH.loadImage("ShirokuroNoFuda.png");
+		bulletIID[FUDA_SOUHAKU] = THH.loadImage("SouhakuNoFuda.png");
+		effectIID[LIGHTNING] = THH.loadImage("ReuseBomb_Effect.png");
+		effectIID[FUDA_HIT_EF] = THH.loadImage("FudaHitEffect.png");
 	}
 	
 	@Override
-	public final void loadSoundData(){ //¥µ¥¦¥ó¥ÉÕi¤ßÞz¤ß
+	public final void loadSoundData(){ //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½zï¿½ï¿½
 	}
 	
 	//Initialization
@@ -73,7 +74,7 @@ public class Reimu extends UserChara{
 		slot_spell = 0;
 	}
 	@Override
-	public final void respawn(int charaID,int charaTeam,int x,int y){ //³õÆÚ»¯„IÀí
+	public final void respawn(int charaID,int charaTeam,int x,int y){ //ï¿½ï¿½ï¿½Ú»ï¿½ï¿½Iï¿½ï¿½
 		super.respawn(charaID,charaTeam,x,y);
 		charaHP = super.charaBaseHP = 10000;
 		charaME = charaBaseME = 100;

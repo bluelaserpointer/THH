@@ -15,7 +15,6 @@ import stage.Stage;
 import stage.StageEngine;
 import stage.StageInfo;
 import structure.Structure;
-import thh.Chara;
 import thh.MessageSource;
 import thh.THH;
 
@@ -49,14 +48,14 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	}
 	@Override
 	public final void loadResource() {
-		focusIID = thh.loadImage("focus.png");
-		magicCircleIID = thh.loadImage("MagicCircle.png");
-		vegImageIID[0] = thh.loadImage("veg_leaf.png");
-		vegImageIID[1] = thh.loadImage("veg_flower.png");
-		vegImageIID[2] = thh.loadImage("veg_leaf2.png");
-		vegImageIID[3] = thh.loadImage("veg_stone.png");
-		vegImageIID[4] = thh.loadImage("veg_leaf3.png");
-		Editor.freeShapeIID = thh.loadImage("gui_editor/FreeShape.png");
+		focusIID = THH.loadImage("focus.png");
+		magicCircleIID = THH.loadImage("MagicCircle.png");
+		vegImageIID[0] = THH.loadImage("veg_leaf.png");
+		vegImageIID[1] = THH.loadImage("veg_flower.png");
+		vegImageIID[2] = THH.loadImage("veg_leaf2.png");
+		vegImageIID[3] = THH.loadImage("veg_stone.png");
+		vegImageIID[4] = THH.loadImage("veg_leaf3.png");
+		Editor.freeShapeIID = THH.loadImage("gui_editor/FreeShape.png");
 	}
 	@Override
 	public final Chara[] charaSetup() {
@@ -193,7 +192,28 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 				}
 				break;
 			}
-			//formation
+		}else if(stopEventKind == THH.STOP || stopEventKind == THH.NO_ANM_STOP) {
+			THH.defaultCharaIdle(friendCharaClass);
+			THH.defaultCharaIdle(enemyCharaClass);
+		}
+		THH.defaultEntityIdle();
+		//focus
+		g2.setColor(new Color(200,120,10,100));
+		g2.setStroke(THH.stroke3);
+		g2.drawLine(formationCenterX,formationCenterY,MOUSE_X,MOUSE_Y);
+		THH.drawImageTHH_center(focusIID,MOUSE_X,MOUSE_Y);
+		//editor
+		if(editMode) {
+			Editor.doEditorPaint(g2);
+		}else { //game GUI
+			THH.translateForGUI(true);
+			int pos = 1;
+			for(UserChara chara : friendCharaClass) 
+				THH.drawImageTHH(chara.faceIID, pos++*90 + 10, THH.getScreenH() - 40, 80, 30);
+			THH.translateForGUI(false);
+		}
+		if(stopEventKind == NONE) { //scroll
+			//scroll by keys
 			if(ctrlEx.getCommandBool(CtrlEx_THH1.UP)) {
 				formationCenterY -= F_MOVE_SPD;
 				THH.viewTargetMove(0,-F_MOVE_SPD);
@@ -212,24 +232,11 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 				THH.viewTargetMove(F_MOVE_SPD,0);
 				THH.pureViewMove(F_MOVE_SPD,0);
 			}
-		}else if(stopEventKind == THH.STOP || stopEventKind == THH.NO_ANM_STOP) {
-			THH.defaultCharaIdle(friendCharaClass);
-			THH.defaultCharaIdle(enemyCharaClass);
-		}
-		THH.defaultEntityIdle();
-		//focus
-		g2.setColor(new Color(200,120,10,100));
-		g2.setStroke(THH.stroke3);
-		g2.drawLine(formationCenterX,formationCenterY,MOUSE_X,MOUSE_Y);
-		THH.drawImageTHH_center(focusIID,MOUSE_X,MOUSE_Y);
-		//scroll by mouse
-		if(stopEventKind == NONE && doScrollView) {
-			THH.viewTargetTo((MOUSE_X + formationCenterX)/2,(MOUSE_Y + formationCenterY)/2);
-			THH.viewApproach_rate(10);
-		}
-		//editor
-		if(editMode) {
-			Editor.doEditorPaint(g2);
+			//scroll by mouse
+			if(doScrollView) {
+				THH.viewTargetTo((MOUSE_X + formationCenterX)/2,(MOUSE_Y + formationCenterY)/2);
+				THH.viewApproach_rate(10);
+			}
 		}
 	}
 	
@@ -269,11 +276,11 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		private static int freeShapeIID;
 		//role
 		static void doEditorPaint(Graphics2D g2) {
-			THH.translate(true);
+			THH.translateForGUI(true);
 			g2.setColor(Color.WHITE);
 			g2.drawString("EDIT_MODE", 20, 20);
 			THH.drawImageTHH_center(freeShapeIID,80,200);
-			THH.translate(false);
+			THH.translateForGUI(false);
 		}
 	}
 }

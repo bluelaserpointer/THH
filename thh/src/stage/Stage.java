@@ -1,8 +1,10 @@
 package stage;
 
 import structure.Structure;
-import thh.Chara;
-import thh.DynamInteractable;
+
+import java.awt.geom.Line2D;
+
+import chara.Chara;
 import thh.THH;
 
 public class Stage {
@@ -11,11 +13,11 @@ public class Stage {
 	private double gravity;
 	private int stageW,stageH;
 	//structure
-	private Structure[] primeStructures; //¶àÊıÅÉ
-	private Structure[] subStructures; //ÉÙÊıÅÉ
+	private Structure[] primeStructures; //ï½¶çŒï¿½ï¾…ï¾‰
+	private Structure[] subStructures; //ï¾‰ï¾™ï¾Šï¿½ï¾…ï¾‰
 	//chara
-	private Chara[] primeCharas; //¶àÊıÅÉ(”³¤Ê¤É)
-	private Chara[] subCharas; //ÉÙÊıÅÉ
+	private Chara[] primeCharas; //ï½¶çŒï¿½ï¾…ï¾‰(ç­ï½¤ï¾Šï½¤ï¾‰)
+	private Chara[] subCharas; //ï¾‰ï¾™ï¾Šï¿½ï¾…ï¾‰
 	
 	{
 		reset();
@@ -76,16 +78,16 @@ public class Stage {
 	public final boolean inStage(int x,int y) {
 		return 0 <= x && x < stageW && 0 <= y && y < stageH;
 	}
-	public final boolean underLoS(DynamInteractable d1,DynamInteractable d2) {
+	public final boolean checkLoS(Line2D line) {
 		for(Structure ver : primeStructures) {
-			if(ver.intersectsLine(d1,d2))
+			if(ver.intersectsLine(line))
 				return false;
 		}
 		for(Structure ver : subStructures) {
-			if(ver.intersectsLine(d1,d2))
+			if(ver.intersectsLine(line))
 				return false;
 		}
-		return false;
+		return true;
 	}
 	public final boolean hitLandscape(int x,int y,int w,int h){
 		for(Structure structure : primeStructures) {

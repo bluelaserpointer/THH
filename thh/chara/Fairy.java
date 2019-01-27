@@ -17,28 +17,26 @@ public class Fairy extends UserChara{
 	}
 	
 	@Override
-	public final void loadImageData(){ //»­ÏñÕi¤ßÞz¤ß
+	public final void loadImageData(){
 		super.loadImageData();
-		charaIID = thh.loadImage("YouseiA.png");
-		magicCircleIID = thh.loadImage("MagicCircleBlue.png");
-		bulletIID[0] = thh.loadImage("LightBallA.png");
+		charaIID = THH.loadImage("YouseiA.png");
+		magicCircleIID = THH.loadImage("MagicCircleBlue.png");
+		bulletIID[0] = THH.loadImage("LightBallA.png");
 	}
 	@Override
 	public void activeCons() {
+		final int charaX = (int)dynam.getX(),charaY = (int)dynam.getY();
 		weaponController.defaultIdle();
-		for(int i = 0;i < THH.getCharaAmount();i++) {
-			if(THH.charaIsVisibleFrom(i,(int)dynam.getX(),(int)dynam.getY())) {
-				if(weaponController.trigger())
-					EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.lightBall_ROUND,bulletIID[0],(int)dynam.getX(),(int)dynam.getY(),(int)THH.getCharaX(i),(int)THH.getCharaY(i));
-			}
-		}
+		final Chara targetEnemy = THH.getNearstVisibleEnemy(this);
+		if(targetEnemy != null && weaponController.trigger())
+			EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.lightBall_ROUND,bulletIID[0],charaX,charaY,(int)targetEnemy.dynam.getX(),(int)targetEnemy.dynam.getY());
 	}
 	@Override
 	public void paint(boolean doAnimation) {
 		if(charaHP <= 0)
 			return;
 		super.paintMode_magicCircle(magicCircleIID);
-		thh.paintHPArc((int) dynam.getX(), (int) dynam.getY(), 20,charaHP, charaBaseHP);
+		THH.paintHPArc((int) dynam.getX(), (int) dynam.getY(), 20,charaHP, charaBaseHP);
 	}
 	@Override
 	public void setEffect(int kind,DynamInteractable source) {}

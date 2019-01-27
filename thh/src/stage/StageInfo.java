@@ -2,7 +2,7 @@ package stage;
 
 import structure.Structure;
 import structure.Terrain;
-import thh.Chara;
+import chara.Chara;
 
 public class StageInfo {
 	public static String name;

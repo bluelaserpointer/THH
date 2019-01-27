@@ -1,6 +1,6 @@
 package chara;
 
-import thh.Chara;
+import chara.Chara;
 import thh.DynamInteractable;
 import thh.THH;
 
@@ -16,10 +16,10 @@ public class WhiteMan extends UserChara{
 	}
 	
 	@Override
-	public final void loadImageData(){ //»­ÏñÕi¤ßÞz¤ß
+	public final void loadImageData(){ //ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½zï¿½ï¿½
 		super.loadImageData();
-		charaIID = thh.loadImage("WhiteBall.png");
-		bulletIID[0] = thh.loadImage("LightBallA.png");
+		charaIID = THH.loadImage("WhiteBall.png");
+		bulletIID[0] = THH.loadImage("LightBallA.png");
 	}
 	@Override
 	public void activeCons() {

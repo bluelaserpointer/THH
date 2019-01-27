@@ -2,6 +2,10 @@ package thh;
 
 import static java.lang.Math.*;
 
+import java.awt.geom.Line2D;
+
+import chara.Chara;
+
 public class Dynam{
 	
 	private double x,y,xSpd,ySpd,angle;
@@ -76,9 +80,18 @@ public class Dynam{
 	public boolean inArea(int x,int y,int w,int h) {
 		return abs(x - this.x) < w && abs(y - this.y) < h;
 	}
+	public double getDistance(Dynam dynam) {
+		return getDistance(dynam.x,dynam.y);
+	}
 	public double getDistance(double x,double y) {
 		final double XD = x - this.x,YD = y - this.y;
 		return sqrt(XD*XD + YD*YD);
+	}
+	public boolean isVisible(Dynam dynam) {
+		return THH.getStage().checkLoS(new Line2D.Double(x,y,dynam.x,dynam.y));
+	}
+	public boolean isVisible(double x,double y) {
+		return THH.getStage().checkLoS(new Line2D.Double(this.x,this.y,x,y));
 	}
 	public double getAngle(double x,double y) {
 		return atan2(y - this.y, x - this.x);

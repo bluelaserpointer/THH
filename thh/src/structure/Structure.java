@@ -29,7 +29,7 @@ public abstract class Structure{
 		case 5:
 			break;
 		default:
-			ErrorCounter.put("Tile.idle¤Î²»ÕýÊ¹ÓÃ:\"" + stopLevel + "\"");
+			ErrorCounter.put("Tile.idleï¿½Î²ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½:\"" + stopLevel + "\"");
 		}
 	}
 	public void activeCons() {};
@@ -53,6 +53,9 @@ public abstract class Structure{
 	public final boolean intersectsLine(DynamInteractable d1,DynamInteractable d2) {
 		final Dynam D1 = d1.getDynam(),D2 = d2.getDynam();
 		return intersectsLine(D1.getX(),D1.getY(),D2.getX(),D2.getY());
+	}
+	public final boolean intersectsLine(Dynam d1,Dynam d2) {
+		return intersectsLine(d1.getX(),d1.getY(),d2.getX(),d2.getY());
 	}
 	public abstract int getTeam();
 	

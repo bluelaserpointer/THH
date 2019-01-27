@@ -20,11 +20,11 @@ public class Terrain extends Structure{
 	}
 	public Terrain(int[] pointX,int[] pointY) {
 		if(pointX.length < pointY.length) {
-			ErrorCounter.put("Terrainの不正使用：pointX.length = " + pointX.length + ", pointY.length = " + pointY.length);
+			ErrorCounter.put("Terrain's constructer called Illegally: pointX.length = " + pointX.length + ", pointY.length = " + pointY.length);
 			polygon = new Polygon(pointX,pointY,pointX.length);
 			px = pointX;py = Arrays.copyOf(pointY, pointX.length);
 		}else if(pointX.length > pointY.length){
-			ErrorCounter.put("Terrainの不正使用：pointX.length = " + pointX.length + ", pointY.length = " + pointY.length);
+			ErrorCounter.put("Terrain's constructer called Illegally: pointX.length = " + pointX.length + ", pointY.length = " + pointY.length);
 			polygon = new Polygon(pointX,pointY,pointY.length);
 			px = Arrays.copyOf(pointX, pointY.length);py = pointY;
 		}else {
