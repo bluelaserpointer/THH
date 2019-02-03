@@ -67,7 +67,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		ACTION_PART = 6000,
 		BATTLE = 7000,BATTLE_PAUSE = 7001,
 		EVENT_PART = 8000;
-	private int mainEvent = OPENING; //･､･ﾙ･ﾈﾑ}ｺﾏﾇ驤�(･､･ﾙ･ﾈｷN譿+･､･ﾙ･ﾈ･ﾇｩ`･ｿ)
+	private int mainEvent = OPENING;
 	
 	//stopEvent
 	private static int stopEventKind = NONE;
@@ -80,17 +80,17 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private static double viewX,viewY,viewDstX,viewDstY;
 
 	//page
-	private int page,page_max; //･ﾚｩ`･ｸ僂ﾄﾜ
+	private int page,page_max;
 	
 	//frame
-	private int clearFrame; //･ｲｩ`･琺v４瓶馮
-	private static int systemFrame; //ｬFﾔﾚ･ﾕ･�ｩ`･�
+	private int clearFrame;
+	private static int systemFrame;
 	private static int gameFrame;
 	
 	//stage
-	private static StageEngine engine = new Engine_THH1();
+	private static StageEngine engine;
 	private static Stage stage;
-	private static ControlExpansion ctrlEx = engine.getCtrl_ex();
+	private static ControlExpansion ctrlEx;
 
 	//character data
 	private static Chara[] characters = new Chara[0];
@@ -116,19 +116,30 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private static int arraySound_maxID = -1;
 	
 	//Initialize methods/////////////
-	public static void main(String args[]){
-		new GHQ();
+	public static StageEngine loadEngine(String fileURL) {
+		StageEngine result = null;
+		try{
+			final Object obj = Class.forName(fileURL).newInstance(); //インスタンスを生成
+			if(obj instanceof StageEngine)
+				result =  (StageEngine)obj; //インスタンスを保存
+		}catch(ClassNotFoundException | InstantiationException | IllegalAccessException e){
+			System.out.println(e);
+			result = new Engine_THH1();
+		}
+		return result;
 	}
 	
 	private boolean loadComplete;
 	private final JFrame myFrame;
 	private final MediaTracker tracker;
-	public GHQ(){
+	public GHQ(StageEngine engine){
+		GHQ.engine = engine;
+		ctrlEx = engine.getCtrl_ex();
 		hq = this;
 		StageEngine.thh = hq;
 		final long loadTime = System.currentTimeMillis();
 		//window setup
-		myFrame = new JFrame("touhouHachidanmakusetu");
+		myFrame = new JFrame(engine.getTitleName());
 		myFrame.add(this,BorderLayout.CENTER);
 		myFrame.addWindowListener(new MyWindowAdapter());
 		addMouseMotionListener(this);

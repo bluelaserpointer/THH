@@ -43,6 +43,13 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	
 	//initialization
 	@Override
+	public String getTitleName() {
+		return "touhouHachidanmakusetu";
+	}
+	public static void main(String args[]){
+		new GHQ(new Engine_THH1());
+	}
+	@Override
 	public final ControlExpansion getCtrl_ex() {
 		return ctrlEx;
 	}

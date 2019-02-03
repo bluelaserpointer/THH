@@ -15,8 +15,10 @@ public abstract class StageEngine{
 	
 	public static GHQ thh;
 	
-	
 	//initialization
+	public String getTitleName(){
+		return GHQ.NOT_NAMED;
+	}
 	public abstract ControlExpansion getCtrl_ex();
 	public abstract void loadResource();
 	public abstract Chara[] charaSetup();
