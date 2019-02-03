@@ -4,16 +4,16 @@ import java.awt.Graphics2D;
 
 import bullet.Bullet;
 import chara.Chara;
-import thh.THH;
+import core.GHQ;
 
 public abstract class StageEngine{
 	protected final static int
 		//system
-		NONE = THH.NONE,
-		MAX = THH.MAX,
-		MIN = THH.MIN;
+		NONE = GHQ.NONE,
+		MAX = GHQ.MAX,
+		MIN = GHQ.MIN;
 	
-	public static THH thh;
+	public static GHQ thh;
 	
 	
 	//initialization

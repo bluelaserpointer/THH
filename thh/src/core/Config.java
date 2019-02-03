@@ -1,4 +1,4 @@
-package thh;
+package core;
 
 import java.io.*;
 import java.util.*;
@@ -8,9 +8,9 @@ public class Config implements Serializable{
 	private static final long serialVersionUID = 1379872249568100093L;
 
 	final static int 
-		NONE = THH.NONE,
-		MAX = THH.MAX,
-		MIN = THH.MIN;
+		NONE = GHQ.NONE,
+		MAX = GHQ.MAX,
+		MIN = GHQ.MIN;
 
 	//敵の配列群
 	String[] enemyName; //敵の名前、他configで名前指定されるときに使用
@@ -171,58 +171,58 @@ public class Config implements Serializable{
 	
 	//ID変換系
 	int convertID_enemy(String name){
-		if(!THH.isActualString(name))
-			return THH.NONE;
+		if(!GHQ.isActualString(name))
+			return GHQ.NONE;
 		if(nameToID_enemy.containsKey(name)) //指定名をIDに変換
 			return nameToID_enemy.get(name);
 		//指定名が見つからない
 		System.out.println("enemy[" + name + "]が見つかりませんでした。");
-		return THH.NONE;
+		return GHQ.NONE;
 	}
 	int convertID_entity(String name){
-		if(!THH.isActualString(name))
-			return THH.NONE;
+		if(!GHQ.isActualString(name))
+			return GHQ.NONE;
 		if(nameToID_entity.containsKey(name)) //指定名をIDに変換
 			return nameToID_entity.get(name);
 		//指定名が見つからない
 		System.out.println("entity[" + name + "]が見つかりませんでした。");
-		return THH.NONE;
+		return GHQ.NONE;
 	}
 	int convertID_effect(String name){
-		if(!THH.isActualString(name))
-			return THH.NONE;
+		if(!GHQ.isActualString(name))
+			return GHQ.NONE;
 		if(nameToID_effect.containsKey(name)) //指定名をIDに変換
 			return nameToID_effect.get(name);
 		//指定名が見つからない
 		System.out.println("effect[" + name + "]が見つかりませんでした。");
-		return THH.NONE;
+		return GHQ.NONE;
 	}
 	int convertID_gimmick(String name){
-		if(!THH.isActualString(name))
-			return THH.NONE;
+		if(!GHQ.isActualString(name))
+			return GHQ.NONE;
 		if(nameToID_gimmick.containsKey(name)) //指定名をIDに変換
 			return nameToID_gimmick.get(name);
 		//指定名が見つからない
 		System.out.println("gimmick[" + name + "]が見つかりませんでした。");
-		return THH.NONE;
+		return GHQ.NONE;
 	}
 	int convertID_weapon(String name){
-		if(!THH.isActualString(name))
-			return THH.NONE;
+		if(!GHQ.isActualString(name))
+			return GHQ.NONE;
 		if(nameToID_weapon.containsKey(name)) //指定名をIDに変換
 			return nameToID_weapon.get(name);
 		//指定名が見つからない
 		System.out.println("weapon[" + name + "]が見つかりませんでした。");
-		return THH.NONE;
+		return GHQ.NONE;
 	}
 	int convertID_bullet(String name){
-		if(!THH.isActualString(name))
-			return THH.NONE;
+		if(!GHQ.isActualString(name))
+			return GHQ.NONE;
 		if(nameToID_bullet.containsKey(name)) //指定名をIDに変換
 			return nameToID_bullet.get(name);
 		//指定名が見つからない
 		System.out.println("bullet[" + name + "]が見つかりませんでした。");
-		return THH.NONE;
+		return GHQ.NONE;
 	}
 	
 	//配列拡張系
@@ -436,7 +436,7 @@ public class Config implements Serializable{
 	
 	//共用
 	public static final int parseInt2(String str,int defaultValue) {
-		str = THH.trim2(str);
+		str = GHQ.trim2(str);
 		if(str == null || str.isEmpty()){
 			return defaultValue;
 		}
@@ -455,7 +455,7 @@ public class Config implements Serializable{
 		}
 	}
 	public static final double parseDouble2(String str,double defaultValue) {
-		str = THH.trim2(str);
+		str = GHQ.trim2(str);
 		if(str == null || str.isEmpty()){
 			return defaultValue;
 		}
@@ -474,7 +474,7 @@ public class Config implements Serializable{
 		}
 	}
 	public static final boolean parseBoolean2(String str,boolean defaultValue) {
-		str = THH.trim2(str);
+		str = GHQ.trim2(str);
 		if(str == null || str.isEmpty()){
 			return defaultValue;
 		}

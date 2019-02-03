@@ -1,6 +1,6 @@
 package action;
 
-import thh.THH;
+import core.GHQ;
 
 public class Action{
 	public final ActionSource SOURCE;
@@ -15,7 +15,7 @@ public class Action{
 	
 	public Action(ActionSource source) {
 		this.SOURCE = source;
-		initialFrame = THH.getNowFrame();
+		initialFrame = GHQ.getNowFrame();
 		name = ActionInfo.name;
 		frame = ActionInfo.getFrameArray();
 		meaning = ActionInfo.getMeaningArray();
@@ -24,11 +24,11 @@ public class Action{
 	}
 	
 	public final int getNowPos() {
-		final int passedFrame = THH.getPassedFrame(initialFrame);
+		final int passedFrame = GHQ.getPassedFrame(initialFrame);
 		for(int i = 0;i < frame.length;i++) {
 			if(passedFrame > frame[i])
 				return i;
 		}
-		return THH.NONE;
+		return GHQ.NONE;
 	}
 }

@@ -1,8 +1,16 @@
 package effect;
 
-import thh.THH;
+import core.Dynam;
+import core.DynamInteractable;
+import core.GHQ;
 
 public class EffectScript {
+	//generation
+	public final void create(DynamInteractable user) {
+		create(user,user.getDynam());
+	}
+	public void create(DynamInteractable user,Dynam baseDynam) {}
+	
 	//idle
 	public void effectIdle(Effect effect) { //Include painting
 		if(effect.defaultIdle())
@@ -26,8 +34,8 @@ public class EffectScript {
 	
 	//library
 	public final void effectFadePaint(Effect effect) {
-		THH.setImageAlpha((float)(1.0 - (double)THH.getPassedFrame(effect.INITIAL_FRAME)/effect.LIMIT_FRAME));
+		GHQ.setImageAlpha((float)(1.0 - (double)GHQ.getPassedFrame(effect.INITIAL_FRAME)/effect.LIMIT_FRAME));
 		effect.defaultPaint();
-		THH.setImageAlpha();
+		GHQ.setImageAlpha();
 	}
 }

@@ -4,8 +4,8 @@ package weapon;
  */
 public class Weapon {
 	protected final static int 
-		NONE = thh.THH.NONE,
-		MAX = thh.THH.MAX;
+		NONE = core.GHQ.NONE,
+		MAX = core.GHQ.MAX;
 	protected final int
 		COOL_TIME, //
 		COOL_SPEED, //

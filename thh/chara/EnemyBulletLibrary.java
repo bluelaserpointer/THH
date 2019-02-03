@@ -2,8 +2,8 @@ package chara;
 
 import static java.lang.Math.*;
 import bullet.BulletAgent;
-import bullet.BulletInfo;
-import thh.THH;
+import bullet.BulletBlueprint;
+import core.GHQ;
 import weapon.Weapon;
 import weapon.WeaponInfo;
 
@@ -36,49 +36,41 @@ public class EnemyBulletLibrary extends BulletAgent{
 			return null;
 		}
 	}
-	public static void inputBulletInfo(Chara source,int bulletKind,int bulletIID,int x,int y,int targetX,int targetY) {
-		THH.prepareBulletInfo();
-		BulletInfo.team = source.getTeam();
+	public static void inputBulletInfo(Chara user,int bulletKind,int bulletIID,Chara targetChara) {
+		BulletBlueprint.clear(BulletBlueprint.DEFAULT_SCRIPT,user.dynam);
+		BulletBlueprint.dynam.setAngle(targetChara);
+		BulletBlueprint.team = user.getTeam();
 		switch(bulletKind) {
 		case lightBall_S:
-			BulletInfo.name = "lightBall_S";
-			BulletInfo.kind = lightBall_S;
-			BulletInfo.fastParaSet_SourceDSpd(source,10,3);
-			BulletInfo.atk = 20;
-			BulletInfo.imageID = bulletIID;
-			THH.createBullet(source);
+			BulletBlueprint.name = "lightBall_S";
+			BulletBlueprint.dynam.fastParaAdd_DSpd(10,3);
+			BulletBlueprint.atk = 20;
+			BulletBlueprint.imageID = bulletIID;
+			GHQ.createBullet(user);
 			break;
 		case lightBall_ROUND:
-			BulletInfo.name = "lightBall_ROUND";
-			BulletInfo.kind = lightBall_ROUND;
-			BulletInfo.atk = 20;
-			BulletInfo.imageID = bulletIID;
-			BulletInfo.createBullet_BurstDesign(source,x,y,10,5,5);
+			BulletBlueprint.name = "lightBall_ROUND";
+			BulletBlueprint.atk = 20;
+			BulletBlueprint.imageID = bulletIID;
+			GHQ.createBullet(user).split_Burst(5, 10, 12.0);
 			break;
 		case HEAL_SHOTGUN:
-			BulletInfo.name = "HEAL_SHOTGUN";
-			BulletInfo.kind = HEAL_SHOTGUN;
-			BulletInfo.atk = -20;
-			BulletInfo.limitRange = 150;
-			BulletInfo.imageID = bulletIID;
-			BulletInfo.createBullet_BurstDesign(source,x,y,10,16,15);
+			BulletBlueprint.name = "HEAL_SHOTGUN";
+			BulletBlueprint.atk = -20;
+			BulletBlueprint.limitRange = 150;
+			BulletBlueprint.imageID = bulletIID;
+			GHQ.createBullet(user).split_Burst(10, 16, 15.0);
 			break;
 		case BLACK_SLASH_BURST:
-			BulletInfo.name = "BLACK_SLASH_BURST";
-			BulletInfo.kind = lightBall_ROUND;
-			BulletInfo.size = 10;
-			BulletInfo.atk = 20;
-			BulletInfo.offSet = 3;
-			BulletInfo.reflection = 1;
-			BulletInfo.limitFrame = 200;
-			BulletInfo.imageID = bulletIID;
+			BulletBlueprint.name = "BLACK_SLASH_BURST";
+			BulletBlueprint.size = 10;
+			BulletBlueprint.atk = 20;
+			BulletBlueprint.offSet = 3;
+			BulletBlueprint.reflection = 1;
+			BulletBlueprint.limitFrame = 200;
+			BulletBlueprint.imageID = bulletIID;
 			final double DEG10 = PI/18;
-			BulletInfo.fastParaSet_SourceDSpd(source,10,20);
-			THH.createBullet(source);
-			BulletInfo.fastParaSet_SourceADSpd(source,-DEG10,10,20);
-			THH.createBullet(source);
-			BulletInfo.fastParaSet_SourceADSpd(source,DEG10,10,20);
-			THH.createBullet(source);
+			GHQ.createBullet(user).split_NWay(10,new double[] {-DEG10, 0, +DEG10},20);
 			break;
 		}
 	}

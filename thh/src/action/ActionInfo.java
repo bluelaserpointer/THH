@@ -2,13 +2,13 @@ package action;
 
 import java.util.ArrayList;
 
-import thh.THH;
+import core.GHQ;
 
 import static java.lang.Math.*;
 
 public class ActionInfo {
 	private final static int
-		NONE = thh.THH.NONE;
+		NONE = core.GHQ.NONE;
 	public final static int
 		DST = 0,
 		MOVE = 1,
@@ -65,15 +65,15 @@ public class ActionInfo {
 		addPlan(frame,SPEED,radius*cos(angle),radius*sin(angle));
 	}
 	public static final int[] getFrameArray() {
-		return THH.toIntArray(frame);
+		return GHQ.toIntArray(frame);
 	}
 	public static final int[] getMeaningArray() {
-		return THH.toIntArray(meaning);
+		return GHQ.toIntArray(meaning);
 	}
 	public static final double[] getXArray() {
-		return THH.toDoubleArray(x);
+		return GHQ.toDoubleArray(x);
 	}
 	public static final double[] getYArray() {
-		return THH.toDoubleArray(y);
+		return GHQ.toDoubleArray(y);
 	}
 }

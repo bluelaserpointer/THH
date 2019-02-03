@@ -7,8 +7,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.BitSet;
 
+import core.GHQ;
 import stage.ControlExpansion;
-import thh.THH;
 
 public class CtrlEx_THH1 extends ControlExpansion{
 	//mouse
@@ -58,34 +58,34 @@ public class CtrlEx_THH1 extends ControlExpansion{
 		case VK_4:
 			switch(KEY_CODE){
 			case VK_1:
-				if(!THH.isExpired_time(key_1_time,SPELL_TAP_DUR))
+				if(!GHQ.isExpired_time(key_1_time,SPELL_TAP_DUR))
 					commandBools.set(SPELL_CHARA1);
-				key_1_time = THH.getNowTime();
+				key_1_time = GHQ.getNowTime();
 				break;
 			case VK_2:
-				if(!THH.isExpired_time(key_2_time,SPELL_TAP_DUR))
+				if(!GHQ.isExpired_time(key_2_time,SPELL_TAP_DUR))
 					commandBools.set(SPELL_CHARA2);
-				key_2_time = THH.getNowTime();
+				key_2_time = GHQ.getNowTime();
 				break;
 			case VK_3:
-				if(!THH.isExpired_time(key_3_time,SPELL_TAP_DUR))
+				if(!GHQ.isExpired_time(key_3_time,SPELL_TAP_DUR))
 					commandBools.set(SPELL_CHARA3);
-				key_3_time = THH.getNowTime();
+				key_3_time = GHQ.getNowTime();
 				break;
 			case VK_4:
-				if(!THH.isExpired_time(key_4_time,SPELL_TAP_DUR))
+				if(!GHQ.isExpired_time(key_4_time,SPELL_TAP_DUR))
 					commandBools.set(SPELL_CHARA4);
-				key_4_time = THH.getNowTime();
+				key_4_time = GHQ.getNowTime();
 				break;
 			}
 			break;
 		case VK_F6:
 			if(Engine_THH1.editMode) {
 				Engine_THH1.editMode = false;
-				THH.clearStopEvent();
-			}else if(THH.isNoStopEvent()) {
+				GHQ.clearStopEvent();
+			}else if(GHQ.isNoStopEvent()) {
 				Engine_THH1.editMode = true;
-				THH.stopScreen_noAnm();
+				GHQ.stopScreen_noAnm();
 			}
 			break;
 		default:

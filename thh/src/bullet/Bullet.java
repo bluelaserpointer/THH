@@ -1,10 +1,12 @@
 package bullet;
 
+import static java.lang.Math.PI;
+
 import chara.Chara;
-import thh.Dynam;
-import thh.DynamInteractable;
-import thh.Entity_double;
-import thh.THH;
+import core.Dynam;
+import core.DynamInteractable;
+import core.Entity_double;
+import core.GHQ;
 
 public class Bullet extends Entity_double implements DynamInteractable{
 	public final int UNIQUE_ID;
@@ -13,11 +15,9 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	private int idleExecuted = 0;
 	
 	public final BulletScript SCRIPT; //a script of unique behaviors
-	public final Dynam dynam;
 	
 	public String name;
 	public final int
-		KIND,
 		SIZE,
 		INITIAL_TEAM,
 		INITIAL_ATK;
@@ -39,32 +39,28 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		HIT_ENEMY,
 		IS_LASER;
 	public Bullet(DynamInteractable source) {
-		super(source,BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
-		dynam = new Dynam(BulletInfo.x,BulletInfo.y,BulletInfo.xSpeed,BulletInfo.ySpeed,BulletInfo.angle);
+		super(source,BulletBlueprint.dynam,BulletBlueprint.nowFrame);
 		UNIQUE_ID = ++nowMaxUniqueID;
-		SCRIPT = BulletInfo.script != null ? BulletInfo.script : BulletInfo.DEFAULT_SCRIPT;
-		name = BulletInfo.name;
-		KIND = BulletInfo.kind;
-		SIZE = BulletInfo.size;
-		LIMIT_FRAME = BulletInfo.limitFrame;
-		LIMIT_RANGE = BulletInfo.limitRange;
-		INITIAL_TEAM = team = BulletInfo.team;
-		INITIAL_ATK = atk = BulletInfo.atk;
-		offSet = BulletInfo.offSet;
-		penetration = BulletInfo.penetration;
-		reflection = BulletInfo.reflection;
-		ACCEL = BulletInfo.accel;
-		IMAGE_ID = BulletInfo.imageID;
-		HIT_ENEMY = BulletInfo.hitEnemy;
-		IS_LASER = BulletInfo.isLaser;
+		SCRIPT = BulletBlueprint.script != null ? BulletBlueprint.script : BulletBlueprint.DEFAULT_SCRIPT;
+		name = BulletBlueprint.name;
+		SIZE = BulletBlueprint.size;
+		LIMIT_FRAME = BulletBlueprint.limitFrame;
+		LIMIT_RANGE = BulletBlueprint.limitRange;
+		INITIAL_TEAM = team = BulletBlueprint.team;
+		INITIAL_ATK = atk = BulletBlueprint.atk;
+		offSet = BulletBlueprint.offSet;
+		penetration = BulletBlueprint.penetration;
+		reflection = BulletBlueprint.reflection;
+		ACCEL = BulletBlueprint.accel;
+		IMAGE_ID = BulletBlueprint.imageID;
+		HIT_ENEMY = BulletBlueprint.hitEnemy;
+		IS_LASER = BulletBlueprint.isLaser;
 	}
 	public Bullet(Bullet bullet) {
-		super(bullet.SOURCE,BulletInfo.x,BulletInfo.y,BulletInfo.nowFrame);
-		dynam = bullet.dynam.clone();
+		super(bullet.source,bullet.dynam,BulletBlueprint.nowFrame);
 		UNIQUE_ID = ++nowMaxUniqueID;
-		SCRIPT = bullet.SCRIPT != null ? bullet.SCRIPT : BulletInfo.DEFAULT_SCRIPT;
+		SCRIPT = bullet.SCRIPT != null ? bullet.SCRIPT : BulletBlueprint.DEFAULT_SCRIPT;
 		name = bullet.name;
-		KIND = bullet.KIND;
 		SIZE = bullet.SIZE;
 		LIMIT_FRAME = bullet.LIMIT_FRAME;
 		LIMIT_RANGE = bullet.LIMIT_RANGE;
@@ -78,6 +74,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		HIT_ENEMY = bullet.HIT_ENEMY;
 		IS_LASER = bullet.IS_LASER;
 	}
+	@Override
 	public final boolean defaultIdle() {
 		if(allDeleteCheck())
 			return false;
@@ -97,8 +94,8 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		return lifeSpanCheck(LIMIT_FRAME);
 	}
 	public final boolean lifeSpanCheck(int limitFrame) {
-		if(limitFrame <= THH.getPassedFrame(super.INITIAL_FRAME) && SCRIPT.bulletOutOfLifeSpan(this)) {
-			THH.deleteBullet(this);
+		if(limitFrame <= GHQ.getPassedFrame(super.INITIAL_FRAME) && SCRIPT.bulletOutOfLifeSpan(this)) {
+			GHQ.deleteBullet(this);
 			return true;
 		}
 		return false;
@@ -108,23 +105,23 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	}
 	public final boolean rangeCheck(int limitRange) {
 		if(limitRange <= dynam.getMovedDistance() && SCRIPT.bulletOutOfRange(this)){
-			THH.deleteBullet(this);
+			GHQ.deleteBullet(this);
 			return true;
 		}
 		return false;
 	}
 	public final boolean inStageCheck() {
 		if(!dynam.inStage()){
-			THH.deleteBullet(this);
+			GHQ.deleteBullet(this);
 			return true;
 		}
 		return false;
 	}
 	public final boolean dynam() {
-		return dynam(true,THH.MAX);
+		return dynam(true,GHQ.MAX);
 	}
 	public final boolean dynam(boolean doHit) {
-		return dynam(doHit,THH.MAX);
+		return dynam(doHit,GHQ.MAX);
 	}
 	public final boolean dynam(int maxGap) {
 		return dynam(true,maxGap);
@@ -132,46 +129,97 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	public final boolean dynam(boolean doHit,int maxGap) {
 		//speed & acceleration
 		dynam.move();
-		dynam.accelerate(ACCEL);
+		dynam.addSpeed(ACCEL,true);
 		if(!doHit)
 			return true;
 		//landscape collision
 		if(SCRIPT.bulletIfHitLandscape(this,(int)dynam.getX(),(int)dynam.getY())){
 			SCRIPT.bulletHitObject(this);
 			if(penetration > 0) {
-				if(penetration != THH.MAX)
+				if(penetration != GHQ.MAX)
 					penetration--;
 			}else {
 				if(reflection > 0) {
-					if(reflection != THH.MAX)
+					if(reflection != GHQ.MAX)
 						reflection--;
 					//edit reflection process
 				}else if(SCRIPT.bulletOutOfDurability(this)) {
-					THH.deleteBullet(this);
+					GHQ.deleteBullet(this);
 					return false;
 				}
 			}
 		}
 		//entity collision
-		for(Chara chara : THH.callBulletEngage(THH.getCharacters_team(team,!HIT_ENEMY),this)) {
+		for(Chara chara : GHQ.callBulletEngage(GHQ.getCharacters_team(team,!HIT_ENEMY),this)) {
 			chara.damage_amount(atk);
 			SCRIPT.bulletHitObject(this);
 			if(penetration > 0) {
-				if(penetration != THH.MAX)
+				if(penetration != GHQ.MAX)
 					penetration--;
 			}else if(SCRIPT.bulletOutOfDurability(this)) {
-				THH.deleteBullet(this);
+				GHQ.deleteBullet(this);
 				return false;
 			}
 		}
 		return true;
 	}
+	@Override
 	public final void defaultPaint() {
-		THH.drawImageTHH_center(IMAGE_ID, (int)dynam.getX(),(int)dynam.getY(), dynam.getAngle());
+		GHQ.drawImageTHH_center(IMAGE_ID, (int)dynam.getX(),(int)dynam.getY(), dynam.getAngle());
 	}
 	//tool
+	public void split_xMirror(double dx,double dy) {
+		this.dynam.addXY_allowsAngle(-dx/2,dy);
+		GHQ.createBullet(this).dynam.addX_allowsAngle(dx);
+	}
+	public void split_yMirror(double dx,double dy) {
+		this.dynam.addXY_allowsAngle(dx,-dy/2);
+		GHQ.createBullet(this).dynam.addY_allowsAngle(dy);
+	}
+	public void split_Round(int radius,int amount) {
+		final double D_ANGLE = 2*PI/amount;
+		for(int i = 1;i < amount;i++)
+			GHQ.createBullet(this).dynam.addXY_DA(radius, D_ANGLE*i);
+		this.dynam.addXY_DA(radius, 0);
+	}
+	public void clone_Round(int radius,int amount) {
+		final double D_ANGLE = 2*PI/amount;
+		for(int i = 0;i < amount;i++)
+			GHQ.createBullet(this).dynam.addXY_DA(radius, D_ANGLE*i);
+	}
+	public void split_Burst(int radius,int amount,double speed) {
+		final double D_ANGLE = 2*PI/amount;
+		for(int i = 1;i < amount;i++)
+			GHQ.createBullet(this).dynam.fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
+		this.dynam.fastParaAdd_DASpd(radius, 0, speed);
+	}
+	public void clone_Burst(int radius,int amount,double speed) {
+		final double D_ANGLE = 2*PI/amount;
+		for(int i = 0;i < amount;i++)
+			GHQ.createBullet(this).dynam.fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
+	}
+	public void split_NWay(int radius,double[] angles,double speed) {
+		for(int i = 1;i < angles.length;i++)
+			GHQ.createBullet(this).dynam.fastParaAdd_DASpd(radius, angles[i], speed);
+		this.dynam.fastParaAdd_DASpd(radius, angles[0], speed);
+	}
+	public void clone_NWay(int radius,double[] angles,double speed) {
+		for(double angle : angles)
+			GHQ.createBullet(this).dynam.fastParaAdd_DASpd(radius, angle, speed);
+	}
+	public void split_NWay(int radius,double marginAngle,double amount,double speed) {
+		this.dynam.spin(-marginAngle*(double)(amount - 1)/2.0);
+		for(int i = 1;i < amount;i++)
+			GHQ.createBullet(this).dynam.fastParaAdd_DASpd(radius, marginAngle*i, speed);
+		this.dynam.fastParaAdd_DSpd(radius, speed);
+	}
+	public void clone_NWay(int radius,double marginAngle,double amount,double speed) {
+		this.dynam.spin(-marginAngle*(double)(amount - 1)/2.0);
+		for(int i = 0;i < amount;i++)
+			GHQ.createBullet(this).dynam.fastParaAdd_DASpd(radius, marginAngle*i, speed);
+	}
 	public int getPassedFrame() {
-		return THH.getPassedFrame(INITIAL_FRAME);
+		return GHQ.getPassedFrame(INITIAL_FRAME);
 	}
 	
 	//control

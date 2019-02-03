@@ -1,11 +1,11 @@
-package thh;
+package core;
 
 import java.util.ArrayList;
 
 public class ArrayListEx<E> extends ArrayList<E>{
 	private static final long serialVersionUID = -1813423514881483180L;
 	
-	private int nowIterator = 0;
+	private int nowIterator = -1;
 	public E next() {
 		return this.get(++nowIterator);
 	}

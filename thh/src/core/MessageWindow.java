@@ -1,4 +1,4 @@
-package thh;
+package core;
 
 public abstract class MessageWindow extends GUIParts{
 	@Override

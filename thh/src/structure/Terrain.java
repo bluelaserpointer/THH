@@ -5,8 +5,8 @@ import java.awt.Polygon;
 import java.awt.geom.Line2D;
 import java.util.Arrays;
 
-import thh.ErrorCounter;
-import thh.THH;
+import core.ErrorCounter;
+import core.GHQ;
 
 public class Terrain extends Structure{
 	protected Polygon polygon;
@@ -61,6 +61,6 @@ public class Terrain extends Structure{
 	}
 	@Override
 	public int getTeam() {
-		return THH.NONE;
+		return GHQ.NONE;
 	}
 }

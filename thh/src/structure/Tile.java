@@ -3,8 +3,8 @@ package structure;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import thh.ErrorCounter;
-import thh.THH;
+import core.ErrorCounter;
+import core.GHQ;
 
 public abstract class Tile extends Structure{
 	protected ArrayList<Integer> tileX = new ArrayList<Integer>();
@@ -31,7 +31,7 @@ public abstract class Tile extends Structure{
 	public boolean contains(int x,int y,int w,int h) {
 		final int LENGTH = tileX.size();
 		for(int i = 0;i < LENGTH;i++) {
-			if(THH.rectangleCollision(tileX.get(i), tileY.get(i), TILE_SIZE, TILE_SIZE, x, y, w, h))
+			if(GHQ.rectangleCollision(tileX.get(i), tileY.get(i), TILE_SIZE, TILE_SIZE, x, y, w, h))
 				return true;
 		}
 		return false;

@@ -3,14 +3,14 @@ package structure;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 
-import thh.Dynam;
-import thh.DynamInteractable;
-import thh.ErrorCounter;
-import thh.THH;
+import core.Dynam;
+import core.DynamInteractable;
+import core.ErrorCounter;
+import core.GHQ;
 
 public abstract class Structure{
 	protected final int
-		NONE = THH.NONE;
+		NONE = GHQ.NONE;
 	
 	public final void idle(int stopLevel) {
 		switch(stopLevel) {
@@ -44,7 +44,7 @@ public abstract class Structure{
 	//information
 	public abstract boolean contains(int x,int y,int w,int h);
 	public boolean hit(int team,int x,int y,int w,int h) {
-		return THH.isRival(team,getTeam()) && contains(x,y,w,h);
+		return GHQ.isRival(team,getTeam()) && contains(x,y,w,h);
 	}
 	public abstract boolean intersectsLine(Line2D line);
 	public final boolean intersectsLine(double x1,double y1,double x2,double y2) {

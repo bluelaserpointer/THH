@@ -1,9 +1,17 @@
 package bullet;
 
-import thh.THH;
+import core.Dynam;
+import core.DynamInteractable;
+import core.GHQ;
 
 public class BulletScript {
-
+	//generation
+	public final void create(DynamInteractable user) {
+		create(user,user.getDynam());
+	}
+	public void create(DynamInteractable user,Dynam baseDynam) {}
+	
+	//role
 	public void bulletIdle(Bullet bullet) { //Include painting
 		if(bullet.defaultIdle())
 			bulletNoAnmPaint(bullet);
@@ -27,7 +35,7 @@ public class BulletScript {
 	}
 	public void bulletHitObject(Bullet bullet) {}
 	public boolean bulletIfHitLandscape(Bullet bullet,int x,int y){
-		return THH.hitLandscape(x,y,bullet.SIZE);
+		return GHQ.hitLandscape(x,y,bullet.SIZE);
 	}
 	
 	//judge

@@ -1,7 +1,7 @@
 package chara;
 
-import thh.DynamInteractable;
-import thh.THH;
+import core.DynamInteractable;
+import core.GHQ;
 import weapon.Weapon;
 
 public class Fairy extends UserChara{
@@ -19,24 +19,23 @@ public class Fairy extends UserChara{
 	@Override
 	public final void loadImageData(){
 		super.loadImageData();
-		charaIID = THH.loadImage("YouseiA.png");
-		magicCircleIID = THH.loadImage("MagicCircleBlue.png");
-		bulletIID[0] = THH.loadImage("LightBallA.png");
+		charaIID = GHQ.loadImage("YouseiA.png");
+		magicCircleIID = GHQ.loadImage("MagicCircleBlue.png");
+		bulletIID[0] = GHQ.loadImage("LightBallA.png");
 	}
 	@Override
 	public void activeCons() {
-		final int charaX = (int)dynam.getX(),charaY = (int)dynam.getY();
 		weaponController.defaultIdle();
-		final Chara targetEnemy = THH.getNearstVisibleEnemy(this);
+		final Chara targetEnemy = GHQ.getNearstVisibleEnemy(this);
 		if(targetEnemy != null && weaponController.trigger())
-			EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.lightBall_ROUND,bulletIID[0],charaX,charaY,(int)targetEnemy.dynam.getX(),(int)targetEnemy.dynam.getY());
+			EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.lightBall_ROUND,bulletIID[0],targetEnemy);
 	}
 	@Override
 	public void paint(boolean doAnimation) {
 		if(charaHP <= 0)
 			return;
 		super.paintMode_magicCircle(magicCircleIID);
-		THH.paintHPArc((int) dynam.getX(), (int) dynam.getY(), 20,charaHP, charaBaseHP);
+		GHQ.paintHPArc((int) dynam.getX(), (int) dynam.getY(), 20,charaHP, charaBaseHP);
 	}
 	@Override
 	public void setEffect(int kind,DynamInteractable source) {}

@@ -8,11 +8,11 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
-import thh.THH;
+import core.GHQ;
 
 public abstract class ControlExpansion implements MouseListener,MouseMotionListener,MouseWheelListener,KeyListener{
-	protected int NONE = THH.NONE,
-			MAX = THH.MAX;
+	protected int NONE = GHQ.NONE,
+			MAX = GHQ.MAX;
 	
 	public abstract void reset();
 	//mouse

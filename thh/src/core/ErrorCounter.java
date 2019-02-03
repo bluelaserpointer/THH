@@ -1,4 +1,4 @@
-package thh;
+package core;
 
 import java.util.ArrayList;
 
@@ -17,7 +17,7 @@ public class ErrorCounter {
 	public static final void put(String str) {
 		count++;
 		msg.add(str);
-		frame.add(THH.getNowFrame());
+		frame.add(GHQ.getNowFrame());
 	}
 	public static final void putWithPrint(String str) {
 		System.out.println(str);

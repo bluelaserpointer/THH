@@ -2,14 +2,14 @@ package weapon;
 
 import java.io.BufferedWriter;
 
-import thh.Config;
-import thh.ErrorCounter;
-import thh.THH;
+import core.Config;
+import core.ErrorCounter;
+import core.GHQ;
 
 public class WeaponInfo {
 	private final static int
-		NONE = thh.THH.NONE,
-		MAX = thh.THH.MAX;
+		NONE = core.GHQ.NONE,
+		MAX = core.GHQ.MAX;
 	public static String name;
 	public static int
 		coolTime,
@@ -33,7 +33,7 @@ public class WeaponInfo {
 		reloadOption = EMPTY;
 	}
 	public static final boolean readConfig(String str) {
-		final String[] _str = THH.split2(str, "=");
+		final String[] _str = GHQ.split2(str, "=");
 		if(_str.length == 2)
 			return readConfig(_str[0],_str[1]);
 		else
@@ -67,7 +67,7 @@ public class WeaponInfo {
 			else if(str.equalsIgnoreCase("NONE"))
 				reloadOption = NONE;
 			else {
-				ErrorCounter.putWithPrint("WeaponConfig.readConfig¤Î²»ÕýÊ¹ÓÃ£º(" + property + ", " + str + ")");
+				ErrorCounter.putWithPrint("WeaponConfig.readConfigï¿½Î²ï¿½ï¿½ï¿½Ê¹ï¿½Ã£ï¿½(" + property + ", " + str + ")");
 				reloadOption = EMPTY;
 			}
 		default:

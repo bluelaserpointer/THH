@@ -5,14 +5,13 @@ import action.Action;
 import action.ActionInfo;
 import bullet.Bullet;
 import chara.Chara;
-import thh.DynamInteractable;
-import thh.THH;
+import core.DynamInteractable;
+import core.GHQ;
 import weapon.Weapon;
 
 public abstract class UserChara extends Chara {
 
-	// �Хȥ�ѩ`���v�B
-	public int charaID, charaTeam, charaHP, charaME, charaBaseHP, charaBaseME, charaSpellCharge,
+	public int charaTeam, charaHP, charaME, charaBaseHP, charaBaseME, charaSpellCharge,
 			charaSize, charaStatus;
 	public double charaDstX, charaDstY, charaSpeed = 30;
 	public boolean charaOnLand;
@@ -36,9 +35,8 @@ public abstract class UserChara extends Chara {
 	}
 
 	@Override
-	public void respawn(int charaID, int charaTeam, int x, int y) { // ���ڻ��I��
+	public void respawn(int charaTeam, int x, int y) {
 		super.resetOrder();
-		this.charaID = charaID;
 		this.charaTeam = charaTeam;
 		super.dynam.clear();
 		super.dynam.setXY(charaDstX = x, charaDstY = y);
@@ -47,16 +45,16 @@ public abstract class UserChara extends Chara {
 		slot_spell = 0;
 	}
 	@Override
-	public void respawn(int charaID, int charaTeam, int x, int y,int hp) { // ���ڻ��I��2
+	public void respawn(int charaTeam, int x, int y,int hp) {
 		charaHP = charaBaseHP = hp;
-		this.respawn(charaID, charaTeam, x, y);
+		this.respawn(charaTeam, x, y);
 	}
 	@Override
 	public void dynam() {
 		if(!isMovable())
 			return;
 		dynam.move();
-		dynam.accelerate(0.9);
+		dynam.accelerate_MUL(0.9);
 	}
 	@Override
 	public void activeCons() {
@@ -64,7 +62,7 @@ public abstract class UserChara extends Chara {
 		if (charaHP <= 0) {
 			return;
 		}
-		final int mouseX = THH.getMouseX(), mouseY = THH.getMouseY();
+		final int mouseX = GHQ.getMouseX(), mouseY = GHQ.getMouseY();
 		dynam.setAngle(dynam.getMouseAngle());
 		// dodge
 		if (super.dodgeOrder)
@@ -109,20 +107,17 @@ public abstract class UserChara extends Chara {
 		}
 	}
 	@Override
-	public void passiveCons() {
-	}
-	@Override
 	public void paint(boolean doAnimation) {
 		if(charaHP <= 0)
 			return;
 		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
-		THH.drawImageTHH_center(charaIID, X, Y);
-		THH.paintHPArc(X, Y, 20,charaHP, charaBaseHP);
+		GHQ.drawImageTHH_center(charaIID, X, Y);
+		GHQ.paintHPArc(X, Y, 20,charaHP, charaBaseHP);
 	}
 	protected final void paintMode_magicCircle(int magicCircleIID) {
 		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
-		THH.drawImageTHH_center(magicCircleIID, X, Y, (double)THH.getNowFrame()/35.0);
-		THH.drawImageTHH_center(charaIID, X, Y);
+		GHQ.drawImageTHH_center(magicCircleIID, X, Y, (double)GHQ.getNowFrame()/35.0);
+		GHQ.drawImageTHH_center(charaIID, X, Y);
 	}
 	
 	// control
@@ -183,7 +178,7 @@ public abstract class UserChara extends Chara {
 	// judge
 	@Override
 	public final boolean bulletEngage(Bullet bullet) {
-		return charaHP > 0 && THH.squreCollision((int) dynam.getX(), (int) dynam.getY(), charaSize, (int) bullet.dynam.getX(),(int)bullet.dynam.getY(), bullet.SIZE)
+		return charaHP > 0 && GHQ.squreCollision((int) dynam.getX(), (int) dynam.getY(), charaSize, (int) bullet.dynam.getX(),(int)bullet.dynam.getY(), bullet.SIZE)
 				&& (bullet.team == charaTeam ^ bullet.atk >= 0);
 	}
 	// hp
@@ -194,10 +189,6 @@ public abstract class UserChara extends Chara {
 	private final void dodge(double targetX, double targetY) {
 		dynam.addSpeed_DA(40, dynam.getAngle(targetX,targetY));
 		charaOnLand = false;
-	}
-	@Override
-	public final void gravity(double g) {
-		dynam.gravity(g);
 	}
 
 	// decrease
@@ -236,7 +227,7 @@ public abstract class UserChara extends Chara {
 	// information
 	@Override
 	public String getName() {
-		return THH.NOT_NAMED;
+		return GHQ.NOT_NAMED;
 	}
 	@Override
 	public final int getTeam() {

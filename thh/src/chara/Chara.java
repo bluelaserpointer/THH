@@ -2,47 +2,53 @@ package chara;
 
 import action.Action;
 import bullet.Bullet;
-import thh.Dynam;
-import thh.DynamInteractable;
-import thh.ErrorCounter;
-import thh.MessageSource;
-import thh.THH;
+import core.Dynam;
+import core.DynamInteractable;
+import core.Entity_double;
+import core.ErrorCounter;
+import core.GHQ;
+import core.MessageSource;
 
-public abstract class Chara implements MessageSource,DynamInteractable{
+public abstract class Chara extends Entity_double implements MessageSource,DynamInteractable{
 	protected static final int
 		//system
-		NONE = THH.NONE,
-		MAX = THH.MAX,
-		MIN = THH.MIN;
+		NONE = GHQ.NONE,
+		MAX = GHQ.MAX,
+		MIN = GHQ.MIN;
 	
-	public final Dynam dynam = new Dynam();
 	public final CharaActionPlan actions = new CharaActionPlan();
 	
 	//Initialization
-	public final Chara initialSpawn(int charaID,int charaTeam,int spawnX,int spawnY) {
+	public final Chara initialSpawn(int charaTeam,int spawnX,int spawnY) {
 		loadImageData();
 		loadSoundData();
 		battleStarted();
-		respawn(charaID,charaTeam,spawnX,spawnY);
+		respawn(charaTeam,spawnX,spawnY);
 		return this;
 	}
-	public final Chara initialSpawn(int charaID,int charaTeam,int spawnX,int spawnY,int hp) {
+	public final Chara initialSpawn(int charaTeam,int spawnX,int spawnY,int hp) {
 		loadImageData();
 		loadSoundData();
 		battleStarted();
-		respawn(charaID,charaTeam,spawnX,spawnY,hp);
+		respawn(charaTeam,spawnX,spawnY,hp);
 		return this;
 	}
-	public abstract void respawn(int charaID,int charaTeam,int spawnX,int spawnY);
-	public abstract void respawn(int charaID,int charaTeam,int spawnX,int spawnY,int hp);
+	public abstract void respawn(int charaTeam,int spawnX,int spawnY);
+	public abstract void respawn(int charaTeam,int spawnX,int spawnY,int hp);
 	public void loadImageData(){}
 	public void loadSoundData(){}
 	public void battleStarted(){}
 	
 	//idles
 	public static final int ACITIVE_CONS = 0,PASSIVE_CONS = 1,DYNAM = 2,PAINT_ANIMATED = 3,PAINT_FREEZED = 4,STOP_ALL = 5;
-	public final void idle() {
+	@Override
+	public final boolean defaultIdle() {
 		this.idle(ACITIVE_CONS);
+		return isAlive();
+	}
+	@Override
+	public final void defaultPaint() {
+		this.idle(PAINT_ANIMATED);
 	}
 	public void idle(int stopLevel) {
 		switch(stopLevel) {
@@ -70,6 +76,7 @@ public abstract class Chara implements MessageSource,DynamInteractable{
 	public void paint(boolean doAnimation) {};
 	
 	//control
+	@Override
 	public final Dynam getDynam() {
 		return dynam;
 	}
@@ -102,8 +109,6 @@ public abstract class Chara implements MessageSource,DynamInteractable{
 	public abstract int getME();
 	public abstract double getMERate();
 	public abstract int getStatus();
-	//acceleration
-	public abstract void gravity(double value);
 	
 	//specialEvent
 	public int weaponChangeOrder;

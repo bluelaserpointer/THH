@@ -1,4 +1,4 @@
-package thh;
+package core;
 
 public abstract class Entity_int {
 	public final int INITIAL_FRAME;
@@ -9,7 +9,7 @@ public abstract class Entity_int {
 		INITIAL_Y = 0;
 	}
 	public Entity_int(int x,int y) {
-		INITIAL_FRAME = THH.getNowFrame();
+		INITIAL_FRAME = GHQ.getNowFrame();
 		INITIAL_X = x;
 		INITIAL_Y =  y;
 	}

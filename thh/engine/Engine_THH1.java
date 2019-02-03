@@ -10,13 +10,13 @@ import action.ActionInfo;
 import action.ActionSource;
 import bullet.Bullet;
 import chara.*;
+import core.GHQ;
+import core.MessageSource;
 import stage.ControlExpansion;
 import stage.Stage;
 import stage.StageEngine;
 import stage.StageInfo;
 import structure.Structure;
-import thh.MessageSource;
-import thh.THH;
 
 public class Engine_THH1 extends StageEngine implements MessageSource,ActionSource{
 	private static final UserChara[] friendCharaClass = new UserChara[2];
@@ -48,38 +48,38 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	}
 	@Override
 	public final void loadResource() {
-		focusIID = THH.loadImage("focus.png");
-		magicCircleIID = THH.loadImage("MagicCircle.png");
-		vegImageIID[0] = THH.loadImage("veg_leaf.png");
-		vegImageIID[1] = THH.loadImage("veg_flower.png");
-		vegImageIID[2] = THH.loadImage("veg_leaf2.png");
-		vegImageIID[3] = THH.loadImage("veg_stone.png");
-		vegImageIID[4] = THH.loadImage("veg_leaf3.png");
-		Editor.freeShapeIID = THH.loadImage("gui_editor/FreeShape.png");
+		focusIID = GHQ.loadImage("focus.png");
+		magicCircleIID = GHQ.loadImage("MagicCircle.png");
+		vegImageIID[0] = GHQ.loadImage("veg_leaf.png");
+		vegImageIID[1] = GHQ.loadImage("veg_flower.png");
+		vegImageIID[2] = GHQ.loadImage("veg_leaf2.png");
+		vegImageIID[3] = GHQ.loadImage("veg_stone.png");
+		vegImageIID[4] = GHQ.loadImage("veg_leaf3.png");
+		Editor.freeShapeIID = GHQ.loadImage("gui_editor/FreeShape.png");
 	}
 	@Override
 	public final Chara[] charaSetup() {
 		//formation
-		formationCenterX = THH.getScreenW()/2;formationCenterY = THH.getScreenH()/2;
+		formationCenterX = GHQ.getScreenW()/2;formationCenterY = GHQ.getScreenH() - 100;
 		formationsX = new int[2];
 		formationsY = new int[2];
 		formationsX[0] = -15;formationsY[0] = 0;
 		formationsX[1] = +15;formationsY[1] = 0;
 		//friend
-		friendCharaClass[0] = (UserChara)new Marisa().initialSpawn(0,FRIEND,formationCenterX + formationsX[0],THH.getScreenH());
-		friendCharaClass[1] = (UserChara)new Reimu().initialSpawn(1,FRIEND,formationCenterX + formationsX[1],THH.getScreenH());
+		friendCharaClass[0] = (UserChara)new Marisa().initialSpawn(FRIEND,formationCenterX + formationsX[0],formationCenterY + formationsY[0],4000);
+		friendCharaClass[1] = (UserChara)new Reimu().initialSpawn(FRIEND,formationCenterX + formationsX[1],formationCenterY + formationsY[1],4000);
 		//action
 		ActionInfo.clear();
-		ActionInfo.addDstPlan(1000, THH.getScreenW() - 200, THH.getScreenH() + 100);
-		ActionInfo.addDstPlan(1000, THH.getScreenW() + 200, THH.getScreenH() + 100);
+		ActionInfo.addDstPlan(1000, GHQ.getScreenW() - 200, GHQ.getScreenH() + 100);
+		ActionInfo.addDstPlan(1000, GHQ.getScreenW() + 200, GHQ.getScreenH() + 100);
 		final Action moveLeftToRight200 = new Action(this);
 		//enemy
-		enemyCharaClass.add(new Fairy().initialSpawn(0, ENEMY, 300, 100,2500));
-		enemyCharaClass.add(new Fairy().initialSpawn(0, ENEMY, 700, 20,2500));
-		enemyCharaClass.add(new Fairy().initialSpawn(0, ENEMY, 1200, 300,2500));
-		enemyCharaClass.add(new Fairy().initialSpawn(0, ENEMY, 1800, 700,2500));
-		enemyCharaClass.add(new WhiteMan().initialSpawn(1, ENEMY, 400, THH.random2(100, 150),50000));
-		enemyCharaClass.add(new BlackMan().initialSpawn(1, ENEMY, 200, THH.random2(100, 150),10000));
+		enemyCharaClass.add(new Fairy().initialSpawn(ENEMY, 300, 100,2500));
+		enemyCharaClass.add(new Fairy().initialSpawn(ENEMY, 700, 20,2500));
+		enemyCharaClass.add(new Fairy().initialSpawn(ENEMY, 1200, 300,2500));
+		enemyCharaClass.add(new Fairy().initialSpawn(ENEMY, 1800, 700,2500));
+		enemyCharaClass.add(new WhiteMan().initialSpawn(ENEMY, 400, GHQ.random2(100, 150),50000));
+		enemyCharaClass.add(new BlackMan().initialSpawn(ENEMY, 200, GHQ.random2(100, 150),10000));
 		
 		//result
 		final ArrayList<Chara> allCharaClass = new ArrayList<Chara>();
@@ -97,7 +97,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	}
 	@Override
 	public final void openStage() {
-		THH.addMessage(this,"This is a prototype stage.");
+		GHQ.addMessage(this,"This is a prototype stage.");
 	}
 	//idle
 	private int gameFrame;
@@ -115,31 +115,30 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		for(Structure ver : stages[nowStage].getSubStructures())
 			ver.doFill(g2);
 		g2.setColor(Color.GRAY);
-		g2.setStroke(THH.stroke3);
+		g2.setStroke(GHQ.stroke3);
 		for(Structure ver : stages[nowStage].getPrimeStructures())
 			ver.doDraw(g2);
 		for(Structure ver : stages[nowStage].getSubStructures())
 			ver.doDraw(g2);
 		//vegitation
-		THH.drawImageTHH_center(vegImageIID[3], 1172, 886,1.3);
-		THH.drawImageTHH_center(vegImageIID[0], 1200, 800,1.0);
-		THH.drawImageTHH_center(vegImageIID[0], 1800, 350,1.4);
-		THH.drawImageTHH_center(vegImageIID[0], 1160, 870,1.7);
-		THH.drawImageTHH_center(vegImageIID[1], 1180, 830,1.3);
-		THH.drawImageTHH_center(vegImageIID[2], 1102, 815,1.3);
-		THH.drawImageTHH_center(vegImageIID[2], 1122, 826,1.3);
-		THH.drawImageTHH_center(vegImageIID[4], 822, 886,1.3);
+		GHQ.drawImageTHH_center(vegImageIID[3], 1172, 886,1.3);
+		GHQ.drawImageTHH_center(vegImageIID[0], 1200, 800,1.0);
+		GHQ.drawImageTHH_center(vegImageIID[0], 1800, 350,1.4);
+		GHQ.drawImageTHH_center(vegImageIID[0], 1160, 870,1.7);
+		GHQ.drawImageTHH_center(vegImageIID[1], 1180, 830,1.3);
+		GHQ.drawImageTHH_center(vegImageIID[2], 1102, 815,1.3);
+		GHQ.drawImageTHH_center(vegImageIID[2], 1122, 826,1.3);
+		GHQ.drawImageTHH_center(vegImageIID[4], 822, 886,1.3);
 		////////////////
-		THH.drawImageTHH_center(magicCircleIID, formationCenterX, formationCenterY, (double)THH.getNowFrame()/35.0);
+		GHQ.drawImageTHH_center(magicCircleIID, formationCenterX, formationCenterY, (double)GHQ.getNowFrame()/35.0);
 		g2.setColor(Color.RED);
 		g2.fillOval(formationCenterX - 2, formationCenterY - 2, 5, 5);
 		////////////////
-		final int MOUSE_X = THH.getMouseX(),MOUSE_Y = THH.getMouseY();
+		final int MOUSE_X = GHQ.getMouseX(),MOUSE_Y = GHQ.getMouseY();
 		if(stopEventKind == NONE) {
 			//gravity
 			if(doGravity) {
-				for(Chara chara : friendCharaClass)
-					chara.gravity(1.1);
+				//<editting>
 			}
 			//others
 			switch(nowStage) {
@@ -147,7 +146,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 				for(int i = 0;i < friendCharaClass.length;i++)
 					friendCharaClass[i].teleportTo(formationCenterX + formationsX[i], formationCenterY + formationsY[i]);
 				//friend
-				THH.defaultCharaIdle(friendCharaClass);
+				GHQ.defaultCharaIdle(friendCharaClass);
 				//enemy
 				for(int i = 0;i < enemyCharaClass.size();i++) {
 					final Chara enemy = enemyCharaClass.get(i);
@@ -155,7 +154,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 						enemyCharaClass.remove(enemy);
 						continue;
 					}
-					THH.defaultCharaIdle(enemy);
+					GHQ.defaultCharaIdle(enemy);
 					if(enemy.getName() == "FairyA") {
 						final int FRAME = gameFrame % 240;
 						if(FRAME < 100)
@@ -192,50 +191,50 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 				}
 				break;
 			}
-		}else if(stopEventKind == THH.STOP || stopEventKind == THH.NO_ANM_STOP) {
-			THH.defaultCharaIdle(friendCharaClass);
-			THH.defaultCharaIdle(enemyCharaClass);
+		}else if(stopEventKind == GHQ.STOP || stopEventKind == GHQ.NO_ANM_STOP) {
+			GHQ.defaultCharaIdle(friendCharaClass);
+			GHQ.defaultCharaIdle(enemyCharaClass);
 		}
-		THH.defaultEntityIdle();
+		GHQ.defaultEntityIdle();
 		//focus
 		g2.setColor(new Color(200,120,10,100));
-		g2.setStroke(THH.stroke3);
+		g2.setStroke(GHQ.stroke3);
 		g2.drawLine(formationCenterX,formationCenterY,MOUSE_X,MOUSE_Y);
-		THH.drawImageTHH_center(focusIID,MOUSE_X,MOUSE_Y);
+		GHQ.drawImageTHH_center(focusIID,MOUSE_X,MOUSE_Y);
 		//editor
 		if(editMode) {
 			Editor.doEditorPaint(g2);
 		}else { //game GUI
-			THH.translateForGUI(true);
+			GHQ.translateForGUI(true);
 			int pos = 1;
 			for(UserChara chara : friendCharaClass) 
-				THH.drawImageTHH(chara.faceIID, pos++*90 + 10, THH.getScreenH() - 40, 80, 30);
-			THH.translateForGUI(false);
+				GHQ.drawImageTHH(chara.faceIID, pos++*90 + 10, GHQ.getScreenH() - 40, 80, 30);
+			GHQ.translateForGUI(false);
 		}
 		if(stopEventKind == NONE) { //scroll
 			//scroll by keys
 			if(ctrlEx.getCommandBool(CtrlEx_THH1.UP)) {
 				formationCenterY -= F_MOVE_SPD;
-				THH.viewTargetMove(0,-F_MOVE_SPD);
-				THH.pureViewMove(0,-F_MOVE_SPD);
+				GHQ.viewTargetMove(0,-F_MOVE_SPD);
+				GHQ.pureViewMove(0,-F_MOVE_SPD);
 			}else if(ctrlEx.getCommandBool(CtrlEx_THH1.DOWN)) {
 				formationCenterY += F_MOVE_SPD;
-				THH.viewTargetMove(0,F_MOVE_SPD);
-				THH.pureViewMove(0,F_MOVE_SPD);
+				GHQ.viewTargetMove(0,F_MOVE_SPD);
+				GHQ.pureViewMove(0,F_MOVE_SPD);
 			}
 			if(ctrlEx.getCommandBool(CtrlEx_THH1.LEFT)) {
 				formationCenterX -= F_MOVE_SPD;
-				THH.viewTargetMove(-F_MOVE_SPD,0);
-				THH.pureViewMove(-F_MOVE_SPD,0);
+				GHQ.viewTargetMove(-F_MOVE_SPD,0);
+				GHQ.pureViewMove(-F_MOVE_SPD,0);
 			}else if(ctrlEx.getCommandBool(CtrlEx_THH1.RIGHT)) {
 				formationCenterX += F_MOVE_SPD;
-				THH.viewTargetMove(F_MOVE_SPD,0);
-				THH.pureViewMove(F_MOVE_SPD,0);
+				GHQ.viewTargetMove(F_MOVE_SPD,0);
+				GHQ.pureViewMove(F_MOVE_SPD,0);
 			}
 			//scroll by mouse
 			if(doScrollView) {
-				THH.viewTargetTo((MOUSE_X + formationCenterX)/2,(MOUSE_Y + formationCenterY)/2);
-				THH.viewApproach_rate(10);
+				GHQ.viewTargetTo((MOUSE_X + formationCenterX)/2,(MOUSE_Y + formationCenterY)/2);
+				GHQ.viewApproach_rate(10);
 			}
 		}
 	}
@@ -276,11 +275,11 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		private static int freeShapeIID;
 		//role
 		static void doEditorPaint(Graphics2D g2) {
-			THH.translateForGUI(true);
+			GHQ.translateForGUI(true);
 			g2.setColor(Color.WHITE);
 			g2.drawString("EDIT_MODE", 20, 20);
-			THH.drawImageTHH_center(freeShapeIID,80,200);
-			THH.translateForGUI(false);
+			GHQ.drawImageTHH_center(freeShapeIID,80,200);
+			GHQ.translateForGUI(false);
 		}
 	}
 }

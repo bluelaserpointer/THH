@@ -5,7 +5,7 @@ import structure.Structure;
 import java.awt.geom.Line2D;
 
 import chara.Chara;
-import thh.THH;
+import core.GHQ;
 
 public class Stage {
 	//stage
@@ -101,7 +101,7 @@ public class Stage {
 		return false;
 	}
 	public final boolean hitLandscape(int team,int x,int y,int w,int h){
-		if(primeStructures.length > 0 && THH.isRival(team,primeStructures[0].getTeam())) {
+		if(primeStructures.length > 0 && GHQ.isRival(team,primeStructures[0].getTeam())) {
 			for(Structure structure : primeStructures) {
 				if(structure.contains(x, y, w, h))
 					return true;

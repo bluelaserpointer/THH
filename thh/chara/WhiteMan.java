@@ -1,8 +1,8 @@
 package chara;
 
 import chara.Chara;
-import thh.DynamInteractable;
-import thh.THH;
+import core.DynamInteractable;
+import core.GHQ;
 
 public class WhiteMan extends UserChara{
 	{
@@ -16,14 +16,14 @@ public class WhiteMan extends UserChara{
 	}
 	
 	@Override
-	public final void loadImageData(){ //�����i���z��
+	public final void loadImageData(){
 		super.loadImageData();
-		charaIID = THH.loadImage("WhiteBall.png");
-		bulletIID[0] = THH.loadImage("LightBallA.png");
+		charaIID = GHQ.loadImage("WhiteBall.png");
+		bulletIID[0] = GHQ.loadImage("LightBallA.png");
 	}
 	@Override
 	public void activeCons() {
-		final Chara blackManAdress = THH.getChara("BlackMan");
+		final Chara blackManAdress = GHQ.getChara("BlackMan");
 		charaDstX = blackManAdress.dynam.getX();
 		charaDstY = blackManAdress.dynam.getY();
 		if(0 < blackManAdress.getHP() && blackManAdress.getHP() < 10000 && dynam.getDistance(charaDstX, charaDstY) < 200){

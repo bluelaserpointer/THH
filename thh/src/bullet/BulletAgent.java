@@ -1,10 +1,10 @@
 package bullet;
 
-import thh.THH;
+import core.GHQ;
 
 public abstract class BulletAgent{
 	protected static final int
-		MAX = THH.MAX,
-		NONE = THH.NONE;
+		MAX = GHQ.MAX,
+		NONE = GHQ.NONE;
 	
 }
