@@ -1,8 +1,8 @@
-package chara;
+package unit;
 
 import java.util.ArrayDeque;
 
-public class CharaActionPlan {
+public class ActionPlan {
 	private ArrayDeque<String> actionsName = new ArrayDeque<String>();
 	private int phase;
 	private int passedFrame;

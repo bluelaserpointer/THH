@@ -1,10 +1,10 @@
-package chara;
+package unit;
 
-import chara.Chara;
 import core.DynamInteractable;
 import core.GHQ;
+import unit.Unit;
 
-public class WhiteMan extends UserChara{
+public class WhiteMan extends THHUnit{
 	{
 		charaSize = 120;
 		charaSpeed = 1;
@@ -23,7 +23,7 @@ public class WhiteMan extends UserChara{
 	}
 	@Override
 	public void activeCons() {
-		final Chara blackManAdress = GHQ.getChara("BlackMan");
+		final Unit blackManAdress = GHQ.getChara("BlackMan");
 		charaDstX = blackManAdress.dynam.getX();
 		charaDstY = blackManAdress.dynam.getY();
 		if(0 < blackManAdress.getHP() && blackManAdress.getHP() < 10000 && dynam.getDistance(charaDstX, charaDstY) < 200){

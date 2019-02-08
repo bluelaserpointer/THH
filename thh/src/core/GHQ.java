@@ -7,13 +7,13 @@ import java.awt.geom.*;
 import static java.awt.event.KeyEvent.*;
 import javax.swing.*;
 
-import chara.Chara;
 import bullet.Bullet;
 import effect.Effect;
 import engine.Engine_THH1;
 import stage.ControlExpansion;
 import stage.Stage;
 import stage.StageEngine;
+import unit.Unit;
 
 import java.io.*;
 import java.net.*;
@@ -93,7 +93,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private static ControlExpansion ctrlEx;
 
 	//character data
-	private static Chara[] characters = new Chara[0];
+	private static Unit[] characters = new Unit[0];
 	
 	//bullet data
 	private static final ArrayListEx<Bullet> bullets = new ArrayListEx<Bullet>();
@@ -109,7 +109,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 
 	//ResourceSystem
 	private static Image[] arrayImage = new Image[128];
-	private static String[] arrayImageURL = new String[128];
+	private static URL[] arrayImageURL = new URL[128];
 	private static int arrayImage_maxID = -1;
 	private static SoundClip[] arraySound = new SoundClip[128];
 	private static String[] arraySoundURL = new String[128];
@@ -302,7 +302,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				g2.setStroke(stroke5);
 				g2.drawString("(" + (MOUSE_X - (int)viewX) + "," + (MOUSE_Y - (int)viewY) + ")",MOUSE_X + 20,MOUSE_Y + 40);
 				//charaInfo
-				for(Chara chara : characters) {
+				for(Unit chara : characters) {
 					final int RECT_X = (int)chara.getDynam().getX() + (int)viewX,RECT_Y = (int)chara.getDynam().getY() + (int)viewY;
 					g2.setStroke(stroke1);
 					g2.drawRect(RECT_X - 50, RECT_Y - 50, 100,100);
@@ -316,42 +316,42 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		loadTime_total = System.currentTimeMillis() - LOAD_TIME_PAINTCOMPONENT;
 	}
 	
-	public static final Chara[] callBulletEngage(Bullet bullet) {
+	public static final Unit[] callBulletEngage(Bullet bullet) {
 		return engine.callBulletEngage(getCharacters_team(bullet.team,false),bullet);
 	}
-	public static final Chara[] callBulletEngage(Chara[] characters,Bullet bullet) {
+	public static final Unit[] callBulletEngage(Unit[] characters,Bullet bullet) {
 		return engine.callBulletEngage(characters,bullet);
 	}
 	//idle-character
-	public static final void defaultCharaIdle(Chara[] characters) {
+	public static final void defaultCharaIdle(Unit[] characters) {
 		switch(stopEventKind) {
 		case STOP:
-			for(Chara chara : characters)
-				chara.idle(Chara.PASSIVE_CONS);
+			for(Unit chara : characters)
+				chara.idle(Unit.PASSIVE_CONS);
 			break;
 		case NO_ANM_STOP:
-			for(Chara chara : characters)
-				chara.idle(Chara.PAINT_FREEZED);
+			for(Unit chara : characters)
+				chara.idle(Unit.PAINT_FREEZED);
 			break;
 		default:
-			for(Chara chara : characters) {
+			for(Unit chara : characters) {
 				chara.defaultIdle();
 				chara.resetSingleOrder();
 			}
 		}
 	}
-	public static final void defaultCharaIdle(ArrayList<Chara> characters) {
+	public static final void defaultCharaIdle(ArrayList<Unit> characters) {
 		switch(stopEventKind) {
 		case STOP:
-			for(Chara chara : characters)
-				chara.idle(Chara.PASSIVE_CONS);
+			for(Unit chara : characters)
+				chara.idle(Unit.PASSIVE_CONS);
 			break;
 		case NO_ANM_STOP:
-			for(Chara chara : characters)
-				chara.idle(Chara.PAINT_FREEZED);
+			for(Unit chara : characters)
+				chara.idle(Unit.PAINT_FREEZED);
 			break;
 		default:
-			for(Chara chara : characters) {
+			for(Unit chara : characters) {
 				chara.defaultIdle();
 				chara.resetSingleOrder();
 			}
@@ -393,13 +393,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			}
 		}
 	}
-	public static final void defaultCharaIdle(Chara chara) {
+	public static final void defaultCharaIdle(Unit chara) {
 		switch(stopEventKind) {
 		case STOP:
-			chara.idle(Chara.PASSIVE_CONS);
+			chara.idle(Unit.PASSIVE_CONS);
 			break;
 		case NO_ANM_STOP:
-			chara.idle(Chara.PAINT_FREEZED);
+			chara.idle(Unit.PAINT_FREEZED);
 			break;
 		default:
 			chara.defaultIdle();
@@ -407,35 +407,35 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 	}
 	//information-characters
-	public static final Chara getChara(String name) {
-		for(Chara chara : characters) {
+	public static final Unit getChara(String name) {
+		for(Unit chara : characters) {
 			if(chara.getName() == name)
 				return chara;
 		}
 		return null;
 	}
-	public static final Chara[] getCharacters() {
+	public static final Unit[] getCharacters() {
 		return characters;
 	}
-	public static final Chara getCharacters(int charaID) {
+	public static final Unit getCharacters(int charaID) {
 		return characters[charaID];
 	}
-	public static final Chara[] getCharacters_team(int team,boolean white) {
-		final Chara[] charaArray = new Chara[characters.length];
+	public static final Unit[] getCharacters_team(int team,boolean white) {
+		final Unit[] charaArray = new Unit[characters.length];
 		int founded = 0;
-		for(Chara chara : characters) {
+		for(Unit chara : characters) {
 			if(white == isSameTeam(team,chara.getTeam()))
 				charaArray[founded++] = chara;
 		}
 		return Arrays.copyOf(charaArray, founded);
 	}
-	public static final Chara[] getCharacters_team(int team) {
+	public static final Unit[] getCharacters_team(int team) {
 		return getCharacters_team(team,true);
 	}
-	public static final Chara getNearstEnemy(int team,int x,int y) {
+	public static final Unit getNearstEnemy(int team,int x,int y) {
 		double nearstDistance = NONE;
-		Chara nearstChara = null;
-		for(Chara enemy : getCharacters_team(team,true)) {
+		Unit nearstChara = null;
+		for(Unit enemy : getCharacters_team(team,true)) {
 			if(!enemy.isAlive())
 				continue;
 			final double distance = abs(enemy.getDynam().getDistance(x, y));
@@ -453,21 +453,21 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final int getCharaTeam(int charaID) {
 		return characters[charaID].getTeam();
 	}
-	public static final Chara[] getVisibleEnemies(Chara chara) {
-		final ArrayList<Chara> visibleEnemies = new ArrayList<Chara>();
-		for(Chara enemy : getCharacters_team(chara.getTeam(),false)) {
+	public static final Unit[] getVisibleEnemies(Unit chara) {
+		final ArrayList<Unit> visibleEnemies = new ArrayList<Unit>();
+		for(Unit enemy : getCharacters_team(chara.getTeam(),false)) {
 			if(!enemy.isAlive())
 				continue;
 			if(enemy.dynam.isVisible(chara))
 				visibleEnemies.add(enemy);
 		}
-		return visibleEnemies.toArray(new Chara[0]);
+		return visibleEnemies.toArray(new Unit[0]);
 	}
-	public static final Chara getNearstVisibleEnemy(Chara chara) {
+	public static final Unit getNearstVisibleEnemy(Unit chara) {
 		final Dynam DYNAM = chara.dynam;
-		Chara neastVisibleEnemy = null;
+		Unit neastVisibleEnemy = null;
 		double enemyDistance = MAX;
-		for(Chara enemy : getCharacters_team(chara.getTeam(),false)) {
+		for(Unit enemy : getCharacters_team(chara.getTeam(),false)) {
 			if(!enemy.isAlive())
 				continue;
 			if(enemyDistance == MAX) {
@@ -485,11 +485,11 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return neastVisibleEnemy;
 	}
-	public static final Chara getNearstVisibleEnemy(Bullet bullet) {
+	public static final Unit getNearstVisibleEnemy(Bullet bullet) {
 		final Dynam DYNAM = bullet.dynam;
-		Chara neastVisibleEnemy = null;
+		Unit neastVisibleEnemy = null;
 		double enemyDistance = MAX;
-		for(Chara enemy : getCharacters_team(bullet.team,false)) {
+		for(Unit enemy : getCharacters_team(bullet.team,false)) {
 			if(!enemy.isAlive())
 				continue;
 			if(enemyDistance == MAX) {
@@ -565,7 +565,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static void viewTo(int x,int y) {
 		viewDstX = viewX = -x + screenW/2;
-		viewDstY = viewY = -y + screenH/2;//mouseX - (int)viewX
+		viewDstY = viewY = -y + screenH/2;
 	}
 	public static void pureViewMove(int dx,int dy) {
 		viewX -= dx;viewY -= dy;
@@ -620,14 +620,14 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final void paintHPArc(int x,int y,int radius,int hp,int maxHP) {
 		final Graphics2D G2 = hq.g2;
 		G2.setStroke(stroke3);
-		if((double)hp/(double)maxHP > 0.75) //HP､ｬﾉﾙ､ﾊ､ｯ､ﾊ､�､ｴ､ﾈ､ﾋﾉｫ､ｬ我ｻｯ
-			G2.setColor(Color.CYAN); //ﾋｮﾉｫ
+		if((double)hp/(double)maxHP > 0.75)
+			G2.setColor(Color.CYAN);
 		else if((double)hp/(double)maxHP > 0.50)
-			G2.setColor(Color.GREEN); //ｾvﾉｫ
+			G2.setColor(Color.GREEN);
 		else if((double)hp/(double)maxHP > 0.25)
-			G2.setColor(Color.YELLOW); //ｻﾆﾉｫ
+			G2.setColor(Color.YELLOW);
 		else if((double)hp/(double)maxHP > 0.10 || gameFrame % 4 < 2)
-			G2.setColor(Color.RED); //ｳ猖ｫ
+			G2.setColor(Color.RED);
 		else
 			G2.setColor(HPWarningColor);
 		G2.drawString(String.valueOf(hp),x + (int)(radius*1.1) + (hp >= 10 ? 0 : 6),y + (int)(radius*1.1));
@@ -635,18 +635,18 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		G2.drawArc(x - radius,y - radius,radius*2,radius*2,90,(int)((double)hp/(double)maxHP*360));
 		G2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
 	}
-	public final int receiveDamageInSquare(int team,int hp,int x,int y,int size){ //ﾗﾔИﾀ敎ｻ庶(庶ﾏ蕫�)
+	public final int receiveDamageInSquare(int team,int hp,int x,int y,int size){
 		for(Bullet bullet : bullets){
-			if(team != bullet.team && bullet.atk > 0 && squreCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)){ //ﾐnﾍｻ
+			if(team != bullet.team && bullet.atk > 0 && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2)){
 				hp -= bullet.atk;
 				bullet.SCRIPT.bulletHitObject(bullet);
 				if(hp <= 0)
 					break;
 			}
 		}
-		return hp; //ｲﾐ､ﾃ､ｿHP､ｵ､ｹ
+		return hp;
 	}
-	public final int receiveBulletInCircle(int hp,int x,int y,int size,int team){ //ﾗﾔИﾀ敎ｻ庶(庶ﾏ蕫�)
+	public final int receiveBulletInCircle(int hp,int x,int y,int size,int team){
 		for(Bullet bullet : bullets){
 			if(team != bullet.team && bullet.atk > 0 && circleCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)){ //ﾐnﾍｻ
 				hp -= bullet.atk;
@@ -660,7 +660,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public final Bullet searchBulletInSquare_single(int x,int y,int size,int team){
 		for(int i = 0;i < bullets.size();i++){
 			final Bullet bullet = bullets.get(i);
-			if(team != bullet.team && squreCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)) //ﾐnﾍｻ
+			if(team != bullet.team && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2))
 				return bullet; //return ID
 		}
 		return null; //Not found
@@ -670,12 +670,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		int foundAmount =  0;
 		for(int i = 0;i < bullets.size();i++){
 			final Bullet bullet = bullets.get(i);
-			if(team != bullet.team && squreCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)) //ﾐnﾍｻ
+			if(team != bullet.team && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2))
 				foundIDs[foundAmount++] = bullet; //record ID
 		}
 		return Arrays.copyOf(foundIDs,foundAmount);
 	}
-	public static final boolean squreCollision(int x1,int y1,int size1,int x2,int y2,int size2) {
+	public static final boolean squreCollisionII(int x1,int y1,int size1,int x2,int y2,int size2) {
 		final int halfSize = (size1 + size2)/2;
 		return abs(x1 - x2) < halfSize && abs(y1 - y2) < halfSize;
 	}
@@ -689,7 +689,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//input
 	private static int mouseX,mouseY;
-	private int mousePointing = NONE; //･ﾞ･ｦ･ｹ､ｬ･ﾝ･､･ﾈ､ｷ､ﾆ､､､�､筅ﾎ
+	private int mousePointing = NONE;
 	
 	public void mouseWheelMoved(MouseWheelEvent e){
 		ctrlEx.mouseWheelMoved(e);
@@ -943,13 +943,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//ResourceLoad
 	/**
-	* ｻｭﾏi､ﾟﾞz､爭皈ｽ･ﾃ･ﾉ､ﾇ､ｹ
-	* @param url ｻｭﾏﾕ･｡･､･�ﾃ�
-	* @param errorSource ･ｨ･鬩`ｳｦ瓶､ﾎｱ桄ｾ･皈ﾃ･ｻｩ`･ｸ
-	* @return ｽyｺﾏｻｯImageID
+	* 
+	* @param url 
+	* @param errorSource 
+	* @return ImageID
 	* @since alpha1.0
 	*/
-	public static final int loadImage(String url,String errorSource){ //画像読み込みメソッド
+	public static final int loadImage(URL url,String errorSource){ //画像読み込みメソッド
 		//old URL
 		for(int id = 0;id < arrayImageURL.length;id++){
 			if(url.equals(arrayImageURL[id])) //URLｵﾇ乕徃､ﾟ
@@ -962,7 +962,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		Image img = null;
 		try{
-			img = hq.createImage((ImageProducer)hq.getClass().getResource("/image/" + url).getContent());
+			img = hq.createImage((ImageProducer)url.getContent());
 			hq.tracker.addImage(img,1);
 		}catch(IOException | NullPointerException e){ //異常-読み込み失敗
 			if(errorSource != null && !errorSource.isEmpty())
@@ -981,14 +981,20 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		arrayImage[arrayImage_maxID] = img; //､ｳ､ﾎｻｭﾏﾇ乕
 		return arrayImage_maxID;
 	}
+	public static final int loadImage(URL url) {
+		return loadImage(url,null);
+	}
+	public static final int loadImage(String urlStr,String errorSource) {
+		return loadImage(hq.getClass().getResource("/image/" + urlStr),errorSource);
+	}
 	/**
-	* ｻｭﾏi､ﾟﾞz､爭皈ｽ･ﾃ･ﾉ､ﾇ､ｹ
-	* @param url ｻｭﾏﾕ･｡･､･�ﾃ�
-	* @return ｽyｺﾏｻｯImageID
+	* 
+	* @param url 
+	* @return ImageID
 	* @since alpha1.0
 	*/
-	public static final int loadImage(String url){ //画像読み込みメソッド
-		return loadImage(url,null);
+	public static final int loadImage(String urlStr){ //画像読み込みメソッド
+		return loadImage(urlStr,null);
 	}
 	/**
 	* ･ｵ･ｦ･ﾉ･ﾕ･｡･､･�､i､ﾟﾞz､爭皈ｽ･ﾃ･ﾉ､ﾇ､ｹ
@@ -1032,7 +1038,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 	}
 	
-	public final Chara[] loadAllChara(URL url) {
+	public final Unit[] loadAllChara(URL url) {
 		final FilenameFilter classFilter = new FilenameFilter(){
 			public boolean accept(File dir,String name){
 				return name.endsWith(".class");
@@ -1047,15 +1053,15 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		if(charaFolder == null){
 			System.out.println("chara･ﾕ･ｩ･�･ﾀ､ｬﾒ侃ﾄ､ｫ､熙ﾞ､ｻ､�");
-			return new Chara[0];
+			return new Unit[0];
 		}
 		int classAmount = 0;
-		final Chara[] charaClass = new Chara[64];
+		final Unit[] charaClass = new Unit[64];
 		for(String className : charaFolder.list(classFilter)){
 			try{
 				final Object obj = Class.forName("chara." + className.substring(0,className.length() - 6)).newInstance();
-				if(obj instanceof Chara){
-					final Chara cls = (Chara)obj;
+				if(obj instanceof Unit){
+					final Unit cls = (Unit)obj;
 					cls.loadImageData();
 					cls.loadSoundData();
 					charaClass[classAmount++] = cls;

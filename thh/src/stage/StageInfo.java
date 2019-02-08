@@ -2,7 +2,7 @@ package stage;
 
 import structure.Structure;
 import structure.Terrain;
-import chara.Chara;
+import unit.Unit;
 
 public class StageInfo {
 	public static String name;
@@ -12,8 +12,8 @@ public class StageInfo {
 	public static Structure[] primeStructures;
 	public static Structure[] subStructures;
 	
-	public static Chara[] primeCharas;
-	public static Chara[] subCharas;
+	public static Unit[] primeCharas;
+	public static Unit[] subCharas;
 	//testStage
 	public static int[] poliX,poliY;
 	
@@ -25,7 +25,7 @@ public class StageInfo {
 		gravity = 0.0;
 		stageW = stageH = 5000;
 		primeStructures = subStructures = new Structure[0];
-		primeCharas = subCharas = new Chara[0];
+		primeCharas = subCharas = new Unit[0];
 		poliX = new int[]{0,0,300,400,500,600,700,700};
 		poliY = new int[]{650,450,450,350,350,450,450,650};
 		primeStructures = new Structure[] {new BlankTerrain(poliX,poliY)};

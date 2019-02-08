@@ -1,10 +1,10 @@
 package stage;
 
 import structure.Structure;
+import unit.Unit;
 
 import java.awt.geom.Line2D;
 
-import chara.Chara;
 import core.GHQ;
 
 public class Stage {
@@ -16,8 +16,8 @@ public class Stage {
 	private Structure[] primeStructures; //ｶ猝�ﾅﾉ
 	private Structure[] subStructures; //ﾉﾙﾊ�ﾅﾉ
 	//chara
-	private Chara[] primeCharas; //ｶ猝�ﾅﾉ(筏､ﾊ､ﾉ)
-	private Chara[] subCharas; //ﾉﾙﾊ�ﾅﾉ
+	private Unit[] primeCharas; //ｶ猝�ﾅﾉ(筏､ﾊ､ﾉ)
+	private Unit[] subCharas; //ﾉﾙﾊ�ﾅﾉ
 	
 	{
 		reset();
@@ -51,7 +51,7 @@ public class Stage {
 	//control
 	public final void reset() {
 		primeStructures = subStructures = new Structure[0];
-		primeCharas = subCharas = new Chara[0];
+		primeCharas = subCharas = new Unit[0];
 	}
 	//information
 	public final String getStageName() {

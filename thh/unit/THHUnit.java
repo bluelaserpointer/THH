@@ -1,18 +1,17 @@
-package chara;
+package unit;
 
 
 import action.Action;
 import action.ActionInfo;
 import bullet.Bullet;
-import chara.Chara;
 import core.DynamInteractable;
 import core.GHQ;
+import unit.Unit;
 import weapon.Weapon;
 
-public abstract class UserChara extends Chara {
+public abstract class THHUnit extends Unit {
 
-	public int charaTeam, charaHP, charaME, charaBaseHP, charaBaseME, charaSpellCharge,
-			charaSize, charaStatus;
+	public int charaSize;
 	public double charaDstX, charaDstY, charaSpeed = 30;
 	public boolean charaOnLand;
 
@@ -30,23 +29,40 @@ public abstract class UserChara extends Chara {
 	public int charaIID;
 	public final int bulletIID[] = new int[weapon_max], effectIID[] = new int[10];
 
+	//status
+	public static final int PARAMETER_AMOUNT = 7;
+	public static final int HP = 0,MP = 1,ATK = 2,AGI = 3,BLO = 4,STUN = 5,TEAM = 6;
+	private static final String names[] = new String[PARAMETER_AMOUNT];
+	static {
+		names[HP] = "HP";
+		names[MP] = "MP";
+		names[ATK] = "ATK";
+		names[AGI] = "AGI";
+		names[BLO] = "BLO";
+		names[STUN] = "STUN";
+		names[TEAM] = "TEAM";
+	}
+	public THHUnit() {
+		super(new Status(PARAMETER_AMOUNT));
+	}
+	
 	@Override
-	public void loadImageData() { // �����i���z��
+	public void loadImageData() {
 	}
 
 	@Override
 	public void respawn(int charaTeam, int x, int y) {
 		super.resetOrder();
-		this.charaTeam = charaTeam;
-		super.dynam.clear();
-		super.dynam.setXY(charaDstX = x, charaDstY = y);
-		charaStatus = NONE;
+		status.reset();
+		status.set(TEAM, charaTeam);
+		dynam.clear();
+		dynam.setXY(charaDstX = x, charaDstY = y);
 		charaOnLand = false;
 		slot_spell = 0;
 	}
 	@Override
 	public void respawn(int charaTeam, int x, int y,int hp) {
-		charaHP = charaBaseHP = hp;
+		status.setDefault(HP,hp);
 		this.respawn(charaTeam, x, y);
 	}
 	@Override
@@ -59,7 +75,7 @@ public abstract class UserChara extends Chara {
 	@Override
 	public void activeCons() {
 		// death
-		if (charaHP <= 0) {
+		if (status.get(HP) <= 0) {
 			return;
 		}
 		final int mouseX = GHQ.getMouseX(), mouseY = GHQ.getMouseY();
@@ -108,11 +124,11 @@ public abstract class UserChara extends Chara {
 	}
 	@Override
 	public void paint(boolean doAnimation) {
-		if(charaHP <= 0)
+		if(status.get(HP) <= 0)
 			return;
 		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
 		GHQ.drawImageTHH_center(charaIID, X, Y);
-		GHQ.paintHPArc(X, Y, 20,charaHP, charaBaseHP);
+		GHQ.paintHPArc(X, Y, 20,status.get(HP), status.getDefault(HP));
 	}
 	protected final void paintMode_magicCircle(int magicCircleIID) {
 		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
@@ -178,13 +194,13 @@ public abstract class UserChara extends Chara {
 	// judge
 	@Override
 	public final boolean bulletEngage(Bullet bullet) {
-		return charaHP > 0 && GHQ.squreCollision((int) dynam.getX(), (int) dynam.getY(), charaSize, (int) bullet.dynam.getX(),(int)bullet.dynam.getY(), bullet.SIZE)
-				&& (bullet.team == charaTeam ^ bullet.atk >= 0);
+		return status.ifOver0(HP) && dynam.squreCollision(bullet.dynam,(charaSize + bullet.SIZE)/2)
+				&& (bullet.team == status.get(TEAM) ^ bullet.atk >= 0);
 	}
 	// hp
 	@Override
 	public final void setHP(int hp) {
-		charaHP = hp;
+		status.set(HP, hp);
 	}
 	private final void dodge(double targetX, double targetY) {
 		dynam.addSpeed_DA(40, dynam.getAngle(targetX,targetY));
@@ -194,33 +210,27 @@ public abstract class UserChara extends Chara {
 	// decrease
 	@Override
 	public final int decreaseME_amount(int amount) {
-		charaME -= amount;
-		return amount;
+		return status.add(MP, -amount);
 	}
 
 	@Override
 	public final int decreaseME_rate(double rate) {
-		final int value = (int) (charaME * rate);
-		charaME -= value;
-		return value;
+		return status.reduce_rate(MP, rate);
 	}
 
 	@Override
 	public final int damage_amount(int amount) {
-		charaHP -= amount;
-		return amount;
+		return status.add(HP, -amount);
 	}
 
 	@Override
 	public final int damage_rate(double rate) {
-		final int damage = (int) (charaHP * rate);
-		charaHP -= damage;
-		return damage;
+		return status.reduce_rate(HP, rate);
 	}
 
 	@Override
 	public final boolean kill(boolean force) {
-		charaHP = 0;
+		status.set0(HP);
 		return true;
 	}
 
@@ -231,31 +241,31 @@ public abstract class UserChara extends Chara {
 	}
 	@Override
 	public final int getTeam() {
-		return charaTeam;
+		return status.get(TEAM);
 	}
 	@Override
 	public final int getHP() {
-		return charaHP;
+		return status.get(HP);
 	}
 
 	@Override
 	public final double getHPRate() {
-		return (double) charaHP / (double) charaBaseHP;
+		return status.getRate(HP);
 	}
 
 	@Override
-	public final int getME() {
-		return charaME;
+	public final int getMP() {
+		return status.get(MP);
 	}
 
 	@Override
-	public final double getMERate() {
-		return (double) charaME / (double) charaBaseME;
+	public final double getMPRate() {
+		return status.getRate(MP);
 	}
 
 	@Override
-	public final int getStatus() {
-		return charaStatus;
+	public final Status getStatus() {
+		return status;
 	}
 	@Override
 	public boolean isMovable() {

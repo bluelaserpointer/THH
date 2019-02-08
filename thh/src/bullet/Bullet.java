@@ -2,11 +2,11 @@ package bullet;
 
 import static java.lang.Math.PI;
 
-import chara.Chara;
 import core.Dynam;
 import core.DynamInteractable;
 import core.Entity_double;
 import core.GHQ;
+import unit.Unit;
 
 public class Bullet extends Entity_double implements DynamInteractable{
 	public final int UNIQUE_ID;
@@ -150,7 +150,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 			}
 		}
 		//entity collision
-		for(Chara chara : GHQ.callBulletEngage(GHQ.getCharacters_team(team,!HIT_ENEMY),this)) {
+		for(Unit chara : GHQ.callBulletEngage(GHQ.getCharacters_team(team,!HIT_ENEMY),this)) {
 			chara.damage_amount(atk);
 			SCRIPT.bulletHitObject(this);
 			if(penetration > 0) {

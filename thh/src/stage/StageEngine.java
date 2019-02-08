@@ -3,8 +3,8 @@ package stage;
 import java.awt.Graphics2D;
 
 import bullet.Bullet;
-import chara.Chara;
 import core.GHQ;
+import unit.Unit;
 
 public abstract class StageEngine{
 	protected final static int
@@ -21,7 +21,7 @@ public abstract class StageEngine{
 	}
 	public abstract ControlExpansion getCtrl_ex();
 	public abstract void loadResource();
-	public abstract Chara[] charaSetup();
+	public abstract Unit[] charaSetup();
 	public abstract Stage stageSetup();
 	public abstract void openStage();
 	
@@ -30,8 +30,8 @@ public abstract class StageEngine{
 	
 	//control
 	public abstract void resetStage();
-	public abstract Chara[] callBulletEngage(Chara[] characters,Bullet bullet);
-	public abstract boolean deleteChara(Chara chara);
+	public abstract Unit[] callBulletEngage(Unit[] characters,Bullet bullet);
+	public abstract boolean deleteChara(Unit chara);
 	
 	//information
 	public abstract int getGameFrame();

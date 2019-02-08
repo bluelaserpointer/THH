@@ -1,11 +1,13 @@
-package chara;
+package unit;
 
+import unit.Unit;
+import unit.EnemyBulletLibrary;
 import core.DynamInteractable;
 import core.GHQ;
 import engine.Engine_THH1;
 import weapon.Weapon;
 
-public class BlackMan extends UserChara{
+public class BlackMan extends THHUnit{
 	{
 		charaSize = 120;
 		charaSpeed = 2;
@@ -28,12 +30,12 @@ public class BlackMan extends UserChara{
 	public void activeCons() {
 		final int charaX = (int)dynam.getX(),charaY = (int)dynam.getY();
 		weaponController.defaultIdle();
-		final Chara targetEnemy = GHQ.getNearstVisibleEnemy(this);
+		final Unit targetEnemy = GHQ.getNearstVisibleEnemy(this);
 		if(targetEnemy != null && weaponController.trigger()) {
 			EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.BLACK_SLASH_BURST,bulletIID[0],targetEnemy);
 			EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.BLACK_SLASH_BURST,bulletIID[1],targetEnemy);
 		}
-		Chara chara = GHQ.getNearstEnemy(Engine_THH1.FRIEND, (int)charaX, (int)charaY);
+		Unit chara = GHQ.getNearstEnemy(Engine_THH1.FRIEND, (int)charaX, (int)charaY);
 		if(chara != null) 
 			dynam.setAngle(dynam.getAngle(charaDstX = chara.dynam.getX(),charaDstY = chara.dynam.getY()));
 		dynam.approach(charaDstX, charaDstY, charaSpeed);

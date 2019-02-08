@@ -1,4 +1,4 @@
-package chara;
+package unit;
 
 import action.Action;
 import bullet.Bullet;
@@ -9,24 +9,28 @@ import core.ErrorCounter;
 import core.GHQ;
 import core.MessageSource;
 
-public abstract class Chara extends Entity_double implements MessageSource,DynamInteractable{
+public abstract class Unit extends Entity_double implements MessageSource,DynamInteractable{
 	protected static final int
 		//system
 		NONE = GHQ.NONE,
 		MAX = GHQ.MAX,
 		MIN = GHQ.MIN;
 	
-	public final CharaActionPlan actions = new CharaActionPlan();
+	public final ActionPlan actions = new ActionPlan();
+	public final Status status;
 	
 	//Initialization
-	public final Chara initialSpawn(int charaTeam,int spawnX,int spawnY) {
+	public Unit(Status status) {
+		this.status = status;
+	}
+	public final Unit initialSpawn(int charaTeam,int spawnX,int spawnY) {
 		loadImageData();
 		loadSoundData();
 		battleStarted();
 		respawn(charaTeam,spawnX,spawnY);
 		return this;
 	}
-	public final Chara initialSpawn(int charaTeam,int spawnX,int spawnY,int hp) {
+	public final Unit initialSpawn(int charaTeam,int spawnX,int spawnY,int hp) {
 		loadImageData();
 		loadSoundData();
 		battleStarted();
@@ -106,9 +110,9 @@ public abstract class Chara extends Entity_double implements MessageSource,Dynam
 	}
 	public abstract int getHP();
 	public abstract double getHPRate();
-	public abstract int getME();
-	public abstract double getMERate();
-	public abstract int getStatus();
+	public abstract int getMP();
+	public abstract double getMPRate();
+	public abstract Status getStatus();
 	
 	//specialEvent
 	public int weaponChangeOrder;

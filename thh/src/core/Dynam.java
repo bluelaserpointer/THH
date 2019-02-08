@@ -325,6 +325,14 @@ public class Dynam{
 	public double getMouseAngle() {
 		return atan2(GHQ.getMouseY() - y, GHQ.getMouseX() - x);
 	}
+	public boolean squreCollision(Dynam targetDynam,int distance) {
+		final int DX = (int)(targetDynam.x - x),DY = (int)(targetDynam.y - y);
+		return (DX > 0 ? DX < distance : DX > -distance) && (DY > 0 ? DY < distance : DY > -distance);
+	}
+	public boolean squreCollision(int x,int y,int distance) {
+		final int DX = (int)(x - this.x),DY = (int)(y - this.y);
+		return (DX > 0 ? DX < distance : DX > -distance) && (DY > 0 ? DY < distance : DY > -distance);
+	}
 	public void approach(double dstX,double dstY,double speed) {
 		final double DX = dstX - x,DY = dstY - y;
 		final double DISTANCE = sqrt(DX*DX + DY*DY);
