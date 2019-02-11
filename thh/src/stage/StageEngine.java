@@ -13,7 +13,7 @@ public abstract class StageEngine{
 		MAX = GHQ.MAX,
 		MIN = GHQ.MIN;
 	
-	public static GHQ thh;
+	public abstract String getVersion();
 	
 	//initialization
 	public String getTitleName(){

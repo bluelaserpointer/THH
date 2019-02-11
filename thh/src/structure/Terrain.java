@@ -3,6 +3,7 @@ package structure;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.geom.Line2D;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import core.ErrorCounter;
@@ -11,6 +12,7 @@ import core.GHQ;
 public class Terrain extends Structure{
 	protected Polygon polygon;
 	private int px[],py[];
+	public static ArrayList<Integer> bppx = new ArrayList<Integer>(),bppy = new ArrayList<Integer>();
 	
 	public Terrain() {
 		polygon = new Polygon();
@@ -62,5 +64,25 @@ public class Terrain extends Structure{
 	@Override
 	public int getTeam() {
 		return GHQ.NONE;
+	}
+	
+	//create-with-blueprint
+	public static void blueprintAddPoint(int x,int y) {
+		bppx.add(x);
+		bppy.add(y);
+	}
+	public static void blueprintClear() {
+		bppx.clear();
+		bppy.clear();
+	}
+	public static Terrain blueprintFlush() {
+		final int[] rx = new int[bppx.size()],ry = new int[rx.length];
+		for(int i = 0;i < rx.length;i++) {
+			rx[i] = bppx.get(i);
+			ry[i] = bppy.get(i);
+		}
+		bppx.clear();
+		bppy.clear();
+		return new Terrain(rx,ry);
 	}
 }

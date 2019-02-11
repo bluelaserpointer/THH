@@ -65,15 +65,15 @@ public class ActionInfo {
 		addPlan(frame,SPEED,radius*cos(angle),radius*sin(angle));
 	}
 	public static final int[] getFrameArray() {
-		return GHQ.toIntArray(frame);
+		return GHQ.deboxingIntArray(frame);
 	}
 	public static final int[] getMeaningArray() {
-		return GHQ.toIntArray(meaning);
+		return GHQ.deboxingIntArray(meaning);
 	}
 	public static final double[] getXArray() {
-		return GHQ.toDoubleArray(x);
+		return GHQ.deboxingDoubleArray(x);
 	}
 	public static final double[] getYArray() {
-		return GHQ.toDoubleArray(y);
+		return GHQ.deboxingDoubleArray(y);
 	}
 }

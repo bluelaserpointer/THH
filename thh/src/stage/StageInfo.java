@@ -6,7 +6,6 @@ import unit.Unit;
 
 public class StageInfo {
 	public static String name;
-	public static double gravity;
 	public static int stageW,stageH;
 	
 	public static Structure[] primeStructures;
@@ -22,7 +21,6 @@ public class StageInfo {
 	}
 	public static void clear() {
 		name = "<Not named>";
-		gravity = 0.0;
 		stageW = stageH = 5000;
 		primeStructures = subStructures = new Structure[0];
 		primeCharas = subCharas = new Unit[0];

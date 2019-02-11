@@ -29,7 +29,10 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	
 	int formationsX[],formationsY[];
 	int formationCenterX,formationCenterY;
-	
+
+	public String getVersion() {
+		return "alpha1.0.0";
+	}
 	//images
 	//stageObject
 	private int vegImageIID[] = new int[5];
@@ -117,15 +120,11 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		g2.fillRect(0,0,stages[nowStage].getStageW(),stages[nowStage].getStageH());
 		//landscape
 		g2.setColor(Color.LIGHT_GRAY);
-		for(Structure ver : stages[nowStage].getPrimeStructures())
-			ver.doFill(g2);
-		for(Structure ver : stages[nowStage].getSubStructures())
+		for(Structure ver : stages[nowStage].getStructures())
 			ver.doFill(g2);
 		g2.setColor(Color.GRAY);
 		g2.setStroke(GHQ.stroke3);
-		for(Structure ver : stages[nowStage].getPrimeStructures())
-			ver.doDraw(g2);
-		for(Structure ver : stages[nowStage].getSubStructures())
+		for(Structure ver : stages[nowStage].getStructures())
 			ver.doDraw(g2);
 		//vegitation
 		GHQ.drawImageTHH_center(vegImageIID[3], 1172, 886,1.3);

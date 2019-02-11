@@ -32,8 +32,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 
 	private static GHQ hq;
 	
-	static final String
-		GAME_VERSION = "Ver beta1.0.0";
+	public static final String
+		GHQ_VERSION = "Ver alpha1.0.0";
 	public static final int
 		NONE = -999999999,
 		ALL = -NONE,
@@ -136,7 +136,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		GHQ.engine = engine;
 		ctrlEx = engine.getCtrl_ex();
 		hq = this;
-		StageEngine.thh = hq;
 		final long loadTime = System.currentTimeMillis();
 		//window setup
 		myFrame = new JFrame(engine.getTitleName());
@@ -453,7 +452,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final int getCharaTeam(int charaID) {
 		return characters[charaID].getTeam();
 	}
-	public static final Unit[] getVisibleEnemies(Unit chara) {
+	public static final ArrayList<Unit> getVisibleEnemies(Unit chara) {
 		final ArrayList<Unit> visibleEnemies = new ArrayList<Unit>();
 		for(Unit enemy : getCharacters_team(chara.getTeam(),false)) {
 			if(!enemy.isAlive())
@@ -461,7 +460,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			if(enemy.dynam.isVisible(chara))
 				visibleEnemies.add(enemy);
 		}
-		return visibleEnemies.toArray(new Unit[0]);
+		return visibleEnemies;
 	}
 	public static final Unit getNearstVisibleEnemy(Unit chara) {
 		final Dynam DYNAM = chara.dynam;
@@ -923,7 +922,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		messageEvent.add(event);
 	}
 	
-	//premade stage test area
+	//stage test area
 	final private void resetStage(){
 		bullets.clear();
 		effects.clear();
@@ -943,16 +942,16 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//ResourceLoad
 	/**
-	* 
+	* Load the image file.
 	* @param url 
 	* @param errorSource 
-	* @return ImageID
+	* @return ImageID (id of Image array arrayImage)
 	* @since alpha1.0
 	*/
 	public static final int loadImage(URL url,String errorSource){ //画像読み込みメソッド
 		//old URL
 		for(int id = 0;id < arrayImageURL.length;id++){
-			if(url.equals(arrayImageURL[id])) //URLｵﾇ乕徃､ﾟ
+			if(url.equals(arrayImageURL[id]))
 				return id;
 		}
 		//new URL
@@ -972,13 +971,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			arrayImage[arrayImage_maxID] = hq.createImage(1,1);
 		}
 		//save URL
-		arrayImage_maxID++; //ｻｭﾏRLﾊ�､愛荀ｹ
-		if(arrayImage_maxID == arrayImage.length){ //ﾊﾖ�ﾓﾅ菽ﾐﾑﾓ餃
+		arrayImage_maxID++;
+		if(arrayImage_maxID == arrayImage.length){
 			arrayImage = Arrays.copyOf(arrayImage,arrayImage_maxID*2);
 			arrayImageURL = Arrays.copyOf(arrayImageURL,arrayImage_maxID*2);
 		}
-		arrayImageURL[arrayImage_maxID] = url; //､ｳ､ﾎｻｭﾏRL､ﾇ乕
-		arrayImage[arrayImage_maxID] = img; //､ｳ､ﾎｻｭﾏﾇ乕
+		arrayImageURL[arrayImage_maxID] = url;
+		arrayImage[arrayImage_maxID] = img;
 		return arrayImage_maxID;
 	}
 	public static final int loadImage(URL url) {
@@ -988,18 +987,18 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return loadImage(hq.getClass().getResource("/image/" + urlStr),errorSource);
 	}
 	/**
-	* 
+	* Load the image file.
 	* @param url 
-	* @return ImageID
+	* @return ImageID (id of Image array arrayImage)
 	* @since alpha1.0
 	*/
 	public static final int loadImage(String urlStr){ //画像読み込みメソッド
 		return loadImage(urlStr,null);
 	}
 	/**
-	* ･ｵ･ｦ･ﾉ･ﾕ･｡･､･�､i､ﾟﾞz､爭皈ｽ･ﾃ･ﾉ､ﾇ､ｹ
-	* @param url ･ｵ･ｦ･ﾉ･ﾕ･｡･､･�ﾃ�
-	* @return ｽyｺﾏｻｯSoundClipID
+	* Load the sound file.
+	* @param url
+	* @return SoundID (id of SoundClip array arraySound)
 	* @since alpha1.0
 	*/
 	public final int loadSound(String url){ //画像読み込みメソッド
@@ -1024,8 +1023,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 
 	/**
-	* ･ﾕ･ｩ･ﾈ､i､ﾟﾞz､爭皈ｽ･ﾃ･ﾉ､ﾇ､ｹ
-	* @param url ･ﾕ･ｩ･ﾈ･ﾕ･｡･､･�ﾃ�
+	* Load the font file.
+	* @param url
 	* @return Font
 	* @since alpha1.0
 	*/
@@ -1038,7 +1037,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 	}
 	
-	public final Unit[] loadAllChara(URL url) {
+	public final Unit[] loadAllUnit(URL url) {
 		final FilenameFilter classFilter = new FilenameFilter(){
 			public boolean accept(File dir,String name){
 				return name.endsWith(".class");
@@ -1047,12 +1046,11 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		File charaFolder = null;
 		try{
 			charaFolder = new File(url.toURI());
-		}catch(URISyntaxException e){
-		}catch(NullPointerException e) {
-			System.out.println("･ﾕ･｡･､･��欽�､ﾋ�矢}､ｬｰkﾉ妤ｷ､ﾆ､､､ﾞ､ｹ｡｣");
+		}catch(URISyntaxException | NullPointerException e){
+			System.out.println("Unable to load Unit class.");
 		}
 		if(charaFolder == null){
-			System.out.println("chara･ﾕ･ｩ･�･ﾀ､ｬﾒ侃ﾄ､ｫ､熙ﾞ､ｻ､�");
+			System.out.println("Pass does not exist.");
 			return new Unit[0];
 		}
 		int classAmount = 0;
@@ -1191,21 +1189,30 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			radian += PI*2;
 		return radian;
 	}
-	public static final int[] toIntArray(ArrayList<Integer> arrayList) {
-		final Integer[] array = arrayList.toArray(new Integer[0]);
-		final int[] result = new int[array.length];
-		for(int i = 0;i < array.length;i++) {
-			result[i] = array[i];
-		}
+	public static final int[] deboxingIntArray(ArrayList<Integer> arrayList) {
+		final int SIZE = arrayList.size();
+		final int[] result = new int[SIZE];
+		for(int i = 0;i < SIZE;i++)
+			result[i] = arrayList.get(i);
 		return result;
 	}
-	public static final double[] toDoubleArray(ArrayList<Double> arrayList) {
-		final Double[] array = arrayList.toArray(new Double[0]);
-		final double[] result = new double[array.length];
-		for(int i = 0;i < array.length;i++) {
-			result[i] = array[i];
-		}
+	public static final double[] deboxingDoubleArray(ArrayList<Double> arrayList) {
+		final int SIZE = arrayList.size();
+		final double[] result = new double[SIZE];
+		for(int i = 0;i < SIZE;i++)
+			result[i] = arrayList.get(i);
 		return result;
+	}
+	public static String buildStringArray(Object...objects) {
+		final StringBuilder SB = new StringBuilder();
+		for(int i = 0;;) {
+			SB.append(objects[i]);
+			if(++i < objects.length)
+				SB.append(',');
+			else
+				break;
+		}
+		return SB.toString();
 	}
 	public static final String trim2(String str){
 		if(str == null || str.length() == 0)
@@ -1231,12 +1238,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return str;
 	}
 	/**
-	* ﾎﾄﾗﾖﾁﾐ､oken､ﾇｷﾖｸ釥ｷ､ﾆﾅ菽ﾐ､ﾇｷｵ､ｹ｡｢String.split･皈ｽ･ﾃ･ﾉ､ﾎTHHｰ讀ﾇ､ｹ｡｣
-	* ｷﾖｸ釥ｵ､�､ｿﾎﾄﾗﾖ､ﾏ｡｢､ｵ､鬢ﾋﾇｰ矣､ﾎｰ�ｽﾇ/ﾈｫｽﾇｿﾕｰﾗ､�ﾈ･､ｵ､�､ﾞ､ｹ｡｣
-	* ﾖｸｶｨ､ｵ､�､ｿﾎﾄﾗﾖﾁﾐ､ｬnull､ﾇ､｢､ﾃ､ｿ､ﾈ､ｭ､ﾏｿﾕﾅ菽ﾐ､ｬｷｵ､ｵ､�｡｢ﾀ�ﾍ筅ﾏﾍｶ､ｲ､ﾞ､ｻ､｣
-	* @param str ｷﾖｸ釥ｵ､�､�ﾎﾄﾗﾖﾁﾐ
-	* @param token ｷﾖｸ釥ﾋﾊｹ､ｦ･ﾈｩ`･ｯ･�
-	* @return ｷﾖｸ釥ｵ､�､ｿﾎﾄﾗﾖﾅ菽ﾐ
+	* Original version of String.split that prevent throwing NullPointerException.
+	* @param str
+	* @param token 
+	* @return string array
 	* @since alpha1.0
 	*/
 	public static final String[] split2(String str,String token){
@@ -1248,7 +1253,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return strs;
 	}
 	/**
-	* Stringｎ､ｬ殪�ｿｎ､ﾇ､ﾏ､ﾊ､､､ｳ､ﾈ､ﾊﾔ^､ｷ､ﾞ､ｹ｡｣
+	* Check if the string is null or equals "NONE"
 	*/
 	public static final boolean isActualString(String value){
 		if(value != null && !value.isEmpty() && !value.equalsIgnoreCase("NONE"))
@@ -1256,7 +1261,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return false;
 	}
 	/**
-	* Stringﾅ菽ﾐ､ｬ殪�ｿｎ､ﾇ､ﾏ､ﾊ､､､ｳ､ﾈ､ﾊﾔ^､ｷ､ﾞ､ｹ｡｣
+	* Check if the string array is null or empty or have only element "NONE"
 	*/
 	public static final boolean isActualString(String[] value){
 		if(value != null && value.length > 0 && !value[0].isEmpty() && !value[0].equalsIgnoreCase("NONE"))
@@ -1264,12 +1269,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return false;
 	}
 	/**
-	* ､ｳ､ﾎintｎ､ﾏﾌﾘ�e､ﾊﾒ簧ｶ､ｬｺｬ､ﾞ､�､ﾊ､､携ﾊ�ｎ･ｾｩ`･ﾇ､｢､�､ｫ､{､ﾙ､ﾞ､ｹ｡｣
-	* THH､ﾇ､ﾏﾒｻｲｿ､ﾎ我ﾊ�､ﾋﾌﾘﾊ筅ﾊﾒ簧ｶ､ﾖ､ｿ､ｻ､ｿﾊ�ｎ､抦�､ｷ｡｢ﾟ`､ﾃ､ｿ彫�ﾓ､ｾ､ｹ､隍ｦ､ﾊﾊﾋｽM､ﾟ､ｬ､｢､熙ﾞ､ｹ｡｣
-	* (ﾀ�｣ｺgimmickHP､ﾏｶｨﾊ�MAX､ﾎ､ﾈ､ｭﾆﾆ牡ｲｻﾄﾜ,ｶｨﾊ�NONE､ﾎ､ﾈ､ｭﾐnﾍｻﾅﾐｶｨ､ﾊ､ｷ)
-	* 携ﾊ�ｎ､ﾈｻ�ﾍｬ､ｷ､ﾊ､､､ｿ､癸｢､ｳ､ﾎ･ｾｩ`･ﾏﾏﾞｽ轤失ｶｽ�､ﾇ､｢､�､ｳ､ﾈ､ｬｶ爨､､隍ｦ､ﾋ､ﾊ､ﾃ､ﾆ､､､ﾞ､ｹ｡｣
-	* @param value ﾕ{､ﾙ､�ｎ
-	* @return 携ﾊ�ｎ､ﾇ､｢､�､ﾈ､ｭtrue,､ｽ､ｦ､ﾇ､ﾊ､ｱ､�､ﾐfalse
+	* Check if the int value has a special meaning, including NONE.
+	* @param value
 	* @since alpha1.0
 	*/
 	public static final boolean isActualNumber(int value){
@@ -1287,13 +1288,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return true;
 	}
 	/**
-	* ､ｳ､ﾎdoubleｎ､ﾏﾌﾘ�e､ﾊﾒ簧ｶ､ｬｺｬ､ﾞ､�､ﾊ､､携ﾊ�ｎ･ｾｩ`･ﾇ､｢､�､ｫ､{､ﾙ､ﾞ､ｹ｡｣
-	* THH､ﾇ､ﾏﾒｻｲｿ､ﾎ我ﾊ�､ﾋﾌﾘﾊ筅ﾊﾒ簧ｶ､ﾖ､ｿ､ｻ､ｿﾊ�ｎ､抦�､ｷ｡｢ﾟ`､ﾃ､ｿ彫�ﾓ､ｾ､ｹ､隍ｦ､ﾊﾊﾋｽM､ﾟ､ｬ､｢､熙ﾞ､ｹ｡｣
-	* (ﾀ�｣ｺgimmickHP､ｬｶｨﾊ�MAX､ﾎ､ﾈ､ｭﾆﾆ牡ｲｻﾄﾜ,ｶｨﾊ�NONE､ﾎ､ﾈ､ｭﾐnﾍｻﾅﾐｶｨ､ﾊ､ｷ)
-	* 携ﾊ�ｎ､ﾈｻ�ﾍｬ､ｷ､ﾊ､､､ｿ､癸｢､ｳ､ﾎ･ｾｩ`･ﾏﾏﾞｽ轤失ｶｽ�､ﾇ､｢､�､ｳ､ﾈ､ｬｶ爨､､隍ｦ､ﾋ､ﾊ､ﾃ､ﾆ､､､ﾞ､ｹ｡｣
-	* ､ﾊ､ｪ｡｢NaN､膽NEGATIVE/POSITIVE]_INFINITY､ﾇ､稠alse､ｬｷｵ､ﾃ､ﾆ､ｭ､ﾞ､ｹ｡｣
-	* @param value ﾕ{､ﾙ､�ｎ
-	* @return 携ﾊ�ｎ､ﾈ､ﾇ､｢､�､ﾈ､ｭtrue,､ｽ､ｦ､ﾇ､ﾊ､ｱ､�､ﾐfalse
+	* Check if the double value has a special meaning, including NONE.
+	* @param value
 	* @since alpha1.0
 	*/
 	public static final boolean isActualNumber(double value){
@@ -1306,10 +1302,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			return true;
 	}
 	/**
-	* ｶﾈ､鬣ｸ･｢･ﾘ我轍､ｷ､ﾞ､ｹ､ｬ｡｢携ﾊ�ｎ､ﾇ､ﾏ､ﾊ､､ｎ､｣ｳﾖ､ｷ､ﾞ､ｹ｡｣
-	* ､ｿ､ﾈ､ｨ､ﾐ｡｢"NONE"､�"Double.NEGATIVE_INFINITY"､ﾊ､ﾉ､ﾎﾌﾘﾊ竄痔ﾏ､ｳ､ﾎ･皈ｽ･ﾃ･ﾉ､ｨ､ｷ､ﾆ､竄痔ﾏ我ｻｯ､ｷ､ﾞ､ｻ､｣
-	* @param ･鬣ｸ･｢･ﾋ我轍､ｹ､�ﾊ�ｎ
-	* @return 我轍､ｵ､�､ｿｎ
+	* Execute Math.toRadians only if the value doesen't have special meaning.
+	* @param degress
 	* @since alpha1.0
 	*/
 	public static final double toRadians2(double degress){
@@ -1350,11 +1344,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	//message window
 	/**
-	* ｾｯｸ讌ｦ･｣･ﾉ･ｦ､桄ｾ､ｷ､ﾞ､ｹ｡｣
-	* ､ｳ､ﾎ馮､ﾎ･ﾕ･�ｩ`･猝�､ﾎ･ｫ･ｦ･ﾈ､ｬｷｵ､ｵ､�､ﾞ､ｹ｡｣
-	* @param message ･皈ﾃ･ｻｩ`･ｸ
-	* @param title ･皈ﾃ･ｻｩ`･ｸ･ｿ･､･ﾈ･�
-	* @return ﾍ｣ﾖｹ､ｷ､ｿ瓶馮
+	* Show a warning message window.
+	* @param message
+	* @param title
+	* @return The time passed while this window is shown.
 	* @since alpha1.0
 	*/
 	public static final long warningBox(String message,String title){
