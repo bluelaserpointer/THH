@@ -360,19 +360,4 @@ public class Dynam{
 			movedDistance += sqrt(xSpd*xSpd + ySpd*ySpd);
 		}
 	}
-	
-	//StringOutput&Input
-	public String stringOutput() {
-		return GHQ.buildStringArray(x,y,xSpd,ySpd,angle,movedDistance);
-	}
-	public void stringInput(String[] inputStrs) {
-		if(inputStrs.length != 6)
-			System.out.println("Illegal inputStrs length to Dynam: " + inputStrs.length);
-		x = Double.parseDouble(inputStrs[0]);
-		y = Double.parseDouble(inputStrs[1]);
-		xSpd = Double.parseDouble(inputStrs[2]);
-		ySpd = Double.parseDouble(inputStrs[3]);
-		angle = Double.parseDouble(inputStrs[4]);
-		movedDistance = Double.parseDouble(inputStrs[5]);
-	}
 }

@@ -3,11 +3,6 @@ package stage;
 import structure.Structure;
 
 import java.awt.geom.Line2D;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,38 +27,6 @@ public class Stage implements Serializable{
 		structures.add(new BlankTerrain(new int[]{0,0,300,400,500,600,700,700},new int[]{650,450,450,350,350,450,450,650}));
 	}
 	
-	//role
-	public final void load(File file) {
-		if(!file.exists()) {
-			System.out.println("File doesn't exist.");
-			return;
-		}
-		Stage loadedStage = null;
-		try(ObjectInputStream ois = new ObjectInputStream(getClass().getResourceAsStream("source/configPackage/configTextData.txt"))){
-			loadedStage = (Stage)ois.readObject();
-		}catch(IOException | ClassNotFoundException e){}
-		if(loadedStage == null) {
-			System.out.println("Load Error.");
-			return;
-		}
-		name = loadedStage.name;
-		stageW = loadedStage.stageW;
-		stageH = loadedStage.stageH;
-		structures = loadedStage.structures;
-	}
-	public final void save() {
-		final String urlStr = "stage/" + name + ".txt";
-		try{ //ステージデータの書き込み
-			final File file = new File(urlStr);
-			if(!file.exists())
-				file.createNewFile();
-			final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
-			oos.writeObject(this);
-			oos.close();
-		}catch(IOException e){
-			e.printStackTrace();
-		}
-	}
 	//control
 	public final void reset() {
 		structures.clear();
