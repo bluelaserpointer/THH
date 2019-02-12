@@ -6,6 +6,11 @@ import java.awt.image.*;
 import java.awt.geom.*;
 import static java.awt.event.KeyEvent.*;
 import javax.swing.*;
+import java.io.*;
+import java.net.*;
+import java.text.DecimalFormat;
+import java.util.*;
+import static java.lang.Math.*;
 
 import bullet.Bullet;
 import effect.Effect;
@@ -15,11 +20,6 @@ import structure.Structure;
 import stage.StageEngine;
 import unit.Unit;
 
-import java.io.*;
-import java.net.*;
-import java.text.DecimalFormat;
-import java.util.*;
-import static java.lang.Math.*;
 
 /**
  * 
@@ -83,7 +83,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private static int page,page_max;
 	
 	//frame
-	private static int clearFrame;
 	private static int systemFrame;
 	private static int gameFrame;
 	
@@ -102,6 +101,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//structure data
 	private static final ArrayListEx<Structure> structures = new ArrayListEx<Structure>();
+	
+	//gui data
+	private static final ArrayList<GUIParts> guiParts = new ArrayList<GUIParts>();
 	
 	//event data
 	private static final ArrayDeque<String> messageStr = new ArrayDeque<String>();
@@ -214,12 +216,15 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		final int TRANSLATE_X = (int)TRANSLATE_X_double,TRANSLATE_Y = (int)TRANSLATE_Y_double;
 		g2.translate(TRANSLATE_X_double, TRANSLATE_Y_double);
 		////////////////////////////////////////////////////////////////////////
-		//stageAction
+		//stageIdle
 		engine.idle(g2,stopEventKind);
 		////////////////////////////////////////////////////////////////////////
-		//GUIAction
+		//GUIIdle
 		g2.translate(-TRANSLATE_X_double, -TRANSLATE_Y_double);
 		{
+			//gui parts////////////////////
+			for(GUIParts parts : guiParts)
+				parts.defaultIdle();
 			//message system///////////////
 			if(messageStop) {
 				if(messageStr.size() > 0) {
@@ -733,8 +738,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		ctrlEx.mouseReleased(e);
 	}
 	public void mouseClicked(MouseEvent e){
-		ctrlEx.mouseClicked(e);
+		for(GUIParts parts : guiParts) {
+			if(parts.isMouseOvered())
+				parts.clicked();
 		}
+		ctrlEx.mouseClicked(e);
+	}
 	public void mouseMoved(MouseEvent e){
 		final int x = e.getX(),y = e.getY();
 		mouseX = x;mouseY = y;
@@ -909,6 +918,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final void addStructure(Structure structure) {
 		structures.add(structure);
+	}
+	public static final void addGUIParts(GUIParts guiParts) {
+		GHQ.guiParts.add(guiParts);
 	}
 
 	public static final int getNowFrame() {

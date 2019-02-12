@@ -1,13 +1,8 @@
 package core;
 
 public abstract class MessageWindow extends GUIParts{
-	@Override
-	public void enable() {
-		super.isEnabled = true;
-	}
-	@Override
-	public void disable() {
-		super.isEnabled = false;
+	public MessageWindow(int group) {
+		super(group);
 	}
 	//role
 	public void setText(String text) {
