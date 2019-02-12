@@ -35,7 +35,7 @@ public class BulletScript {
 	}
 	public void bulletHitObject(Bullet bullet) {}
 	public boolean bulletIfHitLandscape(Bullet bullet,int x,int y){
-		return GHQ.hitLandscape(x,y,bullet.SIZE);
+		return GHQ.hitLandscape_Rect(bullet.team,x,y,bullet.SIZE,bullet.SIZE);
 	}
 	
 	//judge

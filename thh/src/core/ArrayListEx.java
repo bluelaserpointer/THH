@@ -32,4 +32,7 @@ public class ArrayListEx<E> extends ArrayList<E>{
 		}
 		return false;
 	}
+	public E removeCurrent() {
+		return remove(nowIterator);
+	}
 }

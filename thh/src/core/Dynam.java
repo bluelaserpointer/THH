@@ -172,10 +172,10 @@ public class Dynam{
 		if(targetDI == null)
 			return false;
 		final Dynam targetDynam = targetDI.getDynam();
-		return GHQ.getStage().checkLoS(new Line2D.Double(x,y,targetDynam.x,targetDynam.y));
+		return GHQ.checkLoS(new Line2D.Double(x,y,targetDynam.x,targetDynam.y));
 	}
 	public boolean isVisible(double x,double y) {
-		return GHQ.getStage().checkLoS(new Line2D.Double(this.x,this.y,x,y));
+		return GHQ.checkLoS(new Line2D.Double(this.x,this.y,x,y));
 	}
 	public double getAngle() {
 		return angle;

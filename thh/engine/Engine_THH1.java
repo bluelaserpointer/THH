@@ -12,17 +12,17 @@ import bullet.Bullet;
 import core.GHQ;
 import core.MessageSource;
 import stage.ControlExpansion;
-import stage.Stage;
+import stage.StageSaveData;
 import stage.StageEngine;
-import stage.StageInfo;
 import structure.Structure;
+import structure.Terrain;
 import unit.*;
 
 public class Engine_THH1 extends StageEngine implements MessageSource,ActionSource{
-	private static final THHUnit[] friendCharaClass = new THHUnit[2];
-	private static final ArrayList<Unit> enemyCharaClass = new ArrayList<Unit>();
-	private static final Stage[] stages = new Stage[1];
+	private static THHUnit[] friends;
+	private static final StageSaveData[] stages = new StageSaveData[1];
 	private int nowStage;
+	private int stageW,stageH;
 	
 	public static final int FRIEND = 0,ENEMY = 100;
 	final int F_MOVE_SPD = 6;
@@ -56,6 +56,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	public final ControlExpansion getCtrl_ex() {
 		return ctrlEx;
 	}
+	
 	@Override
 	public final void loadResource() {
 		focusIID = GHQ.loadImage("focus.png");
@@ -68,7 +69,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		Editor.freeShapeIID = GHQ.loadImage("gui_editor/FreeShape.png");
 	}
 	@Override
-	public final Unit[] charaSetup() {
+	public final void charaSetup() {
 		//formation
 		formationCenterX = GHQ.getScreenW()/2;formationCenterY = GHQ.getScreenH() - 100;
 		formationsX = new int[2];
@@ -76,34 +77,28 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		formationsX[0] = -15;formationsY[0] = 0;
 		formationsX[1] = +15;formationsY[1] = 0;
 		//friend
-		friendCharaClass[0] = (THHUnit)new Marisa().initialSpawn(FRIEND,formationCenterX + formationsX[0],formationCenterY + formationsY[0],4000);
-		friendCharaClass[1] = (THHUnit)new Reimu().initialSpawn(FRIEND,formationCenterX + formationsX[1],formationCenterY + formationsY[1],4000);
+		friends = new THHUnit[2];
+		friends[0] = (THHUnit)new Marisa().initialSpawn(FRIEND,formationCenterX + formationsX[0],formationCenterY + formationsY[0],4000);
+		friends[1] = (THHUnit)new Reimu().initialSpawn(FRIEND,formationCenterX + formationsX[1],formationCenterY + formationsY[1],4000);
+		for(Unit friend : friends)
+			GHQ.addUnit(friend);
 		//action
 		ActionInfo.clear();
 		ActionInfo.addDstPlan(1000, GHQ.getScreenW() - 200, GHQ.getScreenH() + 100);
 		ActionInfo.addDstPlan(1000, GHQ.getScreenW() + 200, GHQ.getScreenH() + 100);
 		final Action moveLeftToRight200 = new Action(this);
 		//enemy
-		enemyCharaClass.add(new Fairy().initialSpawn(ENEMY, 300, 100,2500));
-		enemyCharaClass.add(new Fairy().initialSpawn(ENEMY, 700, 20,2500));
-		enemyCharaClass.add(new Fairy().initialSpawn(ENEMY, 1200, 300,2500));
-		enemyCharaClass.add(new Fairy().initialSpawn(ENEMY, 1800, 700,2500));
-		enemyCharaClass.add(new WhiteMan().initialSpawn(ENEMY, 400, GHQ.random2(100, 150),50000));
-		enemyCharaClass.add(new BlackMan().initialSpawn(ENEMY, 200, GHQ.random2(100, 150),10000));
-		
-		//result
-		final ArrayList<Unit> allCharaClass = new ArrayList<Unit>();
-		allCharaClass.add(friendCharaClass[0]);
-		allCharaClass.add(friendCharaClass[1]);
-		allCharaClass.addAll(enemyCharaClass);
-		return allCharaClass.toArray(new Unit[0]);
+		GHQ.addUnit(new Fairy().initialSpawn(ENEMY, 300, 100,2500));
+		GHQ.addUnit(new Fairy().initialSpawn(ENEMY, 700, 20,2500));
+		GHQ.addUnit(new Fairy().initialSpawn(ENEMY, 1200, 300,2500));
+		GHQ.addUnit(new Fairy().initialSpawn(ENEMY, 1800, 700,2500));
+		GHQ.addUnit(new WhiteMan().initialSpawn(ENEMY, 400, GHQ.random2(100, 150),50000));
+		GHQ.addUnit(new BlackMan().initialSpawn(ENEMY, 200, GHQ.random2(100, 150),10000));
 	}
 	@Override
-	public final Stage stageSetup() {
-		StageInfo.clear();
-		StageInfo.name = "stage1_1";
-		StageInfo.stageW = StageInfo.stageH = 2000;
-		return stages[0] = new Stage();
+	public final void stageSetup() {
+		stageW = stageH = 5000;
+		GHQ.addStructure(new Terrain(new int[]{0,0,300,400,500,600,700,700},new int[]{650,450,450,350,350,450,450,650}));
 	}
 	@Override
 	public final void openStage() {
@@ -117,14 +112,14 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		//stagePaint
 		//background
 		g2.setColor(new Color(112,173,71));
-		g2.fillRect(0,0,stages[nowStage].getStageW(),stages[nowStage].getStageH());
+		g2.fillRect(0,0,stageW,stageH);
 		//landscape
 		g2.setColor(Color.LIGHT_GRAY);
-		for(Structure ver : stages[nowStage].getStructures())
+		for(Structure ver : GHQ.getStructureList())
 			ver.doFill(g2);
 		g2.setColor(Color.GRAY);
 		g2.setStroke(GHQ.stroke3);
-		for(Structure ver : stages[nowStage].getStructures())
+		for(Structure ver : GHQ.getStructureList())
 			ver.doDraw(g2);
 		//vegitation
 		GHQ.drawImageTHH_center(vegImageIID[3], 1172, 886,1.3);
@@ -149,28 +144,25 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 			//others
 			switch(nowStage) {
 			case 0:
-				for(int i = 0;i < friendCharaClass.length;i++)
-					friendCharaClass[i].teleportTo(formationCenterX + formationsX[i], formationCenterY + formationsY[i]);
+				for(int i = 0;i < friends.length;i++)
+					friends[i].teleportTo(formationCenterX + formationsX[i], formationCenterY + formationsY[i]);
 				//friend
-				GHQ.defaultCharaIdle(friendCharaClass);
+				GHQ.defaultCharaIdle(friends);
 				//enemy
-				for(int i = 0;i < enemyCharaClass.size();i++) {
-					final Unit enemy = enemyCharaClass.get(i);
-					if(enemy.getHP() <= 0) {
-						enemyCharaClass.remove(enemy);
+				for(Unit enemy : GHQ.getCharacterList()) {
+					if(!enemy.isAlive())
 						continue;
-					}
 					GHQ.defaultCharaIdle(enemy);
 					if(enemy.getName() == "FairyA") {
 						final int FRAME = gameFrame % 240;
 						if(FRAME < 100)
-							enemyCharaClass.get(i).dynam.setSpeed(-5, 0);
+							enemy.dynam.setSpeed(-5, 0);
 						else if(FRAME < 120)
-							enemyCharaClass.get(i).dynam.setSpeed(0, 0);
+							enemy.dynam.setSpeed(0, 0);
 						else if(FRAME < 220)
-							enemyCharaClass.get(i).dynam.setSpeed(5, 0);
+							enemy.dynam.setSpeed(5, 0);
 						else
-							enemyCharaClass.get(i).dynam.setSpeed(0, 0);
+							enemy.dynam.setSpeed(0, 0);
 					}
 				}
 				//leap
@@ -181,26 +173,24 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 					//}else {
 						//formationCenterX += (double)DX/10.0;formationCenterY += (double)DY/10.0;
 					//}
-					for(int i = 0;i < friendCharaClass.length;i++)
-						friendCharaClass[i].teleportTo(formationCenterX + formationsX[i], formationCenterY + formationsY[i]);
+					for(int i = 0;i < friends.length;i++)
+						friends[i].teleportTo(formationCenterX + formationsX[i], formationCenterY + formationsY[i]);
 				}
 				//shot
-				for(Unit chara : friendCharaClass)
+				for(Unit chara : friends)
 					chara.attackOrder = ctrlEx.getCommandBool(CtrlEx_THH1.SHOT);
 				//spell
 				{
 					int spellUser;
 					while((spellUser = ctrlEx.pullSpellUser()) != NONE) {
-						if(spellUser < friendCharaClass.length)
-							friendCharaClass[spellUser].spellOrder = true;
+						if(spellUser < friends.length)
+							friends[spellUser].spellOrder = true;
 					}
 				}
 				break;
 			}
-		}else if(stopEventKind == GHQ.STOP || stopEventKind == GHQ.NO_ANM_STOP) {
-			GHQ.defaultCharaIdle(friendCharaClass);
-			GHQ.defaultCharaIdle(enemyCharaClass);
-		}
+		}else if(stopEventKind == GHQ.STOP || stopEventKind == GHQ.NO_ANM_STOP)
+			GHQ.defaultCharaIdle(GHQ.getCharacterList());
 		GHQ.defaultEntityIdle();
 		//focus
 		g2.setColor(new Color(200,120,10,100));
@@ -213,7 +203,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		}else { //game GUI
 			GHQ.translateForGUI(true);
 			int pos = 1;
-			for(THHUnit chara : friendCharaClass) 
+			for(THHUnit chara : friends) 
 				GHQ.drawImageTHH(chara.faceIID, pos++*90 + 10, GHQ.getScreenH() - 40, 80, 30);
 			GHQ.translateForGUI(false);
 		}
@@ -261,17 +251,22 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		}
 		return Arrays.copyOf(result, searched);
 	}
-	@Override
-	public boolean deleteChara(Unit chara) {
-		return enemyCharaClass.remove(chara);
-	}
 	//information
 	@Override
 	public final int getGameFrame() {
 		return gameFrame;
 	}
-	final static Unit[] getUserChara() {
-		return friendCharaClass;
+	@Override
+	public final boolean inStage(int x,int y) {
+		return 0 < x && x <= stageW && 0 < y && y <= stageH;
+	}
+	@Override
+	public final int getStageW() {
+		return stageW;
+	}
+	@Override
+	public final int getStageH() {
+		return stageH;
 	}
 	private boolean doScrollView = true;
 	private boolean doGravity = false;

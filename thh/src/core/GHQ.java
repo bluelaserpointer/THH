@@ -11,7 +11,7 @@ import bullet.Bullet;
 import effect.Effect;
 import engine.Engine_THH1;
 import stage.ControlExpansion;
-import stage.Stage;
+import structure.Structure;
 import stage.StageEngine;
 import unit.Unit;
 
@@ -80,26 +80,28 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private static double viewX,viewY,viewDstX,viewDstY;
 
 	//page
-	private int page,page_max;
+	private static int page,page_max;
 	
 	//frame
-	private int clearFrame;
+	private static int clearFrame;
 	private static int systemFrame;
 	private static int gameFrame;
 	
 	//stage
 	private static StageEngine engine;
-	private static Stage stage;
 	private static ControlExpansion ctrlEx;
 
 	//character data
-	private static Unit[] characters = new Unit[0];
+	private static final ArrayListEx<Unit> characters = new ArrayListEx<Unit>();
 	
 	//bullet data
 	private static final ArrayListEx<Bullet> bullets = new ArrayListEx<Bullet>();
 	
 	//effect data
 	private static final ArrayListEx<Effect> effects = new ArrayListEx<Effect>();
+	
+	//structure data
+	private static final ArrayListEx<Structure> structures = new ArrayListEx<Structure>();
 	
 	//event data
 	private static final ArrayDeque<String> messageStr = new ArrayDeque<String>();
@@ -269,7 +271,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				g2.drawOval(TRANSLATE_X - 15, TRANSLATE_Y - 15, 30, 30);
 				//stageEdge
 				g2.setStroke(stroke3);
-				final int STAGE_W = stage.getStageW(),STAGE_H = stage.getStageH();
+				final int STAGE_W = engine.getStageW(),STAGE_H = engine.getStageH();
 				{ //LXRX lines
 					final int LX = TRANSLATE_X,RX = TRANSLATE_X + STAGE_W;
 					for(int i = 0;i < 50;i++) {
@@ -287,7 +289,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 					}
 				}
 				//entityInfo
-				g2.drawString("Chara:" + characters.length + " EF:" + effects.size() + " B:" + bullets.size(),30,100);
+				g2.drawString("Chara:" + characters.size() + " EF:" + effects.size() + " B:" + bullets.size(),30,100);
 				g2.drawString("LoadTime(ms):" + loadTime_total,30,120);
 				//g2.drawString("EM:" + loadTime_enemy + " ET:" + loadTime_entity + " G:" + loadTime_gimmick + " EF:" + loadTime_effect + " B:" + loadTime_bullet + " I:" + loadTime_item + " W: " + loadTime_weapon + " Other: " + loadTime_other,30,140);
 				g2.drawString("GameTime(ms):" + gameFrame,30,160);
@@ -338,6 +340,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				chara.resetSingleOrder();
 			}
 		}
+		removeDeadUnits();
 	}
 	public static final void defaultCharaIdle(ArrayList<Unit> characters) {
 		switch(stopEventKind) {
@@ -355,6 +358,19 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				chara.resetSingleOrder();
 			}
 		}
+		removeDeadUnits();
+	}
+	public static final int removeDeadUnits() {
+		int deleted = 0;
+		characters.setIterator(0);
+		while(characters.hasNext()) {
+			final Unit UNIT = characters.next();
+			if(!UNIT.isAlive()) {
+				characters.removeCurrent();
+				deleted++;
+			}
+		}
+		return deleted;
 	}
 	//idle-entity
 	public static final void defaultEntityIdle() {
@@ -413,14 +429,14 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return null;
 	}
-	public static final Unit[] getCharacters() {
+	public static final ArrayListEx<Unit> getCharacterList() {
 		return characters;
 	}
-	public static final Unit getCharacters(int charaID) {
-		return characters[charaID];
+	public static final Unit getCharacter(int index) {
+		return characters.get(index);
 	}
 	public static final Unit[] getCharacters_team(int team,boolean white) {
-		final Unit[] charaArray = new Unit[characters.length];
+		final Unit[] charaArray = new Unit[characters.size()];
 		int founded = 0;
 		for(Unit chara : characters) {
 			if(white == isSameTeam(team,chara.getTeam()))
@@ -447,10 +463,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		
 	}
 	public static final int getCharaAmount() {
-		return characters.length;
+		return characters.size();
 	}
-	public static final int getCharaTeam(int charaID) {
-		return characters[charaID].getTeam();
+	public static final int getCharaTeam(int index) {
+		return characters.get(index).getTeam();
 	}
 	public static final ArrayList<Unit> getVisibleEnemies(Unit chara) {
 		final ArrayList<Unit> visibleEnemies = new ArrayList<Unit>();
@@ -506,35 +522,46 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return neastVisibleEnemy;
 	}
-	public static final double getCharaX(int charaID) {
-		return characters[charaID].getDynam().getX();
-	}
-	public static final double getCharaY(int charaID) {
-		return characters[charaID].getDynam().getY();
-	}
 	//information-stage
 	public static final StageEngine getEngine() {
 		return engine;
 	}
-	public static final Stage getStage() {
-		return stage;
+	public static ArrayListEx<Structure> getStructureList(){
+		return structures;
 	}
-	public static final boolean hitLandscape(int x,int y,int size) {
-		if(size <= 0)
-			return false;
-		if(size <= 2)
-			return stage.hitLandscape(x, y, 1, 1);
-		final int HALF_SIZE = size/2;
-		return stage.hitLandscape(x, y, HALF_SIZE, HALF_SIZE);
+
+	public static Structure[] getStructures(int team,boolean white){
+		Structure result[] = new Structure[structures.size()];
+		int searched = 0;
+		for(Structure structure : structures) {
+			if(white == (structure.getTeam() == team))
+				result[searched++] = structure;
+		}
+		return Arrays.copyOf(result, searched);
+	}
+	public static final boolean checkLoS(Line2D line) {
+		for(Structure structure : structures) {
+			if(structure.intersectsLine(line))
+				return false;
+		}
+		return true;
+	}
+	public static final boolean hitStructure_Rect(int x,int y,int w,int h){
+		for(Structure structure : structures) {
+			if(structure.contains(x, y, w, h))
+				return true;
+		}
+		return false;
+	}
+	public static final boolean hitLandscape_Rect(int team,int x,int y,int w,int h){
+		for(Structure structure : structures) {
+			if(GHQ.isRival(team,structure.getTeam()) && structure.contains(x, y, w, h))
+				return true;
+		}
+		return false;
 	}
 	public static final boolean inStage(int x,int y) {
-		return stage.inStage(x, y);
-	}
-	public static final double flitCodX(double screenX) {
-		return viewX - screenX;
-	}
-	public static final double flitCodY(double screenY) {
-		return viewY - screenY;
+		return engine.inStage(x,y);
 	}
 	//information-team
 	public static final boolean isSameTeam(int team1,int team2) {
@@ -877,6 +904,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		effects.add(effect);
 		return effect;
 	}
+	public static final void addUnit(Unit unit) {
+		characters.add(unit);
+	}
+	public static final void addStructure(Structure structure) {
+		structures.add(structure);
+	}
 
 	public static final int getNowFrame() {
 		return gameFrame;
@@ -935,8 +968,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		System.gc();
 		System.out.println("add characters to the game");
 		engine.loadResource();
-		characters = engine.charaSetup();
-		stage = engine.stageSetup();
+		engine.charaSetup();
+		engine.stageSetup();
 		engine.openStage();
 	}
 	
