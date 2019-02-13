@@ -1,8 +1,11 @@
 package core;
 
+import gui.GUIParts;
+import paint.PaintScript;
+
 public abstract class MessageWindow extends GUIParts{
-	public MessageWindow(int group) {
-		super(group);
+	public MessageWindow(int group,PaintScript paintScript,int x,int y,int w,int h) {
+		super(group,paintScript,x,y,w,h);
 	}
 	//role
 	public void setText(String text) {
@@ -14,7 +17,7 @@ public abstract class MessageWindow extends GUIParts{
 	public void addText(String text) {
 		
 	}
-	public void setPaintPronpt(PaintPronpt pp,int kind) {
+	public void setPaintPronpt(PaintScript pp,int kind) {
 		
 	}
 }

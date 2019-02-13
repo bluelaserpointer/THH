@@ -15,6 +15,7 @@ import static java.lang.Math.*;
 import bullet.Bullet;
 import effect.Effect;
 import engine.Engine_THH1;
+import gui.GUIParts;
 import stage.ControlExpansion;
 import structure.Structure;
 import stage.StageEngine;
@@ -531,6 +532,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final StageEngine getEngine() {
 		return engine;
 	}
+	public static final ControlExpansion getCtrlEx() {
+		return ctrlEx;
+	}
 	public static ArrayListEx<Structure> getStructureList(){
 		return structures;
 	}
@@ -686,7 +690,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 					break;
 			}
 		}
-		return hp; //ｲﾐ､ﾃ､ｿHP､ｵ､ｹ
+		return hp;
 	}
 	public final Bullet searchBulletInSquare_single(int x,int y,int size,int team){
 		for(int i = 0;i < bullets.size();i++){
@@ -706,6 +710,20 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return Arrays.copyOf(foundIDs,foundAmount);
 	}
+	//control-GUI
+	public static final void enableGUIs(int group) {
+		for(GUIParts parts : guiParts) {
+			if(parts.GROUP == group)
+				parts.enable();
+		}
+	}
+	public static final void disableGUIs(int group) {
+		for(GUIParts parts : guiParts) {
+			if(parts.GROUP == group)
+				parts.disable();
+		}
+	}
+	//information-collision
 	public static final boolean squreCollisionII(int x1,int y1,int size1,int x2,int y2,int size2) {
 		final int halfSize = (size1 + size2)/2;
 		return abs(x1 - x2) < halfSize && abs(y1 - y2) < halfSize;
@@ -1127,35 +1145,35 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	//Paint
 	/**
-	* x,y､ｬｻｭﾏﾎﾗﾏｽﾇ､ﾈ､ﾊ､�､隍ｦ､ﾋﾃ霆ｭ､ｷ､ﾞ､ｹ｡｣
-	* @param img ｻｭﾏ�
-	* @param x ﾖﾐﾐﾄxﾗﾋ
-	* @param y ﾖﾐﾐﾄyﾗﾋ
-	* @param w ｺ盥�
-	* @param h ﾁ｢ｷ�
+	* 
+	* @param img 
+	* @param x 
+	* @param y 
+	* @param w 
+	* @param h 
 	* @since alpha1.0
 	*/
-	public static final void drawImageTHH(Image img,int x,int y,int w,int h){
+	public static final void drawImageGHQ(Image img,int x,int y,int w,int h){
 		hq.g2.drawImage(img,x - w/2,y - h/2,w,h,hq);
 	}
 	/**
-	* x,y､ｬｻｭﾏﾎﾗﾏｽﾇ､ﾈ､ﾊ､�､隍ｦ､ﾋﾃ霆ｭ､ｷ､ﾞ､ｹ｡｣
-	* @param imgID ｻｭﾏD
-	* @param x ﾖﾐﾐﾄxﾗﾋ
-	* @param y ﾖﾐﾐﾄyﾗﾋ
-	* @param w ｺ盥�
-	* @param h ﾁ｢ｷ�
+	* 
+	* @param imgID 
+	* @param x 
+	* @param y 
+	* @param w 
+	* @param h 
 	* @since alpha1.0
 	*/
-	public static final void drawImageTHH(int imgID,int x,int y,int w,int h){
-		drawImageTHH(arrayImage[imgID],x - w/2,y - h/2,w,h);
+	public static final void drawImageGHQ(int imgID,int x,int y,int w,int h){
+		drawImageGHQ(arrayImage[imgID],x - w/2,y - h/2,w,h);
 	}
 	/**
-	* x,y､ｬｻｭﾏﾎﾖﾐﾐﾄ､ﾈ､ﾊ､�､隍ｦ､ﾋﾃ霆ｭ､ｷ｡｢､ｫ､ﾄﾖｸｶｨｽﾇｶﾈ､ﾇｻﾘﾜ椄ｵ､ｻ､ﾞ､ｹ｡｣
-	* @param img ｻｭﾏ�
-	* @param x ﾖﾐﾐﾄxﾗﾋ
-	* @param y ﾖﾐﾐﾄyﾗﾋ
-	* @param angle ｻﾘﾜ椰ﾇｶﾈ
+	* 
+	* @param img 
+	* @param x 
+	* @param y 
+	* @param angle 
 	* @since alpha1.0
 	*/
 	public static final void drawImageTHH_center(Image img,int x,int y,double angle){
@@ -1170,35 +1188,47 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			G2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,hq);
 	}
 	/**
-	* x,y､ｬｻｭﾏﾎﾖﾐﾐﾄ､ﾈ､ﾊ､�､隍ｦ､ﾋﾃ霆ｭ､ｷ｡｢､ｫ､ﾄﾖｸｶｨｽﾇｶﾈ､ﾇｻﾘﾜ椄ｵ､ｻ､ﾞ､ｹ｡｣
-	* @param imgID ｻｭﾏD
-	* @param x ﾖﾐﾐﾄxﾗﾋ
-	* @param y ﾖﾐﾐﾄyﾗﾋ
-	* @param angle ｻﾘﾜ椰ﾇｶﾈ
+	* 
+	* @param imgID 
+	* @param x 
+	* @param y 
+	* @param angle 
 	* @since alpha1.0
 	*/
 	public static final void drawImageTHH_center(int imgID,int x,int y,double angle) {
 		drawImageTHH_center(arrayImage[imgID],x,y,angle);
 	}
 	/**
-	* x,y､ｬｻｭﾏﾎﾖﾐﾐﾄ､ﾈ､ﾊ､�､隍ｦ､ﾋﾃ霆ｭ､ｷ､ﾞ､ｹ｡｣
-	* @param img ｻｭﾏ�
-	* @param x ﾖﾐﾐﾄxﾗﾋ
-	* @param y ﾖﾐﾐﾄyﾗﾋ
+	* 
+	* @param img 
+	* @param x 
+	* @param y 
 	* @since alpha1.0
 	*/
 	public static final void drawImageTHH_center(Image img,int x,int y){
 		hq.g2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,hq);
 	}
 	/**
-	* x,y､ｬｻｭﾏﾎﾖﾐﾐﾄ､ﾈ､ﾊ､�､隍ｦ､ﾋﾃ霆ｭ､ｷ､ﾞ､ｹ｡｣
-	* @param imgID ｻｭﾏD
-	* @param x ﾖﾐﾐﾄxﾗﾋ
-	* @param y ﾖﾐﾐﾄyﾗﾋ
+	* 
+	* @param imgID 
+	* @param x 
+	* @param y 
 	* @since alpha1.0
 	*/
 	public static final void drawImageTHH_center(int imgID,int x,int y){
 		drawImageTHH_center(arrayImage[imgID],x,y);
+	}
+	/**
+	* 
+	* @param imgID 
+	* @param x 
+	* @param y 
+	* @param w 
+	* @param h 
+	* @since alpha1.0
+	*/
+	public static final void drawImageTHH_center(int imgID,int x,int y,int w,int h){
+		hq.g2.drawImage(arrayImage[imgID],x - w/2,y - h/2,w,h,hq);
 	}
 	public static final void setImageAlpha() {
 		hq.g2.setComposite(AlphaComposite.SrcOver);

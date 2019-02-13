@@ -204,7 +204,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 			GHQ.translateForGUI(true);
 			int pos = 1;
 			for(THHUnit chara : friends) 
-				GHQ.drawImageTHH(chara.faceIID, pos++*90 + 10, GHQ.getScreenH() - 40, 80, 30);
+				GHQ.drawImageGHQ(chara.faceIID, pos++*90 + 10, GHQ.getScreenH() - 40, 80, 30);
 			GHQ.translateForGUI(false);
 		}
 		if(stopEventKind == NONE) { //scroll
