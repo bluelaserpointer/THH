@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 import core.ErrorCounter;
 import core.GHQ;
+import paint.PaintScript;
 
 public class Terrain extends Structure{
 	protected Polygon polygon;
@@ -67,15 +68,26 @@ public class Terrain extends Structure{
 	}
 	
 	//create-with-blueprint
-	public static void blueprintAddPoint(int x,int y) {
+	public static void blueprint_markPoints(PaintScript paintScript) {
+		for(int i = 0;i < bppx.size();i++)
+			paintScript.paint(bppx.get(i), bppy.get(i));
+	}
+	public static void blueprint_markOrigin(PaintScript paintScript) {
+		if(bppx.size() > 0)
+			paintScript.paint(bppx.get(0), bppy.get(0));
+	}
+	public static boolean blueprint_isOriginPoint(int x,int y) {
+		return bppx.size() >= 3 && x == bppx.get(0) && y == bppy.get(0);
+	}
+	public static void blueprint_addPoint(int x,int y) {
 		bppx.add(x);
 		bppy.add(y);
 	}
-	public static void blueprintClear() {
+	public static void blueprint_clear() {
 		bppx.clear();
 		bppy.clear();
 	}
-	public static Terrain blueprintFlush() {
+	public static Terrain blueprint_flush() {
 		final int[] rx = new int[bppx.size()],ry = new int[rx.length];
 		for(int i = 0;i < rx.length;i++) {
 			rx[i] = bppx.get(i);

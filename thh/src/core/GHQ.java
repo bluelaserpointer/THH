@@ -748,18 +748,25 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 	public void mouseExited(MouseEvent e){
 		ctrlEx.mouseExited(e);
-		}
+	}
+	private GUIParts mousePressedGUIParts;
 	public void mousePressed(MouseEvent e){
+		for(GUIParts parts : guiParts) {
+			if(parts.isEnabled() && parts.isMouseOvered()) {
+				mousePressedGUIParts = parts;
+				break;
+			}
+		}
 		ctrlEx.mousePressed(e);
 	}
 	public void mouseReleased(MouseEvent e){
+		if(mousePressedGUIParts != null && mousePressedGUIParts.isEnabled() && mousePressedGUIParts.isMouseOvered()) {
+			mousePressedGUIParts.clicked();
+			mousePressedGUIParts = null;
+		}
 		ctrlEx.mouseReleased(e);
 	}
 	public void mouseClicked(MouseEvent e){
-		for(GUIParts parts : guiParts) {
-			if(parts.isMouseOvered())
-				parts.clicked();
-		}
 		ctrlEx.mouseClicked(e);
 	}
 	public void mouseMoved(MouseEvent e){
@@ -784,12 +791,15 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final int getMouseScreenY(){
 		return mouseY;
 	}
-	public static final boolean isMouseInArea(int x,int y,int w,int h) {
+	public static final boolean isMouseInArea_Stage(int x,int y,int w,int h) {
 		return abs(x - mouseX + viewX) < w/2 && abs(y - mouseY + viewY) < h/2;
+	}
+	public static final boolean isMouseInArea_Screen(int x,int y,int w,int h) {
+		return abs(x - mouseX) < w/2 && abs(y - mouseY) < h/2;
 	}
 	public final boolean isMouseOnImage(int imgID,int x,int y) {
 		final Image img = arrayImage[imgID];
-		return isMouseInArea(x,y,img.getWidth(null),img.getHeight(null));
+		return isMouseInArea_Stage(x,y,img.getWidth(null),img.getHeight(null));
 	}
 	//キー情報
 	private boolean key_1,key_2,key_3,key_4;
