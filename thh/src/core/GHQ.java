@@ -453,6 +453,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final Unit[] getCharacters_team(int team) {
 		return getCharacters_team(team,true);
 	}
+	public static final Unit[] getCharacters() {
+		final Unit[] unitArray = new Unit[characters.size()];
+		for(int i = 0;i < unitArray.length;i++)
+			unitArray[i] = characters.get(i);
+		return unitArray;
+	}
 	public static final Unit getNearstEnemy(int team,int x,int y) {
 		double nearstDistance = NONE;
 		Unit nearstChara = null;
@@ -537,6 +543,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static ArrayListEx<Structure> getStructureList(){
 		return structures;
+	}
+	public static final Structure[] getStructures() {
+		final Structure[] structureArray = new Structure[structures.size()];
+		for(int i = 0;i < structureArray.length;i++)
+			structureArray[i] = structures.get(i);
+		return structureArray;
 	}
 
 	public static Structure[] getStructures(int team,boolean white){
@@ -1439,5 +1451,30 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		long openTime = System.currentTimeMillis();
 		JOptionPane.showMessageDialog(null,message,title,JOptionPane.WARNING_MESSAGE);
 		return System.currentTimeMillis() - openTime;
+	}
+
+	public static final void saveData(SaveData save,File file) {
+		try{ //データの書き込み
+			if(!file.exists())
+				file.createNewFile();
+			final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
+			oos.writeObject(new SaveHolder(save));
+			oos.close();
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+	public static final SaveData loadData(File file) {
+		if(!file.exists()) {
+			System.out.println("File doesn't exist.");
+			return null;
+		}
+		SaveHolder saveHolder = null;
+		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))){
+			saveHolder = (SaveHolder)ois.readObject();
+		}catch(IOException | ClassNotFoundException e){}
+		if(saveHolder == null)
+			System.out.println("Load Error.");
+		return saveHolder.getData();
 	}
 }

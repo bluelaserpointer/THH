@@ -1,5 +1,7 @@
 package unit;
 
+import java.io.Serializable;
+
 import action.Action;
 import bullet.Bullet;
 import core.Dynam;
@@ -9,7 +11,9 @@ import core.ErrorCounter;
 import core.GHQ;
 import core.MessageSource;
 
-public abstract class Unit extends Entity_double implements MessageSource,DynamInteractable{
+public abstract class Unit extends Entity_double implements MessageSource,DynamInteractable,Serializable{
+	private static final long serialVersionUID = 7140005723063155203L;
+
 	protected static final int
 		//system
 		NONE = GHQ.NONE,

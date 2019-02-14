@@ -1,10 +1,14 @@
 package bullet;
 
+import java.io.Serializable;
+
 import core.Dynam;
 import core.DynamInteractable;
 import core.GHQ;
 
-public class BulletScript {
+public class BulletScript implements Serializable{
+	private static final long serialVersionUID = -6286259077659200260L;
+
 	//generation
 	public final void create(DynamInteractable user) {
 		create(user,user.getDynam());

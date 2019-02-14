@@ -1,10 +1,13 @@
 package unit;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import core.GHQ;
 
-public abstract class TagHolder {
+public abstract class TagHolder implements Serializable{
+	private static final long serialVersionUID = 5735269528773492135L;
+
 	public abstract ArrayList<Tag> getTags();
 }
 

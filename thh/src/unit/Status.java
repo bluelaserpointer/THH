@@ -1,10 +1,12 @@
 package unit;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import core.GHQ;
 
-public class Status {
+public class Status implements Serializable{
+	private static final long serialVersionUID = 1194231397112685499L;
 	private final int parameterDefaults[];
 	private final int parameters[];
 	public final ArrayList<Buff> skillEffects = new ArrayList<Buff>();

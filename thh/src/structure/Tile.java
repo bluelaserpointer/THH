@@ -7,6 +7,7 @@ import core.ErrorCounter;
 import core.GHQ;
 
 public abstract class Tile extends Structure{
+	private static final long serialVersionUID = -1364728656700080343L;
 	protected ArrayList<Integer> tileX = new ArrayList<Integer>();
 	protected ArrayList<Integer> tileY = new ArrayList<Integer>();
 	protected final int TILE_SIZE,

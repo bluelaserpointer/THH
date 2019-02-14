@@ -1,8 +1,11 @@
 package unit;
 
+import java.io.Serializable;
+
 import core.GHQ;
 
-public abstract class Buff {
+public abstract class Buff implements Serializable{
+	private static final long serialVersionUID = -6546281620292643179L;
 	final int INITIAL_FRAME;
 	
 	public Buff() {
@@ -20,6 +23,7 @@ public abstract class Buff {
 	
 	public static Buff getSpanTypeBuff(String buffName,int affectKind,int changes,int spanFrame) {
 		return new Buff() {
+			private static final long serialVersionUID = 9062557653968203855L;
 			@Override
 			public String getName() {
 				return buffName;

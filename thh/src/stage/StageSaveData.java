@@ -27,11 +27,4 @@ public abstract class StageSaveData extends SaveData{
 	public final boolean inStage(int x,int y) {
 		return 0 <= x && x < stageW && 0 <= y && y < stageH;
 	}
-	//role
-	final void loadStage(String url) {
-		
-	}
-	final void writeStage(String url) {
-		
-	}
 }

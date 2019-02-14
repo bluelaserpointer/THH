@@ -2,13 +2,15 @@ package structure;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
+import java.io.Serializable;
 
 import core.Dynam;
 import core.DynamInteractable;
 import core.ErrorCounter;
 import core.GHQ;
 
-public abstract class Structure{
+public abstract class Structure implements Serializable{
+	private static final long serialVersionUID = -641218813005671688L;
 	protected final int
 		NONE = GHQ.NONE;
 	

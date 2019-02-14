@@ -1,8 +1,12 @@
 package action;
 
+import java.io.Serializable;
+
 import core.GHQ;
 
-public class Action{
+public class Action implements Serializable{
+	private static final long serialVersionUID = -552460412467611988L;
+
 	public final ActionSource SOURCE;
 	
 	public String name;

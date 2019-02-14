@@ -1,8 +1,12 @@
 package weapon;
+
+import java.io.Serializable;
+
 /**
  * class for performing character's attack delay
  */
-public class Weapon {
+public class Weapon implements Serializable{
+	private static final long serialVersionUID = -2165271452612401269L;
 	protected final static int 
 		NONE = core.GHQ.NONE,
 		MAX = core.GHQ.MAX;

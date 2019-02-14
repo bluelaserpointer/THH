@@ -11,6 +11,7 @@ import core.GHQ;
 import paint.PaintScript;
 
 public class Terrain extends Structure{
+	private static final long serialVersionUID = 7167638140442836310L;
 	protected Polygon polygon;
 	private int px[],py[];
 	public static ArrayList<Integer> bppx = new ArrayList<Integer>(),bppy = new ArrayList<Integer>();

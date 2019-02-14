@@ -2,6 +2,7 @@ package engine;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.io.File;
 import java.util.Arrays;
 
 import action.Action;
@@ -15,7 +16,6 @@ import paint.ColorFraming;
 import paint.ImageFrame;
 import paint.PaintScript;
 import stage.ControlExpansion;
-import stage.StageSaveData;
 import stage.StageEngine;
 import structure.Structure;
 import structure.Terrain;
@@ -23,7 +23,7 @@ import unit.*;
 
 public class Engine_THH1 extends StageEngine implements MessageSource,ActionSource{
 	private static THHUnit[] friends;
-	private static final StageSaveData[] stages = new StageSaveData[1];
+	private static final Stage_THH1[] stages = new Stage_THH1[1];
 	private int nowStage;
 	private int stageW,stageH;
 	
@@ -101,7 +101,12 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	@Override
 	public final void stageSetup() {
 		stageW = stageH = 5000;
-		GHQ.addStructure(new Terrain(new int[]{0,0,300,400,500,600,700,700},new int[]{650,450,450,350,350,450,450,650}));
+		stages[0] = (Stage_THH1)GHQ.loadData(new File("stage/saveData1.txt"));
+		if(stages[0] != null) {
+			for(Structure structure : stages[0].STRUCTURES) {
+				GHQ.addStructure(structure);
+			}
+		}
 	}
 	@Override
 	public final void openStage() {
@@ -348,6 +353,14 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 					super.paint();
 					if(placeKind == TERRAIN)
 						RED_FRAMING.paint(x, y, w, h);
+				}
+			});
+			GHQ.addGUIParts(new BasicButton(EDIT_MODE_GROUP,new ImageFrame("gui_editor/Save.png"),77,500,85,40) {
+				@Override
+				public void clicked() {
+					System.out.println("saving...");
+					GHQ.saveData(new Stage_THH1(GHQ.getCharacters(),GHQ.getStructures()),new File("stage/saveData1.txt"));
+					System.out.println("complete!");
 				}
 			});
 		}

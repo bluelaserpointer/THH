@@ -1,8 +1,10 @@
 package unit;
 
+import java.io.Serializable;
 import java.util.ArrayDeque;
 
-public class ActionPlan {
+public class ActionPlan implements Serializable{
+	private static final long serialVersionUID = -2290085814867461006L;
 	private ArrayDeque<String> actionsName = new ArrayDeque<String>();
 	private int phase;
 	private int passedFrame;

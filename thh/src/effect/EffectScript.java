@@ -1,10 +1,14 @@
 package effect;
 
+import java.io.Serializable;
+
 import core.Dynam;
 import core.DynamInteractable;
 import core.GHQ;
 
-public class EffectScript {
+public class EffectScript implements Serializable{
+	private static final long serialVersionUID = -7528140745782034400L;
+
 	//generation
 	public final void create(DynamInteractable user) {
 		create(user,user.getDynam());
