@@ -15,6 +15,8 @@ import static java.lang.Math.*;
 import bullet.Bullet;
 import effect.Effect;
 import engine.Engine_THH1;
+import eventListner.KeyListenerEx;
+import eventListner.MouseListenerEx;
 import gui.GUIParts;
 import stage.ControlExpansion;
 import structure.Structure;
@@ -69,6 +71,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		BATTLE = 7000,BATTLE_PAUSE = 7001,
 		EVENT_PART = 8000;
 	private int mainEvent = OPENING;
+	
+	//inputEvent
+	private ArrayList<KeyListenerEx> keyListenerExs = new ArrayList<KeyListenerEx>();
+	private ArrayList<MouseListenerEx> mouseListenerExs = new ArrayList<MouseListenerEx>();
 	
 	//stopEvent
 	private static int stopEventKind = NONE;
@@ -818,10 +824,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static long key_1_time,key_2_time,key_3_time,key_4_time;
 	public static boolean key_W,key_A,key_S,key_D,key_enter;
 	public static boolean key_shift;
-	public static final int[] keyInputFrame = new int[1024];
 	public void keyPressed(KeyEvent e){
 		final int KEY_CODE = e.getKeyCode();
-		keyInputFrame[KEY_CODE] = gameFrame;
+		for(KeyListenerEx ver : keyListenerExs) {
+			if(ver.isEnabled())
+				ver.pressEvent(KEY_CODE);
+		}
 		switch(KEY_CODE){
 		case VK_1:
 			key_1 = true;
@@ -871,7 +879,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		ctrlEx.keyPressed(e);
 	}
 	public void keyReleased(KeyEvent e){
-		switch(e.getKeyCode()){
+		final int KEY_CODE = e.getKeyCode();
+		for(KeyListenerEx ver : keyListenerExs) {
+			if(ver.isEnabled())
+				ver.releaseEvent(KEY_CODE);
+		}
+		switch(KEY_CODE){
 		case VK_1:
 			key_1 = false;
 			break;
@@ -920,9 +933,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			if(mainEvent == BATTLE)
 				mainEvent = BATTLE_PAUSE;
 		}
-	}
-	public int getKeyInputFrame(int keyCode) {
-		return keyInputFrame[keyCode];
 	}
 	
 	//control
@@ -974,7 +984,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return gameFrame;
 	}
 	public static final int getPassedFrame(int frame) {
-		return frame == NONE ? NONE : gameFrame - frame;
+		return frame == NONE ? MAX : gameFrame - frame;
 	}
 	public static final boolean isExpired_frame(int initialFrame,int limitFrame) {
 		return initialFrame == NONE || (gameFrame - initialFrame) >= limitFrame;
@@ -983,7 +993,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return System.currentTimeMillis();
 	}
 	public static final int getPassedTime(long time) {
-		return time == NONE ? NONE : (int)(System.currentTimeMillis() - time);
+		return time == NONE ? MAX : (int)(System.currentTimeMillis() - time);
 	}
 	public static final boolean isExpired_time(long initialFrame,long limitTime) {
 		return initialFrame == NONE || (System.currentTimeMillis() - initialFrame) >= limitTime;
