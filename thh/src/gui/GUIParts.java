@@ -4,11 +4,11 @@ import core.GHQ;
 import paint.PaintScript;
 
 public abstract class GUIParts {
-	public final int GROUP;
+	public final String GROUP;
 	protected boolean isEnabled;
 	protected int x,y,w,h;
 	private final PaintScript PAINT_SCRIPT;
-	public GUIParts(int group,PaintScript paintScript,int x,int y,int w,int h) {
+	public GUIParts(String group,PaintScript paintScript,int x,int y,int w,int h) {
 		GROUP = group;
 		if(paintScript == null)
 			PAINT_SCRIPT = new PaintScript() {};

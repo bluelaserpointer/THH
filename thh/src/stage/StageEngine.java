@@ -23,6 +23,7 @@ public abstract class StageEngine{
 	public abstract void charaSetup();
 	public abstract void stageSetup();
 	public abstract void openStage();
+	public abstract StageSaveData getStageSaveData();
 	
 	//idle
 	public abstract void idle(Graphics2D g2,int stopEventKind);

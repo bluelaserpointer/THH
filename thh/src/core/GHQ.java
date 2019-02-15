@@ -73,7 +73,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	//stopEvent
 	private static int stopEventKind = NONE;
 	public static final int STOP = 0,NO_ANM_STOP = 1;
-	private static boolean messageStop,spellStop;
+	public static boolean messageStop,spellStop;
 	
 	//screen
 	private final int defaultScreenW = 1000,defaultScreenH = 600;
@@ -723,13 +723,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return Arrays.copyOf(foundIDs,foundAmount);
 	}
 	//control-GUI
-	public static final void enableGUIs(int group) {
+	public static final void enableGUIs(String group) {
 		for(GUIParts parts : guiParts) {
 			if(parts.GROUP == group)
 				parts.enable();
 		}
 	}
-	public static final void disableGUIs(int group) {
+	public static final void disableGUIs(String group) {
 		for(GUIParts parts : guiParts) {
 			if(parts.GROUP == group)
 				parts.disable();
@@ -814,10 +814,11 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return isMouseInArea_Stage(x,y,img.getWidth(null),img.getHeight(null));
 	}
 	//キー情報
-	private boolean key_1,key_2,key_3,key_4;
-	private long key_1_time,key_2_time,key_3_time,key_4_time;
-	private boolean key_W,key_A,key_S,key_D,key_enter;
-	private final int[] keyInputFrame = new int[1024];
+	public static boolean key_1,key_2,key_3,key_4;
+	public static long key_1_time,key_2_time,key_3_time,key_4_time;
+	public static boolean key_W,key_A,key_S,key_D,key_enter;
+	public static boolean key_shift;
+	public static final int[] keyInputFrame = new int[1024];
 	public void keyPressed(KeyEvent e){
 		final int KEY_CODE = e.getKeyCode();
 		keyInputFrame[KEY_CODE] = gameFrame;
@@ -853,6 +854,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		case VK_D:
 		case VK_RIGHT:
 			key_D = true;
+			break;
+		case VK_SHIFT:
+			key_shift = true;
 			break;
 		case VK_ENTER:
 			key_enter = true;
@@ -895,6 +899,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		case VK_D:
 		case VK_RIGHT:
 			key_D = false;
+			break;
+		case VK_SHIFT:
+			key_shift = false;
 			break;
 		case VK_ENTER:
 			key_enter = false;

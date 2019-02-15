@@ -4,7 +4,7 @@ import gui.GUIParts;
 import paint.PaintScript;
 
 public abstract class MessageWindow extends GUIParts{
-	public MessageWindow(int group,PaintScript paintScript,int x,int y,int w,int h) {
+	public MessageWindow(String group,PaintScript paintScript,int x,int y,int w,int h) {
 		super(group,paintScript,x,y,w,h);
 	}
 	//role
