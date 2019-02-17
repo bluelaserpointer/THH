@@ -1,4 +1,4 @@
-package eventListner;
+package input;
 
 import com.sun.glass.events.KeyEvent;
 
@@ -7,8 +7,13 @@ import core.GHQ;
 public class SingleNumKeyListener extends KeyListenerEx{
 	private static final long serialVersionUID = -7351066034418156232L;
 	public SingleNumKeyListener(int maxNumber) {
-		super(new int[Math.min(maxNumber + 1, 9)]);
+		super(new int[Math.min(maxNumber + 1, 10)]);
 		for(int i = 0;i <= targetKeys.length;i++)
+			super.targetKeys[i] = KeyEvent.VK_0 + i;
+	}
+	public SingleNumKeyListener() {
+		super(new int[10]);
+		for(int i = 0;i <= 9;i++)
 			super.targetKeys[i] = KeyEvent.VK_0 + i;
 	}
 	@Override
@@ -23,6 +28,15 @@ public class SingleNumKeyListener extends KeyListenerEx{
 		for(int i = 0;i < targetKeys.length;i++) {
 			if(hasKeyEvents.get(i))
 				return i;
+		}
+		return GHQ.NONE;
+	}
+	public final int pullHasEventKeyNum() {
+		for(int i = 0;i < targetKeys.length;i++) {
+			if(hasKeyEvents.get(i)) {
+				hasKeyEvents.clear(i);
+				return i;
+			}
 		}
 		return GHQ.NONE;
 	}

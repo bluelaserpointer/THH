@@ -1,4 +1,4 @@
-package eventListner;
+package input;
 
 public class SingleKeyListener extends KeyListenerEx{
 	private static final long serialVersionUID = -7351066034418156232L;

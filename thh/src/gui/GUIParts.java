@@ -38,7 +38,8 @@ public abstract class GUIParts {
 	public final boolean isMouseOvered() {
 		return GHQ.isMouseInArea_Screen(x, y, w, h);
 	}
-	public abstract void clicked();
+	public void clicked() {}
+	public void outsideClicked() {}
 	public void setXY(int x,int y) {
 		this.x = x;
 		this.y = y;

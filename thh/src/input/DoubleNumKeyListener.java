@@ -1,4 +1,4 @@
-package eventListner;
+package input;
 
 import java.util.Arrays;
 
@@ -11,6 +11,11 @@ public class DoubleNumKeyListener extends SingleNumKeyListener{
 
 	public DoubleNumKeyListener(int maxNumber,int limitSpan) {
 		super(maxNumber);
+		keyInputedFrame = new int[targetKeys.length];
+		Arrays.fill(keyInputedFrame, GHQ.NONE);
+		LIMIT_SPAN = limitSpan;
+	}
+	public DoubleNumKeyListener(int limitSpan) {
 		keyInputedFrame = new int[targetKeys.length];
 		Arrays.fill(keyInputedFrame, GHQ.NONE);
 		LIMIT_SPAN = limitSpan;

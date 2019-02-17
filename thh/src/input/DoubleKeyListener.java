@@ -1,4 +1,4 @@
-package eventListner;
+package input;
 
 import java.util.Arrays;
 

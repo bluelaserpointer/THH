@@ -1,28 +1,27 @@
 package core;
 
+import static java.awt.event.KeyEvent.*;
+import static java.lang.Math.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 import java.awt.geom.*;
-import static java.awt.event.KeyEvent.*;
 import javax.swing.*;
 import java.io.*;
 import java.net.*;
 import java.text.DecimalFormat;
 import java.util.*;
-import static java.lang.Math.*;
 
 import bullet.Bullet;
 import effect.Effect;
 import engine.Engine_THH1;
-import eventListner.KeyListenerEx;
-import eventListner.MouseListenerEx;
 import gui.GUIParts;
-import stage.ControlExpansion;
+import input.KeyListenerEx;
+import input.MouseListenerEx;
 import structure.Structure;
 import stage.StageEngine;
 import unit.Unit;
-
 
 /**
  * 
@@ -73,8 +72,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private int mainEvent = OPENING;
 	
 	//inputEvent
-	private ArrayList<KeyListenerEx> keyListenerExs = new ArrayList<KeyListenerEx>();
-	private ArrayList<MouseListenerEx> mouseListenerExs = new ArrayList<MouseListenerEx>();
+	private static ArrayList<KeyListenerEx> keyListenerExs = new ArrayList<KeyListenerEx>();
+	private static ArrayList<MouseListenerEx> mouseListenerExs = new ArrayList<MouseListenerEx>();
 	
 	//stopEvent
 	private static int stopEventKind = NONE;
@@ -85,9 +84,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private final int defaultScreenW = 1000,defaultScreenH = 600;
 	private static int screenW = 1000,screenH = 600;
 	private static double viewX,viewY,viewDstX,viewDstY;
-
-	//page
-	private static int page,page_max;
 	
 	//frame
 	private static int systemFrame;
@@ -95,7 +91,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//stage
 	private static StageEngine engine;
-	private static ControlExpansion ctrlEx;
 
 	//character data
 	private static final ArrayListEx<Unit> characters = new ArrayListEx<Unit>();
@@ -145,7 +140,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private final MediaTracker tracker;
 	public GHQ(StageEngine engine){
 		GHQ.engine = engine;
-		ctrlEx = engine.getCtrl_ex();
 		hq = this;
 		final long loadTime = System.currentTimeMillis();
 		//window setup
@@ -544,9 +538,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final StageEngine getEngine() {
 		return engine;
 	}
-	public static final ControlExpansion getCtrlEx() {
-		return ctrlEx;
-	}
 	public static ArrayListEx<Structure> getStructureList(){
 		return structures;
 	}
@@ -756,46 +747,64 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//input
 	private static int mouseX,mouseY;
-	private int mousePointing = NONE;
 	
-	public void mouseWheelMoved(MouseWheelEvent e){
-		ctrlEx.mouseWheelMoved(e);
-		}
-	public void mouseEntered(MouseEvent e){
-		ctrlEx.mouseEntered(e);
-		}
-	public void mouseExited(MouseEvent e){
-		ctrlEx.mouseExited(e);
-	}
-	private GUIParts mousePressedGUIParts;
+	public void mouseWheelMoved(MouseWheelEvent e){}
+	public void mouseEntered(MouseEvent e){}
+	public void mouseExited(MouseEvent e){}
 	public void mousePressed(MouseEvent e){
-		for(GUIParts parts : guiParts) {
-			if(parts.isEnabled() && parts.isMouseOvered()) {
-				mousePressedGUIParts = parts;
+		for(MouseListenerEx mle : mouseListenerExs) {
+			if(!mle.isEnabled())
+				continue;
+			switch(e.getButton()) {
+			case MouseEvent.BUTTON1:
+				mle.pressButton1Event();
+				break;
+			case MouseEvent.BUTTON2:
+				mle.pressButton2Event();
+				break;
+			case MouseEvent.BUTTON3:
+				mle.pressButton3Event();
 				break;
 			}
 		}
-		ctrlEx.mousePressed(e);
 	}
 	public void mouseReleased(MouseEvent e){
-		if(mousePressedGUIParts != null && mousePressedGUIParts.isEnabled() && mousePressedGUIParts.isMouseOvered()) {
-			mousePressedGUIParts.clicked();
-			mousePressedGUIParts = null;
+		for(MouseListenerEx mle : mouseListenerExs) {
+			if(!mle.isEnabled())
+				continue;
+			switch(e.getButton()) {
+			case MouseEvent.BUTTON1:
+				mle.pullButton1Event();
+				break;
+			case MouseEvent.BUTTON2:
+				mle.pullButton2Event();
+				break;
+			case MouseEvent.BUTTON3:
+				mle.pullButton3Event();
+				break;
+			}
 		}
-		ctrlEx.mouseReleased(e);
 	}
 	public void mouseClicked(MouseEvent e){
-		ctrlEx.mouseClicked(e);
+		boolean alreadyClicked = false;
+		for(GUIParts parts : guiParts) {
+			if(parts.isEnabled()) {
+				if(alreadyClicked || !parts.isMouseOvered())
+					parts.outsideClicked();
+				else {
+					parts.clicked();
+					alreadyClicked = true;
+				}
+			}
+		}
 	}
 	public void mouseMoved(MouseEvent e){
 		final int x = e.getX(),y = e.getY();
 		mouseX = x;mouseY = y;
-		ctrlEx.mouseMoved(e);
 	}
 	public void mouseDragged(MouseEvent e){
 		final int x = e.getX(),y = e.getY();
 		mouseX = x;mouseY = y;
-		ctrlEx.mouseDragged(e);
 	}
 	public static final int getMouseX(){
 		return mouseX - (int)viewX;
@@ -826,9 +835,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static boolean key_shift;
 	public void keyPressed(KeyEvent e){
 		final int KEY_CODE = e.getKeyCode();
-		for(KeyListenerEx ver : keyListenerExs) {
-			if(ver.isEnabled())
-				ver.pressEvent(KEY_CODE);
+		for(KeyListenerEx kle : keyListenerExs) {
+			if(kle.isEnabled())
+				kle.pressEvent(KEY_CODE);
 		}
 		switch(KEY_CODE){
 		case VK_1:
@@ -876,13 +885,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			freezeScreen = !freezeScreen;
 			break;
 		}
-		ctrlEx.keyPressed(e);
 	}
 	public void keyReleased(KeyEvent e){
 		final int KEY_CODE = e.getKeyCode();
-		for(KeyListenerEx ver : keyListenerExs) {
-			if(ver.isEnabled())
-				ver.releaseEvent(KEY_CODE);
+		for(KeyListenerEx kle : keyListenerExs) {
+			if(kle.isEnabled())
+				kle.releaseEvent(KEY_CODE);
 		}
 		switch(KEY_CODE){
 		case VK_1:
@@ -920,11 +928,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			key_enter = false;
 			break;
 		}
-		ctrlEx.keyReleased(e);
 	}
-	public void keyTyped(KeyEvent e){
-		ctrlEx.keyTyped(e);
-	}
+	public void keyTyped(KeyEvent e){}
 	private final class MyWindowAdapter extends WindowAdapter{
 		public void windowClosing(WindowEvent e){
 			System.exit(0);
@@ -978,6 +983,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final void addGUIParts(GUIParts guiParts) {
 		GHQ.guiParts.add(guiParts);
+	}
+	public static final void addListenerEx(MouseListenerEx mle) {
+		mouseListenerExs.add(mle);
+	}
+	public static final void addListenerEx(KeyListenerEx kle) {
+		keyListenerExs.add(kle);
 	}
 
 	public static final int getNowFrame() {

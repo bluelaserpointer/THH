@@ -1,4 +1,4 @@
-package eventListner;
+package input;
 
 import java.io.Serializable;
 
@@ -6,13 +6,14 @@ public class MouseListenerEx implements Serializable{
 	private static final long serialVersionUID = 2878445766577630707L;
 
 	protected boolean button1,button2,button3;
-	public void setButton1Event() {
+	private boolean isEnabled;
+	public void pressButton1Event() {
 		button1 = true;
 	}
-	public void setButton2Event() {
+	public void pressButton2Event() {
 		button2 = true;
 	}
-	public void setButton3Event() {
+	public void pressButton3Event() {
 		button3 = true;
 	}
 	public final boolean hasButton1Event() {
@@ -44,6 +45,16 @@ public class MouseListenerEx implements Serializable{
 			return true;
 		}
 		return false;
+	}
+	public final boolean isEnabled() {
+		return isEnabled;
+	}
+	public final void enable() {
+		isEnabled = true;
+	}
+	public final void disable() {
+		isEnabled = false;
+		reset();
 	}
 	public void reset() {
 		button1 = button2 = button3 = false;

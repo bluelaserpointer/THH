@@ -1,5 +1,7 @@
 package engine;
 
+import static java.awt.event.KeyEvent.*;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.File;
@@ -12,7 +14,10 @@ import bullet.Bullet;
 import core.GHQ;
 import core.MessageSource;
 import gui.DefaultStageEditor;
-import stage.ControlExpansion;
+import input.DoubleNumKeyListener;
+import input.MouseListenerEx;
+import input.SingleKeyListener;
+import input.SingleNumKeyListener;
 import stage.StageEngine;
 import stage.StageSaveData;
 import structure.Structure;
@@ -33,11 +38,32 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	public String getVersion() {
 		return "alpha1.0.0";
 	}
+	//inputEvnet
+	private final int inputKeys[] = 
+	{
+		VK_W,
+		VK_A,
+		VK_S,
+		VK_D,
+		VK_Q,
+		VK_E,
+		VK_R,
+		VK_F,
+		VK_G,
+		VK_TAB,
+		VK_SHIFT,
+		VK_SPACE,
+		VK_ESCAPE,
+		VK_F6,
+	};
+	private final MouseListenerEx sml = new MouseListenerEx();
+	private final SingleKeyListener skl = new SingleKeyListener(inputKeys);
+	private final SingleNumKeyListener snkl = new SingleNumKeyListener();
+	private final DoubleNumKeyListener dnkl = new DoubleNumKeyListener(20);
+	
 	//images
 	//stageObject
 	private int vegImageIID[] = new int[5];
-	
-	private static final CtrlEx_THH1 ctrlEx = new CtrlEx_THH1();
 	
 	int focusIID,magicCircleIID;
 	
@@ -52,10 +78,6 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	public static void main(String args[]){
 		new GHQ(new Engine_THH1());
 	}
-	@Override
-	public final ControlExpansion getCtrl_ex() {
-		return ctrlEx;
-	}
 	
 	@Override
 	public final void loadResource() {
@@ -67,6 +89,10 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		vegImageIID[3] = GHQ.loadImage("veg_stone.png");
 		vegImageIID[4] = GHQ.loadImage("veg_leaf3.png");
 		DefaultStageEditor.init(new File("stage/saveData1.txt"));
+		GHQ.addListenerEx(sml);
+		GHQ.addListenerEx(skl);
+		GHQ.addListenerEx(snkl);
+		GHQ.addListenerEx(dnkl);
 	}
 	@Override
 	public final void charaSetup() {
@@ -108,6 +134,10 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	@Override
 	public final void openStage() {
 		GHQ.addMessage(this,"This is a prototype stage.");
+		sml.enable();
+		skl.enable();
+		snkl.enable();
+		dnkl.enable();
 	}
 	@Override
 	public final StageSaveData getStageSaveData() {
@@ -175,7 +205,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 					}
 				}
 				//leap
-				if(ctrlEx.getCommandBool(CtrlEx_THH1.LEAP)){
+				if(skl.hasEvent(VK_SHIFT)){
 					//final int DX = MOUSE_X - formationCenterX,DY = MOUSE_Y - formationCenterY;
 					//if(DX*DX + DY*DY < 5000) {
 						formationCenterX = MOUSE_X;formationCenterY = MOUSE_Y;
@@ -187,11 +217,12 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 				}
 				//shot
 				for(Unit chara : friends)
-					chara.attackOrder = ctrlEx.getCommandBool(CtrlEx_THH1.SHOT);
+					chara.attackOrder = sml.hasButton1Event();
 				//spell
 				{
 					int spellUser;
-					while((spellUser = ctrlEx.pullSpellUser()) != NONE) {
+					while((spellUser = dnkl.pullHasEventKeyNum()) != NONE) {
+						spellUser -= 1;
 						if(spellUser < friends.length)
 							friends[spellUser].spellOrder = true;
 					}
@@ -207,7 +238,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		g2.drawLine(formationCenterX,formationCenterY,MOUSE_X,MOUSE_Y);
 		GHQ.drawImageTHH_center(focusIID,MOUSE_X,MOUSE_Y);
 		//editor
-		if(ctrlEx.pullCommandBool(CtrlEx_THH1.EDIT_MODE)) {
+		if(skl.pullEvent(VK_F6)) {
 			if(editMode) {
 				editMode = false;
 				GHQ.disableGUIs(DefaultStageEditor.EDIT_MODE_GROUP);
@@ -229,20 +260,20 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		}
 		if(stopEventKind == NONE || editMode) { //scroll
 			//scroll by keys
-			if(ctrlEx.getCommandBool(CtrlEx_THH1.UP)) {
+			if(skl.hasEvent(VK_W)) {
 				formationCenterY -= F_MOVE_SPD;
 				GHQ.viewTargetMove(0,-F_MOVE_SPD);
 				GHQ.pureViewMove(0,-F_MOVE_SPD);
-			}else if(ctrlEx.getCommandBool(CtrlEx_THH1.DOWN)) {
+			}else if(skl.hasEvent(VK_S)) {
 				formationCenterY += F_MOVE_SPD;
 				GHQ.viewTargetMove(0,F_MOVE_SPD);
 				GHQ.pureViewMove(0,F_MOVE_SPD);
 			}
-			if(ctrlEx.getCommandBool(CtrlEx_THH1.LEFT)) {
+			if(skl.hasEvent(VK_A)) {
 				formationCenterX -= F_MOVE_SPD;
 				GHQ.viewTargetMove(-F_MOVE_SPD,0);
 				GHQ.pureViewMove(-F_MOVE_SPD,0);
-			}else if(ctrlEx.getCommandBool(CtrlEx_THH1.RIGHT)) {
+			}else if(skl.hasEvent(VK_D)) {
 				formationCenterX += F_MOVE_SPD;
 				GHQ.viewTargetMove(F_MOVE_SPD,0);
 				GHQ.pureViewMove(F_MOVE_SPD,0);

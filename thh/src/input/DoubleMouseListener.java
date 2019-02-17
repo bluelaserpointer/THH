@@ -1,4 +1,4 @@
-package eventListner;
+package input;
 
 import core.GHQ;
 
@@ -11,21 +11,21 @@ public class DoubleMouseListener extends MouseListenerEx{
 		LIMIT_SPAN = limitSpan;
 	}
 	@Override
-	public void setButton1Event() {
+	public void pressButton1Event() {
 		if(!GHQ.isExpired_frame(button1PressedFrame,LIMIT_SPAN))
 			super.button1 = true;
 		else
 			button1PressedFrame = GHQ.getNowFrame();
 	}
 	@Override
-	public void setButton2Event() {
+	public void pressButton2Event() {
 		if(!GHQ.isExpired_frame(button2PressedFrame,LIMIT_SPAN))
 			super.button2 = true;
 		else
 			button2PressedFrame = GHQ.getNowFrame();
 	}
 	@Override
-	public void setButton3Event() {
+	public void pressButton3Event() {
 		if(!GHQ.isExpired_frame(button3PressedFrame,LIMIT_SPAN))
 			super.button3 = true;
 		else
