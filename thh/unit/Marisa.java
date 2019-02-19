@@ -214,7 +214,7 @@ public class Marisa extends THHUnit{
 		bulletScripts[MILLKY_WAY] = BulletBlueprint.DEFAULT_SCRIPT;
 		bulletScripts[NARROW_SPARK] = new BulletScript() {
 			@Override
-			public final void bulletIdle(Bullet bullet) {
+			public final void idle(Bullet bullet) {
 				bullet.lifeSpanCheck();
 				int count = 0;
 				while(bullet.dynam.inStage()) {
@@ -232,7 +232,7 @@ public class Marisa extends THHUnit{
 		};
 		bulletScripts[REUSE_BOMB] = new BulletScript() {
 			@Override
-			public final void bulletIdle(Bullet bullet) {
+			public final void idle(Bullet bullet) {
 				bullet.defaultIdle();
 				bullet.dynam.addSpeed(0.0,1.1);
 				bullet.defaultPaint();
@@ -242,11 +242,11 @@ public class Marisa extends THHUnit{
 		};
 		bulletScripts[MAGIC_MISSILE] = new BulletScript() {
 			@Override
-			public final void bulletIdle(Bullet bullet) {
+			public final void idle(Bullet bullet) {
 				for(int i = 0;i < 2;i++)
 					setEffect(MISSILE_TRACE1_EF,bullet);
 				setEffect(MISSILE_TRACE2_EF,bullet);
-				super.bulletIdle(bullet);
+				super.idle(bullet);
 			}
 			@Override
 			public final void bulletHitObject(Bullet bullet) {
@@ -258,23 +258,23 @@ public class Marisa extends THHUnit{
 	{
 		effectScripts[MISSILE_TRACE1_EF] = new EffectScript() {
 			@Override
-			public final void effectNoAnmPaint(Effect effect) {
+			public final void noAnmPaint(Effect effect) {
 				effectFadePaint(effect);
 			}
 		};
 		effectScripts[MISSILE_TRACE2_EF] = new EffectScript() {
 			@Override
-			public final void effectNoAnmPaint(Effect effect) {
+			public final void noAnmPaint(Effect effect) {
 				GHQ.setImageAlpha((float)(1.0 - (double)GHQ.getPassedFrame(effect.INITIAL_FRAME)/effect.LIMIT_FRAME));
-				super.effectNoAnmPaint(effect);
+				super.noAnmPaint(effect);
 				GHQ.setImageAlpha();
 			}
 		};
 		effectScripts[MISSILE_HIT_EF] = new EffectScript() {
 			@Override
-			public final void effectNoAnmPaint(Effect effect) {
+			public final void noAnmPaint(Effect effect) {
 				GHQ.setImageAlpha((float)(1.0 - (double)GHQ.getPassedFrame(effect.INITIAL_FRAME)/effect.LIMIT_FRAME));
-				super.effectNoAnmPaint(effect);
+				super.noAnmPaint(effect);
 				GHQ.setImageAlpha();
 			}
 		};

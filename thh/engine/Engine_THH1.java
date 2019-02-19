@@ -153,24 +153,19 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		g2.setColor(new Color(112,173,71));
 		g2.fillRect(0,0,stageW,stageH);
 		//landscape
-		g2.setColor(Color.LIGHT_GRAY);
 		for(Structure ver : GHQ.getStructureList())
-			ver.doFill(g2);
-		g2.setColor(Color.GRAY);
-		g2.setStroke(GHQ.stroke3);
-		for(Structure ver : GHQ.getStructureList())
-			ver.doDraw(g2);
-		//vegitation
-		GHQ.drawImageTHH_center(vegImageIID[3], 1172, 886,1.3);
-		GHQ.drawImageTHH_center(vegImageIID[0], 1200, 800,1.0);
-		GHQ.drawImageTHH_center(vegImageIID[0], 1800, 350,1.4);
-		GHQ.drawImageTHH_center(vegImageIID[0], 1160, 870,1.7);
-		GHQ.drawImageTHH_center(vegImageIID[1], 1180, 830,1.3);
-		GHQ.drawImageTHH_center(vegImageIID[2], 1102, 815,1.3);
-		GHQ.drawImageTHH_center(vegImageIID[2], 1122, 826,1.3);
-		GHQ.drawImageTHH_center(vegImageIID[4], 822, 886,1.3);
+			ver.paint();
+		//Vegetation
+		GHQ.drawImageGHQ_center(vegImageIID[3], 1172, 886,1.3);
+		GHQ.drawImageGHQ_center(vegImageIID[0], 1200, 800,1.0);
+		GHQ.drawImageGHQ_center(vegImageIID[0], 1800, 350,1.4);
+		GHQ.drawImageGHQ_center(vegImageIID[0], 1160, 870,1.7);
+		GHQ.drawImageGHQ_center(vegImageIID[1], 1180, 830,1.3);
+		GHQ.drawImageGHQ_center(vegImageIID[2], 1102, 815,1.3);
+		GHQ.drawImageGHQ_center(vegImageIID[2], 1122, 826,1.3);
+		GHQ.drawImageGHQ_center(vegImageIID[4], 822, 886,1.3);
 		////////////////
-		GHQ.drawImageTHH_center(magicCircleIID, formationCenterX, formationCenterY, (double)GHQ.getNowFrame()/35.0);
+		GHQ.drawImageGHQ_center(magicCircleIID, formationCenterX, formationCenterY, (double)GHQ.getNowFrame()/35.0);
 		g2.setColor(Color.RED);
 		g2.fillOval(formationCenterX - 2, formationCenterY - 2, 5, 5);
 		////////////////
@@ -236,7 +231,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		g2.setColor(new Color(200,120,10,100));
 		g2.setStroke(GHQ.stroke3);
 		g2.drawLine(formationCenterX,formationCenterY,MOUSE_X,MOUSE_Y);
-		GHQ.drawImageTHH_center(focusIID,MOUSE_X,MOUSE_Y);
+		GHQ.drawImageGHQ_center(focusIID,MOUSE_X,MOUSE_Y);
 		//editor
 		if(skl.pullEvent(VK_F6)) {
 			if(editMode) {

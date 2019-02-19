@@ -16,14 +16,14 @@ public class BulletScript implements Serializable{
 	public void create(DynamInteractable user,Dynam baseDynam) {}
 	
 	//role
-	public void bulletIdle(Bullet bullet) { //Include painting
+	public void idle(Bullet bullet) { //Include painting
 		if(bullet.defaultIdle())
-			bulletNoAnmPaint(bullet);
+			noAnmPaint(bullet);
 	}
-	public void bulletPaint(Bullet bullet) {
-		this.bulletNoAnmPaint(bullet);
+	public void paint(Bullet bullet) {
+		this.noAnmPaint(bullet);
 	}
-	public void bulletNoAnmPaint(Bullet bullet) {
+	public void noAnmPaint(Bullet bullet) {
 		bullet.defaultPaint();
 	}
 	

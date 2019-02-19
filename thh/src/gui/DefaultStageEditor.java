@@ -1,56 +1,132 @@
 package gui;
 
+import static java.awt.event.KeyEvent.*;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
+import java.util.ArrayList;
 
 import core.GHQ;
+import core.HasBody;
+import input.SingleKeyListener;
+import paint.ColorFilling;
 import paint.ColorFraming;
 import paint.ImageFrame;
 import paint.PaintScript;
+import structure.Structure;
+import structure.StructureScript;
 import structure.Terrain;
+import structure.Tile;
+import unit.Unit;
 
 public class DefaultStageEditor {
+	private static ArrayList<StructureScript<Tile>> tileScripts = new ArrayList<StructureScript<Tile>>();
+	private static ArrayList<StructureScript<Terrain>> terrainScripts = new ArrayList<StructureScript<Terrain>>();
+	//private static ArrayList<StructureScript<Terrain>> unitScripts = new ArrayList<StructureScript<Terrain>>();
+	
+	static {
+		//tileScripts
+		tileScripts.add(new StructureScript<Tile>() {
+			private static final long serialVersionUID = -1082801436030177586L;
+			@Override
+			public String getName() {
+				return "WHITE_WALL";
+			}
+			@Override
+			public void paint(Tile tile,boolean doAnimation) {
+				tile.fill(Color.WHITE);
+				tile.draw(Color.LIGHT_GRAY, GHQ.stroke3);
+			}
+		});
+		//terrainScripts
+		terrainScripts.add(new StructureScript<Terrain>() {
+			private static final long serialVersionUID = -1082801436030177586L;
+			@Override
+			public String getName() {
+				return "WHITE_WALL";
+			}
+			@Override
+			public void paint(Terrain terrain,boolean doAnimation) {
+				terrain.fill(Color.WHITE);
+				terrain.draw(Color.LIGHT_GRAY, GHQ.stroke3);
+			}
+		});
+	}
+	//input
+	private static final int inputKeys[] = 
+	{
+		VK_BACK_SPACE,
+		VK_C,
+		VK_V,
+		VK_CONTROL,
+	};
+	private static final SingleKeyListener keyListener = new SingleKeyListener(inputKeys);
+	
 	private static int placeX,placeY;
 	
-	private static final byte
-		NOTHING = -1,
+	private static final int
+		POINTING = -1,
 		TERRAIN = 0,
 		TILES = 1,
-		ENEMY = 2,
+		UNIT = 2,
 		ITEM = 3;
-	private static byte placeKind = NOTHING;
+	private static int placeKind = POINTING;
+	private static HasBody selectObject,mouseOveredObject;
 	//GUI_GROUP_ID
 	public static final String
 		EDIT_MODE_GROUP = "EDIT_MODE_GROUP";
+	//GUI
+	private static TitledLabel scriptLabel;
 	//PaintScripts
 	private static final PaintScript RED_FRAMING = new ColorFraming(Color.RED,GHQ.stroke3);
 	//loadResource
 	public static void init(File stageFile) {
 		final int SCREEN_W = GHQ.getScreenW(),SCREEN_H = GHQ.getScreenH();
-		GHQ.addGUIParts(new BasicButton(EDIT_MODE_GROUP,null,150 + (SCREEN_W - 150)/2,SCREEN_H/2,SCREEN_W - 150,SCREEN_H) {
+		GHQ.addListenerEx(keyListener);
+		GHQ.addGUIParts(new BasicButton(EDIT_MODE_GROUP,new ColorFraming(Color.WHITE,GHQ.stroke3),150,0,SCREEN_W - 150,SCREEN_H) {
 			@Override
 			public void clicked() {
-				switch(placeKind) {
-				case TERRAIN:
-					if(Terrain.blueprint_isOriginPoint(placeX, placeY))
-						GHQ.addStructure(Terrain.blueprint_flush());
+				if(placeKind == POINTING) {
+					selectObject = mouseOveredObject;
+					keyListener.enable();
+					final String scriptName;
+					if(selectObject instanceof Tile)
+						scriptName = ((Tile)selectObject).script.getName();
+					else if(selectObject instanceof Terrain)
+						scriptName = ((Terrain)selectObject).script.getName();
 					else
-						Terrain.blueprint_addPoint(placeX, placeY);
-					break;
-				case TILES:
-					break;
-				case ENEMY:
-					break;
-				case ITEM:
-					break;
+						scriptName = "";
+					scriptLabel.setText(scriptName.equals(GHQ.NOT_NAMED) ? "" : scriptName);
+				}else {
+					selectObject = null;
+					keyListener.disable();
+					switch(placeKind) {
+					case TERRAIN:
+						if(Terrain.blueprint_isOriginPoint(placeX, placeY))
+							GHQ.addStructure(Terrain.blueprint_flush());
+						else
+							Terrain.blueprint_addPoint(placeX, placeY);
+						break;
+					case TILES:
+						if(Tile.blueprint_hasOriginPoint())
+							GHQ.addStructure(Tile.blueprint_addEndPointAndFlush(placeX, placeY));
+						else
+							Tile.blueprint_addOriginPoint(placeX, placeY);
+						break;
+					case UNIT:
+						break;
+					case ITEM:
+						break;
+					}
 				}
 			}
 		});
 		GHQ.addGUIParts(new BasicButton(EDIT_MODE_GROUP,new ImageFrame("gui_editor/Tiles.png"),55,155,40,40) {
 			@Override
 			public void clicked() {
-				placeKind = (placeKind == TILES ? NOTHING : TILES);
+				placeKind = (placeKind == TILES ? POINTING : TILES);
 			}
 			@Override
 			public void paint() {
@@ -62,7 +138,7 @@ public class DefaultStageEditor {
 		GHQ.addGUIParts(new BasicButton(EDIT_MODE_GROUP,new ImageFrame("gui_editor/FreeShape.png"),100,155,40,40) {
 			@Override
 			public void clicked() {
-				placeKind = (placeKind == TERRAIN ? NOTHING : TERRAIN);
+				placeKind = (placeKind == TERRAIN ? POINTING : TERRAIN);
 			}
 			@Override
 			public void paint() {
@@ -71,7 +147,7 @@ public class DefaultStageEditor {
 					RED_FRAMING.paint(x, y, w, h);
 			}
 		});
-		GHQ.addGUIParts(new BasicButton(EDIT_MODE_GROUP,new ImageFrame("gui_editor/Save.png"),77,500,85,40) {
+		GHQ.addGUIParts(new BasicButton(EDIT_MODE_GROUP,new ImageFrame("gui_editor/Save.png"),55,500,85,40) {
 			@Override
 			public void clicked() {
 				System.out.println("saving...");
@@ -79,6 +155,9 @@ public class DefaultStageEditor {
 				System.out.println("complete!");
 			}
 		});
+		GHQ.<TitledLabel>addGUIParts(scriptLabel = new TitledLabel(EDIT_MODE_GROUP,new ColorFilling(Color.WHITE),55,300,85,25){
+			
+		}).setTitle("Scripts:");
 	}
 	//role
 	public static void idle(Graphics2D g2) {
@@ -100,11 +179,66 @@ public class DefaultStageEditor {
 			placeX = GHQ.getMouseX();
 			placeY = GHQ.getMouseY();
 		}
-		//origin
+		//guide
 		switch(placeKind) {
+		case POINTING:
+			mouseOveredObject = GHQ.getMouseOverChara();
+			if(mouseOveredObject == null)
+				mouseOveredObject = GHQ.getMouseOverStructure();
+			if(mouseOveredObject != null && mouseOveredObject != selectObject) {
+				final Rectangle2D RECT = mouseOveredObject.getBoundingBox();
+				g2.setColor(Color.WHITE);
+				g2.setStroke(GHQ.stroke5);
+				g2.draw(RECT);
+				g2.drawOval((int)RECT.getX() - 9,(int)RECT.getY() - 9,18,18);
+				g2.drawOval(GHQ.getMouseX() - 5,GHQ.getMouseY() - 5,10,10);
+			}
+			if(selectObject != null) {
+				//delete
+				if(!scriptLabel.activated && keyListener.pullEvent(VK_BACK_SPACE)) {
+					if(selectObject instanceof Unit)
+						GHQ.deleteChara((Unit)selectObject);
+					else if(selectObject instanceof Structure)
+						GHQ.deleteStructure((Structure)selectObject);
+					selectObject = null;
+					break;
+				}
+				//script install
+				scriptInstall:{
+					if(selectObject instanceof Tile) {
+						for(StructureScript<Tile> script : tileScripts) {
+							if(scriptLabel.textEquals(script.getName())) {
+								((Tile)selectObject).setScript(script);
+								break scriptInstall;
+							}
+						}
+						((Tile)selectObject).setScript(new StructureScript<Tile>());
+					}else if(selectObject instanceof Terrain) {
+						for(StructureScript<Terrain> script : terrainScripts) {
+							if(scriptLabel.textEquals(script.getName())) {
+								((Terrain)selectObject).setScript(script);
+								break scriptInstall;
+							}
+						}
+						((Terrain)selectObject).setScript(new StructureScript<Terrain>());
+					}
+				}
+				//draw selection guide
+				final Rectangle2D RECT = selectObject.getBoundingBox();
+				RECT.setRect(RECT.getX(),RECT.getY(),RECT.getWidth() + 4,RECT.getHeight() + 4);
+				g2.setColor(Color.WHITE);
+				g2.setStroke(GHQ.stroke5);
+				g2.draw(RECT);
+				g2.setColor(Color.RED);
+				g2.setStroke(GHQ.stroke3);
+				g2.draw(RECT);
+				break;
+			}
 		case TERRAIN:
-			Terrain.blueprint_markPoints(new ColorFraming(Color.ORANGE,GHQ.stroke1,4,4));
-			Terrain.blueprint_markOrigin(new ColorFraming(Color.ORANGE,GHQ.stroke1,8,8));
+			Terrain.makeGuiding(g2);
+			break;
+		case TILES:
+			Tile.makeGuiding(g2);
 			break;
 		}
 		//GUI
@@ -112,5 +246,13 @@ public class DefaultStageEditor {
 		g2.setColor(Color.WHITE);
 		g2.drawString("EDIT_MODE", 20, 20);
 		GHQ.translateForGUI(false);
+	}
+	
+	//control
+	public static void addTileScript(StructureScript<Tile> script) {
+		tileScripts.add(script);
+	}
+	public static void addTerrainScript(StructureScript<Terrain> script) {
+		terrainScripts.add(script);
 	}
 }

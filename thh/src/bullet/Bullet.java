@@ -165,7 +165,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	}
 	@Override
 	public final void defaultPaint() {
-		GHQ.drawImageTHH_center(IMAGE_ID, (int)dynam.getX(),(int)dynam.getY(), dynam.getAngle());
+		GHQ.drawImageGHQ_center(IMAGE_ID, (int)dynam.getX(),(int)dynam.getY(), dynam.getAngle());
 	}
 	//tool
 	public void split_xMirror(double dx,double dy) {

@@ -16,14 +16,14 @@ public class EffectScript implements Serializable{
 	public void create(DynamInteractable user,Dynam baseDynam) {}
 	
 	//idle
-	public void effectIdle(Effect effect) { //Include painting
+	public void idle(Effect effect) { //Include painting
 		if(effect.defaultIdle())
-			effectNoAnmPaint(effect);
+			noAnmPaint(effect);
 	}
-	public void effectPaint(Effect effect) {
-		this.effectNoAnmPaint(effect);
+	public void paint(Effect effect) {
+		this.noAnmPaint(effect);
 	}
-	public void effectNoAnmPaint(Effect effect) {
+	public void noAnmPaint(Effect effect) {
 		effect.defaultPaint();
 	}
 	

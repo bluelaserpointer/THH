@@ -1,5 +1,6 @@
 package unit;
 
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
 import action.Action;
@@ -10,8 +11,9 @@ import core.Entity_double;
 import core.ErrorCounter;
 import core.GHQ;
 import core.MessageSource;
+import core.HasBody;
 
-public abstract class Unit extends Entity_double implements MessageSource,DynamInteractable,Serializable{
+public abstract class Unit extends Entity_double implements MessageSource,DynamInteractable,Serializable,HasBody{
 	private static final long serialVersionUID = 7140005723063155203L;
 
 	protected static final int
@@ -96,6 +98,11 @@ public abstract class Unit extends Entity_double implements MessageSource,DynamI
 	public abstract void loadActionPlan(Action action);
 	//judge
 	public abstract boolean bulletEngage(Bullet bullet);
+	@Override
+	public Rectangle2D getBoundingBox() {
+		final int DEFAULT_SIZE = 80;
+		return new Rectangle2D.Double(dynam.getX() - DEFAULT_SIZE/2,dynam.getY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
+	}
 	//hp
 	public abstract void setHP(int hp);
 	//decrease

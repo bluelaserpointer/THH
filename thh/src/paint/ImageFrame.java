@@ -12,10 +12,10 @@ public class ImageFrame implements PaintScript{
 	}
 	@Override
 	public void paint(int x,int y) {
-		GHQ.drawImageTHH_center(IMAGE_IID, x, y);
+		GHQ.drawImageGHQ_center(IMAGE_IID, x, y);
 	}
 	@Override
 	public void paint(int x,int y,int w,int h) {
-		GHQ.drawImageTHH_center(IMAGE_IID, x, y, w, h);
+		GHQ.drawImageGHQ(IMAGE_IID, x, y, w, h);
 	}
 }

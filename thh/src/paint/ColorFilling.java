@@ -2,22 +2,18 @@ package paint;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 
 import core.GHQ;
 
-public class ColorFraming implements PaintScript{
+public class ColorFilling implements PaintScript{
 	private final Color COLOR;
-	private final Stroke STROKE;
 	private final int w,h;
-	public ColorFraming(Color color,Stroke stroke) {
+	public ColorFilling(Color color) {
 		COLOR = color;
-		STROKE = stroke;
 		w = h = 5;
 	}
-	public ColorFraming(Color color,Stroke stroke,int w,int h) {
+	public ColorFilling(Color color,int w,int h) {
 		COLOR = color;
-		STROKE = stroke;
 		this.w = w;
 		this.h = h;
 	}
@@ -25,14 +21,12 @@ public class ColorFraming implements PaintScript{
 	public void paint(int x, int y, int w, int h) {
 		final Graphics2D G2 = GHQ.getGraphics2D();
 		G2.setColor(COLOR);
-		G2.setStroke(STROKE);
-		G2.drawRect(x, y, w, h);
+		G2.fillRect(x, y, w, h);
 	}
 	@Override
 	public void paint(int x, int y) {
 		final Graphics2D G2 = GHQ.getGraphics2D();
 		G2.setColor(COLOR);
-		G2.setStroke(STROKE);
-		G2.drawRect(x, y, w, h);
+		G2.fillRect(x, y, w, h);
 	}
 }

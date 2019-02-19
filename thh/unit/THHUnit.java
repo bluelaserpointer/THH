@@ -1,6 +1,8 @@
 package unit;
 
 
+import java.awt.geom.Rectangle2D;
+
 import action.Action;
 import action.ActionInfo;
 import bullet.Bullet;
@@ -10,7 +12,7 @@ import unit.Unit;
 import weapon.Weapon;
 
 public abstract class THHUnit extends Unit {
-
+	private static final long serialVersionUID = 6736932836274080528L;
 	public int charaSize;
 	public double charaDstX, charaDstY, charaSpeed = 30;
 	public boolean charaOnLand;
@@ -127,13 +129,13 @@ public abstract class THHUnit extends Unit {
 		if(status.get(HP) <= 0)
 			return;
 		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
-		GHQ.drawImageTHH_center(charaIID, X, Y);
+		GHQ.drawImageGHQ_center(charaIID, X, Y);
 		GHQ.paintHPArc(X, Y, 20,status.get(HP), status.getDefault(HP));
 	}
 	protected final void paintMode_magicCircle(int magicCircleIID) {
 		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
-		GHQ.drawImageTHH_center(magicCircleIID, X, Y, (double)GHQ.getNowFrame()/35.0);
-		GHQ.drawImageTHH_center(charaIID, X, Y);
+		GHQ.drawImageGHQ_center(magicCircleIID, X, Y, (double)GHQ.getNowFrame()/35.0);
+		GHQ.drawImageGHQ_center(charaIID, X, Y);
 	}
 	
 	// control
@@ -197,7 +199,11 @@ public abstract class THHUnit extends Unit {
 		return status.ifOver0(HP) && dynam.squreCollision(bullet.dynam,(charaSize + bullet.SIZE)/2)
 				&& (bullet.team == status.get(TEAM) ^ bullet.atk >= 0);
 	}
-	// hp
+	@Override
+	public Rectangle2D getBoundingBox() {
+		return new Rectangle2D.Double(dynam.getX() - charaSize/2,dynam.getY() - charaSize/2,charaSize,charaSize);
+	}
+	// HP
 	@Override
 	public final void setHP(int hp) {
 		status.set(HP, hp);

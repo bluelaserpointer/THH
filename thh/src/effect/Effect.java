@@ -71,7 +71,7 @@ public class Effect extends Entity_double{
 	}
 	@Override
 	public final void defaultPaint() {
-		GHQ.drawImageTHH_center(IMAGE_ID, (int)dynam.getX(), (int)dynam.getY(), dynam.getAngle());
+		GHQ.drawImageGHQ_center(IMAGE_ID, (int)dynam.getX(), (int)dynam.getY(), dynam.getAngle());
 	}
 	
 	//tool

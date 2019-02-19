@@ -1,50 +1,34 @@
 package structure;
 
-import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.io.Serializable;
 
 import core.Dynam;
 import core.DynamInteractable;
-import core.ErrorCounter;
 import core.GHQ;
+import core.HasBody;
 
-public abstract class Structure implements Serializable{
+public abstract class Structure implements Serializable,HasBody{
 	private static final long serialVersionUID = -641218813005671688L;
 	protected final int
 		NONE = GHQ.NONE;
 	
-	public final void idle(int stopLevel) {
-		switch(stopLevel) {
-		case 0:
-			activeCons();
-		case 1:
-			passiveCons();
-		case 2:
-			dynam();
-		case 3:
-			paint(true);
-			break;
-		case 4:
-			paint(false);
-			break;
-		case 5:
-			break;
-		default:
-			ErrorCounter.put("Tile.idle�β���ʹ��:\"" + stopLevel + "\"");
-		}
+	public boolean defaultIdle() {
+		return true;
 	}
+	public abstract void defaultPaint();
 	public void activeCons() {};
 	public void passiveCons() {};
 	public void dynam() {};
-	public void paint(boolean doAnimation) {};
-	
+	public abstract void paint(boolean doAnimation);
+	public final void paint() {
+		paint(true);
+	}
 	//role
-	public abstract void doFill(Graphics2D g2);
-	public abstract void doDraw(Graphics2D g2);
 	
 	//information
 	public abstract boolean contains(int x,int y,int w,int h);
+	public abstract boolean contains(int x,int y);
 	public boolean hit(int team,int x,int y,int w,int h) {
 		return GHQ.isRival(team,getTeam()) && contains(x,y,w,h);
 	}

@@ -18,6 +18,7 @@ import effect.Effect;
 import engine.Engine_THH1;
 import gui.GUIParts;
 import input.KeyListenerEx;
+import input.KeyTypeListener;
 import input.MouseListenerEx;
 import structure.Structure;
 import stage.StageEngine;
@@ -72,8 +73,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private int mainEvent = OPENING;
 	
 	//inputEvent
-	private static ArrayList<KeyListenerEx> keyListenerExs = new ArrayList<KeyListenerEx>();
-	private static ArrayList<MouseListenerEx> mouseListenerExs = new ArrayList<MouseListenerEx>();
+	private static ArrayList<KeyListenerEx> keyListeners = new ArrayList<KeyListenerEx>();
+	private static ArrayList<MouseListenerEx> mouseListeners = new ArrayList<MouseListenerEx>();
+	private static ArrayList<KeyTypeListener> typeListeners = new ArrayList<KeyTypeListener>();
 	
 	//stopEvent
 	private static int stopEventKind = NONE;
@@ -192,7 +194,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	private final BufferedImage offImage = new BufferedImage(defaultScreenW,defaultScreenH,BufferedImage.TYPE_INT_ARGB_PRE); //ダブルバッファキャンバス
 	private Graphics2D g2;
-	private final Font basicFont = createFont("font/upcibi.ttf").deriveFont(Font.BOLD + Font.ITALIC,30.0f),commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN,15.0f);
+	public final Font basicFont = createFont("font/upcibi.ttf").deriveFont(Font.BOLD + Font.ITALIC,30.0f),commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN,15.0f);
 	public static final BasicStroke stroke1 = new BasicStroke(1f),stroke3 = new BasicStroke(3f),stroke5 = new BasicStroke(5f);
 	private static final Color HPWarningColor = new Color(255,120,120),debugTextColor = new Color(200,200,200,160);
 	private final DecimalFormat DF00_00 = new DecimalFormat("00.00");
@@ -386,31 +388,31 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		case STOP:
 			while(bullets.hasNext()) {
 				final Bullet bullet = bullets.next();
-				bullet.SCRIPT.bulletPaint(bullet);
+				bullet.SCRIPT.paint(bullet);
 			}
 			while(effects.hasNext()) {
 				final Effect effect = effects.next();
-				effect.SCRIPT.effectPaint(effect);
+				effect.SCRIPT.paint(effect);
 			}
 			break;
 		case NO_ANM_STOP:
 			while(bullets.hasNext()) {
 				final Bullet bullet = bullets.next();
-				bullet.SCRIPT.bulletNoAnmPaint(bullet);
+				bullet.SCRIPT.noAnmPaint(bullet);
 			}
 			while(effects.hasNext()) {
 				final Effect effect = effects.next();
-				effect.SCRIPT.effectNoAnmPaint(effect);
+				effect.SCRIPT.noAnmPaint(effect);
 			}
 			break;
 		default:
 			while(bullets.hasNext()) {
 				final Bullet bullet = bullets.next();
-				bullet.SCRIPT.bulletIdle(bullet);
+				bullet.SCRIPT.idle(bullet);
 			}
 			while(effects.hasNext()) {
 				final Effect effect = effects.next();
-				effect.SCRIPT.effectIdle(effect);
+				effect.SCRIPT.idle(effect);
 			}
 		}
 	}
@@ -473,6 +475,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return nearstChara;
 		
+	}
+	public static final Unit getMouseOverChara() {
+		for(Unit unit : characters) {
+			if(unit.isMouseOveredBoundingBox())
+				return unit;
+		}
+		return null;
 	}
 	public static final int getCharaAmount() {
 		return characters.size();
@@ -556,6 +565,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				result[searched++] = structure;
 		}
 		return Arrays.copyOf(result, searched);
+	}
+	public static final Structure getMouseOverStructure() {
+		for(Structure structure : structures) {
+			if(structure.isMouseOveredBoundingBox())
+				return structure;
+		}
+		return null;
 	}
 	public static final boolean checkLoS(Line2D line) {
 		for(Structure structure : structures) {
@@ -650,7 +666,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static double getViewY() {
 		return viewY;
 	}
-	//control-bullet
+	//control-delete
 	public static final boolean deleteBullet(Bullet bullet) {
 		if(bullet.SCRIPT.deleteBullet(bullet))
 			return bullets.remove(bullet);
@@ -660,6 +676,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		if(effect.SCRIPT.deleteEffect(effect))
 			return effects.remove(effect);
 		return false;
+	}
+	public static final boolean deleteStructure(Structure structure) {
+		return structures.remove(structure);
+	}
+	public static final boolean deleteChara(Unit unit) {
+		return characters.remove(unit);
 	}
 	public static final void paintHPArc(int x,int y,int radius,int hp,int maxHP) {
 		final Graphics2D G2 = hq.g2;
@@ -752,7 +774,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public void mouseEntered(MouseEvent e){}
 	public void mouseExited(MouseEvent e){}
 	public void mousePressed(MouseEvent e){
-		for(MouseListenerEx mle : mouseListenerExs) {
+		for(MouseListenerEx mle : mouseListeners) {
 			if(!mle.isEnabled())
 				continue;
 			switch(e.getButton()) {
@@ -769,7 +791,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 	}
 	public void mouseReleased(MouseEvent e){
-		for(MouseListenerEx mle : mouseListenerExs) {
+		for(MouseListenerEx mle : mouseListeners) {
 			if(!mle.isEnabled())
 				continue;
 			switch(e.getButton()) {
@@ -835,7 +857,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static boolean key_shift;
 	public void keyPressed(KeyEvent e){
 		final int KEY_CODE = e.getKeyCode();
-		for(KeyListenerEx kle : keyListenerExs) {
+		for(KeyListenerEx kle : keyListeners) {
 			if(kle.isEnabled())
 				kle.pressEvent(KEY_CODE);
 		}
@@ -888,7 +910,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public void keyReleased(KeyEvent e){
 		final int KEY_CODE = e.getKeyCode();
-		for(KeyListenerEx kle : keyListenerExs) {
+		for(KeyListenerEx kle : keyListeners) {
 			if(kle.isEnabled())
 				kle.releaseEvent(KEY_CODE);
 		}
@@ -929,7 +951,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			break;
 		}
 	}
-	public void keyTyped(KeyEvent e){}
+	public void keyTyped(KeyEvent e){
+		for(KeyTypeListener ktl : typeListeners) {
+			if(ktl.isEnabled())
+				ktl.typed(e.getKeyChar());
+		}
+	}
 	private final class MyWindowAdapter extends WindowAdapter{
 		public void windowClosing(WindowEvent e){
 			System.exit(0);
@@ -975,22 +1002,28 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		effects.add(effect);
 		return effect;
 	}
-	public static final void addUnit(Unit unit) {
+	public static final <T extends Unit>T addUnit(T unit) {
 		characters.add(unit);
+		return unit;
 	}
-	public static final void addStructure(Structure structure) {
+	public static final <T extends Structure>T addStructure(T structure) {
 		structures.add(structure);
+		return structure;
 	}
-	public static final void addGUIParts(GUIParts guiParts) {
+	public static final <T extends GUIParts>T addGUIParts(T guiParts) {
 		GHQ.guiParts.add(guiParts);
+		return guiParts;
 	}
 	public static final void addListenerEx(MouseListenerEx mle) {
-		mouseListenerExs.add(mle);
+		mouseListeners.add(mle);
 	}
 	public static final void addListenerEx(KeyListenerEx kle) {
-		keyListenerExs.add(kle);
+		keyListeners.add(kle);
 	}
-
+	public static final void addListenerEx(KeyTypeListener kte) {
+		typeListeners.add(kte);
+	}
+	//information-frame&time
 	public static final int getNowFrame() {
 		return gameFrame;
 	}
@@ -1204,7 +1237,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @since alpha1.0
 	*/
 	public static final void drawImageGHQ(Image img,int x,int y,int w,int h){
-		hq.g2.drawImage(img,x - w/2,y - h/2,w,h,hq);
+		hq.g2.drawImage(img,x,y,w,h,hq);
 	}
 	/**
 	* 
@@ -1216,7 +1249,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @since alpha1.0
 	*/
 	public static final void drawImageGHQ(int imgID,int x,int y,int w,int h){
-		drawImageGHQ(arrayImage[imgID],x - w/2,y - h/2,w,h);
+		drawImageGHQ(arrayImage[imgID],x,y,w,h);
 	}
 	/**
 	* 
@@ -1226,7 +1259,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @param angle 
 	* @since alpha1.0
 	*/
-	public static final void drawImageTHH_center(Image img,int x,int y,double angle){
+	public static final void drawImageGHQ_center(Image img,int x,int y,double angle){
 		if(img == null)
 			return;
 		final Graphics2D G2 = hq.g2;
@@ -1245,8 +1278,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @param angle 
 	* @since alpha1.0
 	*/
-	public static final void drawImageTHH_center(int imgID,int x,int y,double angle) {
-		drawImageTHH_center(arrayImage[imgID],x,y,angle);
+	public static final void drawImageGHQ_center(int imgID,int x,int y,double angle) {
+		drawImageGHQ_center(arrayImage[imgID],x,y,angle);
 	}
 	/**
 	* 
@@ -1255,7 +1288,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @param y 
 	* @since alpha1.0
 	*/
-	public static final void drawImageTHH_center(Image img,int x,int y){
+	public static final void drawImageGHQ_center(Image img,int x,int y){
 		hq.g2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,hq);
 	}
 	/**
@@ -1265,8 +1298,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @param y 
 	* @since alpha1.0
 	*/
-	public static final void drawImageTHH_center(int imgID,int x,int y){
-		drawImageTHH_center(arrayImage[imgID],x,y);
+	public static final void drawImageGHQ_center(int imgID,int x,int y){
+		drawImageGHQ_center(arrayImage[imgID],x,y);
 	}
 	/**
 	* 
@@ -1277,7 +1310,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @param h 
 	* @since alpha1.0
 	*/
-	public static final void drawImageTHH_center(int imgID,int x,int y,int w,int h){
+	public static final void drawImageGHQ_center(int imgID,int x,int y,int w,int h){
 		hq.g2.drawImage(arrayImage[imgID],x - w/2,y - h/2,w,h,hq);
 	}
 	public static final void setImageAlpha() {
@@ -1501,8 +1534,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))){
 			saveHolder = (SaveHolder)ois.readObject();
 		}catch(IOException | ClassNotFoundException e){}
-		if(saveHolder == null)
+		if(saveHolder == null) {
 			System.out.println("Load Error.");
+			return null;
+		}
 		return saveHolder.getData();
 	}
 }

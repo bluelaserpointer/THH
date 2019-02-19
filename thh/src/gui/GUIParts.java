@@ -7,7 +7,7 @@ public abstract class GUIParts {
 	public final String GROUP;
 	protected boolean isEnabled;
 	protected int x,y,w,h;
-	private final PaintScript PAINT_SCRIPT;
+	protected final PaintScript PAINT_SCRIPT;
 	public GUIParts(String group,PaintScript paintScript,int x,int y,int w,int h) {
 		GROUP = group;
 		if(paintScript == null)
@@ -26,7 +26,7 @@ public abstract class GUIParts {
 	public void paint() {
 		PAINT_SCRIPT.paint(x, y, w, h);
 	}
-	public final void enable() {
+	public void enable() {
 		isEnabled = true;
 	}
 	public void disable() {
@@ -36,7 +36,7 @@ public abstract class GUIParts {
 		return isEnabled;
 	}
 	public final boolean isMouseOvered() {
-		return GHQ.isMouseInArea_Screen(x, y, w, h);
+		return GHQ.isMouseInArea_Screen(x + w/2, y + h/2, w, h);
 	}
 	public void clicked() {}
 	public void outsideClicked() {}
