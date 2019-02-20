@@ -30,6 +30,7 @@ import unit.Unit;
  * @version alpha1.0
  *
  */
+
 public final class GHQ extends JPanel implements MouseListener,MouseMotionListener,MouseWheelListener,KeyListener,Runnable{
 	private static final long serialVersionUID = 123412351L;
 
@@ -156,6 +157,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		myFrame.setBounds(120,80,1006,628);
 		myFrame.setResizable(false);
 		myFrame.setVisible(true);
+		myFrame.setFocusTraversalKeysEnabled(false);
 		//load assets
 		tracker = new MediaTracker(this);
 		//setup
@@ -166,7 +168,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		try{
 			tracker.waitForAll();
 		}catch(InterruptedException | NullPointerException e){}
-		
+		//font
+		basicFont = createFont("font/upcibi.ttf").deriveFont(30.0f);
+		commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN,15.0f);
 		System.out.println("loadTimeReslut: " + (System.currentTimeMillis() - loadTime));
 		new Thread(this).start();
 		loadComplete = true;
@@ -194,7 +198,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	private final BufferedImage offImage = new BufferedImage(defaultScreenW,defaultScreenH,BufferedImage.TYPE_INT_ARGB_PRE); //ダブルバッファキャンバス
 	private Graphics2D g2;
-	public final Font basicFont = createFont("font/upcibi.ttf").deriveFont(Font.BOLD + Font.ITALIC,30.0f),commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN,15.0f);
+	public static Font basicFont,commentFont;
 	public static final BasicStroke stroke1 = new BasicStroke(1f),stroke3 = new BasicStroke(3f),stroke5 = new BasicStroke(5f);
 	private static final Color HPWarningColor = new Color(255,120,120),debugTextColor = new Color(200,200,200,160);
 	private final DecimalFormat DF00_00 = new DecimalFormat("00.00");
@@ -1533,7 +1537,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		SaveHolder saveHolder = null;
 		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))){
 			saveHolder = (SaveHolder)ois.readObject();
-		}catch(IOException | ClassNotFoundException e){}
+		}catch(IOException | ClassNotFoundException e){
+			e.printStackTrace();
+		}
 		if(saveHolder == null) {
 			System.out.println("Load Error.");
 			return null;

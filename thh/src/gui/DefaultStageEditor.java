@@ -60,9 +60,11 @@ public class DefaultStageEditor {
 		VK_BACK_SPACE,
 		VK_C,
 		VK_V,
+		VK_TAB,
 		VK_CONTROL,
 	};
 	private static final SingleKeyListener keyListener = new SingleKeyListener(inputKeys);
+	private static int nowSlot = 0,slot_max = 1;
 	
 	private static int placeX,placeY;
 	
@@ -194,6 +196,16 @@ public class DefaultStageEditor {
 				g2.drawOval(GHQ.getMouseX() - 5,GHQ.getMouseY() - 5,10,10);
 			}
 			if(selectObject != null) {
+				//changeSlot(Left side menu bar)
+				if(keyListener.pullEvent(VK_TAB)) {
+					if(++nowSlot > slot_max)
+						nowSlot = 0;
+					if(nowSlot == 1) { //select script
+						scriptLabel.clicked();
+					}else {
+						scriptLabel.outsideClicked();
+					}
+				}
 				//delete
 				if(!scriptLabel.activated && keyListener.pullEvent(VK_BACK_SPACE)) {
 					if(selectObject instanceof Unit)

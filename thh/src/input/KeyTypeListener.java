@@ -29,6 +29,8 @@ public abstract class KeyTypeListener {
 			if(nowLength > 0)
 				contentStr = contentStr.substring(0,nowLength - 1);
 			break;
+		case '\t': //tab
+			break;
 		default:
 			//copy & paste
 			if(copyListener.hasEvent(VK_CONTROL)) {

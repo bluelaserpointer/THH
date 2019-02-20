@@ -2,14 +2,15 @@
 /.project
 /.settings/
 /_config_1.0/
-/font/
 /action/
 /bullet/
 /core/
 /effect/
 /engine/
+/font/
 /gui/
 /image/
+/input/
 /library/
 /manifest
 /paint/
@@ -17,6 +18,3 @@
 /structure/
 /unit/
 /weapon/
-/eventListner/
-/inputEvent/
-/input/

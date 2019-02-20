@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 
 import core.GHQ;
@@ -36,9 +37,10 @@ public class TitledLabel extends GUIParts{
 	@Override
 	public void paint() {
 		final Graphics2D G2 = GHQ.getGraphics2D();
-		G2.setColor(Color.WHITE);
-		G2.setStroke(GHQ.stroke3);
-		G2.drawString(titleStr, x, y - h);
+		G2.setColor(Color.BLACK);
+		G2.setStroke(GHQ.stroke1);
+		G2.setFont(GHQ.basicFont);
+		G2.drawString(titleStr, x, y - 8);
 		PAINT_SCRIPT.paint(x, y, w, h);
 		G2.setColor(Color.BLACK);
 		G2.setStroke(activated ? GHQ.stroke3 : GHQ.stroke1);
