@@ -855,7 +855,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 					parts.outsideClicked();
 				else {
 					parts.clicked();
-					alreadyClicked = true;
+					alreadyClicked = parts.absorbClickEvent();
 				}
 			}
 		}

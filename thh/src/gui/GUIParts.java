@@ -6,7 +6,7 @@ import paint.PaintScript;
 public abstract class GUIParts {
 	public final String GROUP;
 	protected boolean isEnabled;
-	protected int x,y,w,h;
+	public int x,y,w,h;
 	protected final PaintScript PAINT_SCRIPT;
 	public GUIParts(String group,PaintScript paintScript,int x,int y,int w,int h) {
 		GROUP = group;
@@ -40,6 +40,9 @@ public abstract class GUIParts {
 	}
 	public void clicked() {}
 	public void outsideClicked() {}
+	public boolean absorbClickEvent() {
+		return true;
+	}
 	public void setXY(int x,int y) {
 		this.x = x;
 		this.y = y;

@@ -237,11 +237,11 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		if(skl.pullEvent(VK_F6)) {
 			if(editMode) {
 				editMode = false;
-				GHQ.disableGUIs(DefaultStageEditor.EDIT_MENU_GROUP);
+				DefaultStageEditor.disable();
 				GHQ.clearStopEvent();
 			}else if(GHQ.isNoStopEvent()) {
 				editMode = true;
-				GHQ.enableGUIs(DefaultStageEditor.EDIT_MENU_GROUP);
+				DefaultStageEditor.enable();
 				GHQ.stopScreen_noAnm();
 			}
 		}

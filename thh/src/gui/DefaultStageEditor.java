@@ -15,7 +15,6 @@ import input.SingleKeyListener;
 import paint.ColorFilling;
 import paint.ColorFraming;
 import paint.ImageFrame;
-import paint.PaintScript;
 import structure.Structure;
 import structure.StructureScript;
 import structure.Terrain;
@@ -79,7 +78,6 @@ public class DefaultStageEditor {
 		UNIT = 2,
 		VEGETATION = 3,
 		ITEM = 4;
-	private static int placeKind = POINTING;
 	private static HasBody selectObject,mouseOveredObject;
 	//GUI_GROUP_ID
 	public static final String
@@ -87,8 +85,9 @@ public class DefaultStageEditor {
 		OBJECT_CONFIG_GROUP = "OBJECT_CONFIG_GROUP";
 	//GUI
 	private static TitledLabel configLabel;
+	private static CombinedButtons CB_placeKind;
 	//PaintScripts
-	private static final PaintScript RED_FRAMING = new ColorFraming(Color.RED,GHQ.stroke3);
+	//private static final PaintScript RED_FRAMING = new ColorFraming(Color.RED,GHQ.stroke3);
 	//loadResource
 	public static void init(File stageFile) {
 		final int SCREEN_W = GHQ.getScreenW(),SCREEN_H = GHQ.getScreenH();
@@ -96,7 +95,7 @@ public class DefaultStageEditor {
 		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ColorFraming(Color.WHITE,GHQ.stroke3),150,0,SCREEN_W - 150,SCREEN_H) {
 			@Override
 			public void clicked() {
-				if(placeKind == POINTING) { //object select
+				if(CB_placeKind.isDefaultSelection()) { //not selected any placeKind = object select
 					GHQ.enableGUIs(OBJECT_CONFIG_GROUP);
 					selectObject = mouseOveredObject;
 					keyListener.enable();
@@ -120,7 +119,7 @@ public class DefaultStageEditor {
 					GHQ.disableGUIs(OBJECT_CONFIG_GROUP);
 					selectObject = null;
 					keyListener.disable();
-					switch(placeKind) {
+					switch(CB_placeKind.getSelection()) {
 					case TERRAIN:
 						if(Terrain.blueprint_isOriginPoint(placeX, placeY))
 							GHQ.addStructure(Terrain.blueprint_flush());
@@ -145,54 +144,11 @@ public class DefaultStageEditor {
 				}
 			}
 		});
-		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("gui_editor/Tiles.png"),25,155,40,40) {
-			@Override
-			public void clicked() {
-				placeKind = (placeKind == TILES ? POINTING : TILES);
-			}
-			@Override
-			public void paint() {
-				super.paint();
-				if(placeKind == TILES)
-					RED_FRAMING.paint(x, y, w, h);
-			}
-		});
-		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("gui_editor/FreeShape.png"),70,155,40,40) {
-			@Override
-			public void clicked() {
-				placeKind = (placeKind == TERRAIN ? POINTING : TERRAIN);
-			}
-			@Override
-			public void paint() {
-				super.paint();
-				if(placeKind == TERRAIN)
-					RED_FRAMING.paint(x, y, w, h);
-			}
-		});
-		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("gui_editor/Unit.png"),25,200,40,40) {
-			@Override
-			public void clicked() {
-				placeKind = (placeKind == UNIT ? POINTING : UNIT);
-			}
-			@Override
-			public void paint() {
-				super.paint();
-				if(placeKind == UNIT)
-					RED_FRAMING.paint(x, y, w, h);
-			}
-		});
-		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("gui_editor/Vegetation.png"),70,200,40,40) {
-			@Override
-			public void clicked() {
-				placeKind = (placeKind == VEGETATION ? POINTING : VEGETATION);
-			}
-			@Override
-			public void paint() {
-				super.paint();
-				if(placeKind == VEGETATION)
-					RED_FRAMING.paint(x, y, w, h);
-			}
-		});
+		GHQ.addGUIParts(CB_placeKind = new CombinedButtons(EDIT_MENU_GROUP, POINTING, 0, 0, 150, SCREEN_H));
+		CB_placeKind.addButton(TILES, new ImageFrame("gui_editor/Tiles.png"),25,155,40,40);
+		CB_placeKind.addButton(TERRAIN, new ImageFrame("gui_editor/FreeShape.png"),70,155,40,40);
+		CB_placeKind.addButton(UNIT, new ImageFrame("gui_editor/Unit.png"),25,200,40,40);
+		CB_placeKind.addButton(VEGETATION, new ImageFrame("gui_editor/Vegetation.png"),70,200,40,40);
 		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("gui_editor/Save.png"),25,500,85,40) {
 			@Override
 			public void clicked() {
@@ -226,7 +182,7 @@ public class DefaultStageEditor {
 			placeY = GHQ.getMouseY();
 		}
 		//guide
-		switch(placeKind) {
+		switch(CB_placeKind.getSelection()) {
 		case POINTING:
 			mouseOveredObject = GHQ.getMouseOverChara();
 			if(mouseOveredObject == null)
@@ -320,5 +276,14 @@ public class DefaultStageEditor {
 	}
 	public static void addTerrainScript(StructureScript<Terrain> script) {
 		terrainScripts.add(script);
+	}
+	public static void enable() {
+		GHQ.enableGUIs(DefaultStageEditor.EDIT_MENU_GROUP);
+		GHQ.enableGUIs(DefaultStageEditor.OBJECT_CONFIG_GROUP);
+		selectObject = mouseOveredObject = null;
+	}
+	public static void disable() {
+		GHQ.disableGUIs(DefaultStageEditor.EDIT_MENU_GROUP);
+		GHQ.disableGUIs(DefaultStageEditor.OBJECT_CONFIG_GROUP);
 	}
 }
