@@ -22,6 +22,7 @@ public abstract class Unit extends Entity_double implements MessageSource,DynamI
 		MAX = GHQ.MAX,
 		MIN = GHQ.MIN;
 	
+	public String originalName = "";
 	public final ActionPlan actions = new ActionPlan();
 	public final Status status;
 	
@@ -103,27 +104,21 @@ public abstract class Unit extends Entity_double implements MessageSource,DynamI
 		final int DEFAULT_SIZE = 80;
 		return new Rectangle2D.Double(dynam.getX() - DEFAULT_SIZE/2,dynam.getY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
 	}
-	//hp
-	public abstract void setHP(int hp);
 	//decrease
-	public abstract int decreaseME_amount(int amount);
-	public abstract int decreaseME_rate(double rate);
 	public abstract int damage_amount(int damage);
 	public abstract int damage_rate(double rate);
 
 	public abstract boolean kill(boolean force);
 	public void killed() {}
 	//information
-	public abstract String getName();
-	public abstract int getTeam();
-	public boolean isAlive() {
-		return getHP() > 0;
+	public String getName() {
+		return GHQ.NOT_NAMED;
 	}
-	public abstract int getHP();
-	public abstract double getHPRate();
-	public abstract int getMP();
-	public abstract double getMPRate();
-	public abstract Status getStatus();
+	public abstract int getTeam();
+	public abstract boolean isAlive();
+	public final Status getStatus() {
+		return status;
+	}
 	
 	//specialEvent
 	public int weaponChangeOrder;

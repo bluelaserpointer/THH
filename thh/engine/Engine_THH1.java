@@ -7,9 +7,6 @@ import java.awt.Graphics2D;
 import java.io.File;
 import java.util.Arrays;
 
-import action.Action;
-import action.ActionInfo;
-import action.ActionSource;
 import bullet.Bullet;
 import core.GHQ;
 import core.MessageSource;
@@ -23,7 +20,7 @@ import stage.StageSaveData;
 import structure.Structure;
 import unit.*;
 
-public class Engine_THH1 extends StageEngine implements MessageSource,ActionSource{
+public class Engine_THH1 extends StageEngine implements MessageSource{
 	private static THHUnit[] friends;
 	private static final Stage_THH1[] stages = new Stage_THH1[1];
 	private int nowStage;
@@ -65,7 +62,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 	//stageObject
 	private int vegImageIID[] = new int[5];
 	
-	int focusIID,magicCircleIID;
+	private int focusIID,magicCircleIID;
 	
 	//editMode
 	static boolean editMode;
@@ -109,10 +106,10 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		for(Unit friend : friends)
 			GHQ.addUnit(friend);
 		//action
-		ActionInfo.clear();
-		ActionInfo.addDstPlan(1000, GHQ.getScreenW() - 200, GHQ.getScreenH() + 100);
-		ActionInfo.addDstPlan(1000, GHQ.getScreenW() + 200, GHQ.getScreenH() + 100);
-		final Action moveLeftToRight200 = new Action(this);
+		//ActionInfo.clear();
+		//ActionInfo.addDstPlan(1000, GHQ.getScreenW() - 200, GHQ.getScreenH() + 100);
+		//ActionInfo.addDstPlan(1000, GHQ.getScreenW() + 200, GHQ.getScreenH() + 100);
+		//final Action moveLeftToRight200 = new Action(this);
 		//enemy
 		GHQ.addUnit(new Fairy().initialSpawn(ENEMY, 300, 100,2500));
 		GHQ.addUnit(new Fairy().initialSpawn(ENEMY, 700, 20,2500));
@@ -236,11 +233,11 @@ public class Engine_THH1 extends StageEngine implements MessageSource,ActionSour
 		if(skl.pullEvent(VK_F6)) {
 			if(editMode) {
 				editMode = false;
-				GHQ.disableGUIs(DefaultStageEditor.EDIT_MODE_GROUP);
+				GHQ.disableGUIs(DefaultStageEditor.EDIT_MENU_GROUP);
 				GHQ.clearStopEvent();
 			}else if(GHQ.isNoStopEvent()) {
 				editMode = true;
-				GHQ.enableGUIs(DefaultStageEditor.EDIT_MODE_GROUP);
+				GHQ.enableGUIs(DefaultStageEditor.EDIT_MENU_GROUP);
 				GHQ.stopScreen_noAnm();
 			}
 		}

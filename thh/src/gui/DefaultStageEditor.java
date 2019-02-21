@@ -8,6 +8,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.ArrayList;
 
+import core.Dynam;
 import core.GHQ;
 import core.HasBody;
 import input.SingleKeyListener;
@@ -19,6 +20,7 @@ import structure.Structure;
 import structure.StructureScript;
 import structure.Terrain;
 import structure.Tile;
+import unit.DummyUnit;
 import unit.Unit;
 
 public class DefaultStageEditor {
@@ -65,6 +67,7 @@ public class DefaultStageEditor {
 	};
 	private static final SingleKeyListener keyListener = new SingleKeyListener(inputKeys);
 	private static int nowSlot = 0,slot_max = 1;
+	//private static final int arrowIID = GHQ.loadImage("gui_editor/arrow.png");
 	
 	private static int placeX,placeY;
 	
@@ -78,30 +81,38 @@ public class DefaultStageEditor {
 	private static HasBody selectObject,mouseOveredObject;
 	//GUI_GROUP_ID
 	public static final String
-		EDIT_MODE_GROUP = "EDIT_MODE_GROUP";
+		EDIT_MENU_GROUP = "EDIT_MENU_GROUP",
+		OBJECT_CONFIG_GROUP = "OBJECT_CONFIG_GROUP";
 	//GUI
-	private static TitledLabel scriptLabel;
+	private static TitledLabel configLabel;
 	//PaintScripts
 	private static final PaintScript RED_FRAMING = new ColorFraming(Color.RED,GHQ.stroke3);
 	//loadResource
 	public static void init(File stageFile) {
 		final int SCREEN_W = GHQ.getScreenW(),SCREEN_H = GHQ.getScreenH();
 		GHQ.addListenerEx(keyListener);
-		GHQ.addGUIParts(new BasicButton(EDIT_MODE_GROUP,new ColorFraming(Color.WHITE,GHQ.stroke3),150,0,SCREEN_W - 150,SCREEN_H) {
+		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ColorFraming(Color.WHITE,GHQ.stroke3),150,0,SCREEN_W - 150,SCREEN_H) {
 			@Override
 			public void clicked() {
-				if(placeKind == POINTING) {
+				if(placeKind == POINTING) { //object select
+					GHQ.enableGUIs(OBJECT_CONFIG_GROUP);
 					selectObject = mouseOveredObject;
 					keyListener.enable();
-					final String scriptName;
-					if(selectObject instanceof Tile)
-						scriptName = ((Tile)selectObject).script.getName();
-					else if(selectObject instanceof Terrain)
-						scriptName = ((Terrain)selectObject).script.getName();
-					else
-						scriptName = "";
-					scriptLabel.setText(scriptName.equals(GHQ.NOT_NAMED) ? "" : scriptName);
-				}else {
+					final String labelText;
+					if(selectObject instanceof Tile) {
+						labelText = ((Tile)selectObject).script.getName();
+						configLabel.setTitle("script:");
+					}else if(selectObject instanceof Terrain) {
+						labelText = ((Terrain)selectObject).script.getName();
+						configLabel.setTitle("script:");
+					}else if(selectObject instanceof Unit) {
+						labelText = ((Unit)selectObject).originalName;
+						configLabel.setTitle("orignal_name:");
+					}else
+						labelText = "";
+					configLabel.setText(labelText.equals(GHQ.NOT_NAMED) ? "" : labelText);
+				}else { //object deselect
+					GHQ.disableGUIs(OBJECT_CONFIG_GROUP);
 					selectObject = null;
 					keyListener.disable();
 					switch(placeKind) {
@@ -118,6 +129,7 @@ public class DefaultStageEditor {
 							Tile.blueprint_addOriginPoint(placeX, placeY);
 						break;
 					case UNIT:
+						GHQ.addUnit(new DummyUnit(new Dynam(placeX, placeY)));
 						break;
 					case ITEM:
 						break;
@@ -125,7 +137,7 @@ public class DefaultStageEditor {
 				}
 			}
 		});
-		GHQ.addGUIParts(new BasicButton(EDIT_MODE_GROUP,new ImageFrame("gui_editor/Tiles.png"),55,155,40,40) {
+		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("gui_editor/Tiles.png"),25,155,40,40) {
 			@Override
 			public void clicked() {
 				placeKind = (placeKind == TILES ? POINTING : TILES);
@@ -137,7 +149,7 @@ public class DefaultStageEditor {
 					RED_FRAMING.paint(x, y, w, h);
 			}
 		});
-		GHQ.addGUIParts(new BasicButton(EDIT_MODE_GROUP,new ImageFrame("gui_editor/FreeShape.png"),100,155,40,40) {
+		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("gui_editor/FreeShape.png"),70,155,40,40) {
 			@Override
 			public void clicked() {
 				placeKind = (placeKind == TERRAIN ? POINTING : TERRAIN);
@@ -149,7 +161,19 @@ public class DefaultStageEditor {
 					RED_FRAMING.paint(x, y, w, h);
 			}
 		});
-		GHQ.addGUIParts(new BasicButton(EDIT_MODE_GROUP,new ImageFrame("gui_editor/Save.png"),55,500,85,40) {
+		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("gui_editor/Unit.png"),25,200,40,40) {
+			@Override
+			public void clicked() {
+				placeKind = (placeKind == UNIT ? POINTING : UNIT);
+			}
+			@Override
+			public void paint() {
+				super.paint();
+				if(placeKind == UNIT)
+					RED_FRAMING.paint(x, y, w, h);
+			}
+		});
+		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("gui_editor/Save.png"),25,500,85,40) {
 			@Override
 			public void clicked() {
 				System.out.println("saving...");
@@ -157,9 +181,9 @@ public class DefaultStageEditor {
 				System.out.println("complete!");
 			}
 		});
-		GHQ.<TitledLabel>addGUIParts(scriptLabel = new TitledLabel(EDIT_MODE_GROUP,new ColorFilling(Color.WHITE),55,300,85,25){
+		GHQ.<TitledLabel>addGUIParts(configLabel = new TitledLabel(OBJECT_CONFIG_GROUP,new ColorFilling(Color.WHITE),25,300,120,25){
 			
-		}).setTitle("Scripts:");
+		});
 	}
 	//role
 	public static void idle(Graphics2D g2) {
@@ -201,25 +225,25 @@ public class DefaultStageEditor {
 					if(++nowSlot > slot_max)
 						nowSlot = 0;
 					if(nowSlot == 1) { //select script
-						scriptLabel.clicked();
+						configLabel.clicked();
 					}else {
-						scriptLabel.outsideClicked();
+						configLabel.outsideClicked();
 					}
 				}
 				//delete
-				if(!scriptLabel.activated && keyListener.pullEvent(VK_BACK_SPACE)) {
+				if(!configLabel.activated && keyListener.pullEvent(VK_BACK_SPACE)) {
 					if(selectObject instanceof Unit)
-						GHQ.deleteChara((Unit)selectObject);
+						GHQ.deleteUnit((Unit)selectObject);
 					else if(selectObject instanceof Structure)
 						GHQ.deleteStructure((Structure)selectObject);
 					selectObject = null;
 					break;
 				}
-				//script install
+				//script install / name change
 				scriptInstall:{
 					if(selectObject instanceof Tile) {
 						for(StructureScript<Tile> script : tileScripts) {
-							if(scriptLabel.textEquals(script.getName())) {
+							if(configLabel.textEquals(script.getName())) {
 								((Tile)selectObject).setScript(script);
 								break scriptInstall;
 							}
@@ -227,12 +251,14 @@ public class DefaultStageEditor {
 						((Tile)selectObject).setScript(new StructureScript<Tile>());
 					}else if(selectObject instanceof Terrain) {
 						for(StructureScript<Terrain> script : terrainScripts) {
-							if(scriptLabel.textEquals(script.getName())) {
+							if(configLabel.textEquals(script.getName())) {
 								((Terrain)selectObject).setScript(script);
 								break scriptInstall;
 							}
 						}
 						((Terrain)selectObject).setScript(new StructureScript<Terrain>());
+					}else if(selectObject instanceof Unit) {
+						((Unit)selectObject).originalName = configLabel.getText();
 					}
 				}
 				//draw selection guide
@@ -253,6 +279,12 @@ public class DefaultStageEditor {
 			Tile.makeGuiding(g2);
 			break;
 		}
+		//originalName display
+		g2.setColor(Color.GRAY);
+		g2.setFont(GHQ.basicFont.deriveFont(20.0f));
+		for(Unit unit : GHQ.getCharacterList())
+			g2.drawString(unit.originalName, (int)unit.dynam.getX(), (int)unit.dynam.getY());
+		g2.setFont(GHQ.basicFont);
 		//GUI
 		GHQ.translateForGUI(true);
 		g2.setColor(Color.WHITE);

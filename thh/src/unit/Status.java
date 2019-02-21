@@ -17,6 +17,10 @@ public class Status implements Serializable{
 		parameterDefaults = new int[parameterAmount];
 		parameters = new int[parameterAmount];
 	}
+	public Status() {
+		parameterDefaults = new int[0];
+		parameters = new int[0];
+	}
 	public void reset() {
 		buffs.clear();
 		for(int i = 0;i < parameters.length;i++)
@@ -98,7 +102,7 @@ public class Status implements Serializable{
 	public double getRate(int index) {
 		if(0 <= index && index < parameters.length)
 			return (double)parameters[index]/(double)parameterDefaults[index];
-		System.out.println("getRate is called illegally. index: " + index);
+		System.out.println("Status.getRate is called illegally. index: " + index);
 		return GHQ.NONE;
 	}
 	private final int capCheckII(int index) {
@@ -119,9 +123,21 @@ public class Status implements Serializable{
 	public final int getSize() {
 		return parameters.length;
 	}
-	public final boolean ifOver0(int index) {
+	public final boolean isBigger0(int index) {
 		if(0 <= index && index < parameters.length)
 			return parameters[index] > 0;
+		return false;
+	}
+	public final boolean isBigger(int index,int value) {
+		if(0 <= index && index < parameters.length)
+			return parameters[index] > value;
+		System.out.println("Status.isBigger is called illegally. index: " + index);
+		return false;
+	}
+	public final boolean isSmaller(int index,int value) {
+		if(0 <= index && index < parameters.length)
+			return parameters[index] < value;
+		System.out.println("Status.isSmaller is called illegally. index: " + index);
 		return false;
 	}
 	public final int resetIfOverDefault(int index) {

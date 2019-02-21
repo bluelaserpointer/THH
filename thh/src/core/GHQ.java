@@ -169,7 +169,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			tracker.waitForAll();
 		}catch(InterruptedException | NullPointerException e){}
 		//font
-		basicFont = createFont("font/upcibi.ttf").deriveFont(30.0f);
+		basicFont = createFont("font/upcibi.ttf").deriveFont(25.0f);
 		commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN,15.0f);
 		System.out.println("loadTimeReslut: " + (System.currentTimeMillis() - loadTime));
 		new Thread(this).start();
@@ -201,7 +201,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static Font basicFont,commentFont;
 	public static final BasicStroke stroke1 = new BasicStroke(1f),stroke3 = new BasicStroke(3f),stroke5 = new BasicStroke(5f);
 	private static final Color HPWarningColor = new Color(255,120,120),debugTextColor = new Color(200,200,200,160);
-	private final DecimalFormat DF00_00 = new DecimalFormat("00.00");
+	public static final DecimalFormat DF00_00 = new DecimalFormat("00.00");
 	private final Rectangle2D screenRect = new Rectangle2D.Double(0,0,defaultScreenW,defaultScreenH);
 	
 	public void paintComponent(Graphics g){
@@ -684,7 +684,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final boolean deleteStructure(Structure structure) {
 		return structures.remove(structure);
 	}
-	public static final boolean deleteChara(Unit unit) {
+	public static final boolean deleteUnit(Unit unit) {
 		return characters.remove(unit);
 	}
 	public static final void paintHPArc(int x,int y,int radius,int hp,int maxHP) {
@@ -1009,6 +1009,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final <T extends Unit>T addUnit(T unit) {
 		characters.add(unit);
 		return unit;
+	}
+	public static final <T extends Unit>T replaceUnit(Unit targetUnit,T newUnit){
+		newUnit.dynam.setAllBySample(targetUnit.dynam);
+		deleteUnit(targetUnit);
+		addUnit(newUnit);
+		return newUnit;
 	}
 	public static final <T extends Structure>T addStructure(T structure) {
 		structures.add(structure);

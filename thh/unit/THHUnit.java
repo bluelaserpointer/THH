@@ -196,7 +196,7 @@ public abstract class THHUnit extends Unit {
 	// judge
 	@Override
 	public final boolean bulletEngage(Bullet bullet) {
-		return status.ifOver0(HP) && dynam.squreCollision(bullet.dynam,(charaSize + bullet.SIZE)/2)
+		return status.isBigger0(HP) && dynam.squreCollision(bullet.dynam,(charaSize + bullet.SIZE)/2)
 				&& (bullet.team == status.get(TEAM) ^ bullet.atk >= 0);
 	}
 	@Override
@@ -204,26 +204,12 @@ public abstract class THHUnit extends Unit {
 		return new Rectangle2D.Double(dynam.getX() - charaSize/2,dynam.getY() - charaSize/2,charaSize,charaSize);
 	}
 	// HP
-	@Override
-	public final void setHP(int hp) {
-		status.set(HP, hp);
-	}
 	private final void dodge(double targetX, double targetY) {
 		dynam.addSpeed_DA(40, dynam.getAngle(targetX,targetY));
 		charaOnLand = false;
 	}
 
 	// decrease
-	@Override
-	public final int decreaseME_amount(int amount) {
-		return status.add(MP, -amount);
-	}
-
-	@Override
-	public final int decreaseME_rate(double rate) {
-		return status.reduce_rate(MP, rate);
-	}
-
 	@Override
 	public final int damage_amount(int amount) {
 		return status.add(HP, -amount);
@@ -250,28 +236,8 @@ public abstract class THHUnit extends Unit {
 		return status.get(TEAM);
 	}
 	@Override
-	public final int getHP() {
-		return status.get(HP);
-	}
-
-	@Override
-	public final double getHPRate() {
-		return status.getRate(HP);
-	}
-
-	@Override
-	public final int getMP() {
-		return status.get(MP);
-	}
-
-	@Override
-	public final double getMPRate() {
-		return status.getRate(MP);
-	}
-
-	@Override
-	public final Status getStatus() {
-		return status;
+	public final boolean isAlive() {
+		return status.get(HP) > 0;
 	}
 	@Override
 	public boolean isMovable() {
