@@ -19,6 +19,7 @@ import stage.StageEngine;
 import stage.StageSaveData;
 import structure.Structure;
 import unit.*;
+import vegetation.Vegetation;
 
 public class Engine_THH1 extends StageEngine implements MessageSource{
 	private static THHUnit[] friends;
@@ -138,7 +139,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 	}
 	@Override
 	public final StageSaveData getStageSaveData() {
-		return new Stage_THH1(GHQ.getCharacters(),GHQ.getStructures());
+		return new Stage_THH1(GHQ.getCharacters(),GHQ.getStructures(),GHQ.getVegetations());
 	}
 	//idle
 	private int gameFrame;
@@ -149,6 +150,9 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		//background
 		g2.setColor(new Color(112,173,71));
 		g2.fillRect(0,0,stageW,stageH);
+		//vegetation
+		for(Vegetation ver : GHQ.getVegetationList())
+			ver.paint();
 		//landscape
 		for(Structure ver : GHQ.getStructureList())
 			ver.paint();

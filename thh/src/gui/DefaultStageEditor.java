@@ -22,6 +22,7 @@ import structure.Terrain;
 import structure.Tile;
 import unit.DummyUnit;
 import unit.Unit;
+import vegetation.Vegetation;
 
 public class DefaultStageEditor {
 	private static ArrayList<StructureScript<Tile>> tileScripts = new ArrayList<StructureScript<Tile>>();
@@ -76,7 +77,8 @@ public class DefaultStageEditor {
 		TERRAIN = 0,
 		TILES = 1,
 		UNIT = 2,
-		ITEM = 3;
+		VEGETATION = 3,
+		ITEM = 4;
 	private static int placeKind = POINTING;
 	private static HasBody selectObject,mouseOveredObject;
 	//GUI_GROUP_ID
@@ -108,6 +110,9 @@ public class DefaultStageEditor {
 					}else if(selectObject instanceof Unit) {
 						labelText = ((Unit)selectObject).originalName;
 						configLabel.setTitle("orignal_name:");
+					}else if(selectObject instanceof Vegetation) {
+						labelText = ((Vegetation)selectObject).getImageURL();
+						configLabel.setTitle("image_URL:");
 					}else
 						labelText = "";
 					configLabel.setText(labelText.equals(GHQ.NOT_NAMED) ? "" : labelText);
@@ -130,6 +135,9 @@ public class DefaultStageEditor {
 						break;
 					case UNIT:
 						GHQ.addUnit(new DummyUnit(new Dynam(placeX, placeY)));
+						break;
+					case VEGETATION:
+						GHQ.addVegetation(new Vegetation("gui_editor/Vegetation.png", placeX, placeY));
 						break;
 					case ITEM:
 						break;
@@ -173,6 +181,18 @@ public class DefaultStageEditor {
 					RED_FRAMING.paint(x, y, w, h);
 			}
 		});
+		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("gui_editor/Vegetation.png"),70,200,40,40) {
+			@Override
+			public void clicked() {
+				placeKind = (placeKind == VEGETATION ? POINTING : VEGETATION);
+			}
+			@Override
+			public void paint() {
+				super.paint();
+				if(placeKind == VEGETATION)
+					RED_FRAMING.paint(x, y, w, h);
+			}
+		});
 		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("gui_editor/Save.png"),25,500,85,40) {
 			@Override
 			public void clicked() {
@@ -209,6 +229,8 @@ public class DefaultStageEditor {
 		switch(placeKind) {
 		case POINTING:
 			mouseOveredObject = GHQ.getMouseOverChara();
+			if(mouseOveredObject == null)
+				mouseOveredObject = GHQ.getMouseOverVegetation();
 			if(mouseOveredObject == null)
 				mouseOveredObject = GHQ.getMouseOverStructure();
 			if(mouseOveredObject != null && mouseOveredObject != selectObject) {

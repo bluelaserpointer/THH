@@ -23,6 +23,7 @@ import input.MouseListenerEx;
 import structure.Structure;
 import stage.StageEngine;
 import unit.Unit;
+import vegetation.Vegetation;
 
 /**
  * 
@@ -106,6 +107,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//structure data
 	private static final ArrayListEx<Structure> structures = new ArrayListEx<Structure>();
+	
+	//vegetation data
+	private static final ArrayList<Vegetation> vegetations = new ArrayList<Vegetation>();
 	
 	//gui data
 	private static final ArrayList<GUIParts> guiParts = new ArrayList<GUIParts>();
@@ -433,6 +437,28 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			chara.resetSingleOrder();
 		}
 	}
+	//information-get-mouseOver
+	public static final Unit getMouseOverChara() {
+		for(Unit unit : characters) {
+			if(unit.isMouseOveredBoundingBox())
+				return unit;
+		}
+		return null;
+	}
+	public static final Structure getMouseOverStructure() {
+		for(Structure structure : structures) {
+			if(structure.isMouseOveredBoundingBox())
+				return structure;
+		}
+		return null;
+	}
+	public static final Vegetation getMouseOverVegetation() {
+		for(Vegetation vegetation : vegetations) {
+			if(vegetation.isMouseOveredBoundingBox())
+				return vegetation;
+		}
+		return null;
+	}
 	//information-characters
 	public static final Unit getChara(String name) {
 		for(Unit chara : characters) {
@@ -479,13 +505,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return nearstChara;
 		
-	}
-	public static final Unit getMouseOverChara() {
-		for(Unit unit : characters) {
-			if(unit.isMouseOveredBoundingBox())
-				return unit;
-		}
-		return null;
 	}
 	public static final int getCharaAmount() {
 		return characters.size();
@@ -547,6 +566,16 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return neastVisibleEnemy;
 	}
+	//information-vegetation
+	public static ArrayList<Vegetation> getVegetationList(){
+		return vegetations;
+	}
+	public static final Vegetation[] getVegetations() {
+		final Vegetation[] vegetationArray = new Vegetation[vegetations.size()];
+		for(int i = 0;i < vegetationArray.length;i++)
+			vegetationArray[i] = vegetations.get(i);
+		return vegetationArray;
+	}
 	//information-stage
 	public static final StageEngine getEngine() {
 		return engine;
@@ -569,13 +598,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				result[searched++] = structure;
 		}
 		return Arrays.copyOf(result, searched);
-	}
-	public static final Structure getMouseOverStructure() {
-		for(Structure structure : structures) {
-			if(structure.isMouseOveredBoundingBox())
-				return structure;
-		}
-		return null;
 	}
 	public static final boolean checkLoS(Line2D line) {
 		for(Structure structure : structures) {
@@ -617,8 +639,17 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return abs(viewX - x) < screenW && abs(viewY - y) < screenH;
 	}
 	//information-resource
+	public static final URL getImgageURLByID(int imageID) {
+		return arrayImageURL[imageID];
+	}
 	public static final Image getImageByID(int imageID) {
 		return arrayImage[imageID];
+	}
+	public static final int getImageWByID(int imageID) {
+		return arrayImage[imageID].getWidth(null);
+	}
+	public static final int getImageHByID(int imageID) {
+		return arrayImage[imageID].getHeight(null);
 	}
 
 	//control
@@ -670,6 +701,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static double getViewY() {
 		return viewY;
 	}
+	//control-add
+
 	//control-delete
 	public static final boolean deleteBullet(Bullet bullet) {
 		if(bullet.SCRIPT.deleteBullet(bullet))
@@ -681,11 +714,14 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			return effects.remove(effect);
 		return false;
 	}
+	public static final boolean deleteUnit(Unit unit) {
+		return characters.remove(unit);
+	}
 	public static final boolean deleteStructure(Structure structure) {
 		return structures.remove(structure);
 	}
-	public static final boolean deleteUnit(Unit unit) {
-		return characters.remove(unit);
+	public static final void deleteVegetation(Vegetation vegetation) {
+		vegetations.remove(vegetation);
 	}
 	public static final void paintHPArc(int x,int y,int radius,int hp,int maxHP) {
 		final Graphics2D G2 = hq.g2;
@@ -1019,6 +1055,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final <T extends Structure>T addStructure(T structure) {
 		structures.add(structure);
 		return structure;
+	}
+	public static final <T extends Vegetation>T addVegetation(T vegetation){
+		vegetations.add(vegetation);
+		return vegetation;
 	}
 	public static final <T extends GUIParts>T addGUIParts(T guiParts) {
 		GHQ.guiParts.add(guiParts);
