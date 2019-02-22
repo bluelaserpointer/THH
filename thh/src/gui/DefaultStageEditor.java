@@ -157,9 +157,10 @@ public class DefaultStageEditor {
 				System.out.println("complete!");
 			}
 		});
-		GHQ.<TitledLabel>addGUIParts(configLabel = new TitledLabel(OBJECT_CONFIG_GROUP,new ColorFilling(Color.WHITE),25,300,120,25){
+		GHQ.addGUIParts(configLabel = new TitledLabel(OBJECT_CONFIG_GROUP,new ColorFilling(Color.WHITE),25,300,120,25){
 			
 		});
+		GHQ.<InputOptionList>addGUIParts(new InputOptionList(configLabel)).addWord("WHITE_WALL", "ABCD", "ABNK");
 	}
 	//role
 	public static void idle(Graphics2D g2) {

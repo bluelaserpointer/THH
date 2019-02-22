@@ -851,9 +851,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		boolean alreadyClicked = false;
 		for(GUIParts parts : guiParts) {
 			if(parts.isEnabled()) {
-				if(alreadyClicked || !parts.isMouseOvered())
+				if(alreadyClicked || !parts.isMouseEntered()) {
 					parts.outsideClicked();
-				else {
+				}else {
 					parts.clicked();
 					alreadyClicked = parts.absorbClickEvent();
 				}
@@ -863,6 +863,17 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public void mouseMoved(MouseEvent e){
 		final int x = e.getX(),y = e.getY();
 		mouseX = x;mouseY = y;
+		boolean alreadyOvered = false;
+		for(GUIParts parts : guiParts) {
+			if(parts.isEnabled()) {
+				if(alreadyOvered || !parts.isMouseEntered())
+					parts.outsideMouseOvered();
+				else {
+					parts.mouseOvered();
+					alreadyOvered = parts.absorbClickEvent();
+				}
+			}
+		}
 	}
 	public void mouseDragged(MouseEvent e){
 		final int x = e.getX(),y = e.getY();

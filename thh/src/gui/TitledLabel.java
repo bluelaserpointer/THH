@@ -39,7 +39,7 @@ public class TitledLabel extends GUIParts{
 		G2.setColor(Color.BLACK);
 		G2.setStroke(GHQ.stroke1);
 		G2.setFont(GHQ.basicFont);
-		G2.drawString(titleStr, x, y - 8);
+		G2.drawString(titleStr, x + 3, y - 8);
 		PAINT_SCRIPT.paint(x, y, w, h);
 		G2.setColor(Color.BLACK);
 		G2.setStroke(activated ? GHQ.stroke3 : GHQ.stroke1);
@@ -56,6 +56,15 @@ public class TitledLabel extends GUIParts{
 	public boolean textEquals(String str) {
 		return typeListener.textEquals(str);
 	}
+	public final boolean isInputMode() {
+		return activated;
+	}
+	public void enableInputMode() {
+		activated = true;
+	}
+	public void disableInputMode() {
+		activated = false;
+	}
 	@Override
 	public void disable() {
 		super.disable();
@@ -63,6 +72,9 @@ public class TitledLabel extends GUIParts{
 	}
 	public void clear() {
 		typeListener.clear();
+	}
+	public String getGroup() {
+		return GROUP;
 	}
 
 }
