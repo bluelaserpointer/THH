@@ -10,11 +10,19 @@ import core.GHQ;
 public class InputOptionList extends GUIParts{
 	private final TitledLabel label;
 	private int nowListLength;
+	private final int listViewMaxLength;
 	private int hoveredPosition = GHQ.NONE;
+	private String hoveredString = "";
 	private final ArrayList<String> optionList = new ArrayList<String>();
+	public InputOptionList(TitledLabel label,int listViewMaxLength) {
+		super(label.getGroup(), null, label.x, label.y + label.h, label.w, label.h);
+		this.label = label;
+		this.listViewMaxLength = listViewMaxLength;
+	}
 	public InputOptionList(TitledLabel label) {
 		super(label.getGroup(), null, label.x, label.y + label.h, label.w, label.h);
 		this.label = label;
+		this.listViewMaxLength = GHQ.MAX;
 	}
 	//init
 	public void addWord(String word) {
@@ -37,8 +45,11 @@ public class InputOptionList extends GUIParts{
 		final String matchedOptions[] = new String[optionList.size()];
 		nowListLength = 0;
 		for(String option : optionList) {
-			if(option.startsWith(TEXT))
+			if(option.startsWith(TEXT)) {
 				matchedOptions[nowListLength++] = option;
+				if(nowListLength == listViewMaxLength)
+					break;
+			}
 		}
 		//paint
 		final Graphics2D G2 = GHQ.getGraphics2D();
@@ -47,6 +58,7 @@ public class InputOptionList extends GUIParts{
 		G2.fillRect(x, y, w, H);
 		//hovered position emphasize
 		if(hoveredPosition != GHQ.NONE) {
+			hoveredString = matchedOptions[hoveredPosition];
 			G2.setColor(Color.GRAY);
 			G2.fillRect(x, y + h*hoveredPosition, w, h);
 		}
@@ -62,7 +74,7 @@ public class InputOptionList extends GUIParts{
 	@Override
 	public void clicked() {
 		if(hoveredPosition != GHQ.NONE)
-			label.setText(optionList.get(hoveredPosition));
+			label.setText(hoveredString);
 	}
 	@Override
 	public void mouseOvered() {
@@ -75,7 +87,7 @@ public class InputOptionList extends GUIParts{
 	@Override
 	public boolean isMouseEntered() {
 		final int H = h*nowListLength;
-		return label.isInputMode() || hoveredPosition != GHQ.NONE && GHQ.isMouseInArea_Screen(x + w/2, y + H/2, w, H);
+		return (label.isInputMode() || hoveredPosition != GHQ.NONE) && GHQ.isMouseInArea_Screen(x + w/2, y + H/2, w, H);
 	}
 	//control
 	public void updatePosition() {
