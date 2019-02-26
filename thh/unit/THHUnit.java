@@ -32,8 +32,8 @@ public abstract class THHUnit extends Unit {
 	public final int bulletIID[] = new int[weapon_max], effectIID[] = new int[10];
 
 	//status
-	public static final int PARAMETER_AMOUNT = 7;
-	public static final int HP = 0,MP = 1,ATK = 2,AGI = 3,BLO = 4,STUN = 5,TEAM = 6;
+	public static final int PARAMETER_AMOUNT = 6;
+	public static final int HP = 0,MP = 1,ATK = 2,AGI = 3,BLO = 4,STUN = 5;
 	private static final String names[] = new String[PARAMETER_AMOUNT];
 	static {
 		names[HP] = "HP";
@@ -42,10 +42,9 @@ public abstract class THHUnit extends Unit {
 		names[AGI] = "AGI";
 		names[BLO] = "BLO";
 		names[STUN] = "STUN";
-		names[TEAM] = "TEAM";
 	}
-	public THHUnit() {
-		super(new Status(PARAMETER_AMOUNT));
+	public THHUnit(int initialGroup) {
+		super(new Status(PARAMETER_AMOUNT), initialGroup);
 	}
 	
 	@Override
@@ -53,19 +52,18 @@ public abstract class THHUnit extends Unit {
 	}
 
 	@Override
-	public void respawn(int charaTeam, int x, int y) {
+	public void respawn(int x, int y) {
 		super.resetOrder();
 		status.reset();
-		status.set(TEAM, charaTeam);
 		dynam.clear();
 		dynam.setXY(charaDstX = x, charaDstY = y);
 		charaOnLand = false;
 		slot_spell = 0;
 	}
 	@Override
-	public void respawn(int charaTeam, int x, int y,int hp) {
+	public void respawn(int x, int y,int hp) {
 		status.setDefault(HP,hp);
-		this.respawn(charaTeam, x, y);
+		this.respawn(x, y);
 	}
 	@Override
 	public void dynam() {
@@ -197,7 +195,7 @@ public abstract class THHUnit extends Unit {
 	@Override
 	public final boolean bulletEngage(Bullet bullet) {
 		return status.isBigger0(HP) && dynam.squreCollision(bullet.dynam,(charaSize + bullet.SIZE)/2)
-				&& (bullet.team == status.get(TEAM) ^ bullet.atk >= 0);
+				&& (bullet.isFriendly(this) ^ bullet.atk >= 0);
 	}
 	@Override
 	public Rectangle2D getBoundingBox() {
@@ -230,10 +228,6 @@ public abstract class THHUnit extends Unit {
 	@Override
 	public String getName() {
 		return GHQ.NOT_NAMED;
-	}
-	@Override
-	public final int getTeam() {
-		return status.get(TEAM);
 	}
 	@Override
 	public final boolean isAlive() {

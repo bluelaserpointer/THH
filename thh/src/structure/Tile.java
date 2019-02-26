@@ -77,10 +77,6 @@ public class Tile extends Structure{
 		return false;
 	}
 	@Override
-	public int getTeam() {
-		return GHQ.NONE;
-	}
-	@Override
 	public Rectangle2D getBoundingBox() {
 		return new Rectangle2D.Double(ORIGIN_X,ORIGIN_Y,X_TILES*TILE_SIZE,Y_TILES*TILE_SIZE);
 	}

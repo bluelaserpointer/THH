@@ -11,9 +11,11 @@ import core.Entity_double;
 import core.ErrorCounter;
 import core.GHQ;
 import core.MessageSource;
+import core.Standpoint;
 import core.HasBoundingBox;
+import core.HasStandpoint;
 
-public abstract class Unit extends Entity_double implements MessageSource,DynamInteractable,Serializable,HasBoundingBox{
+public abstract class Unit extends Entity_double implements MessageSource,DynamInteractable,Serializable,HasBoundingBox,HasStandpoint{
 	private static final long serialVersionUID = 7140005723063155203L;
 
 	protected static final int
@@ -23,30 +25,40 @@ public abstract class Unit extends Entity_double implements MessageSource,DynamI
 		MIN = GHQ.MIN;
 	
 	public String originalName = "";
-	public final ActionPlan actions = new ActionPlan();
+	public final ActionPlan actions;
 	public final Status status;
-	public final Inventory inventory = new Inventory();
+	public final Inventory inventory;
+	public final Standpoint standpoint;
 	
 	//Initialization
-	public Unit(Status status) {
+	public Unit(Status status,int initialGroup) {
+		actions = new ActionPlan();
 		this.status = status;
+		inventory = new Inventory();
+		standpoint = new Standpoint(initialGroup);
 	}
-	public final Unit initialSpawn(int charaTeam,int spawnX,int spawnY) {
+	public Unit(ActionPlan actionPlan,Status status,Inventory inventory,Standpoint standpoint) {
+		this.actions = actionPlan;
+		this.status = status;
+		this.inventory = inventory;
+		this.standpoint = standpoint;
+	}
+	public final Unit initialSpawn(int spawnX,int spawnY) {
 		loadImageData();
 		loadSoundData();
 		battleStarted();
-		respawn(charaTeam,spawnX,spawnY);
+		respawn(spawnX,spawnY);
 		return this;
 	}
-	public final Unit initialSpawn(int charaTeam,int spawnX,int spawnY,int hp) {
+	public final Unit initialSpawn(int spawnX,int spawnY,int hp) {
 		loadImageData();
 		loadSoundData();
 		battleStarted();
-		respawn(charaTeam,spawnX,spawnY,hp);
+		respawn(spawnX,spawnY,hp);
 		return this;
 	}
-	public abstract void respawn(int charaTeam,int spawnX,int spawnY);
-	public abstract void respawn(int charaTeam,int spawnX,int spawnY,int hp);
+	public abstract void respawn(int spawnX,int spawnY);
+	public abstract void respawn(int spawnX,int spawnY,int hp);
 	public void loadImageData(){}
 	public void loadSoundData(){}
 	public void battleStarted(){}
@@ -105,6 +117,14 @@ public abstract class Unit extends Entity_double implements MessageSource,DynamI
 		final int DEFAULT_SIZE = 80;
 		return new Rectangle2D.Double(dynam.getX() - DEFAULT_SIZE/2,dynam.getY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
 	}
+	@Override
+	public final Standpoint getStandpoint() {
+		return standpoint;
+	}
+	@Override
+	public boolean isFriendly(HasStandpoint target) {
+		return standpoint.isFriendly(target.getStandpoint());
+	}
 	//decrease
 	public abstract int damage_amount(int damage);
 	public abstract int damage_rate(double rate);
@@ -115,7 +135,6 @@ public abstract class Unit extends Entity_double implements MessageSource,DynamI
 	public String getName() {
 		return GHQ.NOT_NAMED;
 	}
-	public abstract int getTeam();
 	public abstract boolean isAlive();
 	public final Status getStatus() {
 		return status;

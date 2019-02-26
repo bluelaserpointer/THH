@@ -13,6 +13,11 @@ import weapon.Weapon;
 import weapon.WeaponInfo;
 
 public class Reimu extends THHUnit{
+	public Reimu(int initialGroup) {
+		super(initialGroup);
+	}
+
+	private static final long serialVersionUID = 1669960313477709935L;
 	{
 		charaSize = 20;
 	}
@@ -74,8 +79,8 @@ public class Reimu extends THHUnit{
 		slot_spell = 0;
 	}
 	@Override
-	public final void respawn(int charaID,int charaTeam,int x,int y){
-		super.respawn(charaID,charaTeam,x,y);
+	public final void respawn(int charaID,int x,int y){
+		super.respawn(charaID,x,y);
 		status.setDefault(HP, 10000);
 		status.setDefault(MP, 10000);
 		for(Weapon ver : weaponController) {
@@ -99,7 +104,7 @@ public class Reimu extends THHUnit{
 	@Override
 	public final void setBullet(int kind,DynamInteractable user) {
 		BulletBlueprint.clear(bulletScripts[kind],user.getDynam());
-		BulletBlueprint.team = status.get(TEAM);
+		BulletBlueprint.standpointGroup = standpoint.get();
 		switch(kind){
 		case FUDA_KOUHAKU:
 			BulletBlueprint.name = "FUDA_KOUHAKU";
@@ -160,7 +165,7 @@ public class Reimu extends THHUnit{
 			break;
 		}
 	}
-	private final BulletScript[] bulletScripts = new BulletScript[10];
+	private static transient final BulletScript[] bulletScripts = new BulletScript[10];
 	{
 		bulletScripts[FUDA_KOUHAKU] = new BulletScript() {
 			@Override
@@ -171,7 +176,7 @@ public class Reimu extends THHUnit{
 		bulletScripts[FUDA_SHIROKURO] = BulletBlueprint.DEFAULT_SCRIPT;
 		bulletScripts[FUDA_SOUHAKU] = BulletBlueprint.DEFAULT_SCRIPT;
 	}
-	private final EffectScript[] effectScripts = new EffectScript[10];
+	private static transient final EffectScript[] effectScripts = new EffectScript[10];
 	{
 		effectScripts[LIGHTNING] = EffectBlueprint.DEFAULT_SCRIPT;
 		effectScripts[FUDA_HIT_EF] = EffectBlueprint.DEFAULT_SCRIPT;

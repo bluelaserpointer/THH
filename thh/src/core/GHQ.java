@@ -194,13 +194,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 					if(stopEventKind == NONE)
 						gameFrame++;
 				}
-				if(gameFrame == 10) {
-					System.out.println("!!");
-					for(URL url : arrayImageURL) {
-						if(url != null)
-							url.toString();
-					}
-				}
 			}
 		//}catch(Exception e){
 			//JOptionPane.showMessageDialog(null, "申し訳ありませんが、エラーが発生しました。\nエラーコード：" + e.toString(),"エラー",JOptionPane.ERROR_MESSAGE);
@@ -341,7 +334,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	public static final Unit[] callBulletEngage(Bullet bullet) {
-		return engine.callBulletEngage(getCharacters_team(bullet.team,false),bullet);
+		return engine.callBulletEngage(getCharacters_standpoint(bullet,false),bullet);
 	}
 	public static final Unit[] callBulletEngage(Unit[] characters,Bullet bullet) {
 		return engine.callBulletEngage(characters,bullet);
@@ -480,17 +473,17 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final Unit getCharacter(int index) {
 		return characters.get(index);
 	}
-	public static final Unit[] getCharacters_team(int team,boolean white) {
+	public static final Unit[] getCharacters_standpoint(HasStandpoint source,boolean white) {
 		final Unit[] charaArray = new Unit[characters.size()];
 		int founded = 0;
 		for(Unit chara : characters) {
-			if(white == isSameTeam(team,chara.getTeam()))
+			if(white == source.isFriendly(chara))
 				charaArray[founded++] = chara;
 		}
 		return Arrays.copyOf(charaArray, founded);
 	}
-	public static final Unit[] getCharacters_team(int team) {
-		return getCharacters_team(team,true);
+	public static final Unit[] getCharacters_team(HasStandpoint source) {
+		return getCharacters_standpoint(source,true);
 	}
 	public static final Unit[] getCharacters() {
 		final Unit[] unitArray = new Unit[characters.size()];
@@ -498,10 +491,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			unitArray[i] = characters.get(i);
 		return unitArray;
 	}
-	public static final Unit getNearstEnemy(int team,int x,int y) {
+	public static final Unit getNearstEnemy(HasStandpoint source,int x,int y) {
 		double nearstDistance = NONE;
 		Unit nearstChara = null;
-		for(Unit enemy : getCharacters_team(team,true)) {
+		for(Unit enemy : getCharacters_standpoint(source,false)) {
 			if(!enemy.isAlive())
 				continue;
 			final double distance = abs(enemy.getDynam().getDistance(x, y));
@@ -516,15 +509,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final int getCharaAmount() {
 		return characters.size();
 	}
-	public static final int getCharaTeam(int index) {
-		return characters.get(index).getTeam();
-	}
-	public static final ArrayList<Unit> getVisibleEnemies(Unit chara) {
+	public static final ArrayList<Unit> getVisibleEnemies(Unit unit) {
 		final ArrayList<Unit> visibleEnemies = new ArrayList<Unit>();
-		for(Unit enemy : getCharacters_team(chara.getTeam(),false)) {
+		for(Unit enemy : getCharacters_standpoint(unit,false)) {
 			if(!enemy.isAlive())
 				continue;
-			if(enemy.dynam.isVisible(chara))
+			if(enemy.dynam.isVisible(unit))
 				visibleEnemies.add(enemy);
 		}
 		return visibleEnemies;
@@ -533,7 +523,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		final Dynam DYNAM = chara.dynam;
 		Unit neastVisibleEnemy = null;
 		double enemyDistance = MAX;
-		for(Unit enemy : getCharacters_team(chara.getTeam(),false)) {
+		for(Unit enemy : getCharacters_standpoint(chara,false)) {
 			if(!enemy.isAlive())
 				continue;
 			if(enemyDistance == MAX) {
@@ -555,7 +545,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		final Dynam DYNAM = bullet.dynam;
 		Unit neastVisibleEnemy = null;
 		double enemyDistance = MAX;
-		for(Unit enemy : getCharacters_team(bullet.team,false)) {
+		for(Unit enemy : getCharacters_standpoint(bullet,false)) {
 			if(!enemy.isAlive())
 				continue;
 			if(enemyDistance == MAX) {
@@ -597,11 +587,11 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return structureArray;
 	}
 
-	public static Structure[] getStructures(int team,boolean white){
+	public static Structure[] getStructures(HasStandpoint source,boolean white){
 		Structure result[] = new Structure[structures.size()];
 		int searched = 0;
 		for(Structure structure : structures) {
-			if(white == (structure.getTeam() == team))
+			if(white == structure.isFriendly(source))
 				result[searched++] = structure;
 		}
 		return Arrays.copyOf(result, searched);
@@ -620,9 +610,11 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return false;
 	}
-	public static final boolean hitLandscape_Rect(int team,int x,int y,int w,int h){
+	public static final boolean hitLandscape_Rect(HasStandpoint standpoint,int x,int y,int w,int h){
 		for(Structure structure : structures) {
-			if(GHQ.isRival(team,structure.getTeam()) && structure.contains(x, y, w, h))
+			if(structure.getStandpoint() == null)
+				System.out.println("bug.");
+			if(!standpoint.isFriendly(structure) && structure.contains(x, y, w, h))
 				return true;
 		}
 		return false;
@@ -748,9 +740,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		G2.drawArc(x - radius,y - radius,radius*2,radius*2,90,(int)((double)hp/(double)maxHP*360));
 		G2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
 	}
-	public final int receiveDamageInSquare(int team,int hp,int x,int y,int size){
+	public final int receiveDamageInSquare(HasStandpoint source,int hp,int x,int y,int size){
 		for(Bullet bullet : bullets){
-			if(team != bullet.team && bullet.atk > 0 && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2)){
+			if(!source.isFriendly(bullet) && bullet.atk > 0 && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2)){
 				hp -= bullet.atk;
 				bullet.SCRIPT.bulletHitObject(bullet);
 				if(hp <= 0)
@@ -759,9 +751,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return hp;
 	}
-	public final int receiveBulletInCircle(int hp,int x,int y,int size,int team){
+	public final int receiveBulletInCircle(HasStandpoint source, int hp,int x,int y,int size){
 		for(Bullet bullet : bullets){
-			if(team != bullet.team && bullet.atk > 0 && circleCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)){ //ﾐnﾍｻ
+			if(!source.isFriendly(bullet) && bullet.atk > 0 && circleCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)){ //ﾐnﾍｻ
 				hp -= bullet.atk;
 				bullet.SCRIPT.bulletHitObject(bullet);
 				if(hp <= 0)
@@ -770,20 +762,20 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return hp;
 	}
-	public final Bullet searchBulletInSquare_single(int x,int y,int size,int team){
+	public final Bullet searchBulletInSquare_single(HasStandpoint source,int x,int y,int size){
 		for(int i = 0;i < bullets.size();i++){
 			final Bullet bullet = bullets.get(i);
-			if(team != bullet.team && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2))
+			if(!source.isFriendly(bullet) && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2))
 				return bullet; //return ID
 		}
 		return null; //Not found
 	}
-	public final Bullet[] searchBulletInSquare_multiple(int x,int y,int size,int team){
+	public final Bullet[] searchBulletInSquare_multiple(HasStandpoint source,int x,int y,int size){
 		Bullet[] foundIDs = new Bullet[bullets.size()];
 		int foundAmount =  0;
 		for(int i = 0;i < bullets.size();i++){
 			final Bullet bullet = bullets.get(i);
-			if(team != bullet.team && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2))
+			if(!source.isFriendly(bullet) && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2))
 				foundIDs[foundAmount++] = bullet; //record ID
 		}
 		return Arrays.copyOf(foundIDs,foundAmount);
@@ -1418,10 +1410,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		arraySound[soundID].loop(loops);
 	}
 	
-	//special
-	public static final boolean isRival(int team1,int team2) {
-		return team1 == NONE || team1 != team2;
-	}
 	//math & string
 	public static final double angleFormat(double radian){ //ラジアン整理メソッド -PI~+PIに直す
 		radian %= PI*2;

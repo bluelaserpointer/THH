@@ -13,7 +13,7 @@ public final class BulletBlueprint {
 	public static int
 		nowFrame,
 		size,
-		team,
+		standpointGroup,
 		atk,
 		offSet,
 		penetration,
@@ -32,7 +32,7 @@ public final class BulletBlueprint {
 		name = GHQ.NOT_NAMED;
 		script = nextScript;
 		size = 2;
-		team = NONE;
+		standpointGroup = NONE;
 		atk = offSet = 0;
 		penetration = reflection = 0;
 		nowFrame = GHQ.getNowFrame();
@@ -47,7 +47,7 @@ public final class BulletBlueprint {
 		name = GHQ.NOT_NAMED;
 		script = nextScript;
 		size = 2;
-		team = NONE;
+		standpointGroup = NONE;
 		atk = offSet = 0;
 		penetration = reflection = 0;
 		nowFrame = GHQ.getNowFrame();

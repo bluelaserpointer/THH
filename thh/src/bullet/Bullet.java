@@ -6,23 +6,24 @@ import core.Dynam;
 import core.DynamInteractable;
 import core.Entity_double;
 import core.GHQ;
+import core.HasStandpoint;
+import core.Standpoint;
 import unit.Unit;
 
-public class Bullet extends Entity_double implements DynamInteractable{
+public class Bullet extends Entity_double implements DynamInteractable,HasStandpoint{
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;
 	
 	private int idleExecuted = 0;
 	
 	public final BulletScript SCRIPT; //a script of unique behaviors
+	public final Standpoint standpoint;
 	
 	public String name;
 	public final int
 		SIZE,
-		INITIAL_TEAM,
 		INITIAL_ATK;
 	public int
-		team,
 		atk,
 		offSet;
 	private final int
@@ -46,7 +47,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		SIZE = BulletBlueprint.size;
 		LIMIT_FRAME = BulletBlueprint.limitFrame;
 		LIMIT_RANGE = BulletBlueprint.limitRange;
-		INITIAL_TEAM = team = BulletBlueprint.team;
+		standpoint = new Standpoint(BulletBlueprint.standpointGroup);
 		INITIAL_ATK = atk = BulletBlueprint.atk;
 		offSet = BulletBlueprint.offSet;
 		penetration = BulletBlueprint.penetration;
@@ -64,7 +65,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 		SIZE = bullet.SIZE;
 		LIMIT_FRAME = bullet.LIMIT_FRAME;
 		LIMIT_RANGE = bullet.LIMIT_RANGE;
-		INITIAL_TEAM = team = bullet.team;
+		standpoint = new Standpoint(bullet.standpoint.get());
 		INITIAL_ATK = atk = bullet.atk;
 		offSet = bullet.offSet;
 		penetration = bullet.penetration;
@@ -150,7 +151,7 @@ public class Bullet extends Entity_double implements DynamInteractable{
 			}
 		}
 		//entity collision
-		for(Unit chara : GHQ.callBulletEngage(GHQ.getCharacters_team(team,!HIT_ENEMY),this)) {
+		for(Unit chara : GHQ.callBulletEngage(GHQ.getCharacters_standpoint(this,!HIT_ENEMY),this)) {
 			chara.damage_amount(atk);
 			SCRIPT.bulletHitObject(this);
 			if(penetration > 0) {
@@ -241,5 +242,13 @@ public class Bullet extends Entity_double implements DynamInteractable{
 	}
 	public final int getReflection() {
 		return reflection;
+	}
+	@Override
+	public final Standpoint getStandpoint() {
+		return standpoint;
+	}
+	@Override
+	public boolean isFriendly(HasStandpoint target) {
+		return standpoint.isFriendly(target.getStandpoint());
 	}
 }

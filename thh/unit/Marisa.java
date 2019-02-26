@@ -11,6 +11,11 @@ import weapon.Weapon;
 import weapon.WeaponInfo;
 
 public class Marisa extends THHUnit{
+	private static final long serialVersionUID = -1533719907505962673L;
+
+	public Marisa(int initialGroup) {
+		super(initialGroup);
+	}
 	{
 		charaSize = 20;
 	}
@@ -84,8 +89,8 @@ public class Marisa extends THHUnit{
 		slot_spell = 0;
 	}
 	@Override
-	public final void respawn(int charaID,int charaTeam,int x,int y){
-		super.respawn(charaID,charaTeam,x,y);
+	public final void respawn(int charaID,int x,int y){
+		super.respawn(charaID,x,y);
 		status.setDefault(HP, 10000);
 		status.setDefault(MP, 10000);
 		for(Weapon ver : weaponController) {
@@ -109,7 +114,7 @@ public class Marisa extends THHUnit{
 	@Override
 	public final void setBullet(int kind,DynamInteractable user) {
 		BulletBlueprint.clear(bulletScripts[kind],user.getDynam());
-		BulletBlueprint.team = status.get(TEAM);
+		BulletBlueprint.standpointGroup = standpoint.get();
 		switch(kind){
 		case MILLKY_WAY:
 			BulletBlueprint.name = "MILLKY_WAY";
@@ -209,7 +214,7 @@ public class Marisa extends THHUnit{
 			break;
 		}
 	}
-	private final BulletScript[] bulletScripts = new BulletScript[10];
+	private static transient final BulletScript[] bulletScripts = new BulletScript[10];
 	{
 		bulletScripts[MILLKY_WAY] = BulletBlueprint.DEFAULT_SCRIPT;
 		bulletScripts[NARROW_SPARK] = new BulletScript() {
@@ -254,7 +259,7 @@ public class Marisa extends THHUnit{
 			}
 		};
 	}
-	private final EffectScript[] effectScripts = new EffectScript[10];
+	private static transient final EffectScript[] effectScripts = new EffectScript[10];
 	{
 		effectScripts[MISSILE_TRACE1_EF] = new EffectScript() {
 			@Override

@@ -10,7 +10,7 @@ public class DummyUnit extends Unit{
 
 	private int dummyIID;
 	public DummyUnit(Dynam dynam) {
-		super(new Status());
+		super(new Status(),GHQ.NONE);
 		super.dynam.setAllBySample(dynam);
 		dummyIID = GHQ.loadImage("gui_editor/Unit.png");
 	}
@@ -27,13 +27,13 @@ public class DummyUnit extends Unit{
 	}
 
 	@Override
-	public void respawn(int charaTeam, int spawnX, int spawnY) {
+	public void respawn(int spawnX, int spawnY) {
 		
 		
 	}
 
 	@Override
-	public void respawn(int charaTeam, int spawnX, int spawnY, int hp) {
+	public void respawn(int spawnX, int spawnY, int hp) {
 		
 		
 	}
@@ -90,12 +90,6 @@ public class DummyUnit extends Unit{
 	public boolean kill(boolean force) {
 		
 		return false;
-	}
-
-	@Override
-	public int getTeam() {
-		
-		return 0;
 	}
 
 	@Override

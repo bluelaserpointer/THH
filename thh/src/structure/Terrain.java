@@ -102,10 +102,6 @@ public class Terrain extends Structure{
 		return false;
 	}
 	@Override
-	public int getTeam() {
-		return GHQ.NONE;
-	}
-	@Override
 	public Rectangle2D getBoundingBox() {
 		return polygon.getBounds2D();
 	}
