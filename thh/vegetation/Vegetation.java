@@ -3,9 +3,9 @@ package vegetation;
 import java.awt.geom.Rectangle2D;
 
 import core.GHQ;
-import core.HasBody;
+import core.HasBoundingBox;
 
-public class Vegetation implements HasBody{
+public class Vegetation implements HasBoundingBox{
 	private String imageURL;
 	private int imageIID;
 	private int x,y,w,h;

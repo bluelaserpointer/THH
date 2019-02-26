@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import core.Dynam;
 import core.GHQ;
-import core.HasBody;
+import core.HasBoundingBox;
 import input.SingleKeyListener;
 import paint.ColorFilling;
 import paint.ColorFraming;
@@ -78,7 +78,7 @@ public class DefaultStageEditor {
 		UNIT = 2,
 		VEGETATION = 3,
 		ITEM = 4;
-	private static HasBody selectObject,mouseOveredObject;
+	private static HasBoundingBox selectObject,mouseOveredObject;
 	//GUI_GROUP_ID
 	public static final String
 		EDIT_MENU_GROUP = "EDIT_MENU_GROUP",

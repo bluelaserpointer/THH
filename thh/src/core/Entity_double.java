@@ -1,6 +1,6 @@
 package core;
 
-public abstract class Entity_double {
+public abstract class Entity_double{
 	public final DynamInteractable source; //an information source of user
 	public final Dynam dynam = new Dynam();
 	public final int INITIAL_FRAME;

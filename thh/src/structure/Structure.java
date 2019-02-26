@@ -6,9 +6,9 @@ import java.io.Serializable;
 import core.Dynam;
 import core.DynamInteractable;
 import core.GHQ;
-import core.HasBody;
+import core.HasBoundingBox;
 
-public abstract class Structure implements Serializable,HasBody{
+public abstract class Structure implements Serializable,HasBoundingBox{
 	private static final long serialVersionUID = -641218813005671688L;
 	protected final int
 		NONE = GHQ.NONE;

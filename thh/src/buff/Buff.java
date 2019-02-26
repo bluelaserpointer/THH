@@ -1,12 +1,14 @@
-package unit;
+package buff;
 
 import java.io.Serializable;
 
 import core.GHQ;
+import unit.Status;
 
 public abstract class Buff implements Serializable{
 	private static final long serialVersionUID = -6546281620292643179L;
 	final int INITIAL_FRAME;
+	protected Status targetStatus;
 	
 	public Buff() {
 		INITIAL_FRAME = GHQ.getNowFrame();
@@ -18,10 +20,10 @@ public abstract class Buff implements Serializable{
 	public String getName() {
 		return "<Not named>";
 	}
-	public abstract void idle(Status status);
-	public void reset(Status status) {};
+	public abstract void idle();
+	public void reset() {};
 	
-	public static Buff getSpanTypeBuff(String buffName,int affectKind,int changes,int spanFrame) {
+	public static Buff getSpanTypeBuff(String buffName,int affectKind,int affectAmount,int spanFrame) {
 		return new Buff() {
 			private static final long serialVersionUID = 9062557653968203855L;
 			@Override
@@ -29,9 +31,9 @@ public abstract class Buff implements Serializable{
 				return buffName;
 			}
 			@Override
-			public void idle(Status status) {
+			public void idle() {
 				if(GHQ.getNowFrame() - INITIAL_FRAME % spanFrame == 0)
-					status.add(affectKind, changes);
+					targetStatus.add(affectKind, affectAmount);
 			}
 		};
 	}

@@ -3,6 +3,7 @@ package unit;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import buff.Buff;
 import core.GHQ;
 
 public class Status implements Serializable{
@@ -26,7 +27,7 @@ public class Status implements Serializable{
 		for(int i = 0;i < parameters.length;i++)
 			parameters[i] = parameterDefaults[i];
 		for(Buff buff : skillEffects)
-			buff.reset(this);
+			buff.reset();
 	}
 	
 	//role

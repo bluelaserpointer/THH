@@ -11,9 +11,9 @@ import core.Entity_double;
 import core.ErrorCounter;
 import core.GHQ;
 import core.MessageSource;
-import core.HasBody;
+import core.HasBoundingBox;
 
-public abstract class Unit extends Entity_double implements MessageSource,DynamInteractable,Serializable,HasBody{
+public abstract class Unit extends Entity_double implements MessageSource,DynamInteractable,Serializable,HasBoundingBox{
 	private static final long serialVersionUID = 7140005723063155203L;
 
 	protected static final int
@@ -25,6 +25,7 @@ public abstract class Unit extends Entity_double implements MessageSource,DynamI
 	public String originalName = "";
 	public final ActionPlan actions = new ActionPlan();
 	public final Status status;
+	public final Inventory inventory = new Inventory();
 	
 	//Initialization
 	public Unit(Status status) {

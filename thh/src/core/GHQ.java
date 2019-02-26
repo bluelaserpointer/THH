@@ -194,6 +194,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 					if(stopEventKind == NONE)
 						gameFrame++;
 				}
+				if(gameFrame == 10) {
+					System.out.println("!!");
+					for(URL url : arrayImageURL) {
+						if(url != null)
+							url.toString();
+					}
+				}
 			}
 		//}catch(Exception e){
 			//JOptionPane.showMessageDialog(null, "申し訳ありませんが、エラーが発生しました。\nエラーコード：" + e.toString(),"エラー",JOptionPane.ERROR_MESSAGE);
@@ -1185,6 +1192,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		arrayImageURL[arrayImage_maxID] = url;
 		arrayImage[arrayImage_maxID] = img;
+		//System.out.println(arrayImage_maxID + ">>:" + arrayImageURL[arrayImage_maxID].toString());
 		return arrayImage_maxID;
 	}
 	public static final int loadImage(URL url) {
@@ -1201,6 +1209,21 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	*/
 	public static final int loadImage(String urlStr){ //画像読み込みメソッド
 		return loadImage(urlStr,null);
+	}
+	private static final FileFilter PICTURE_FINDER = new FileFilter(){
+		public boolean accept(File dir){
+			return dir.getName().endsWith(".png") || dir.getName().endsWith(".jpeg");
+		}
+	};
+	public static final void loadImageFolder(File folder) {
+		final File[] fileList = folder.listFiles(PICTURE_FINDER);
+		for(File imageFile : fileList) {
+			try {
+				loadImage(imageFile.toURI().toURL());
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	/**
 	* Load the sound file.

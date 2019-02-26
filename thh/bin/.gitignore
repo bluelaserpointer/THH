@@ -1,15 +1,15 @@
-/.classpath
 /.project
 /.settings/
 /_config_1.0/
+/font/
+/image/
 /action/
+/buff/
 /bullet/
 /core/
 /effect/
 /engine/
-/font/
 /gui/
-/image/
 /input/
 /library/
 /manifest
@@ -17,5 +17,5 @@
 /stage/
 /structure/
 /unit/
-/weapon/
 /vegetation/
+/weapon/
