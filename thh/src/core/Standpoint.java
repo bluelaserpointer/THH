@@ -1,6 +1,10 @@
 package core;
 
-public class Standpoint {
+import java.io.Serializable;
+
+public class Standpoint implements Serializable{
+	private static final long serialVersionUID = 4039529801782707123L;
+
 	public static Standpoint NULL_STANDPOINT = new Standpoint(GHQ.NONE);
 	
 	private int group;

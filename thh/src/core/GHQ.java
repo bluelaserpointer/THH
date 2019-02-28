@@ -1593,7 +1593,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
 			oos.writeObject(new SaveHolder(save));
 			oos.close();
-		}catch(IOException e){
+		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}
@@ -1605,7 +1605,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		SaveHolder saveHolder = null;
 		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))){
 			saveHolder = (SaveHolder)ois.readObject();
-		}catch(IOException | ClassNotFoundException e){
+		}catch(Exception e){
 			e.printStackTrace();
 		}
 		if(saveHolder == null) {

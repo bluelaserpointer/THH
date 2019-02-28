@@ -8,6 +8,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.BitSet;
 
 import core.GHQ;
+import paint.PaintScript;
 
 public class Tile extends Structure{
 	private static final long serialVersionUID = -1364728656700080343L;
@@ -111,6 +112,16 @@ public class Tile extends Structure{
 					G2.setColor(color);
 					G2.setStroke(stroke);
 					G2.fillRect(PX,PY,TILE_SIZE,TILE_SIZE);
+				}
+			}
+		}
+	}
+	public void putPaint(PaintScript paintScript) {
+		for(int xi = 0;xi < X_TILES;xi++) {
+			for(int yi = 0;yi < Y_TILES;yi++) {
+				if(aliveTiles.get(xi + yi*X_TILES)){
+					final int PX = ORIGIN_X + xi*TILE_SIZE,PY = ORIGIN_Y + yi*TILE_SIZE;
+					paintScript.paint(PX,PY,TILE_SIZE,TILE_SIZE);
 				}
 			}
 		}

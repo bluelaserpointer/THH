@@ -3,6 +3,7 @@ package paint;
 import core.GHQ;
 
 public class ImageFrame implements PaintScript{
+	private static final long serialVersionUID = -1537274221051413163L;
 	private final int IMAGE_IID;
 	public ImageFrame(int imageIID) {
 		IMAGE_IID = imageIID;

@@ -33,12 +33,6 @@ public class DummyUnit extends Unit{
 	}
 
 	@Override
-	public void respawn(int spawnX, int spawnY, int hp) {
-		
-		
-	}
-
-	@Override
 	public void moveRel(int dx, int dy) {
 		
 		

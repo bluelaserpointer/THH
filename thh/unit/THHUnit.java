@@ -61,11 +61,6 @@ public abstract class THHUnit extends Unit {
 		slot_spell = 0;
 	}
 	@Override
-	public void respawn(int x, int y,int hp) {
-		status.setDefault(HP,hp);
-		this.respawn(x, y);
-	}
-	@Override
 	public void dynam() {
 		if(!isMovable())
 			return;

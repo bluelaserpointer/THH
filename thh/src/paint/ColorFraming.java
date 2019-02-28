@@ -7,6 +7,7 @@ import java.awt.Stroke;
 import core.GHQ;
 
 public class ColorFraming implements PaintScript{
+	private static final long serialVersionUID = 6260543840507733715L;
 	private final Color COLOR;
 	private final Stroke STROKE;
 	private final int w,h;

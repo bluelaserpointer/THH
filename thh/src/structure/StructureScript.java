@@ -1,6 +1,5 @@
 package structure;
 
-import java.awt.Color;
 import java.io.Serializable;
 
 import core.Dynam;
@@ -9,14 +8,6 @@ import core.GHQ;
 
 public class StructureScript<T extends Structure> implements Serializable{
 	private static final long serialVersionUID = -4624130557133104038L;
-	public static final StructureScript<Tile> WHITE_WALL = new StructureScript<Tile>() {
-		private static final long serialVersionUID = -8765648642542906805L;
-		@Override
-		public void paint(Tile tile,boolean doAnimation) {
-			tile.fill(Color.WHITE);
-			tile.draw(Color.LIGHT_GRAY, GHQ.stroke3);
-		}
-	};
 	public String getName() {
 		return GHQ.NOT_NAMED;
 	}

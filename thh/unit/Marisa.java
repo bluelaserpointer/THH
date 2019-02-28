@@ -89,10 +89,8 @@ public class Marisa extends THHUnit{
 		slot_spell = 0;
 	}
 	@Override
-	public final void respawn(int charaID,int x,int y){
-		super.respawn(charaID,x,y);
-		status.setDefault(HP, 10000);
-		status.setDefault(MP, 10000);
+	public final void respawn(int x,int y){
+		super.respawn(x,y);
 		for(Weapon ver : weaponController) {
 			if(ver != null)
 				ver.reset();

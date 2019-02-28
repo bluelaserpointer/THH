@@ -86,8 +86,6 @@ public class DefaultStageEditor {
 	//GUI
 	private static TitledLabel configLabel;
 	private static CombinedButtons CB_placeKind;
-	//PaintScripts
-	//private static final PaintScript RED_FRAMING = new ColorFraming(Color.RED,GHQ.stroke3);
 	//loadResource
 	public static void init(File stageFile) {
 		final int SCREEN_W = GHQ.getScreenW(),SCREEN_H = GHQ.getScreenH();

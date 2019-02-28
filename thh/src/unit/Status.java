@@ -12,6 +12,8 @@ public class Status implements Serializable{
 	private final int parameters[];
 	public final ArrayList<Buff> skillEffects = new ArrayList<Buff>();
 	public final ArrayList<Buff> buffs = new ArrayList<Buff>();
+	
+	public static final int UNCHANGE = -1;
 
 	//initialization
 	public Status(int parameterAmount) {
@@ -29,7 +31,6 @@ public class Status implements Serializable{
 		for(Buff buff : skillEffects)
 			buff.reset();
 	}
-	
 	//role
 	/**
 	 * Set a default value to a parameter.

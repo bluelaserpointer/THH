@@ -1,10 +1,12 @@
 package unit;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import core.GHQ;
 
-public class Inventory {
+public class Inventory implements Serializable{
+	private static final long serialVersionUID = 353322954827886207L;
 	protected ArrayList<Item> items;
 	protected int storageSize;
 	public Inventory(int storageSize) {

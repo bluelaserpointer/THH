@@ -12,7 +12,7 @@ public abstract class GUIParts {
 	public GUIParts(String group,PaintScript paintScript,int x,int y,int w,int h) {
 		GROUP = group;
 		if(paintScript == null)
-			PAINT_SCRIPT = new PaintScript() {};
+			PAINT_SCRIPT = PaintScript.BLANK_SCRIPT;
 		else
 			PAINT_SCRIPT = paintScript;
 		this.x = x;

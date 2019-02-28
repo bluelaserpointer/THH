@@ -50,15 +50,7 @@ public abstract class Unit extends Entity_double implements MessageSource,DynamI
 		respawn(spawnX,spawnY);
 		return this;
 	}
-	public final Unit initialSpawn(int spawnX,int spawnY,int hp) {
-		loadImageData();
-		loadSoundData();
-		battleStarted();
-		respawn(spawnX,spawnY,hp);
-		return this;
-	}
 	public abstract void respawn(int spawnX,int spawnY);
-	public abstract void respawn(int spawnX,int spawnY,int hp);
 	public void loadImageData(){}
 	public void loadSoundData(){}
 	public void battleStarted(){}

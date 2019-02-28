@@ -7,6 +7,8 @@ import java.awt.Graphics2D;
 import java.io.File;
 import java.util.Arrays;
 
+import static unit.THHUnit.*;
+
 import bullet.Bullet;
 import core.GHQ;
 import core.MessageSource;
@@ -102,8 +104,10 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		formationsX[1] = +15;formationsY[1] = 0;
 		//friend
 		friends = new THHUnit[2];
-		friends[0] = (THHUnit)new Marisa(FRIEND).initialSpawn(formationCenterX + formationsX[0],formationCenterY + formationsY[0],4000);
-		friends[1] = (THHUnit)new Reimu(FRIEND).initialSpawn(formationCenterX + formationsX[1],formationCenterY + formationsY[1],4000);
+		friends[0] = (THHUnit)new Marisa(FRIEND).initialSpawn(formationCenterX + formationsX[0],formationCenterY + formationsY[0]);
+		friends[0].status.set(HP, 4000);
+		friends[1] = (THHUnit)new Reimu(FRIEND).initialSpawn(formationCenterX + formationsX[1],formationCenterY + formationsY[1]);
+		friends[1].status.set(HP, 4000);
 		for(Unit friend : friends)
 			GHQ.addUnit(friend);
 		//action
@@ -112,12 +116,12 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		//ActionInfo.addDstPlan(1000, GHQ.getScreenW() + 200, GHQ.getScreenH() + 100);
 		//final Action moveLeftToRight200 = new Action(this);
 		//enemy
-		GHQ.addUnit(new Fairy(ENEMY).initialSpawn(300, 100,2500));
-		GHQ.addUnit(new Fairy(ENEMY).initialSpawn(700, 20,2500));
-		GHQ.addUnit(new Fairy(ENEMY).initialSpawn(1200, 300,2500));
-		GHQ.addUnit(new Fairy(ENEMY).initialSpawn(1800, 700,2500));
-		GHQ.addUnit(new WhiteMan(ENEMY).initialSpawn(400, GHQ.random2(100, 150),50000));
-		GHQ.addUnit(new BlackMan(ENEMY).initialSpawn(200, GHQ.random2(100, 150),10000));
+		GHQ.addUnit(new Fairy(ENEMY).initialSpawn(300, 100)).status.setDefault(HP, 2500);
+		GHQ.addUnit(new Fairy(ENEMY).initialSpawn(700, 20)).status.setDefault(HP, 2500);
+		GHQ.addUnit(new Fairy(ENEMY).initialSpawn(1200, 300)).status.setDefault(HP, 2500);
+		GHQ.addUnit(new Fairy(ENEMY).initialSpawn(1800, 700)).status.setDefault(HP, 2500);
+		GHQ.addUnit(new WhiteMan(ENEMY).initialSpawn(400, GHQ.random2(100, 150))).status.setDefault(HP, 50000);
+		GHQ.addUnit(new BlackMan(ENEMY).initialSpawn(200, GHQ.random2(100, 150))).status.setDefault(HP, 10000);
 	}
 	@Override
 	public final void stageSetup() {

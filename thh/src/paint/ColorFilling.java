@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import core.GHQ;
 
 public class ColorFilling implements PaintScript{
+	private static final long serialVersionUID = -2891833654516240206L;
 	private final Color COLOR;
 	private final int w,h;
 	public ColorFilling(Color color) {
