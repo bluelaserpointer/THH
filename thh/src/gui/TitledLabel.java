@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 
 import core.GHQ;
 import input.KeyTypeListener;
-import paint.PaintScript;
+import paint.RectPaint;
 
 public class TitledLabel extends GUIParts{
 	private final KeyTypeListener typeListener = new KeyTypeListener(w/5) {
@@ -14,7 +14,7 @@ public class TitledLabel extends GUIParts{
 			typeEnded(text);
 		}
 	};
-	public TitledLabel(String group, PaintScript paintScript, int x, int y, int w, int h) {
+	public TitledLabel(String group, RectPaint paintScript, int x, int y, int w, int h) {
 		super(group, paintScript, x, y, w, h);
 		GHQ.addListenerEx(typeListener);
 	}

@@ -17,6 +17,7 @@ import bullet.Bullet;
 import effect.Effect;
 import engine.Engine_THH1;
 import gui.GUIParts;
+import gui.MessageSource;
 import input.KeyListenerEx;
 import input.KeyTypeListener;
 import input.MouseListenerEx;

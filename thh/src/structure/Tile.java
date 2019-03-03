@@ -8,7 +8,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.BitSet;
 
 import core.GHQ;
-import paint.PaintScript;
+import paint.RectPaint;
 
 public class Tile extends Structure{
 	private static final long serialVersionUID = -1364728656700080343L;
@@ -116,7 +116,7 @@ public class Tile extends Structure{
 			}
 		}
 	}
-	public void putPaint(PaintScript paintScript) {
+	public void putPaint(RectPaint paintScript) {
 		for(int xi = 0;xi < X_TILES;xi++) {
 			for(int yi = 0;yi < Y_TILES;yi++) {
 				if(aliveTiles.get(xi + yi*X_TILES)){

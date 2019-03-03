@@ -1,10 +1,10 @@
-package core;
+package gui;
 
-import gui.GUIParts;
 import paint.PaintScript;
+import paint.RectPaint;
 
 public abstract class MessageWindow extends GUIParts{
-	public MessageWindow(String group,PaintScript paintScript,int x,int y,int w,int h) {
+	public MessageWindow(String group,RectPaint paintScript,int x,int y,int w,int h) {
 		super(group,paintScript,x,y,w,h);
 	}
 	//role

@@ -1,11 +1,11 @@
 package structure;
 
 import paint.ImageFrame;
-import paint.PaintScript;
+import paint.RectPaint;
 
 public class ImageOnlyTileScript extends StructureScript<Tile>{
 	private static final long serialVersionUID = -2321346080405596602L;
-	private final PaintScript paintScript;
+	private final RectPaint paintScript;
 	public ImageOnlyTileScript(int imageIID) {
 		paintScript = new ImageFrame(imageIID);
 	}

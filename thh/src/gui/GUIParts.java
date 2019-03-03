@@ -1,18 +1,18 @@
 package gui;
 
 import core.GHQ;
-import paint.PaintScript;
+import paint.RectPaint;
 
 public abstract class GUIParts {
 	public final String GROUP;
 	protected boolean isEnabled;
 	public int x,y;
 	public final int w,h;
-	protected final PaintScript PAINT_SCRIPT;
-	public GUIParts(String group,PaintScript paintScript,int x,int y,int w,int h) {
+	protected final RectPaint PAINT_SCRIPT;
+	public GUIParts(String group,RectPaint paintScript,int x,int y,int w,int h) {
 		GROUP = group;
 		if(paintScript == null)
-			PAINT_SCRIPT = PaintScript.BLANK_SCRIPT;
+			PAINT_SCRIPT = RectPaint.BLANK_SCRIPT;
 		else
 			PAINT_SCRIPT = paintScript;
 		this.x = x;

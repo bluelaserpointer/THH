@@ -11,8 +11,8 @@ import static unit.THHUnit.*;
 
 import bullet.Bullet;
 import core.GHQ;
-import core.MessageSource;
 import gui.DefaultStageEditor;
+import gui.MessageSource;
 import input.DoubleNumKeyListener;
 import input.MouseListenerEx;
 import input.SingleKeyListener;

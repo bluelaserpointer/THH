@@ -4,13 +4,13 @@ import java.awt.Color;
 
 import core.GHQ;
 import paint.ColorFraming;
-import paint.PaintScript;
+import paint.RectPaint;
 
 public class CombinedButtons extends GUIParts{
 	private int selection;
 	private int defaultSelection;
-	private PaintScript emphasizer = new ColorFraming(Color.RED,GHQ.stroke3);
-	public CombinedButtons(String group, int defaultValue, PaintScript paintScript,int x, int y, int w, int h) {
+	private RectPaint emphasizer = new ColorFraming(Color.RED,GHQ.stroke3);
+	public CombinedButtons(String group, int defaultValue, RectPaint paintScript,int x, int y, int w, int h) {
 		super(group, paintScript, x, y, w, h);
 		selection = this.defaultSelection = defaultValue;
 	}
@@ -18,7 +18,7 @@ public class CombinedButtons extends GUIParts{
 		super(group, null, 0, 0, 0, 0);
 		selection = this.defaultSelection = defaultValue;
 	}
-	public CombinedButtons(String group, PaintScript paintScript,int x, int y, int w, int h) {
+	public CombinedButtons(String group, RectPaint paintScript,int x, int y, int w, int h) {
 		super(group, paintScript, x, y, w, h);
 		selection = this.defaultSelection = GHQ.NONE;
 	}
@@ -34,7 +34,7 @@ public class CombinedButtons extends GUIParts{
 	public void setDefaultValue(int value) {
 		defaultSelection = value;
 	}
-	public void setEmphasizer(PaintScript paintScript) {
+	public void setEmphasizer(RectPaint paintScript) {
 		emphasizer = paintScript;
 	}
 	//fix
@@ -43,7 +43,7 @@ public class CombinedButtons extends GUIParts{
 		return false;
 	}
 	//main role
-	public void addButton(int buttonID, PaintScript paintScript,int x, int y, int w, int h) {
+	public void addButton(int buttonID, RectPaint paintScript,int x, int y, int w, int h) {
 		GHQ.addGUIParts(new BasicButton(super.GROUP, paintScript, x, y, w, h) {
 			@Override
 			public void clicked() {

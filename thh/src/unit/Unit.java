@@ -10,8 +10,8 @@ import core.DynamInteractable;
 import core.Entity_double;
 import core.ErrorCounter;
 import core.GHQ;
-import core.MessageSource;
 import core.Standpoint;
+import gui.MessageSource;
 import core.HasBoundingBox;
 import core.HasStandpoint;
 
