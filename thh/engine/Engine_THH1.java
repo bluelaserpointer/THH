@@ -1,13 +1,12 @@
 package engine;
 
 import static java.awt.event.KeyEvent.*;
+import static thhunit.THHUnit.*;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.File;
 import java.util.Arrays;
-
-import static unit.THHUnit.*;
 
 import bullet.Bullet;
 import core.GHQ;
@@ -20,7 +19,9 @@ import input.SingleNumKeyListener;
 import stage.StageEngine;
 import stage.StageSaveData;
 import structure.Structure;
-import unit.*;
+import thhunit.*;
+import unit.Unit;
+import thhunit.WhiteMan;
 import vegetation.Vegetation;
 
 public class Engine_THH1 extends StageEngine implements MessageSource{
@@ -255,7 +256,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 			GHQ.translateForGUI(true);
 			int pos = 1;
 			for(THHUnit chara : friends) 
-				GHQ.drawImageGHQ(chara.faceIID, pos++*90 + 10, GHQ.getScreenH() - 40, 80, 30);
+				chara.iconPaint.paint(pos++*90 + 10, GHQ.getScreenH() - 40, 80, 30);
 			GHQ.translateForGUI(false);
 		}
 		if(stopEventKind == NONE || editMode) { //scroll

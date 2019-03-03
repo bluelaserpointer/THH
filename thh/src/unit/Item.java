@@ -1,17 +1,22 @@
 package unit;
 
 import core.GHQ;
+import paint.HasRectPaint;
+import paint.RectPaint;
 
-public abstract class Item {
+public abstract class Item implements HasRectPaint{
 	protected int amount;
 	protected final int STACK_CAP;
+	protected final RectPaint paintScript;
 	public abstract String getName();
 	
-	public Item(int stackCap) {
+	public Item(int stackCap,RectPaint paintScript) {
 		STACK_CAP = stackCap;
+		this.paintScript = paintScript;
 	}
-	public Item() {
+	public Item(RectPaint paintScript) {
 		STACK_CAP = GHQ.MAX;
+		this.paintScript = paintScript;
 	}
 	//information
 	public boolean isStackable(Item item) {
@@ -22,6 +27,10 @@ public abstract class Item {
 	}
 	public boolean keepEvenEmpty() {
 		return false;
+	}
+	@Override
+	public final RectPaint getPaintScript() {
+		return paintScript;
 	}
 	//control
 	public void clear() {

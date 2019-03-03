@@ -16,6 +16,10 @@ public class ImageFrame implements RectPaint,DotPaint{
 		GHQ.drawImageGHQ_center(IMAGE_IID, x, y);
 	}
 	@Override
+	public void paint(int x,int y,double angle) {
+		GHQ.drawImageGHQ_center(IMAGE_IID, x, y, angle);
+	}
+	@Override
 	public void paint(int x,int y,int w,int h) {
 		GHQ.drawImageGHQ(IMAGE_IID, x, y, w, h);
 	}

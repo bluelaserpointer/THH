@@ -112,7 +112,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	//vegetation data
 	private static final ArrayList<Vegetation> vegetations = new ArrayList<Vegetation>();
 	
-	//gui data
+	//GUI data
 	private static final ArrayList<GUIParts> guiParts = new ArrayList<GUIParts>();
 	
 	//event data

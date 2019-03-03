@@ -108,7 +108,7 @@ public class DefaultStageEditor {
 						labelText = ((Unit)selectObject).originalName;
 						configLabel.setTitle("orignal_name:");
 					}else if(selectObject instanceof Vegetation) {
-						labelText = ((Vegetation)selectObject).getImageURL();
+						labelText = "image";//((Vegetation)selectObject).getImageURL();
 						configLabel.setTitle("image_URL:");
 					}else
 						labelText = "";
@@ -134,7 +134,7 @@ public class DefaultStageEditor {
 						GHQ.addUnit(new DummyUnit(new Dynam(placeX, placeY)));
 						break;
 					case VEGETATION:
-						GHQ.addVegetation(new Vegetation("gui_editor/Vegetation.png", placeX, placeY));
+						GHQ.addVegetation(new Vegetation(new ImageFrame("gui_editor/Vegetation.png"), placeX, placeY));
 						break;
 					case ITEM:
 						break;

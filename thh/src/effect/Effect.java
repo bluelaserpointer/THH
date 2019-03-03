@@ -5,8 +5,10 @@ import static java.lang.Math.PI;
 import core.DynamInteractable;
 import core.Entity_double;
 import core.GHQ;
+import paint.DotPaint;
+import paint.HasDotPaint;
 
-public class Effect extends Entity_double{
+public class Effect extends Entity_double implements HasDotPaint{
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;
 	
@@ -19,8 +21,8 @@ public class Effect extends Entity_double{
 		LIMIT_RANGE;
 	private final double
 		ACCEL;
-	private final int
-		IMAGE_ID;
+	public final DotPaint
+		paintScript;
 	
 	public Effect(DynamInteractable source) {
 		super(source,EffectBlueprint.dynam,EffectBlueprint.nowFrame);
@@ -31,7 +33,7 @@ public class Effect extends Entity_double{
 		LIMIT_FRAME = EffectBlueprint.limitFrame;
 		LIMIT_RANGE = EffectBlueprint.limitRange;
 		ACCEL = EffectBlueprint.accel;
-		IMAGE_ID = EffectBlueprint.imageID;
+		paintScript = EffectBlueprint.paintScript;
 	}
 	
 	public Effect(Effect effect) {
@@ -43,7 +45,7 @@ public class Effect extends Entity_double{
 		LIMIT_FRAME = effect.LIMIT_FRAME;
 		LIMIT_RANGE = effect.LIMIT_RANGE;
 		ACCEL = effect.ACCEL;
-		IMAGE_ID = effect.IMAGE_ID;
+		paintScript = effect.paintScript;
 	}
 
 	@Override
@@ -71,7 +73,7 @@ public class Effect extends Entity_double{
 	}
 	@Override
 	public final void defaultPaint() {
-		GHQ.drawImageGHQ_center(IMAGE_ID, (int)dynam.getX(), (int)dynam.getY(), dynam.getAngle());
+		paintScript.paint((int)dynam.getX(), (int)dynam.getY(), dynam.getAngle());
 	}
 	
 	//tool
@@ -107,5 +109,11 @@ public class Effect extends Entity_double{
 	}
 	public int getPassedFrame() {
 		return GHQ.getPassedFrame(INITIAL_FRAME);
+	}
+	
+	//information
+	@Override
+	public final DotPaint getPaintScript() {
+		return paintScript;
 	}
 }

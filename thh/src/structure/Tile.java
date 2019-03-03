@@ -64,14 +64,14 @@ public class Tile extends Structure{
 	}
 	@Override
 	public boolean intersectsLine(Line2D line) {
-		if(!line.intersects(ORIGIN_X,ORIGIN_Y,X_TILES*TILE_SIZE,X_TILES*TILE_SIZE))
+		if(!line.intersects(ORIGIN_X,ORIGIN_Y,X_TILES*TILE_SIZE,Y_TILES*TILE_SIZE))
 			return false;
 		for(int xi = 0;xi < X_TILES;xi++) {
 			for(int yi = 0;yi < Y_TILES;yi++) {
 				if(aliveTiles.get(xi + yi*X_TILES)){
-					final int X = ORIGIN_X + xi*TILE_SIZE,Y = ORIGIN_Y + xi*TILE_SIZE;
-					if(line.intersects(X,Y,TILE_SIZE,TILE_SIZE));
-					return true;
+					final int X = ORIGIN_X + xi*TILE_SIZE,Y = ORIGIN_Y + yi*TILE_SIZE;
+					if(line.intersects(X,Y,TILE_SIZE,TILE_SIZE))
+						return true;
 				}
 			}
 		}

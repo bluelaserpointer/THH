@@ -1,6 +1,6 @@
 package core;
 
-public abstract class Entity_double{
+public abstract class Entity_double implements DynamInteractable{
 	public final DynamInteractable source; //an information source of user
 	public final Dynam dynam = new Dynam();
 	public final int INITIAL_FRAME;
@@ -33,4 +33,14 @@ public abstract class Entity_double{
 	}
 	abstract public boolean defaultIdle();
 	abstract public void defaultPaint();
+	
+	//information
+	@Override
+	public Dynam getDynam() {
+		return dynam;
+	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
 }

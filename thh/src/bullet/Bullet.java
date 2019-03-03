@@ -2,15 +2,16 @@ package bullet;
 
 import static java.lang.Math.PI;
 
-import core.Dynam;
 import core.DynamInteractable;
 import core.Entity_double;
 import core.GHQ;
 import core.HasStandpoint;
 import core.Standpoint;
+import paint.DotPaint;
+import paint.HasDotPaint;
 import unit.Unit;
 
-public class Bullet extends Entity_double implements DynamInteractable,HasStandpoint{
+public class Bullet extends Entity_double implements DynamInteractable,HasStandpoint,HasDotPaint{
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;
 	
@@ -34,8 +35,8 @@ public class Bullet extends Entity_double implements DynamInteractable,HasStandp
 		reflection;
 	private final double
 		ACCEL;
-	private final int
-		IMAGE_ID;
+	public final DotPaint
+		paintScript;
 	public final boolean
 		HIT_ENEMY,
 		IS_LASER;
@@ -53,7 +54,7 @@ public class Bullet extends Entity_double implements DynamInteractable,HasStandp
 		penetration = BulletBlueprint.penetration;
 		reflection = BulletBlueprint.reflection;
 		ACCEL = BulletBlueprint.accel;
-		IMAGE_ID = BulletBlueprint.imageID;
+		paintScript = BulletBlueprint.paintScript;
 		HIT_ENEMY = BulletBlueprint.hitEnemy;
 		IS_LASER = BulletBlueprint.isLaser;
 	}
@@ -71,7 +72,7 @@ public class Bullet extends Entity_double implements DynamInteractable,HasStandp
 		penetration = bullet.penetration;
 		reflection = bullet.reflection;
 		ACCEL = bullet.ACCEL;
-		IMAGE_ID = bullet.IMAGE_ID;
+		paintScript = bullet.paintScript;
 		HIT_ENEMY = bullet.HIT_ENEMY;
 		IS_LASER = bullet.IS_LASER;
 	}
@@ -166,7 +167,7 @@ public class Bullet extends Entity_double implements DynamInteractable,HasStandp
 	}
 	@Override
 	public final void defaultPaint() {
-		GHQ.drawImageGHQ_center(IMAGE_ID, (int)dynam.getX(),(int)dynam.getY(), dynam.getAngle());
+		paintScript.paint((int)dynam.getX(),(int)dynam.getY(), dynam.getAngle());
 	}
 	//tool
 	public void split_xMirror(double dx,double dy) {
@@ -223,16 +224,6 @@ public class Bullet extends Entity_double implements DynamInteractable,HasStandp
 		return GHQ.getPassedFrame(INITIAL_FRAME);
 	}
 	
-	//control
-	@Override
-	public Dynam getDynam() {
-		return dynam;
-	}
-	@Override
-	public boolean isMovable() {
-		return true;
-	}
-	
 	//information
 	public final int getIdleCount() {
 		return idleExecuted;
@@ -246,6 +237,10 @@ public class Bullet extends Entity_double implements DynamInteractable,HasStandp
 	@Override
 	public final Standpoint getStandpoint() {
 		return standpoint;
+	}
+	@Override
+	public final DotPaint getPaintScript() {
+		return paintScript;
 	}
 	@Override
 	public boolean isFriendly(HasStandpoint target) {

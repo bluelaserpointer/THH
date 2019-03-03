@@ -1,4 +1,4 @@
-package unit;
+package thhunit;
 
 
 import java.awt.geom.Rectangle2D;
@@ -8,6 +8,9 @@ import action.ActionInfo;
 import bullet.Bullet;
 import core.DynamInteractable;
 import core.GHQ;
+import paint.DotPaint;
+import paint.RectPaint;
+import unit.Status;
 import unit.Unit;
 import weapon.Weapon;
 
@@ -24,12 +27,12 @@ public abstract class THHUnit extends Unit {
 	protected final Weapon weaponController[] = new Weapon[10];
 
 	// GUI
-	public int faceIID;
+	public RectPaint iconPaint;
 
 	// Resource
 	// Images
-	public int charaIID;
-	public final int bulletIID[] = new int[weapon_max], effectIID[] = new int[10];
+	protected DotPaint charaPaint;
+	public final DotPaint bulletPaint[] = new DotPaint[weapon_max], effectPaint[] = new DotPaint[10];
 
 	//status
 	public static final int PARAMETER_AMOUNT = 6;
@@ -122,13 +125,13 @@ public abstract class THHUnit extends Unit {
 		if(status.get(HP) <= 0)
 			return;
 		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
-		GHQ.drawImageGHQ_center(charaIID, X, Y);
+		charaPaint.paint(X, Y);
 		GHQ.paintHPArc(X, Y, 20,status.get(HP), status.getDefault(HP));
 	}
-	protected final void paintMode_magicCircle(int magicCircleIID) {
+	protected final void paintMode_magicCircle(DotPaint paintScript) {
 		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
-		GHQ.drawImageGHQ_center(magicCircleIID, X, Y, (double)GHQ.getNowFrame()/35.0);
-		GHQ.drawImageGHQ_center(charaIID, X, Y);
+		paintScript.paint(X, Y, (double)GHQ.getNowFrame()/35.0);
+		charaPaint.paint(X, Y);
 	}
 	
 	// control

@@ -1,9 +1,10 @@
-package unit;
+package thhunit;
 
 import unit.Unit;
-import unit.EnemyBulletLibrary;
 import core.DynamInteractable;
 import core.GHQ;
+import paint.ImageFrame;
+import thhunit.EnemyBulletLibrary;
 import weapon.Weapon;
 
 public class BlackMan extends THHUnit{
@@ -16,7 +17,6 @@ public class BlackMan extends THHUnit{
 		super(initialGroup);
 	}
 	private final Weapon weaponController = EnemyBulletLibrary.getWeaponController(EnemyBulletLibrary.lightBall_S);
-	private final int bulletIID[] = new int[10];
 	@Override
 	public final String getName() {
 		return "BlackMan";
@@ -25,9 +25,9 @@ public class BlackMan extends THHUnit{
 	@Override
 	public final void loadImageData(){
 		super.loadImageData();
-		charaIID = GHQ.loadImage("BlackBall.png");
-		bulletIID[0] = GHQ.loadImage("DarkNiddle3.png");
-		bulletIID[1] = GHQ.loadImage("DodgeMarker.png");
+		charaPaint = new ImageFrame("BlackBall.png");
+		bulletPaint[0] = new ImageFrame("DarkNiddle3.png");
+		bulletPaint[1] = new ImageFrame("DodgeMarker.png");
 	}
 	@Override
 	public void activeCons() {
@@ -35,8 +35,8 @@ public class BlackMan extends THHUnit{
 		weaponController.defaultIdle();
 		final Unit targetEnemy = GHQ.getNearstVisibleEnemy(this);
 		if(targetEnemy != null && weaponController.trigger()) {
-			EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.BLACK_SLASH_BURST,bulletIID[0],targetEnemy);
-			EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.BLACK_SLASH_BURST,bulletIID[1],targetEnemy);
+			EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.BLACK_SLASH_BURST,bulletPaint[0],targetEnemy);
+			EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.BLACK_SLASH_BURST,bulletPaint[1],targetEnemy);
 		}
 		Unit chara = GHQ.getNearstEnemy(this, (int)charaX, (int)charaY);
 		if(chara != null) 

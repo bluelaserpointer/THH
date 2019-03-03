@@ -1,4 +1,4 @@
-package unit;
+package thhunit;
 
 import static java.lang.Math.*;
 
@@ -9,6 +9,7 @@ import core.DynamInteractable;
 import core.GHQ;
 import effect.EffectBlueprint;
 import effect.EffectScript;
+import paint.ImageFrame;
 import weapon.Weapon;
 import weapon.WeaponInfo;
 
@@ -40,13 +41,13 @@ public class Reimu extends THHUnit{
 	@Override
 	public final void loadImageData(){
 		super.loadImageData();
-		charaIID = GHQ.loadImage("Reimu.png");
-		faceIID = GHQ.loadImage("ReimuIcon.png");
-		bulletIID[FUDA_KOUHAKU] = GHQ.loadImage("KouhakuNoFuda.png");
-		bulletIID[FUDA_SHIROKURO] = GHQ.loadImage("ShirokuroNoFuda.png");
-		bulletIID[FUDA_SOUHAKU] = GHQ.loadImage("SouhakuNoFuda.png");
-		effectIID[LIGHTNING] = GHQ.loadImage("ReuseBomb_Effect.png");
-		effectIID[FUDA_HIT_EF] = GHQ.loadImage("FudaHitEffect.png");
+		charaPaint = new ImageFrame("Reimu.png");
+		iconPaint = new ImageFrame("ReimuIcon.png");
+		bulletPaint[FUDA_KOUHAKU] = new ImageFrame("KouhakuNoFuda.png");
+		bulletPaint[FUDA_SHIROKURO] = new ImageFrame("ShirokuroNoFuda.png");
+		bulletPaint[FUDA_SOUHAKU] = new ImageFrame("SouhakuNoFuda.png");
+		effectPaint[LIGHTNING] = new ImageFrame("ReuseBomb_Effect.png");
+		effectPaint[FUDA_HIT_EF] = new ImageFrame("FudaHitEffect.png");
 	}
 	
 	@Override
@@ -110,7 +111,7 @@ public class Reimu extends THHUnit{
 			BulletBlueprint.atk = 50;
 			BulletBlueprint.offSet = 5;
 			BulletBlueprint.limitFrame = 200;
-			BulletBlueprint.imageID = bulletIID[FUDA_KOUHAKU];
+			BulletBlueprint.paintScript = bulletPaint[FUDA_KOUHAKU];
 			BulletBlueprint.dynam.setSpeed(28);
 			GHQ.createBullet(user).split_xMirror(7, 7);
 			GHQ.createBullet(user).split_xMirror(7, 14);
@@ -122,7 +123,7 @@ public class Reimu extends THHUnit{
 			BulletBlueprint.offSet = 3;
 			BulletBlueprint.reflection = 1;
 			BulletBlueprint.limitFrame = 200;
-			BulletBlueprint.imageID = bulletIID[FUDA_SHIROKURO];
+			BulletBlueprint.paintScript = bulletPaint[FUDA_SHIROKURO];
 			GHQ.createBullet(user).split_NWay(10,PI/18,3,40);
 			break;
 		case FUDA_SOUHAKU:
@@ -133,7 +134,7 @@ public class Reimu extends THHUnit{
 			BulletBlueprint.offSet = 25;
 			BulletBlueprint.reflection = 1;
 			BulletBlueprint.limitFrame = 40;
-			BulletBlueprint.imageID = bulletIID[FUDA_SOUHAKU];
+			BulletBlueprint.paintScript = bulletPaint[FUDA_SOUHAKU];
 			GHQ.createBullet(this).split_NWay(25,PI/10,8,40);
 			break;
 		}
@@ -147,14 +148,14 @@ public class Reimu extends THHUnit{
 			EffectBlueprint.dynam.fastParaAdd_DASpd(10,2*PI*random(),20);
 			EffectBlueprint.accel = 1.0;
 			EffectBlueprint.limitFrame = 2;
-			EffectBlueprint.imageID = effectIID[LIGHTNING];
+			EffectBlueprint.paintScript = effectPaint[LIGHTNING];
 			GHQ.createEffect(this);
 			break;
 		case FUDA_HIT_EF:
 			EffectBlueprint.name = "FUDA_HIT_EF";
 			EffectBlueprint.accel = 0.5;
 			EffectBlueprint.limitFrame = 4;
-			EffectBlueprint.imageID = effectIID[FUDA_HIT_EF];
+			EffectBlueprint.paintScript = effectPaint[FUDA_HIT_EF];
 			for(int i = 0;i < 15;i++) {
 				EffectBlueprint.dynam.setXY(user);
 				EffectBlueprint.dynam.fastParaAdd_DASpd(10,2*PI*random(),GHQ.random2(0,22));

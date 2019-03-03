@@ -2,6 +2,7 @@ package effect;
 
 import core.Dynam;
 import core.GHQ;
+import paint.DotPaint;
 
 public class EffectBlueprint {
 	private final static int 
@@ -17,8 +18,8 @@ public class EffectBlueprint {
 		limitRange;
 	public static final Dynam dynam = new Dynam();
 	public static double accel;
-	public static int
-		imageID;
+	public static DotPaint
+		paintScript;
 	
 	public static final void clear(EffectScript nextScript) {
 		name = GHQ.NOT_NAMED;
@@ -29,7 +30,7 @@ public class EffectBlueprint {
 		limitRange = MAX;
 		dynam.clear();
 		accel = 0.0;
-		imageID = NONE;
+		paintScript = DotPaint.BLANK_SCRIPT;
 	}
 	public static final void clear(EffectScript nextScript, Dynam baseDynam) {
 		name = GHQ.NOT_NAMED;
@@ -40,6 +41,6 @@ public class EffectBlueprint {
 		limitRange = MAX;
 		dynam.initBySample(baseDynam);
 		accel = 0.0;
-		imageID = NONE;
+		paintScript = DotPaint.BLANK_SCRIPT;
 	}
 }
