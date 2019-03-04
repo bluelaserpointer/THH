@@ -16,6 +16,7 @@ import input.DoubleNumKeyListener;
 import input.MouseListenerEx;
 import input.SingleKeyListener;
 import input.SingleNumKeyListener;
+import paint.ImageFrame;
 import stage.StageEngine;
 import stage.StageSaveData;
 import structure.Structure;
@@ -63,9 +64,6 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 	private final DoubleNumKeyListener dnkl = new DoubleNumKeyListener(20);
 	
 	//images
-	//stageObject
-	private int vegImageIID[] = new int[5];
-	
 	private int focusIID,magicCircleIID;
 	
 	//editMode
@@ -84,11 +82,6 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 	public final void loadResource() {
 		focusIID = GHQ.loadImage("focus.png");
 		magicCircleIID = GHQ.loadImage("MagicCircle.png");
-		vegImageIID[0] = GHQ.loadImage("veg_leaf.png");
-		vegImageIID[1] = GHQ.loadImage("veg_flower.png");
-		vegImageIID[2] = GHQ.loadImage("veg_leaf2.png");
-		vegImageIID[3] = GHQ.loadImage("veg_stone.png");
-		vegImageIID[4] = GHQ.loadImage("veg_leaf3.png");
 		DefaultStageEditor.init(new File("stage/saveData1.txt"));
 		GHQ.addListenerEx(sml);
 		GHQ.addListenerEx(skl);
@@ -123,6 +116,14 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		GHQ.addUnit(new Fairy(ENEMY).initialSpawn(1800, 700)).status.setDefault(HP, 2500);
 		GHQ.addUnit(new WhiteMan(ENEMY).initialSpawn(400, GHQ.random2(100, 150))).status.setDefault(HP, 50000);
 		GHQ.addUnit(new BlackMan(ENEMY).initialSpawn(200, GHQ.random2(100, 150))).status.setDefault(HP, 10000);
+		//vegetation
+		GHQ.addVegetation(new Vegetation(new ImageFrame("veg_leaf.png"),1172,886));
+		GHQ.addVegetation(new Vegetation(new ImageFrame("veg_flower.png"),1200,800));
+		GHQ.addVegetation(new Vegetation(new ImageFrame("veg_leaf2.png"),1800,350));
+		GHQ.addVegetation(new Vegetation(new ImageFrame("veg_stone.png"),1160,870));
+		GHQ.addVegetation(new Vegetation(new ImageFrame("veg_leaf3.png"),1102,830));
+		GHQ.addVegetation(new Vegetation(new ImageFrame("veg_leaf3.png"),1122,815));
+		GHQ.addVegetation(new Vegetation(new ImageFrame("veg_leaf3.png"),822,886));
 	}
 	@Override
 	public final void stageSetup() {
@@ -161,15 +162,6 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		//landscape
 		for(Structure ver : GHQ.getStructureList())
 			ver.paint();
-		//Vegetation
-		GHQ.drawImageGHQ_center(vegImageIID[3], 1172, 886,1.3);
-		GHQ.drawImageGHQ_center(vegImageIID[0], 1200, 800,1.0);
-		GHQ.drawImageGHQ_center(vegImageIID[0], 1800, 350,1.4);
-		GHQ.drawImageGHQ_center(vegImageIID[0], 1160, 870,1.7);
-		GHQ.drawImageGHQ_center(vegImageIID[1], 1180, 830,1.3);
-		GHQ.drawImageGHQ_center(vegImageIID[2], 1102, 815,1.3);
-		GHQ.drawImageGHQ_center(vegImageIID[2], 1122, 826,1.3);
-		GHQ.drawImageGHQ_center(vegImageIID[4], 822, 886,1.3);
 		////////////////
 		GHQ.drawImageGHQ_center(magicCircleIID, formationCenterX, formationCenterY, (double)GHQ.getNowFrame()/35.0);
 		g2.setColor(Color.RED);

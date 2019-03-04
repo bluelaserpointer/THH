@@ -1,36 +1,32 @@
 package vegetation;
 
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 
 import core.HasBoundingBox;
-import paint.HasRectPaint;
-import paint.RectPaint;
+import paint.HasDotPaint;
+import paint.DotPaint;
 
-public class Vegetation implements HasBoundingBox,HasRectPaint{
-	protected final RectPaint paintScript;
-	private int x,y,w,h;
+public class Vegetation implements Serializable,HasBoundingBox,HasDotPaint{
+	private static final long serialVersionUID = -5536970507937704287L;
+	public final int UNIQUE_ID;
+	public static int nowMaxUniqueID = -1;
+	
+	protected final DotPaint paintScript;
+	protected int x,y;
 
 	//init
-	public Vegetation(RectPaint paintScript,int x,int y,int w,int h) {
+	public Vegetation(DotPaint paintScript,int x,int y) {
+		UNIQUE_ID = ++nowMaxUniqueID;
 		this.paintScript = paintScript;
 		this.x = x;
 		this.y = y;
-		this.w = w;
-		this.h = h;
-	}
-	public Vegetation(RectPaint paintScript,int x,int y) {
-		this.paintScript = paintScript;
-		this.x = x;
-		this.y = y;
-		this.w = paintScript.getDefaultW();
-		this.h = paintScript.getDefaultH();
 	}
 	public Vegetation(Vegetation sample) {
+		UNIQUE_ID = ++nowMaxUniqueID;
 		this.paintScript = sample.paintScript;
 		this.x = sample.x;
 		this.y = sample.y;
-		this.w = sample.w;
-		this.h = sample.h;
 	}
 	//idle
 	public void idle() {
@@ -39,7 +35,7 @@ public class Vegetation implements HasBoundingBox,HasRectPaint{
 	public void paint() {
 		if(paintScript == null)
 			return;
-		paintScript.paint(x, y, w, h);
+		paintScript.paint(x, y);
 	}
 	//control
 	@Override
@@ -54,10 +50,11 @@ public class Vegetation implements HasBoundingBox,HasRectPaint{
 	//information
 	@Override
 	public Rectangle2D getBoundingBox() {
-		return new Rectangle2D.Double(x, y, w, h);
+		final int W = paintScript.getDefaultW(),H = paintScript.getDefaultH();
+		return new Rectangle2D.Double(x - W/2, y - H/2, W, H);
 	}
 	@Override
-	public final RectPaint getPaintScript() {
+	public final DotPaint getPaintScript() {
 		return paintScript;
 	}
 }

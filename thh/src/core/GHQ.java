@@ -24,6 +24,7 @@ import input.MouseListenerEx;
 import structure.Structure;
 import stage.StageEngine;
 import unit.Unit;
+import vegetation.DropItem;
 import vegetation.Vegetation;
 
 /**
@@ -573,6 +574,14 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		for(int i = 0;i < vegetationArray.length;i++)
 			vegetationArray[i] = vegetations.get(i);
 		return vegetationArray;
+	}
+	public static final Vegetation getCoveredVegetation(DynamInteractable di) {
+		for(Vegetation vegetation : vegetations) {
+			if(vegetation instanceof DropItem && ((DropItem)vegetation).isCovered(di)) {
+				return vegetation;
+			}
+		}
+		return null;
 	}
 	//information-stage
 	public static final StageEngine getEngine() {
@@ -1328,6 +1337,15 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final void drawImageGHQ(int imgID,int x,int y,int w,int h){
 		drawImageGHQ(arrayImage[imgID],x,y,w,h);
 	}
+	public static final void drawImageGHQ(int imgID,int x,int y,int w,int h,double angle) {
+		if(angle != 0.0) {
+			final double OX = x + w/2,OY = y + h/2;
+			hq.g2.rotate(angle, OX, OY);
+			hq.g2.drawImage(arrayImage[imgID],x - w/2,y - h/2,w,h,hq);
+			hq.g2.rotate(-angle, OX, OY);
+		}else
+			hq.g2.drawImage(arrayImage[imgID],x - w/2,y - h/2,w,h,hq);
+	}
 	/**
 	* 
 	* @param img 
@@ -1389,6 +1407,14 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	*/
 	public static final void drawImageGHQ_center(int imgID,int x,int y,int w,int h){
 		hq.g2.drawImage(arrayImage[imgID],x - w/2,y - h/2,w,h,hq);
+	}
+	public static final void drawImageGHQ_center(int imgID,int x,int y,int w,int h,double angle){
+		if(angle != 0.0) {
+			hq.g2.rotate(angle, x, y);
+			hq.g2.drawImage(arrayImage[imgID],x - w/2,y - h/2,w,h,hq);
+			hq.g2.rotate(-angle, x, y);
+		}else
+			hq.g2.drawImage(arrayImage[imgID],x - w/2,y - h/2,w,h,hq);
 	}
 	public static final void setImageAlpha() {
 		hq.g2.setComposite(AlphaComposite.SrcOver);

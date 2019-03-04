@@ -213,6 +213,8 @@ public class DefaultStageEditor {
 						GHQ.deleteUnit((Unit)selectObject);
 					else if(selectObject instanceof Structure)
 						GHQ.deleteStructure((Structure)selectObject);
+					else if(selectObject instanceof Vegetation)
+						GHQ.deleteVegetation((Vegetation)selectObject);
 					selectObject = null;
 					break;
 				}
