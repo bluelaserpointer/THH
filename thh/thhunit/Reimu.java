@@ -41,13 +41,13 @@ public class Reimu extends THHUnit{
 	@Override
 	public final void loadImageData(){
 		super.loadImageData();
-		charaPaint = new ImageFrame("Reimu.png");
-		iconPaint = new ImageFrame("ReimuIcon.png");
-		bulletPaint[FUDA_KOUHAKU] = new ImageFrame("KouhakuNoFuda.png");
-		bulletPaint[FUDA_SHIROKURO] = new ImageFrame("ShirokuroNoFuda.png");
-		bulletPaint[FUDA_SOUHAKU] = new ImageFrame("SouhakuNoFuda.png");
-		effectPaint[LIGHTNING] = new ImageFrame("ReuseBomb_Effect.png");
-		effectPaint[FUDA_HIT_EF] = new ImageFrame("FudaHitEffect.png");
+		charaPaint = new ImageFrame("thhimage/Reimu.png");
+		iconPaint = new ImageFrame("thhimage/ReimuIcon.png");
+		bulletPaint[FUDA_KOUHAKU] = new ImageFrame("thhimage/KouhakuNoFuda.png");
+		bulletPaint[FUDA_SHIROKURO] = new ImageFrame("thhimage/ShirokuroNoFuda.png");
+		bulletPaint[FUDA_SOUHAKU] = new ImageFrame("thhimage/SouhakuNoFuda.png");
+		effectPaint[LIGHTNING] = new ImageFrame("thhimage/ReuseBomb_Effect.png");
+		effectPaint[FUDA_HIT_EF] = new ImageFrame("thhimage/FudaHitEffect.png");
 	}
 	
 	@Override

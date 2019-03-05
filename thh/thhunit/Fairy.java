@@ -26,9 +26,9 @@ public class Fairy extends THHUnit{
 	@Override
 	public final void loadImageData(){
 		super.loadImageData();
-		charaPaint = new ImageFrame("YouseiA.png");
-		magicCircleIID = new ImageFrame("MagicCircleBlue.png");
-		bulletPaint[0] = new ImageFrame("LightBallA.png");
+		charaPaint = new ImageFrame("thhimage/YouseiA.png");
+		magicCircleIID = new ImageFrame("thhimage/MagicCircleBlue.png");
+		bulletPaint[0] = new ImageFrame("thhimage/LightBallA.png");
 	}
 	@Override
 	public void activeCons() {

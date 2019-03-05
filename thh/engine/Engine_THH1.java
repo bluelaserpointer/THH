@@ -80,8 +80,8 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 	
 	@Override
 	public final void loadResource() {
-		focusIID = GHQ.loadImage("focus.png");
-		magicCircleIID = GHQ.loadImage("MagicCircle.png");
+		focusIID = GHQ.loadImage("thhimage/focus.png");
+		magicCircleIID = GHQ.loadImage("thhimage/MagicCircle.png");
 		DefaultStageEditor.init(new File("stage/saveData1.txt"));
 		GHQ.addListenerEx(sml);
 		GHQ.addListenerEx(skl);
@@ -117,13 +117,13 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		GHQ.addUnit(new WhiteMan(ENEMY).initialSpawn(400, GHQ.random2(100, 150))).status.setDefault(HP, 50000);
 		GHQ.addUnit(new BlackMan(ENEMY).initialSpawn(200, GHQ.random2(100, 150))).status.setDefault(HP, 10000);
 		//vegetation
-		GHQ.addVegetation(new Vegetation(new ImageFrame("veg_leaf.png"),1172,886));
-		GHQ.addVegetation(new Vegetation(new ImageFrame("veg_flower.png"),1200,800));
-		GHQ.addVegetation(new Vegetation(new ImageFrame("veg_leaf2.png"),1800,350));
-		GHQ.addVegetation(new Vegetation(new ImageFrame("veg_stone.png"),1160,870));
-		GHQ.addVegetation(new Vegetation(new ImageFrame("veg_leaf3.png"),1102,830));
-		GHQ.addVegetation(new Vegetation(new ImageFrame("veg_leaf3.png"),1122,815));
-		GHQ.addVegetation(new Vegetation(new ImageFrame("veg_leaf3.png"),822,886));
+		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf.png"),1172,886));
+		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_flower.png"),1200,800));
+		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf2.png"),1800,350));
+		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_stone.png"),1160,870));
+		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf3.png"),1102,830));
+		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf3.png"),1122,815));
+		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf3.png"),822,886));
 	}
 	@Override
 	public final void stageSetup() {

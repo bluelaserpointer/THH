@@ -143,11 +143,11 @@ public class DefaultStageEditor {
 			}
 		});
 		GHQ.addGUIParts(CB_placeKind = new CombinedButtons(EDIT_MENU_GROUP, POINTING, 0, 0, 150, SCREEN_H));
-		CB_placeKind.addButton(TILES, new ImageFrame("gui_editor/Tiles.png"),25,155,40,40);
-		CB_placeKind.addButton(TERRAIN, new ImageFrame("gui_editor/FreeShape.png"),70,155,40,40);
-		CB_placeKind.addButton(UNIT, new ImageFrame("gui_editor/Unit.png"),25,200,40,40);
-		CB_placeKind.addButton(VEGETATION, new ImageFrame("gui_editor/Vegetation.png"),70,200,40,40);
-		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("gui_editor/Save.png"),25,500,85,40) {
+		CB_placeKind.addButton(TILES, new ImageFrame("thhimage/gui_editor/Tiles.png"),25,155,40,40);
+		CB_placeKind.addButton(TERRAIN, new ImageFrame("thhimage/gui_editor/FreeShape.png"),70,155,40,40);
+		CB_placeKind.addButton(UNIT, new ImageFrame("thhimage/gui_editor/Unit.png"),25,200,40,40);
+		CB_placeKind.addButton(VEGETATION, new ImageFrame("thhimage/gui_editor/Vegetation.png"),70,200,40,40);
+		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("thhimage/gui_editor/Save.png"),25,500,85,40) {
 			@Override
 			public void clicked() {
 				System.out.println("saving...");

@@ -1,8 +1,10 @@
 package unit;
 
 import core.GHQ;
+import paint.DotPaint;
 import paint.HasRectPaint;
 import paint.RectPaint;
+import vegetation.DropItem;
 
 public abstract class Item implements HasRectPaint{
 	protected int amount;
@@ -17,6 +19,18 @@ public abstract class Item implements HasRectPaint{
 	public Item(RectPaint paintScript) {
 		STACK_CAP = GHQ.MAX;
 		this.paintScript = paintScript;
+	}
+	//main role
+	public DropItem drop(DotPaint paintScript, int x, int y) {
+		return new DropItem(this,paintScript,x,y);
+	}
+	public DropItem drop(int x, int y) {
+		if(paintScript instanceof DotPaint)
+			return new DropItem(this,(DotPaint)paintScript,x,y);
+		else {
+			System.out.println("Item.drop(int x, int y) has called illegally because it's paintScript is not a instance of DotPaint");
+			return new DropItem(this,DotPaint.BLANK_SCRIPT,x,y);
+		}
 	}
 	//information
 	public boolean isStackable(Item item) {

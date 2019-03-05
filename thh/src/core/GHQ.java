@@ -1159,12 +1159,15 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	//ResourceLoad
 	/**
 	* Load the image file.
-	* @param url 
-	* @param errorSource 
+	* @param url
 	* @return ImageID (id of Image array arrayImage)
 	* @since alpha1.0
 	*/
-	public static final int loadImage(URL url,String errorSource){ //画像読み込みメソッド
+	public static final int loadImage(URL url){ //画像読み込みメソッド
+		if(url == null) {
+			System.out.println("received null image url at: " + null);
+			return 0;
+		}
 		//old URL
 		for(int id = 0;id < arrayImageURL.length;id++){
 			if(url.equals(arrayImageURL[id]))
@@ -1180,8 +1183,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			img = hq.createImage((ImageProducer)url.getContent());
 			hq.tracker.addImage(img,1);
 		}catch(IOException | NullPointerException e){ //異常-読み込み失敗
-			if(errorSource != null && !errorSource.isEmpty())
-				warningBox("Image " + url + " is not found and could not be loaded.Error code: " + errorSource,"ImageLoadingError");
+			if(url.toString() != null && !url.toString().isEmpty())
+				warningBox("Image " + url + " is not found and could not be loaded.Error code: " + url.toString(),"ImageLoadingError");
 			else
 				warningBox("Image " + url + " is not found and could not be loaded.","ImageLoadingError");
 			arrayImage[arrayImage_maxID] = hq.createImage(1,1);
@@ -1197,20 +1200,17 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		//System.out.println(arrayImage_maxID + ">>:" + arrayImageURL[arrayImage_maxID].toString());
 		return arrayImage_maxID;
 	}
-	public static final int loadImage(URL url) {
-		return loadImage(url,null);
-	}
-	public static final int loadImage(String urlStr,String errorSource) {
-		return loadImage(hq.getClass().getResource("/image/" + urlStr),errorSource);
-	}
 	/**
 	* Load the image file.
 	* @param url 
 	* @return ImageID (id of Image array arrayImage)
 	* @since alpha1.0
 	*/
-	public static final int loadImage(String urlStr){ //画像読み込みメソッド
-		return loadImage(urlStr,null);
+	public static final int loadImage(String urlStr){
+		final URL url = hq.getClass().getResource("/" + urlStr);
+		if(url == null)
+			System.out.println("not founded image file:" + urlStr);
+		return loadImage(url);
 	}
 	private static final FileFilter PICTURE_FINDER = new FileFilter(){
 		public boolean accept(File dir){

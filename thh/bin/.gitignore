@@ -1,7 +1,5 @@
-/.settings/
-/_config_1.0/
-/font/
 /image/
+/library/
 /action/
 /buff/
 /bullet/
@@ -10,12 +8,12 @@
 /engine/
 /gui/
 /input/
-/library/
 /manifest
 /paint/
 /stage/
 /structure/
+/thhunit/
 /unit/
 /vegetation/
 /weapon/
-/thhunit/
+/thhimage/
