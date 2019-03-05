@@ -25,6 +25,7 @@ public class DropItem extends Vegetation{
 	}
 	public boolean isCovered(DynamInteractable di, int distance) {
 		final Dynam DYNAM = di.getDynam();
+		return Math.abs(DYNAM.getX() - x) < (HITBOX_W + distance)/2 && Math.abs(DYNAM.getY() - y) < (HITBOX_H + distance)/2;
 	}
 	public Item pickup() {
 		final Item tmpITEM = ITEM;
