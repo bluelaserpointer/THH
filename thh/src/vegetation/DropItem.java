@@ -2,6 +2,7 @@ package vegetation;
 
 import core.Dynam;
 import core.DynamInteractable;
+import core.GHQ;
 import paint.DotPaint;
 import unit.Item;
 
@@ -22,8 +23,12 @@ public class DropItem extends Vegetation{
 		HITBOX_W = w;
 		HITBOX_H = h;
 	}
-	public boolean isCovered(DynamInteractable di) {
+	public boolean isCovered(DynamInteractable di, int distance) {
 		final Dynam DYNAM = di.getDynam();
-		return Math.abs(DYNAM.getX() - x) < HITBOX_W && Math.abs(DYNAM.getY() - y) < HITBOX_H;
+	}
+	public Item pickup() {
+		final Item tmpITEM = ITEM;
+		GHQ.deleteVegetation(this);
+		return tmpITEM;
 	}
 }

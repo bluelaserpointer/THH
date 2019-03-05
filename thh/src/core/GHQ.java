@@ -23,6 +23,7 @@ import input.KeyTypeListener;
 import input.MouseListenerEx;
 import structure.Structure;
 import stage.StageEngine;
+import unit.Item;
 import unit.Unit;
 import vegetation.DropItem;
 import vegetation.Vegetation;
@@ -575,10 +576,18 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			vegetationArray[i] = vegetations.get(i);
 		return vegetationArray;
 	}
-	public static final Vegetation getCoveredVegetation(DynamInteractable di) {
+	public static final DropItem getCoveredDropItem(DynamInteractable di, int distance) {
 		for(Vegetation vegetation : vegetations) {
-			if(vegetation instanceof DropItem && ((DropItem)vegetation).isCovered(di)) {
-				return vegetation;
+			if(vegetation instanceof DropItem && ((DropItem)vegetation).isCovered(di, distance)) {
+				return (DropItem)vegetation;
+			}
+		}
+		return null;
+	}
+	public static final Item getCoveredDropItem_pickup(DynamInteractable di, int distance) {
+		for(Vegetation vegetation : vegetations) {
+			if(vegetation instanceof DropItem && ((DropItem)vegetation).isCovered(di, distance)) {
+				return ((DropItem)vegetation).pickup();
 			}
 		}
 		return null;

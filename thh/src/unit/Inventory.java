@@ -29,10 +29,11 @@ public class Inventory implements Serializable{
 		items.clear();
 	}
 	public void remove(Item targetItem) {
-		items.remove(targetItem);
+		if(targetItem != null)
+			items.remove(targetItem);
 	}
 	public boolean add(Item newItem) {
-		if(items.size() < storageSize) {
+		if(newItem != null && items.size() < storageSize) {
 			items.add(newItem);
 			return true;
 		}
