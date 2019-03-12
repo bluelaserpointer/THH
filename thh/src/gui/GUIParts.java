@@ -6,10 +6,11 @@ import paint.RectPaint;
 public abstract class GUIParts {
 	public final String GROUP;
 	protected boolean isEnabled;
+	private final boolean absorbsClickEvent;
 	public int x,y;
 	public final int w,h;
 	protected final RectPaint PAINT_SCRIPT;
-	public GUIParts(String group,RectPaint paintScript,int x,int y,int w,int h) {
+	public GUIParts(String group,RectPaint paintScript,int x,int y,int w,int h,boolean absorbsClickEvent) {
 		GROUP = group;
 		if(paintScript == null)
 			PAINT_SCRIPT = RectPaint.BLANK_SCRIPT;
@@ -19,6 +20,7 @@ public abstract class GUIParts {
 		this.y = y;
 		this.w = w;
 		this.h = h;
+		this.absorbsClickEvent = absorbsClickEvent;
 	}
 	public final void defaultIdle() {
 		if(isEnabled)
@@ -43,11 +45,17 @@ public abstract class GUIParts {
 	public void outsideClicked() {}
 	public void mouseOvered() {}
 	public void outsideMouseOvered() {}
-	public boolean absorbClickEvent() {
-		return true;
+	public final boolean absorbsClickEvent() {
+		return absorbsClickEvent;
 	}
 	public void setBounds(int x,int y) {
 		this.x = x;
 		this.y = y;
+	}
+	public void flit() {
+		if(isEnabled)
+			disable();
+		else
+			enable();
 	}
 }

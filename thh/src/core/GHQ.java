@@ -812,6 +812,20 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				parts.disable();
 		}
 	}
+	public static final void flitGUIs(String group) {
+		for(GUIParts parts : guiParts) {
+			if(parts.GROUP == group)
+				parts.flit();
+		}
+	}
+	public static final void EnableCertainGUIs(String group) {
+		for(GUIParts parts : guiParts) {
+			if(parts.GROUP == group)
+				parts.enable();
+			else
+				parts.disable();
+		}
+	}
 	//information-collision
 	public static final boolean squreCollisionII(int x1,int y1,int size1,int x2,int y2,int size2) {
 		final int halfSize = (size1 + size2)/2;
@@ -873,7 +887,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 					parts.outsideClicked();
 				}else {
 					parts.clicked();
-					alreadyClicked = parts.absorbClickEvent();
+					alreadyClicked = parts.absorbsClickEvent();
 				}
 			}
 		}
@@ -888,7 +902,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 					parts.outsideMouseOvered();
 				else {
 					parts.mouseOvered();
-					alreadyOvered = parts.absorbClickEvent();
+					alreadyOvered = parts.absorbsClickEvent();
 				}
 			}
 		}
@@ -1350,10 +1364,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		if(angle != 0.0) {
 			final double OX = x + w/2,OY = y + h/2;
 			hq.g2.rotate(angle, OX, OY);
-			hq.g2.drawImage(arrayImage[imgID],x - w/2,y - h/2,w,h,hq);
+			hq.g2.drawImage(arrayImage[imgID],x,y,w,h,hq);
 			hq.g2.rotate(-angle, OX, OY);
 		}else
-			hq.g2.drawImage(arrayImage[imgID],x - w/2,y - h/2,w,h,hq);
+			hq.g2.drawImage(arrayImage[imgID],x,y,w,h,hq);
 	}
 	/**
 	* 

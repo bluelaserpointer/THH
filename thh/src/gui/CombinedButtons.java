@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 import core.GHQ;
 import paint.ColorFraming;
@@ -10,24 +11,25 @@ public class CombinedButtons extends GUIParts{
 	private int selection;
 	private int defaultSelection;
 	private RectPaint emphasizer = new ColorFraming(Color.RED,GHQ.stroke3);
+	private final ArrayList<BasicButton> buttons = new ArrayList<BasicButton>();
 	public CombinedButtons(String group, int defaultValue, RectPaint paintScript,int x, int y, int w, int h) {
-		super(group, paintScript, x, y, w, h);
+		super(group, paintScript, x, y, w, h, false);
 		selection = this.defaultSelection = defaultValue;
 	}
 	public CombinedButtons(String group, int defaultValue) {
-		super(group, null, 0, 0, 0, 0);
+		super(group, null, 0, 0, 0, 0, false);
 		selection = this.defaultSelection = defaultValue;
 	}
 	public CombinedButtons(String group, RectPaint paintScript,int x, int y, int w, int h) {
-		super(group, paintScript, x, y, w, h);
+		super(group, paintScript, x, y, w, h, false);
 		selection = this.defaultSelection = GHQ.NONE;
 	}
 	public CombinedButtons(String group, int defaultValue,int x, int y, int w, int h) {
-		super(group, null, x, y, w, h);
+		super(group, null, x, y, w, h, false);
 		selection = this.defaultSelection = defaultValue;
 	}
 	public CombinedButtons(String group) {
-		super(group, null, 0, 0, 0, 0);
+		super(group, null, 0, 0, 0, 0, false);
 		selection = this.defaultSelection = GHQ.NONE;
 	}
 	//init
@@ -37,14 +39,9 @@ public class CombinedButtons extends GUIParts{
 	public void setEmphasizer(RectPaint paintScript) {
 		emphasizer = paintScript;
 	}
-	//fix
-	@Override
-	public boolean absorbClickEvent() {
-		return false;
-	}
 	//main role
 	public void addButton(int buttonID, RectPaint paintScript,int x, int y, int w, int h) {
-		GHQ.addGUIParts(new BasicButton(super.GROUP, paintScript, x, y, w, h) {
+		final BasicButton BUTTON = new BasicButton(super.GROUP + ">buttons", paintScript, x, y, w, h) {
 			@Override
 			public void clicked() {
 				selection = (selection == buttonID ? defaultSelection : buttonID);
@@ -55,7 +52,9 @@ public class CombinedButtons extends GUIParts{
 				if(selection == buttonID)
 					emphasizer.paint(x, y, w, h);
 			}
-		});
+		};
+		GHQ.addGUIParts(BUTTON);
+		buttons.add(BUTTON);
 	}
 	//control
 	public void setSelection(int id) {
@@ -63,6 +62,18 @@ public class CombinedButtons extends GUIParts{
 	}
 	public void reset() {
 		selection = defaultSelection;
+	}
+	@Override
+	public void enable() {
+		super.enable();
+		for(BasicButton button : buttons)
+			button.enable();
+	}
+	@Override
+	public void disable() {
+		super.disable();
+		for(BasicButton button : buttons)
+			button.disable();
 	}
 	//information
 	public int getSelection() {

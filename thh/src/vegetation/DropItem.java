@@ -14,8 +14,7 @@ public class DropItem extends Vegetation{
 	public DropItem(Item item, DotPaint paintScript, int x, int y) {
 		super(paintScript, x, y);
 		ITEM = item;
-		HITBOX_W = paintScript.getDefaultW();
-		HITBOX_H = paintScript.getDefaultH();
+		HITBOX_W = HITBOX_H = GHQ.NONE;
 	}
 	public DropItem(Item item, DotPaint paintScript, int x, int y, int w,int h) {
 		super(paintScript, x, y);
@@ -25,7 +24,8 @@ public class DropItem extends Vegetation{
 	}
 	public boolean isCovered(DynamInteractable di, int distance) {
 		final Dynam DYNAM = di.getDynam();
-		return Math.abs(DYNAM.getX() - x) < (HITBOX_W + distance)/2 && Math.abs(DYNAM.getY() - y) < (HITBOX_H + distance)/2;
+		return Math.abs(DYNAM.getX() - x) < ((HITBOX_W != GHQ.NONE ? HITBOX_W : paintScript.getDefaultW()) + distance)/2
+				&& Math.abs(DYNAM.getY() - y) < ((HITBOX_H != GHQ.NONE ? HITBOX_H : paintScript.getDefaultH()) + distance)/2;
 	}
 	public Item pickup() {
 		final Item tmpITEM = ITEM;

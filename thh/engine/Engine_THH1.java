@@ -67,7 +67,8 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 	private int focusIID,magicCircleIID;
 	
 	//editMode
-	static boolean editMode;
+	private static DefaultStageEditor editor;
+	private static final String EDIT_GUI_GROUP = "EDIT_GUI_GROUP";
 	
 	//initialization
 	@Override
@@ -82,11 +83,12 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 	public final void loadResource() {
 		focusIID = GHQ.loadImage("thhimage/focus.png");
 		magicCircleIID = GHQ.loadImage("thhimage/MagicCircle.png");
-		DefaultStageEditor.init(new File("stage/saveData1.txt"));
 		GHQ.addListenerEx(sml);
 		GHQ.addListenerEx(skl);
 		GHQ.addListenerEx(snkl);
 		GHQ.addListenerEx(dnkl);
+		//GUI
+		GHQ.addGUIParts(editor = new DefaultStageEditor(EDIT_GUI_GROUP, new File("stage/saveData1.txt")));
 	}
 	@Override
 	public final void charaSetup() {
@@ -232,26 +234,16 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		GHQ.drawImageGHQ_center(focusIID,MOUSE_X,MOUSE_Y);
 		//editor
 		if(skl.pullEvent(VK_F6)) {
-			if(editMode) {
-				editMode = false;
-				DefaultStageEditor.disable();
-				GHQ.clearStopEvent();
-			}else if(GHQ.isNoStopEvent()) {
-				editMode = true;
-				DefaultStageEditor.enable();
-				GHQ.stopScreen_noAnm();
-			}
+			editor.flit();
 		}
-		if(editMode) {
-			DefaultStageEditor.idle(g2);
-		}else { //game GUI
+		if(!editor.isEnabled()){ //game GUI
 			GHQ.translateForGUI(true);
 			int pos = 1;
 			for(THHUnit chara : friends) 
 				chara.iconPaint.paint(pos++*90 + 10, GHQ.getScreenH() - 40, 80, 30);
 			GHQ.translateForGUI(false);
 		}
-		if(stopEventKind == NONE || editMode) { //scroll
+		if(stopEventKind == NONE || editor.isEnabled()) { //scroll
 			//scroll by keys
 			if(skl.hasEvent(VK_W)) {
 				formationCenterY -= F_MOVE_SPD;

@@ -15,7 +15,7 @@ public class TitledLabel extends GUIParts{
 		}
 	};
 	public TitledLabel(String group, RectPaint paintScript, int x, int y, int w, int h) {
-		super(group, paintScript, x, y, w, h);
+		super(group, paintScript, x, y, w, h, true);
 		GHQ.addListenerEx(typeListener);
 	}
 	private String titleStr = "";

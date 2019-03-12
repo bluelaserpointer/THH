@@ -67,4 +67,9 @@ public class Inventory implements Serializable{
 		}else
 			return false;
 	}
+	
+	//information
+	public ArrayList<Item> getItemList(){
+		return items;
+	}
 }

@@ -15,6 +15,7 @@ import input.SingleKeyListener;
 import paint.ColorFilling;
 import paint.ColorFraming;
 import paint.ImageFrame;
+import paint.RectPaint;
 import structure.Structure;
 import structure.StructureScript;
 import structure.Terrain;
@@ -23,7 +24,7 @@ import unit.DummyUnit;
 import unit.Unit;
 import vegetation.Vegetation;
 
-public class DefaultStageEditor {
+public class DefaultStageEditor extends GUIParts{
 	private static ArrayList<StructureScript<Tile>> tileScripts = new ArrayList<StructureScript<Tile>>();
 	private static ArrayList<StructureScript<Terrain>> terrainScripts = new ArrayList<StructureScript<Terrain>>();
 	//private static ArrayList<StructureScript<Terrain>> unitScripts = new ArrayList<StructureScript<Terrain>>();
@@ -80,14 +81,17 @@ public class DefaultStageEditor {
 		ITEM = 4;
 	private static HasBoundingBox selectObject,mouseOveredObject;
 	//GUI_GROUP_ID
-	public static final String
-		EDIT_MENU_GROUP = "EDIT_MENU_GROUP",
-		OBJECT_CONFIG_GROUP = "OBJECT_CONFIG_GROUP";
+	private final String
+		EDIT_MENU_GROUP,
+		OBJECT_CONFIG_GROUP;
 	//GUI
 	private static TitledLabel configLabel;
 	private static CombinedButtons CB_placeKind;
-	//loadResource
-	public static void init(File stageFile) {
+	//init
+	public DefaultStageEditor(String group,File stageFile) {
+		super(group, RectPaint.BLANK_SCRIPT, 0, 0, GHQ.getScreenW(), GHQ.getScreenH(), false);
+		EDIT_MENU_GROUP = group + ">EDIT_MENU_GROUP";
+		OBJECT_CONFIG_GROUP = group + ">OBJECT_CONFIG_GROUP";
 		final int SCREEN_W = GHQ.getScreenW(),SCREEN_H = GHQ.getScreenH();
 		GHQ.addListenerEx(keyListener);
 		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ColorFraming(Color.WHITE,GHQ.stroke3),150,0,SCREEN_W - 150,SCREEN_H) {
@@ -134,7 +138,7 @@ public class DefaultStageEditor {
 						GHQ.addUnit(new DummyUnit(new Dynam(placeX, placeY)));
 						break;
 					case VEGETATION:
-						GHQ.addVegetation(new Vegetation(new ImageFrame("gui_editor/Vegetation.png"), placeX, placeY));
+						GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/gui_editor/Vegetation.png"), placeX, placeY));
 						break;
 					case ITEM:
 						break;
@@ -161,19 +165,22 @@ public class DefaultStageEditor {
 		GHQ.<InputOptionList>addGUIParts(new InputOptionList(configLabel)).addWord("WHITE_WALL", "ABCD", "ABNK");
 	}
 	//role
-	public static void idle(Graphics2D g2) {
+	@Override
+	public void paint() {
+		final Graphics2D G2 = GHQ.getGraphics2D();
+		GHQ.translateForGUI(false);
 		//mouse
 		if(GHQ.key_shift) {
-			g2.setColor(Color.RED);
+			G2.setColor(Color.RED);
 			final int N = 100;
 			int S = 4;
 			final int SX = (GHQ.getMouseX() + N/2)/N,SY = (GHQ.getMouseY() + N/2)/N;
 			for(int xi = -1;xi <= +1;xi++) {
 				for(int yi = -1;yi <= +1;yi++)
-					g2.fillOval((SX + xi)*N - S/2, (SY + yi)*N - S/2, S, S);
+					G2.fillOval((SX + xi)*N - S/2, (SY + yi)*N - S/2, S, S);
 			}
 			S += 6;
-			g2.drawOval(SX*N - S/2, SY*N - S/2, S, S);
+			G2.drawOval(SX*N - S/2, SY*N - S/2, S, S);
 			placeX = SX*N;
 			placeY = SY*N;
 		}else {
@@ -190,11 +197,11 @@ public class DefaultStageEditor {
 				mouseOveredObject = GHQ.getMouseOverStructure();
 			if(mouseOveredObject != null && mouseOveredObject != selectObject) {
 				final Rectangle2D RECT = mouseOveredObject.getBoundingBox();
-				g2.setColor(Color.WHITE);
-				g2.setStroke(GHQ.stroke5);
-				g2.draw(RECT);
-				g2.drawOval((int)RECT.getX() - 9,(int)RECT.getY() - 9,18,18);
-				g2.drawOval(GHQ.getMouseX() - 5,GHQ.getMouseY() - 5,10,10);
+				G2.setColor(Color.WHITE);
+				G2.setStroke(GHQ.stroke5);
+				G2.draw(RECT);
+				G2.drawOval((int)RECT.getX() - 9,(int)RECT.getY() - 9,18,18);
+				G2.drawOval(GHQ.getMouseX() - 5,GHQ.getMouseY() - 5,10,10);
 			}
 			if(selectObject != null) {
 				//changeSlot(Left side menu bar)
@@ -243,32 +250,32 @@ public class DefaultStageEditor {
 				//draw selection guide
 				final Rectangle2D RECT = selectObject.getBoundingBox();
 				RECT.setRect(RECT.getX(),RECT.getY(),RECT.getWidth() + 4,RECT.getHeight() + 4);
-				g2.setColor(Color.WHITE);
-				g2.setStroke(GHQ.stroke5);
-				g2.draw(RECT);
-				g2.setColor(Color.RED);
-				g2.setStroke(GHQ.stroke3);
-				g2.draw(RECT);
+				G2.setColor(Color.WHITE);
+				G2.setStroke(GHQ.stroke5);
+				G2.draw(RECT);
+				G2.setColor(Color.RED);
+				G2.setStroke(GHQ.stroke3);
+				G2.draw(RECT);
 				break;
 			}
 		case TERRAIN:
-			Terrain.makeGuiding(g2);
+			Terrain.makeGuiding(G2);
 			break;
 		case TILES:
-			Tile.makeGuiding(g2);
+			Tile.makeGuiding(G2);
 			break;
 		}
 		//originalName display
-		g2.setColor(Color.GRAY);
-		g2.setFont(GHQ.basicFont.deriveFont(20.0f));
+		G2.setColor(Color.GRAY);
+		G2.setFont(GHQ.basicFont.deriveFont(20.0f));
 		for(Unit unit : GHQ.getCharacterList())
-			g2.drawString(unit.originalName, (int)unit.dynam.getX(), (int)unit.dynam.getY());
-		g2.setFont(GHQ.basicFont);
-		//GUI
+			G2.drawString(unit.originalName, (int)unit.dynam.getX(), (int)unit.dynam.getY());
+		G2.setFont(GHQ.basicFont);
+
 		GHQ.translateForGUI(true);
-		g2.setColor(Color.WHITE);
-		g2.drawString("EDIT_MODE", 20, 20);
-		GHQ.translateForGUI(false);
+		//GUI
+		G2.setColor(Color.WHITE);
+		G2.drawString("EDIT_MODE", 20, 20);
 	}
 	
 	//control
@@ -278,13 +285,19 @@ public class DefaultStageEditor {
 	public static void addTerrainScript(StructureScript<Terrain> script) {
 		terrainScripts.add(script);
 	}
-	public static void enable() {
-		GHQ.enableGUIs(DefaultStageEditor.EDIT_MENU_GROUP);
-		GHQ.enableGUIs(DefaultStageEditor.OBJECT_CONFIG_GROUP);
+	@Override
+	public void enable() {
+		super.enable();
+		GHQ.stopScreen_noAnm();
+		GHQ.enableGUIs(EDIT_MENU_GROUP);
+		GHQ.enableGUIs(OBJECT_CONFIG_GROUP);
 		selectObject = mouseOveredObject = null;
 	}
-	public static void disable() {
-		GHQ.disableGUIs(DefaultStageEditor.EDIT_MENU_GROUP);
-		GHQ.disableGUIs(DefaultStageEditor.OBJECT_CONFIG_GROUP);
+	@Override
+	public void disable() {
+		super.disable();
+		GHQ.clearStopEvent();
+		GHQ.disableGUIs(EDIT_MENU_GROUP);
+		GHQ.disableGUIs(OBJECT_CONFIG_GROUP);
 	}
 }

@@ -42,6 +42,9 @@ public abstract class Item implements HasRectPaint{
 	public boolean keepEvenEmpty() {
 		return false;
 	}
+	public int getAmount() {
+		return amount;
+	}
 	@Override
 	public final RectPaint getPaintScript() {
 		return paintScript;

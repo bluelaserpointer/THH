@@ -12,7 +12,7 @@ public class DummyUnit extends Unit{
 	public DummyUnit(Dynam dynam) {
 		super(new Status(),GHQ.NONE);
 		super.dynam.setAllBySample(dynam);
-		dummyIID = GHQ.loadImage("gui_editor/Unit.png");
+		dummyIID = GHQ.loadImage("thhimage/gui_editor/Unit.png");
 	}
 	@Override
 	public void loadImageData() {
