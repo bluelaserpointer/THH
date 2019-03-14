@@ -21,6 +21,8 @@ import gui.MessageSource;
 import input.KeyListenerEx;
 import input.KeyTypeListener;
 import input.MouseListenerEx;
+import physicis.Dynam;
+import physicis.DynamInteractable;
 import structure.Structure;
 import stage.StageEngine;
 import unit.Item;

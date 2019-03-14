@@ -5,11 +5,11 @@ import static java.lang.Math.*;
 import bullet.Bullet;
 import bullet.BulletBlueprint;
 import bullet.BulletScript;
-import core.DynamInteractable;
 import core.GHQ;
 import effect.EffectBlueprint;
 import effect.EffectScript;
 import paint.ImageFrame;
+import physicis.DynamInteractable;
 import weapon.Weapon;
 import weapon.WeaponInfo;
 

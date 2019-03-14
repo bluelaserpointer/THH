@@ -2,13 +2,13 @@ package bullet;
 
 import static java.lang.Math.PI;
 
-import core.DynamInteractable;
 import core.Entity_double;
 import core.GHQ;
 import core.HasStandpoint;
 import core.Standpoint;
 import paint.DotPaint;
 import paint.HasDotPaint;
+import physicis.DynamInteractable;
 import unit.Unit;
 
 public class Bullet extends Entity_double implements DynamInteractable,HasStandpoint,HasDotPaint{

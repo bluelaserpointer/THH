@@ -1,4 +1,4 @@
-package core;
+package physicis;
 
 public interface DynamInteractable {
 	public static final DynamInteractable BlankDI = new DynamInteractable() {
@@ -7,13 +7,7 @@ public interface DynamInteractable {
 		public Dynam getDynam() {
 			return nullDynam;
 		}
-		@Override
-		public boolean isMovable() {
-			return false;
-		}
 	};
 	
 	public abstract Dynam getDynam();
-	
-	public abstract boolean isMovable();
 }

@@ -2,11 +2,11 @@ package effect;
 
 import static java.lang.Math.PI;
 
-import core.DynamInteractable;
 import core.Entity_double;
 import core.GHQ;
 import paint.DotPaint;
 import paint.HasDotPaint;
+import physicis.DynamInteractable;
 
 public class Effect extends Entity_double implements HasDotPaint{
 	public final int UNIQUE_ID;

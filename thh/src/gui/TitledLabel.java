@@ -34,7 +34,7 @@ public class TitledLabel extends GUIParts{
 		typeListener.disable();
 	}
 	@Override
-	public void paint() {
+	public void idle() {
 		final Graphics2D G2 = GHQ.getGraphics2D();
 		G2.setColor(Color.BLACK);
 		G2.setStroke(GHQ.stroke1);

@@ -1,9 +1,9 @@
 package vegetation;
 
-import core.Dynam;
-import core.DynamInteractable;
 import core.GHQ;
 import paint.DotPaint;
+import physicis.Dynam;
+import physicis.DynamInteractable;
 import unit.Item;
 
 public class DropItem extends Vegetation{

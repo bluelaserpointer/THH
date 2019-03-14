@@ -8,7 +8,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.ArrayList;
 
-import core.Dynam;
 import core.GHQ;
 import core.HasBoundingBox;
 import input.SingleKeyListener;
@@ -16,6 +15,7 @@ import paint.ColorFilling;
 import paint.ColorFraming;
 import paint.ImageFrame;
 import paint.RectPaint;
+import physicis.Dynam;
 import structure.Structure;
 import structure.StructureScript;
 import structure.Terrain;
@@ -166,7 +166,7 @@ public class DefaultStageEditor extends GUIParts{
 	}
 	//role
 	@Override
-	public void paint() {
+	public void idle() {
 		final Graphics2D G2 = GHQ.getGraphics2D();
 		GHQ.translateForGUI(false);
 		//mouse

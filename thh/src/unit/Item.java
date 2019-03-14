@@ -2,21 +2,20 @@ package unit;
 
 import core.GHQ;
 import paint.DotPaint;
-import paint.HasRectPaint;
-import paint.RectPaint;
+import paint.HasDotPaint;
 import vegetation.DropItem;
 
-public abstract class Item implements HasRectPaint{
+public abstract class Item implements HasDotPaint{
 	protected int amount;
 	protected final int STACK_CAP;
-	protected final RectPaint paintScript;
+	protected final DotPaint paintScript;
 	public abstract String getName();
 	
-	public Item(int stackCap,RectPaint paintScript) {
+	public Item(int stackCap,DotPaint paintScript) {
 		STACK_CAP = stackCap;
 		this.paintScript = paintScript;
 	}
-	public Item(RectPaint paintScript) {
+	public Item(DotPaint paintScript) {
 		STACK_CAP = GHQ.MAX;
 		this.paintScript = paintScript;
 	}
@@ -46,7 +45,7 @@ public abstract class Item implements HasRectPaint{
 		return amount;
 	}
 	@Override
-	public final RectPaint getPaintScript() {
+	public final DotPaint getPaintScript() {
 		return paintScript;
 	}
 	//control

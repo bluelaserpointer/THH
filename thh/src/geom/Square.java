@@ -2,7 +2,7 @@ package geom;
 
 import java.awt.geom.Line2D;
 
-public class Square extends HitShape{
+public class Square implements HitShape{
 	public final int SIDE;
 	public Square(int side) {
 		SIDE = side;
@@ -14,6 +14,10 @@ public class Square extends HitShape{
 			return Math.abs(x1 - x2) < S2 && Math.abs(y1 - y2) < S2;
 		}else if(shape instanceof Rectangle) {
 			return Math.abs(x1 - x2) < (SIDE + ((Rectangle)shape).WIDTH)/2 && Math.abs(y1 - y2) < (SIDE + ((Rectangle)shape).HEIGHT)/2;
+		}else if(shape instanceof Circle) {
+			// TODO lacking strictness
+			final int S2 = (SIDE + ((Circle)shape).RADIUS)/2;
+			return Math.abs(x1 - x2) < S2 && Math.abs(y1 - y2) < S2;
 		}
 		return false;
 	}

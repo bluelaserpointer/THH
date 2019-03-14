@@ -5,13 +5,13 @@ import java.io.Serializable;
 
 import action.Action;
 import bullet.Bullet;
-import core.Dynam;
-import core.DynamInteractable;
 import core.Entity_double;
 import core.ErrorCounter;
 import core.GHQ;
 import core.Standpoint;
 import gui.MessageSource;
+import physicis.Dynam;
+import physicis.DynamInteractable;
 import core.HasBoundingBox;
 import core.HasStandpoint;
 

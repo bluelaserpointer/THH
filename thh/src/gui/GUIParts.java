@@ -24,9 +24,9 @@ public abstract class GUIParts {
 	}
 	public final void defaultIdle() {
 		if(isEnabled)
-			paint();
+			idle();
 	}
-	public void paint() {
+	public void idle() {
 		PAINT_SCRIPT.paint(x, y, w, h);
 	}
 	public void enable() {

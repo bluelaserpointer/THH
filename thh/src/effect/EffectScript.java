@@ -2,9 +2,9 @@ package effect;
 
 import java.io.Serializable;
 
-import core.Dynam;
-import core.DynamInteractable;
 import core.GHQ;
+import physicis.Dynam;
+import physicis.DynamInteractable;
 
 public class EffectScript implements Serializable{
 	private static final long serialVersionUID = -7528140745782034400L;

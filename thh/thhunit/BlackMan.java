@@ -1,9 +1,9 @@
 package thhunit;
 
 import unit.Unit;
-import core.DynamInteractable;
 import core.GHQ;
 import paint.ImageFrame;
+import physicis.DynamInteractable;
 import thhunit.EnemyBulletLibrary;
 import weapon.Weapon;
 

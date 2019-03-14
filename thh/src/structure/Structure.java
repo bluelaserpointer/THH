@@ -3,12 +3,12 @@ package structure;
 import java.awt.geom.Line2D;
 import java.io.Serializable;
 
-import core.Dynam;
-import core.DynamInteractable;
 import core.GHQ;
 import core.HasBoundingBox;
 import core.HasStandpoint;
 import core.Standpoint;
+import physicis.Dynam;
+import physicis.DynamInteractable;
 
 public abstract class Structure implements Serializable,HasBoundingBox,HasStandpoint{
 	private static final long serialVersionUID = -641218813005671688L;

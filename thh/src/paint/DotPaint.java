@@ -9,12 +9,21 @@ public interface DotPaint extends PaintScript{
 		private static final long serialVersionUID = 834697886156768195L;
 		@Override
 		public void paint(int x, int y) {}
+		@Override
+		public void paint(int x, int y,int maxSize) {}
 	};
 	public abstract void paint(int x,int y);
+	public abstract void paint(int x,int y,int maxSize);
 	public default void paint(int x,int y,double angle) {
 		final Graphics2D G2 = GHQ.getGraphics2D();
 		G2.rotate(angle);
 		paint(x,y);
+		G2.rotate(-angle);
+	}
+	public default void paint(int x,int y,double angle,int maxSize) {
+		final Graphics2D G2 = GHQ.getGraphics2D();
+		G2.rotate(angle);
+		paint(x,y,maxSize);
 		G2.rotate(-angle);
 	}
 }

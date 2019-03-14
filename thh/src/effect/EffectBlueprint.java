@@ -1,8 +1,8 @@
 package effect;
 
-import core.Dynam;
 import core.GHQ;
 import paint.DotPaint;
+import physicis.Dynam;
 
 public class EffectBlueprint {
 	private final static int 

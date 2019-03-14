@@ -1,8 +1,8 @@
 package bullet;
 
-import core.Dynam;
 import core.GHQ;
 import paint.DotPaint;
+import physicis.Dynam;
 
 public final class BulletBlueprint {
 	private final static int

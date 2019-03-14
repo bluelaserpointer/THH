@@ -2,7 +2,7 @@ package geom;
 
 import java.awt.geom.Line2D;
 
-public class Rectangle extends HitShape{
+public class Rectangle implements HitShape{
 	public final int WIDTH,HEIGHT;
 	public Rectangle(int w,int h) {
 		WIDTH = w;

@@ -47,8 +47,8 @@ public class CombinedButtons extends GUIParts{
 				selection = (selection == buttonID ? defaultSelection : buttonID);
 			}
 			@Override
-			public void paint() {
-				super.paint();
+			public void idle() {
+				super.idle();
 				if(selection == buttonID)
 					emphasizer.paint(x, y, w, h);
 			}

@@ -2,9 +2,9 @@ package structure;
 
 import java.io.Serializable;
 
-import core.Dynam;
-import core.DynamInteractable;
 import core.GHQ;
+import physicis.Dynam;
+import physicis.DynamInteractable;
 
 public class StructureScript<T extends Structure> implements Serializable{
 	private static final long serialVersionUID = -4624130557133104038L;

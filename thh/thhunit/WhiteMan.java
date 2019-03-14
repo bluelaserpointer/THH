@@ -1,8 +1,8 @@
 package thhunit;
 
-import core.DynamInteractable;
 import core.GHQ;
 import paint.ImageFrame;
+import physicis.DynamInteractable;
 import unit.Unit;
 
 public class WhiteMan extends THHUnit{

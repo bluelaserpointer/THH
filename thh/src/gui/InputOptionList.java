@@ -37,7 +37,7 @@ public class InputOptionList extends GUIParts{
 	}
 	//main role
 	@Override
-	public void paint() {
+	public void idle() {
 		if(!label.isInputMode())
 			return;
 		//listLength update

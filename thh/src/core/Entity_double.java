@@ -1,5 +1,8 @@
 package core;
 
+import physicis.Dynam;
+import physicis.DynamInteractable;
+
 public abstract class Entity_double implements DynamInteractable{
 	public final DynamInteractable source; //an information source of user
 	public final Dynam dynam = new Dynam();
@@ -38,9 +41,5 @@ public abstract class Entity_double implements DynamInteractable{
 	@Override
 	public Dynam getDynam() {
 		return dynam;
-	}
-	@Override
-	public boolean isMovable() {
-		return true;
 	}
 }

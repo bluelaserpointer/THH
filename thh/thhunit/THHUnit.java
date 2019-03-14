@@ -6,10 +6,10 @@ import java.awt.geom.Rectangle2D;
 import action.Action;
 import action.ActionInfo;
 import bullet.Bullet;
-import core.DynamInteractable;
 import core.GHQ;
 import paint.DotPaint;
 import paint.RectPaint;
+import physicis.DynamInteractable;
 import unit.Status;
 import unit.Unit;
 import weapon.Weapon;
@@ -65,8 +65,6 @@ public abstract class THHUnit extends Unit {
 	}
 	@Override
 	public void dynam() {
-		if(!isMovable())
-			return;
 		dynam.move();
 		dynam.accelerate_MUL(0.9);
 	}
@@ -230,10 +228,6 @@ public abstract class THHUnit extends Unit {
 	@Override
 	public final boolean isAlive() {
 		return status.get(HP) > 0;
-	}
-	@Override
-	public boolean isMovable() {
-		return true;
 	}
 	public boolean useWeapon(int kind) {
 		return true;

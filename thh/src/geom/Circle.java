@@ -2,7 +2,7 @@ package geom;
 
 import java.awt.geom.Line2D;
 
-public class Circle extends HitShape{
+public class Circle implements HitShape{
 	public final int RADIUS;
 	
 	public Circle(int radius) {
@@ -13,15 +13,17 @@ public class Circle extends HitShape{
 		if(shape instanceof Circle) {
 			final double DX = x1 - x2,DY = y1 - y2,DR = RADIUS + ((Circle)shape).RADIUS;
 			return DX*DX + DY*DY < DR*DR;
+		}else if(shape instanceof Square) {
+			// TODO lacking strictness
+			final int S2 = (RADIUS + ((Square)shape).SIDE)/2;
+			return Math.abs(x1 - x2) < S2 && Math.abs(y1 - y2) < S2;
 		}
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean intersects(int x1, int y1, Line2D line) {
-		// TODO Auto-generated method stub
-		return false;
+		return line.ptLineDistSq(x1,y1) <= RADIUS;
 	}
 
 }

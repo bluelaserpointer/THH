@@ -2,8 +2,8 @@ package unit;
 
 import action.Action;
 import bullet.Bullet;
-import core.Dynam;
 import core.GHQ;
+import physicis.Dynam;
 
 public class DummyUnit extends Unit{
 	private static final long serialVersionUID = 411168207492887964L;
@@ -20,10 +20,6 @@ public class DummyUnit extends Unit{
 	@Override
 	public void paint(boolean doAnimation) {
 		GHQ.drawImageGHQ_center(dummyIID, (int)dynam.getX(), (int)dynam.getY());
-	}
-	@Override
-	public boolean isMovable() {
-		return false;
 	}
 
 	@Override
