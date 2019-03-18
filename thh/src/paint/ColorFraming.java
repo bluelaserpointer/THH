@@ -15,7 +15,7 @@ public class ColorFraming implements RectPaint{
 		STROKE = stroke;
 	}
 	@Override
-	public void paint(int x, int y, int w, int h) {
+	public void rectPaint(int x, int y, int w, int h) {
 		final Graphics2D G2 = GHQ.getGraphics2D();
 		G2.setColor(COLOR);
 		G2.setStroke(STROKE);

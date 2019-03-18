@@ -1,10 +1,10 @@
 package vegetation;
 
 import core.GHQ;
+import item.Item;
 import paint.DotPaint;
 import physicis.Dynam;
 import physicis.DynamInteractable;
-import unit.Item;
 
 public class DropItem extends Vegetation{
 	private static final long serialVersionUID = -8747093817175771314L;

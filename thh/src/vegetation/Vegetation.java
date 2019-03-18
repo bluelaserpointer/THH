@@ -35,7 +35,7 @@ public class Vegetation implements Serializable,HasBoundingBox,HasDotPaint{
 	public void paint() {
 		if(paintScript == null)
 			return;
-		paintScript.paint(x, y);
+		paintScript.dotPaint(x, y);
 	}
 	//control
 	@Override

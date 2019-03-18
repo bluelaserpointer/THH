@@ -58,10 +58,10 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		VK_ESCAPE,
 		VK_F6,
 	};
-	private final MouseListenerEx sml = new MouseListenerEx();
-	private final SingleKeyListener skl = new SingleKeyListener(inputKeys);
-	private final SingleNumKeyListener snkl = new SingleNumKeyListener();
-	private final DoubleNumKeyListener dnkl = new DoubleNumKeyListener(20);
+	private final MouseListenerEx s_mouseL = new MouseListenerEx();
+	private final SingleKeyListener s_keyL = new SingleKeyListener(inputKeys);
+	private final SingleNumKeyListener s_numKeyL = new SingleNumKeyListener();
+	private final DoubleNumKeyListener d_numKeyL = new DoubleNumKeyListener(20);
 	
 	//images
 	private int focusIID,magicCircleIID;
@@ -83,10 +83,10 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 	public final void loadResource() {
 		focusIID = GHQ.loadImage("thhimage/focus.png");
 		magicCircleIID = GHQ.loadImage("thhimage/MagicCircle.png");
-		GHQ.addListenerEx(sml);
-		GHQ.addListenerEx(skl);
-		GHQ.addListenerEx(snkl);
-		GHQ.addListenerEx(dnkl);
+		GHQ.addListenerEx(s_mouseL);
+		GHQ.addListenerEx(s_keyL);
+		GHQ.addListenerEx(s_numKeyL);
+		GHQ.addListenerEx(d_numKeyL);
 		//GUI
 		GHQ.addGUIParts(editor = new DefaultStageEditor(EDIT_GUI_GROUP, new File("stage/saveData1.txt")));
 	}
@@ -140,10 +140,10 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 	@Override
 	public final void openStage() {
 		GHQ.addMessage(this,"This is a prototype stage.");
-		sml.enable();
-		skl.enable();
-		snkl.enable();
-		dnkl.enable();
+		s_mouseL.enable();
+		s_keyL.enable();
+		s_numKeyL.enable();
+		d_numKeyL.enable();
 	}
 	@Override
 	public final StageSaveData getStageSaveData() {
@@ -200,7 +200,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 					}
 				}
 				//leap
-				if(skl.hasEvent(VK_SHIFT)){
+				if(s_keyL.hasEvent(VK_SHIFT)){
 					//final int DX = MOUSE_X - formationCenterX,DY = MOUSE_Y - formationCenterY;
 					//if(DX*DX + DY*DY < 5000) {
 						formationCenterX = MOUSE_X;formationCenterY = MOUSE_Y;
@@ -212,11 +212,11 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 				}
 				//shot
 				for(Unit chara : friends)
-					chara.attackOrder = sml.hasButton1Event();
+					chara.attackOrder = s_mouseL.hasButton1Event();
 				//spell
 				{
 					int spellUser;
-					while((spellUser = dnkl.pullHasEventKeyNum()) != NONE) {
+					while((spellUser = d_numKeyL.pullHasEventKeyNum()) != NONE) {
 						spellUser -= 1;
 						if(spellUser < friends.length)
 							friends[spellUser].spellOrder = true;
@@ -233,32 +233,32 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		g2.drawLine(formationCenterX,formationCenterY,MOUSE_X,MOUSE_Y);
 		GHQ.drawImageGHQ_center(focusIID,MOUSE_X,MOUSE_Y);
 		//editor
-		if(skl.pullEvent(VK_F6)) {
+		if(s_keyL.pullEvent(VK_F6)) {
 			editor.flit();
 		}
 		if(!editor.isEnabled()){ //game GUI
 			GHQ.translateForGUI(true);
 			int pos = 1;
 			for(THHUnit chara : friends) 
-				chara.iconPaint.paint(pos++*90 + 10, GHQ.getScreenH() - 40, 80, 30);
+				chara.iconPaint.rectPaint(pos++*90 + 10, GHQ.getScreenH() - 40, 80, 30);
 			GHQ.translateForGUI(false);
 		}
 		if(stopEventKind == NONE || editor.isEnabled()) { //scroll
 			//scroll by keys
-			if(skl.hasEvent(VK_W)) {
+			if(s_keyL.hasEvent(VK_W)) {
 				formationCenterY -= F_MOVE_SPD;
 				GHQ.viewTargetMove(0,-F_MOVE_SPD);
 				GHQ.pureViewMove(0,-F_MOVE_SPD);
-			}else if(skl.hasEvent(VK_S)) {
+			}else if(s_keyL.hasEvent(VK_S)) {
 				formationCenterY += F_MOVE_SPD;
 				GHQ.viewTargetMove(0,F_MOVE_SPD);
 				GHQ.pureViewMove(0,F_MOVE_SPD);
 			}
-			if(skl.hasEvent(VK_A)) {
+			if(s_keyL.hasEvent(VK_A)) {
 				formationCenterX -= F_MOVE_SPD;
 				GHQ.viewTargetMove(-F_MOVE_SPD,0);
 				GHQ.pureViewMove(-F_MOVE_SPD,0);
-			}else if(skl.hasEvent(VK_D)) {
+			}else if(s_keyL.hasEvent(VK_D)) {
 				formationCenterX += F_MOVE_SPD;
 				GHQ.viewTargetMove(F_MOVE_SPD,0);
 				GHQ.pureViewMove(F_MOVE_SPD,0);

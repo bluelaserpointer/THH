@@ -121,7 +121,7 @@ public class Tile extends Structure{
 			for(int yi = 0;yi < Y_TILES;yi++) {
 				if(aliveTiles.get(xi + yi*X_TILES)){
 					final int PX = ORIGIN_X + xi*TILE_SIZE,PY = ORIGIN_Y + yi*TILE_SIZE;
-					paintScript.paint(PX,PY,TILE_SIZE,TILE_SIZE);
+					paintScript.rectPaint(PX,PY,TILE_SIZE,TILE_SIZE);
 				}
 			}
 		}

@@ -21,11 +21,11 @@ import gui.MessageSource;
 import input.KeyListenerEx;
 import input.KeyTypeListener;
 import input.MouseListenerEx;
+import item.Item;
 import physicis.Dynam;
 import physicis.DynamInteractable;
 import structure.Structure;
 import stage.StageEngine;
-import unit.Item;
 import unit.Unit;
 import vegetation.DropItem;
 import vegetation.Vegetation;
@@ -848,6 +848,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public void mouseEntered(MouseEvent e){}
 	public void mouseExited(MouseEvent e){}
 	public void mousePressed(MouseEvent e){
+		//MouseListenerExs event
 		for(MouseListenerEx mle : mouseListeners) {
 			if(!mle.isEnabled())
 				continue;
@@ -861,6 +862,18 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			case MouseEvent.BUTTON3:
 				mle.pressButton3Event();
 				break;
+			}
+		}
+		//GUIParts click event
+		boolean alreadyClicked = false;
+		for(GUIParts parts : guiParts) {
+			if(parts.isEnabled()) {
+				if(alreadyClicked || !parts.isMouseEntered()) {
+					parts.outsideClicked();
+				}else {
+					parts.clicked();
+					alreadyClicked = parts.absorbsClickEvent();
+				}
 			}
 		}
 	}
@@ -882,17 +895,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 	}
 	public void mouseClicked(MouseEvent e){
-		boolean alreadyClicked = false;
-		for(GUIParts parts : guiParts) {
-			if(parts.isEnabled()) {
-				if(alreadyClicked || !parts.isMouseEntered()) {
-					parts.outsideClicked();
-				}else {
-					parts.clicked();
-					alreadyClicked = parts.absorbsClickEvent();
-				}
-			}
-		}
 	}
 	public void mouseMoved(MouseEvent e){
 		final int x = e.getX(),y = e.getY();

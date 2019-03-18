@@ -27,7 +27,7 @@ public abstract class GUIParts {
 			idle();
 	}
 	public void idle() {
-		PAINT_SCRIPT.paint(x, y, w, h);
+		PAINT_SCRIPT.rectPaint(x, y, w, h);
 	}
 	public void enable() {
 		isEnabled = true;

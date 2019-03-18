@@ -123,13 +123,13 @@ public abstract class THHUnit extends Unit {
 		if(status.get(HP) <= 0)
 			return;
 		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
-		charaPaint.paint(X, Y);
+		charaPaint.dotPaint(X, Y);
 		GHQ.paintHPArc(X, Y, 20,status.get(HP), status.getDefault(HP));
 	}
 	protected final void paintMode_magicCircle(DotPaint paintScript) {
 		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
-		paintScript.paint(X, Y, (double)GHQ.getNowFrame()/35.0);
-		charaPaint.paint(X, Y);
+		paintScript.dotPaint(X, Y, (double)GHQ.getNowFrame()/35.0);
+		charaPaint.dotPaint(X, Y);
 	}
 	
 	// control

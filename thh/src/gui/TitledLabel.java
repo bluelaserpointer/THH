@@ -40,7 +40,7 @@ public class TitledLabel extends GUIParts{
 		G2.setStroke(GHQ.stroke1);
 		G2.setFont(GHQ.basicFont);
 		G2.drawString(titleStr, x + 3, y - 8);
-		PAINT_SCRIPT.paint(x, y, w, h);
+		PAINT_SCRIPT.rectPaint(x, y, w, h);
 		G2.setColor(Color.BLACK);
 		G2.setStroke(activated ? GHQ.stroke3 : GHQ.stroke1);
 		G2.drawRect(x, y, w, h);

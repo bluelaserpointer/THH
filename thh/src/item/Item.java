@@ -1,35 +1,43 @@
-package unit;
+package item;
+
+import java.io.Serializable;
 
 import core.GHQ;
 import paint.DotPaint;
 import paint.HasDotPaint;
 import vegetation.DropItem;
 
-public abstract class Item implements HasDotPaint{
+public abstract class Item implements Serializable,HasDotPaint{
+	private static final long serialVersionUID = 1587964067620280674L;
 	protected int amount;
 	protected final int STACK_CAP;
 	protected final DotPaint paintScript;
 	public abstract String getName();
 	
+	public static final Item BLANK_ITEM = new Item(null) {
+		private static final long serialVersionUID = 7797829501331686714L;
+
+		@Override
+		public String getName() {
+			return "<Blank Item>";
+		}
+	};
+	
+	//init
 	public Item(int stackCap,DotPaint paintScript) {
 		STACK_CAP = stackCap;
-		this.paintScript = paintScript;
+		this.paintScript = paintScript == null ? DotPaint.BLANK_SCRIPT : paintScript;
 	}
 	public Item(DotPaint paintScript) {
 		STACK_CAP = GHQ.MAX;
-		this.paintScript = paintScript;
+		this.paintScript = paintScript == null ? DotPaint.BLANK_SCRIPT : paintScript;
 	}
 	//main role
-	public DropItem drop(DotPaint paintScript, int x, int y) {
-		return new DropItem(this,paintScript,x,y);
+	public DropItem drop(DotPaint newPaintScript, int x, int y) {
+		return new DropItem(this,newPaintScript,x,y);
 	}
 	public DropItem drop(int x, int y) {
-		if(paintScript instanceof DotPaint)
-			return new DropItem(this,(DotPaint)paintScript,x,y);
-		else {
-			System.out.println("Item.drop(int x, int y) has called illegally because it's paintScript is not a instance of DotPaint");
-			return new DropItem(this,DotPaint.BLANK_SCRIPT,x,y);
-		}
+		return new DropItem(this,paintScript,x,y);
 	}
 	//information
 	public boolean isStackable(Item item) {

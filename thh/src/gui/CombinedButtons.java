@@ -50,7 +50,7 @@ public class CombinedButtons extends GUIParts{
 			public void idle() {
 				super.idle();
 				if(selection == buttonID)
-					emphasizer.paint(x, y, w, h);
+					emphasizer.rectPaint(x, y, w, h);
 			}
 		};
 		GHQ.addGUIParts(BUTTON);

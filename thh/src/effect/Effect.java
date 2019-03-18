@@ -73,7 +73,7 @@ public class Effect extends Entity_double implements HasDotPaint{
 	}
 	@Override
 	public final void defaultPaint() {
-		paintScript.paint((int)dynam.getX(), (int)dynam.getY(), dynam.getAngle());
+		paintScript.dotPaint((int)dynam.getX(), (int)dynam.getY(), dynam.getAngle());
 	}
 	
 	//tool

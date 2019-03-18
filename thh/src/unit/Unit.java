@@ -10,8 +10,11 @@ import core.ErrorCounter;
 import core.GHQ;
 import core.Standpoint;
 import gui.MessageSource;
+import item.Item;
 import physicis.Dynam;
 import physicis.DynamInteractable;
+import storage.ItemInventory;
+import storage.Storage;
 import core.HasBoundingBox;
 import core.HasStandpoint;
 
@@ -27,17 +30,17 @@ public abstract class Unit extends Entity_double implements MessageSource,DynamI
 	public String originalName = "";
 	public final ActionPlan actions;
 	public final Status status;
-	public final Inventory inventory;
+	public final ItemInventory inventory;
 	public final Standpoint standpoint;
 	
 	//Initialization
 	public Unit(Status status,int initialGroup) {
 		actions = new ActionPlan();
 		this.status = status;
-		inventory = new Inventory();
+		inventory = new ItemInventory(new Storage<Item>());
 		standpoint = new Standpoint(initialGroup);
 	}
-	public Unit(ActionPlan actionPlan,Status status,Inventory inventory,Standpoint standpoint) {
+	public Unit(ActionPlan actionPlan,Status status,ItemInventory inventory,Standpoint standpoint) {
 		this.actions = actionPlan;
 		this.status = status;
 		this.inventory = inventory;
