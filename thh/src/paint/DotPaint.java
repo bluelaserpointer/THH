@@ -10,12 +10,15 @@ public interface DotPaint extends PaintScript{
 		@Override
 		public void dotPaint(int x, int y) {}
 		@Override
-		public void dotPaint(int x, int y,int maxSize) {}
+		public void dotPaint_resize(int x, int y,int maxSize) {}
+		@Override
+		public void dotPaint_resize(int x, int y, double rate) {}
 	};
 	
 	public abstract void dotPaint(int x,int y);
-	public abstract void dotPaint(int x,int y,int maxSize);
-	public default void dotPaint(int x,int y,double angle) {
+	public abstract void dotPaint_resize(int x,int y,int maxSize);
+	public abstract void dotPaint_resize(int x,int y,double rate);
+	public default void dotPaint_turn(int x,int y,double angle) {
 		final Graphics2D G2 = GHQ.getGraphics2D();
 		G2.rotate(angle);
 		dotPaint(x,y);
@@ -24,7 +27,7 @@ public interface DotPaint extends PaintScript{
 	public default void dotPaint(int x,int y,double angle,int maxSize) {
 		final Graphics2D G2 = GHQ.getGraphics2D();
 		G2.rotate(angle);
-		dotPaint(x,y,maxSize);
+		dotPaint_resize(x,y,maxSize);
 		G2.rotate(-angle);
 	}
 }

@@ -12,10 +12,7 @@ public abstract class GUIParts {
 	protected final RectPaint PAINT_SCRIPT;
 	public GUIParts(String group,RectPaint paintScript,int x,int y,int w,int h,boolean absorbsClickEvent) {
 		GROUP = group;
-		if(paintScript == null)
-			PAINT_SCRIPT = RectPaint.BLANK_SCRIPT;
-		else
-			PAINT_SCRIPT = paintScript;
+		PAINT_SCRIPT = paintScript == null ? RectPaint.BLANK_SCRIPT : paintScript;
 		this.x = x;
 		this.y = y;
 		this.w = w;

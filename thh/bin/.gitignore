@@ -1,3 +1,6 @@
+/.project
+/.settings/
+/_config_1.0/
 /font/
 /library/
 /manifest
@@ -12,12 +15,12 @@
 /geom/
 /gui/
 /input/
+/item/
 /paint/
+/physicis/
+/storage/
 /structure/
 /thhunit/
 /unit/
 /vegetation/
 /weapon/
-/physicis/
-/item/
-/storage/

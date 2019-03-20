@@ -42,7 +42,7 @@ public class TableStorageViewer<T extends HasDotPaint> extends GUIParts{
 	//extends
 	protected void paintOfCell(HasDotPaint object, int x,int y) {
 		if(object != null)
-			object.getPaintScript().dotPaint(x + CELL_SIZE/2, y + CELL_SIZE/2, (int)(CELL_SIZE*0.8));
+			object.getPaintScript().dotPaint_resize(x + CELL_SIZE/2, y + CELL_SIZE/2, (int)(CELL_SIZE*0.8));
 	}
 	
 	//information

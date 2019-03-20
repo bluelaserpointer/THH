@@ -25,7 +25,7 @@ public class MouseHook<T extends HasDotPaint> extends GUIParts{
 			if(SIZE == GHQ.NONE)
 				hookingObject.getPaintScript().dotPaint(GHQ.getMouseScreenX(), GHQ.getMouseScreenY());
 			else
-				hookingObject.getPaintScript().dotPaint(GHQ.getMouseScreenX(), GHQ.getMouseScreenY(), SIZE);
+				hookingObject.getPaintScript().dotPaint_resize(GHQ.getMouseScreenX(), GHQ.getMouseScreenY(), SIZE);
 		}
 	}
 	

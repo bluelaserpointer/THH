@@ -167,7 +167,7 @@ public class Bullet extends Entity_double implements DynamInteractable,HasStandp
 	}
 	@Override
 	public final void defaultPaint() {
-		paintScript.dotPaint((int)dynam.getX(),(int)dynam.getY(), dynam.getAngle());
+		paintScript.dotPaint_turn((int)dynam.getX(),(int)dynam.getY(), dynam.getAngle());
 	}
 	//tool
 	public void split_xMirror(double dx,double dy) {

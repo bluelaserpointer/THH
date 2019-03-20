@@ -1089,6 +1089,11 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		effects.add(effect);
 		return effect;
 	}
+	/**
+	 * Add an unit to current stage.
+	 * @param unit
+	 * @return added unit
+	 */
 	public static final <T extends Unit>T addUnit(T unit) {
 		characters.add(unit);
 		return unit;
@@ -1099,24 +1104,58 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		addUnit(newUnit);
 		return newUnit;
 	}
+	/**
+	 * Add a structure to current stage.
+	 * @param structure
+	 * @return added structure
+	 */
 	public static final <T extends Structure>T addStructure(T structure) {
 		structures.add(structure);
 		return structure;
 	}
+	/**
+	 * Add a vegetation to current stage.
+	 * @param vegetation
+	 * @return added vegetation
+	 */
 	public static final <T extends Vegetation>T addVegetation(T vegetation){
 		vegetations.add(vegetation);
 		return vegetation;
 	}
+	/**
+	 * Add a GUIParts.(Doesn't enable it automatically.)
+	 * @param GUIParts
+	 * @return added GUIParts
+	 */
 	public static final <T extends GUIParts>T addGUIParts(T guiParts) {
+		if(guiParts == null) {
+			System.out.println("GHQ.addGUIParts recieved a null guiParts.");
+			return null;
+		}
 		GHQ.guiParts.add(guiParts);
 		return guiParts;
 	}
+	/**t6y
+	 * Add a MouseListenerEx.(Doesn't enable it automatically.)
+	 * @param GUIParts
+	 * @return added GUIParts
+	 */
 	public static final void addListenerEx(MouseListenerEx mle) {
 		mouseListeners.add(mle);
 	}
+	/**
+	 * Add a KeyListenerEx.(Doesn't enable it automatically.)
+	 * @param GUIParts
+	 * @return added GUIParts
+	 */
 	public static final void addListenerEx(KeyListenerEx kle) {
 		keyListeners.add(kle);
 	}
+	/**
+	 * Add a KeyTypeListener.(Doesn't enable it automatically.)
+	 * @param GUIParts
+	 * @return added GUIParts
+	 */
 	public static final void addListenerEx(KeyTypeListener kte) {
 		typeListeners.add(kte);
 	}

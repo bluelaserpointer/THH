@@ -24,7 +24,7 @@ import unit.DummyUnit;
 import unit.Unit;
 import vegetation.Vegetation;
 
-public class DefaultStageEditor extends GUIParts{
+public class DefaultStageEditor extends GUIGroup{
 	private static ArrayList<StructureScript<Tile>> tileScripts = new ArrayList<StructureScript<Tile>>();
 	private static ArrayList<StructureScript<Terrain>> terrainScripts = new ArrayList<StructureScript<Terrain>>();
 	//private static ArrayList<StructureScript<Terrain>> unitScripts = new ArrayList<StructureScript<Terrain>>();
@@ -89,12 +89,12 @@ public class DefaultStageEditor extends GUIParts{
 	private static CombinedButtons CB_placeKind;
 	//init
 	public DefaultStageEditor(String group,File stageFile) {
-		super(group, RectPaint.BLANK_SCRIPT, 0, 0, GHQ.getScreenW(), GHQ.getScreenH(), false);
+		super(group, RectPaint.BLANK_SCRIPT, 0, 0, GHQ.getScreenW(), GHQ.getScreenH());
 		EDIT_MENU_GROUP = group + ">EDIT_MENU_GROUP";
 		OBJECT_CONFIG_GROUP = group + ">OBJECT_CONFIG_GROUP";
 		final int SCREEN_W = GHQ.getScreenW(),SCREEN_H = GHQ.getScreenH();
 		GHQ.addListenerEx(keyListener);
-		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ColorFraming(Color.WHITE,GHQ.stroke3),150,0,SCREEN_W - 150,SCREEN_H) {
+		super.addParts(new BasicButton(EDIT_MENU_GROUP,new ColorFraming(Color.WHITE,GHQ.stroke3),150,0,SCREEN_W - 150,SCREEN_H) {
 			@Override
 			public void clicked() {
 				if(CB_placeKind.isDefaultSelection()) { //not selected any placeKind = object select
@@ -146,12 +146,12 @@ public class DefaultStageEditor extends GUIParts{
 				}
 			}
 		});
-		GHQ.addGUIParts(CB_placeKind = new CombinedButtons(EDIT_MENU_GROUP, POINTING, 0, 0, 150, SCREEN_H));
+		super.addParts(CB_placeKind = new CombinedButtons(EDIT_MENU_GROUP, POINTING, 0, 0, 150, SCREEN_H));
 		CB_placeKind.addButton(TILES, new ImageFrame("thhimage/gui_editor/Tiles.png"),25,155,40,40);
 		CB_placeKind.addButton(TERRAIN, new ImageFrame("thhimage/gui_editor/FreeShape.png"),70,155,40,40);
 		CB_placeKind.addButton(UNIT, new ImageFrame("thhimage/gui_editor/Unit.png"),25,200,40,40);
 		CB_placeKind.addButton(VEGETATION, new ImageFrame("thhimage/gui_editor/Vegetation.png"),70,200,40,40);
-		GHQ.addGUIParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("thhimage/gui_editor/Save.png"),25,500,85,40) {
+		super.addParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("thhimage/gui_editor/Save.png"),25,500,85,40) {
 			@Override
 			public void clicked() {
 				System.out.println("saving...");
@@ -159,10 +159,10 @@ public class DefaultStageEditor extends GUIParts{
 				System.out.println("complete!");
 			}
 		});
-		GHQ.addGUIParts(configLabel = new TitledLabel(OBJECT_CONFIG_GROUP,new ColorFilling(Color.WHITE),25,300,120,25){
+		super.addParts(configLabel = new TitledLabel(OBJECT_CONFIG_GROUP,new ColorFilling(Color.WHITE),25,300,120,25){
 			
 		});
-		GHQ.<InputOptionList>addGUIParts(new InputOptionList(configLabel)).addWord("WHITE_WALL", "ABCD", "ABNK");
+		super.addParts(new InputOptionList(configLabel)).addWord("WHITE_WALL", "ABCD", "ABNK");
 	}
 	//role
 	@Override
@@ -289,15 +289,11 @@ public class DefaultStageEditor extends GUIParts{
 	public void enable() {
 		super.enable();
 		GHQ.stopScreen_noAnm();
-		GHQ.enableGUIs(EDIT_MENU_GROUP);
-		GHQ.enableGUIs(OBJECT_CONFIG_GROUP);
 		selectObject = mouseOveredObject = null;
 	}
 	@Override
 	public void disable() {
 		super.disable();
 		GHQ.clearStopEvent();
-		GHQ.disableGUIs(EDIT_MENU_GROUP);
-		GHQ.disableGUIs(OBJECT_CONFIG_GROUP);
 	}
 }

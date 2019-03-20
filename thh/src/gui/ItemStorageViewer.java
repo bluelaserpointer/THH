@@ -21,7 +21,7 @@ public class ItemStorageViewer extends TableStorageViewer<Item>{
 		cellPaint.rectPaint(x, y, CELL_SIZE);
 		if(object == null)
 			return;
-		object.getPaintScript().dotPaint(x + CELL_SIZE/2, y + CELL_SIZE/2, (int)(CELL_SIZE*0.8));
+		object.getPaintScript().dotPaint_resize(x + CELL_SIZE/2, y + CELL_SIZE/2, (int)(CELL_SIZE*0.8));
 		if(object instanceof Item && object != Item.BLANK_ITEM) {
 			final int AMOUNT = ((Item)object).getAmount();
 			final Graphics2D G2 = GHQ.getGraphics2D();
