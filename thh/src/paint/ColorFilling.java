@@ -5,9 +5,18 @@ import java.awt.Graphics2D;
 
 import core.GHQ;
 
+/**
+ * A minor PaintScript subclass which fill a rectangle with specified color.
+ * Useful when debugging.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public class ColorFilling implements RectPaint{
 	private static final long serialVersionUID = -2891833654516240206L;
 	private final Color COLOR;
+	/**
+	 * @param color The rectangle color.
+	 */
 	public ColorFilling(Color color) {
 		COLOR = color;
 	}

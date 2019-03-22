@@ -5,15 +5,7 @@ public class DotPaintMultiple implements DotPaint{
 	private final DotPaint[] SCRIPTS;
 	private final int BIGGEST_SIZE;
 	public DotPaintMultiple(DotPaint...dotPaints) {
-		SCRIPTS = dotPaints;
-		//biggest size
-		int biggestSize = 0;
-		for(DotPaint ver : SCRIPTS) {
-			final int BIGGER_SIZE = Math.max(ver.getDefaultW(), ver.getDefaultH());
-			if(biggestSize < BIGGER_SIZE)
-				biggestSize = BIGGER_SIZE;
-		}
-		BIGGEST_SIZE = biggestSize;
+		BIGGEST_SIZE = DotPaint.getMaxSize(SCRIPTS = dotPaints);
 	}
 	@Override
 	public void dotPaint(int x, int y) {
@@ -21,19 +13,19 @@ public class DotPaintMultiple implements DotPaint{
 			ver.dotPaint(x, y);
 	}
 	@Override
-	public void dotPaint_resize(int x, int y, int maxSize) {
+	public void dotPaint_capSize(int x, int y, int maxSize) {
 		if(BIGGEST_SIZE > maxSize) {
 			final double RATE = maxSize/BIGGEST_SIZE;
 			for(DotPaint ver : SCRIPTS)
-				ver.dotPaint_resize(x, y, RATE);
+				ver.dotPaint_rate(x, y, RATE);
 		}else {
 			for(DotPaint ver : SCRIPTS)
 				ver.dotPaint(x, y);
 		}
 	}
 	@Override
-	public void dotPaint_resize(int x, int y, double rate) {
+	public void dotPaint_rate(int x, int y, double rate) {
 		for(DotPaint ver : SCRIPTS)
-			ver.dotPaint_resize(x, y, rate);
+			ver.dotPaint_rate(x, y, rate);
 	}
 }

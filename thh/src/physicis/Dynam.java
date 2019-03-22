@@ -6,6 +6,11 @@ import java.awt.geom.Line2D;
 
 import core.GHQ;
 
+/**
+ * A major class for managing object physics.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public class Dynam extends Coordinate{
 	
 	protected double xSpd,ySpd,angle;

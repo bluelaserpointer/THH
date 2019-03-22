@@ -1,5 +1,10 @@
 package paint;
 
+/**
+ * One of the major PaintScript's direct subinterfaces.Describes a paint method which need specified coordinate and size.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public interface RectPaint extends PaintScript{
 	public static final RectPaint BLANK_SCRIPT = new RectPaint() {
 		private static final long serialVersionUID = -4558496325553265908L;

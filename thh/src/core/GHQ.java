@@ -1055,6 +1055,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	//control
+	/**
+	 * Freeze screen manually.
+	 * @since alpha1.0
+	 */
 	public static final void freezeScreen() {
 		freezeScreen = true;
 	}
@@ -1064,11 +1068,22 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final void stopScreen_noAnm() {
 		stopEventKind = NO_ANM_STOP;
 	}
+	/**
+	 * Clear freeze screen and other stopEvents.
+	 * @since alpha1.0
+	 */
 	public static final void clearStopEvent() {
 		stopEventKind = NONE;
 	}
 	
 	//generation
+	/**
+	 * Create a bullet and add it to current stage.
+	 * Parameters of the bullet refers {@link BulletInfo} settings.
+	 * @param source A shooter of this bullet(Unit, Bullet, etc.)
+	 * @return created Bullet
+	 * @since alpha1.0
+	 */
 	public static final Bullet createBullet(DynamInteractable source){
 		final Bullet bullet = new Bullet(source);
 		bullets.add(bullet);
@@ -1079,6 +1094,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		bullets.add(bullet);
 		return bullet;
 	}
+	/**
+	 * Create a effect and add it to current stage.
+	 * Parameters of the effect refers {@link EffectInfo} settings.
+	 * @param source A shooter of this effect(Unit, Bullet, etc.)
+	 * @return created Effect
+	 * @since alpha1.0
+	 */
 	public static final Effect createEffect(DynamInteractable source){
 		final Effect effect = new Effect(source);
 		effects.add(effect);
@@ -1135,7 +1157,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		GHQ.guiParts.add(guiParts);
 		return guiParts;
 	}
-	/**t6y
+	/**
 	 * Add a MouseListenerEx.(Doesn't enable it automatically.)
 	 * @param GUIParts
 	 * @return added GUIParts
@@ -1160,32 +1182,73 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		typeListeners.add(kte);
 	}
 	//information-frame&time
+	/**
+	 * Returns gameFrame.
+	 * @return now gameFrame
+	 * @since 1.0
+	 */
 	public static final int getNowFrame() {
 		return gameFrame;
 	}
+	/**
+	 * Returns frames passed from the indicated frame.
+	 * @param frame
+	 * @return passed frames
+	 * @since 1.0
+	 */
 	public static final int getPassedFrame(int frame) {
 		return frame == NONE ? MAX : gameFrame - frame;
 	}
+	/**
+	 * Check if passed frames from the indicated frame is much than the limit.
+	 * @return if expired
+	 * @since 1.0
+	 */
 	public static final boolean isExpired_frame(int initialFrame,int limitFrame) {
 		return initialFrame == NONE || (gameFrame - initialFrame) >= limitFrame;
 	}
+	/**
+	 * Returns systemTime. {@link System#currentTimeMillis()}
+	 * @return now systemTime
+	 * @since 1.0
+	 */
 	public static final long getNowTime() {
 		return System.currentTimeMillis();
 	}
+	/**
+	 * Returns time passed from the indicated time. {@link System#currentTimeMillis()}
+	 * @param time
+	 * @return passed time
+	 * @since 1.0
+	 */
 	public static final int getPassedTime(long time) {
 		return time == NONE ? MAX : (int)(System.currentTimeMillis() - time);
 	}
+	/**
+	 * Check if passed time from the indicated time is much than the limit.
+	 * @param initialFrame
+	 * @param limitTime
+	 * @return if expired
+	 * @since 1.0
+	 */
 	public static final boolean isExpired_time(long initialFrame,long limitTime) {
 		return initialFrame == NONE || (System.currentTimeMillis() - initialFrame) >= limitTime;
 	}
+	/**
+	 * Check if there is a stopEvent.
+	 * @return boolean
+	 * @since 1.0
+	 */
 	public static boolean isNoStopEvent() {
 		return !freezeScreen && stopEventKind == NONE;
 	}
+	/**
+	 * Check if there is a "freezeScreen" stop Event.
+	 * @return boolean
+	 * @since 1.0
+	 */
 	public static boolean isFreezeScreen() {
 		return freezeScreen;
-	}
-	public final void addKeyListener(KeyListener e) {
-		myFrame.addKeyListener(e);
 	}
 	
 	//event
@@ -1372,15 +1435,47 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	//PaintTool
+	/**
+	 * Change paint coordinate for GUI/stageObjects.
+	 * Note that if you don't reset changed paint coordinate, it will collapse coordinates of following paints.(like Graphics2D.rotate method)
+	 * @param forGUI true - change for GUI / false - change for objects in its stage;
+	 * @since alpha1.0
+	 */
 	public static final void translateForGUI(boolean forGUI) {
 		if(forGUI)
 			hq.g2.translate(-viewX,-viewY);
 		else
 			hq.g2.translate(viewX,viewY);
 	}
+	/**
+	 * Call {@link Graphics2D#setClip(int, int, int, int)} directly.
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @since alpha1.0
+	 */
+	public static final void setClip(int x,int y,int width,int height) {
+		hq.g2.setClip(x, y, width, height);
+	}
+	/**
+	 * Reset AlphaComposite value.
+	 * @since alpha1.0
+	 */
+	public static final void setImageAlpha() {
+		hq.g2.setComposite(AlphaComposite.SrcOver);
+	}
+	/**
+	 * Set AlphaComposite's transparent value.
+	 * @float alpha transparent degree
+	 * @since alpha1.0
+	 */
+	public static final void setImageAlpha(float alpha) {
+		hq.g2.setComposite(AlphaComposite.SrcOver.derive(alpha));
+	}
 	//Paint
 	/**
-	* 
+	* Draw an image.
 	* @param img 
 	* @param x 
 	* @param y 
@@ -1392,7 +1487,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		hq.g2.drawImage(img,x,y,w,h,hq);
 	}
 	/**
-	* 
+	* Draw an image by imageID.
 	* @param imgID 
 	* @param x 
 	* @param y 
@@ -1413,7 +1508,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			hq.g2.drawImage(arrayImage[imgID],x,y,w,h,hq);
 	}
 	/**
-	* 
+	* Draw an image.
 	* @param img 
 	* @param x 
 	* @param y 
@@ -1432,7 +1527,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			G2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,hq);
 	}
 	/**
-	* 
+	* Draw an image by imageID.
 	* @param imgID 
 	* @param x 
 	* @param y 
@@ -1443,7 +1538,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		drawImageGHQ_center(arrayImage[imgID],x,y,angle);
 	}
 	/**
-	* 
+	* Draw an image.
 	* @param img 
 	* @param x 
 	* @param y 
@@ -1453,7 +1548,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		hq.g2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,hq);
 	}
 	/**
-	* 
+	* Draw an image by imageID.
 	* @param imgID 
 	* @param x 
 	* @param y 
@@ -1463,7 +1558,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		drawImageGHQ_center(arrayImage[imgID],x,y);
 	}
 	/**
-	* 
+	* Draw an image by imageID.
 	* @param imgID 
 	* @param x 
 	* @param y 
@@ -1474,6 +1569,16 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final void drawImageGHQ_center(int imgID,int x,int y,int w,int h){
 		hq.g2.drawImage(arrayImage[imgID],x - w/2,y - h/2,w,h,hq);
 	}
+	/**
+	 * Draw an image by imageID.
+	 * @param imgID
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param h
+	 * @param angle
+	* @since alpha1.0
+	 */
 	public static final void drawImageGHQ_center(int imgID,int x,int y,int w,int h,double angle){
 		if(angle != 0.0) {
 			hq.g2.rotate(angle, x, y);
@@ -1482,12 +1587,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}else
 			hq.g2.drawImage(arrayImage[imgID],x - w/2,y - h/2,w,h,hq);
 	}
-	public static final void setImageAlpha() {
-		hq.g2.setComposite(AlphaComposite.SrcOver);
-	}
-	public static final void setImageAlpha(float alpha) {
-		hq.g2.setComposite(AlphaComposite.SrcOver.derive(alpha));
-	}
+	/**
+	 * Return Graphics2D instance.
+	 * @return
+	 */
 	public static final Graphics2D getGraphics2D() {
 		return hq.g2;
 	}

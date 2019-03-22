@@ -2,6 +2,11 @@ package paint;
 
 import core.GHQ;
 
+/**
+ * A popular PaintScript subclass which loads image resource and display it.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public class ImageFrame implements RectPaint,DotPaint{
 	private static final long serialVersionUID = -1537274221051413163L;
 	private final int IMAGE_IID;
@@ -23,7 +28,7 @@ public class ImageFrame implements RectPaint,DotPaint{
 		GHQ.drawImageGHQ_center(IMAGE_IID, x, y, BASE_ANGLE + angle);
 	}
 	@Override
-	public void dotPaint_resize(int x,int y,int maxSize) {
+	public void dotPaint_capSize(int x,int y,int maxSize) {
 		final int IMAGE_W = GHQ.getImageWByID(IMAGE_IID),IMAGE_H = GHQ.getImageHByID(IMAGE_IID);
 		if(IMAGE_W > IMAGE_H && IMAGE_W > maxSize) {
 			final double RATE = (double)maxSize/(double)IMAGE_W;
@@ -35,7 +40,7 @@ public class ImageFrame implements RectPaint,DotPaint{
 			GHQ.drawImageGHQ_center(IMAGE_IID, x, y);
 	}
 	@Override
-	public void dotPaint_resize(int x, int y, double rate) {
+	public void dotPaint_rate(int x, int y, double rate) {
 		final int IMAGE_W = GHQ.getImageWByID(IMAGE_IID),IMAGE_H = GHQ.getImageHByID(IMAGE_IID);
 		GHQ.drawImageGHQ_center(IMAGE_IID, x, y, (int)(IMAGE_W*rate), (int)(IMAGE_H*rate));
 	}
