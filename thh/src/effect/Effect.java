@@ -8,6 +8,11 @@ import paint.DotPaint;
 import paint.HasDotPaint;
 import physicis.DynamInteractable;
 
+/**
+ * A primal class for managing effect.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public class Effect extends Entity_double implements HasDotPaint{
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;

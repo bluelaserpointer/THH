@@ -7,6 +7,12 @@ import paint.DotPaint;
 import paint.HasDotPaint;
 import vegetation.DropItem;
 
+/**
+ * A primal class for managing item.
+ * Note that Item class and {@link DropItem} class is different.(One commonly put in {@link storage.Storage} but the another one can put in stage as {@link vegetation.Vegetation} object.)
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public abstract class Item implements Serializable,HasDotPaint{
 	private static final long serialVersionUID = 1587964067620280674L;
 	protected int amount;

@@ -18,6 +18,11 @@ import storage.Storage;
 import core.HasBoundingBox;
 import core.HasStandpoint;
 
+/**
+ * A primal class for managing unit.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public abstract class Unit extends Entity_double implements MessageSource,DynamInteractable,Serializable,HasBoundingBox,HasStandpoint{
 	private static final long serialVersionUID = 7140005723063155203L;
 

@@ -7,6 +7,11 @@ import core.HasBoundingBox;
 import paint.HasDotPaint;
 import paint.DotPaint;
 
+/**
+ * A primal class for managing vegetation object.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public class Vegetation implements Serializable,HasBoundingBox,HasDotPaint{
 	private static final long serialVersionUID = -5536970507937704287L;
 	public final int UNIQUE_ID;

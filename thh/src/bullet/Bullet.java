@@ -11,6 +11,11 @@ import paint.HasDotPaint;
 import physicis.DynamInteractable;
 import unit.Unit;
 
+/**
+ * A primal class for managing bullet.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public class Bullet extends Entity_double implements DynamInteractable,HasStandpoint,HasDotPaint{
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;

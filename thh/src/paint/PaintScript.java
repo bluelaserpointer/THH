@@ -5,7 +5,7 @@ import java.io.Serializable;
 import core.GHQ;
 
 /**
- * A major interface for managing paint process.
+ * A primal interface for managing paint process.
  * @author bluelaserpointer
  * @since alpha1.0
  */

@@ -43,15 +43,46 @@ public interface DotPaint extends PaintScript{
 	}
 	
 	//main role
+	/**
+	 * Drawing at specified coordinate.
+	 * The width and height is decided by its original value.
+	 * @param x
+	 * @param y
+	 */
 	public abstract void dotPaint(int x,int y);
+	/**
+	 * Drawing at specified coordinate but keep its maxSize lower than a value.
+	 * @param x
+	 * @param y
+	 * @param maxSize
+	 */
 	public abstract void dotPaint_capSize(int x,int y,int maxSize);
+	/**
+	 * Drawing at specified coordinate but resize it by a rate.
+	 * @param x
+	 * @param y
+	 * @param rate
+	 */
 	public abstract void dotPaint_rate(int x,int y,double rate);
+	/**
+	 * Drawing at specified coordinate but change its angle.
+	 * @param x
+	 * @param y
+	 * @param angle
+	 */
 	public default void dotPaint_turn(int x,int y,double angle) {
 		final Graphics2D G2 = GHQ.getGraphics2D();
 		G2.rotate(angle);
 		dotPaint(x,y);
 		G2.rotate(-angle);
 	}
+	/**
+	 * Drawing at specified coordinate but change its angle and keep its maxSize lower than a value.
+	 * @param x
+	 * @param y
+	 * @param angle
+	 * @param maxSize
+	 */
 	public default void dotPaint_turnAndCapSize(int x,int y,double angle,int maxSize) {
 		final Graphics2D G2 = GHQ.getGraphics2D();
 		G2.rotate(angle);

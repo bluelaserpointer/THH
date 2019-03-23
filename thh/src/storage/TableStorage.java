@@ -1,5 +1,11 @@
 package storage;
 
+/**
+ * A class for managing array like Excel.Can set any cell as empty and skip them when traversing. 
+ * @author bluelaserpointer
+ * @since alpha1.0
+ * @param <T> the type of elements in this list
+ */
 public class TableStorage<T> extends Storage<T>{
 	private static final long serialVersionUID = -823825080682852987L;
 	protected int storageW,storageH;

@@ -3,6 +3,11 @@ package gui;
 import core.GHQ;
 import paint.RectPaint;
 
+/**
+ * A primal class for managing GUI.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public abstract class GUIParts {
 	public final String GROUP;
 	protected boolean isEnabled;
