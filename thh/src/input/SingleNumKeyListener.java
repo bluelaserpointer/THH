@@ -1,9 +1,14 @@
 package input;
 
-import com.sun.glass.events.KeyEvent;
+import java.awt.event.KeyEvent;
 
 import core.GHQ;
 
+/**
+ * A primal class for managing keyboard number keys input event.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public class SingleNumKeyListener extends KeyListenerEx{
 	private static final long serialVersionUID = -7351066034418156232L;
 	public SingleNumKeyListener(int maxNumber) {

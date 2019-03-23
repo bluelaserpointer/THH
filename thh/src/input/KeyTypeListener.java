@@ -4,6 +4,11 @@ import static java.awt.event.KeyEvent.*;
 
 import core.GHQ;
 
+/**
+ * A class for managing keyboard input event and read the typed text.It can also support "Ctrl+C","Ctrl+V" orders.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public abstract class KeyTypeListener {
 	private boolean isEnabled;
 	private final int LIMIT_LENGTH;

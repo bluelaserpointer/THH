@@ -3,6 +3,11 @@ package input;
 import java.io.Serializable;
 import java.util.BitSet;
 
+/**
+ * A primal class for managing keyboard input event.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public abstract class KeyListenerEx implements Serializable{
 	private static final long serialVersionUID = -8033137272230272770L;
 

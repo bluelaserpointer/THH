@@ -2,6 +2,11 @@ package input;
 
 import java.io.Serializable;
 
+/**
+ * A primal class for managing mouse input event.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public class MouseListenerEx implements Serializable{
 	private static final long serialVersionUID = 2878445766577630707L;
 

@@ -31,22 +31,28 @@ import vegetation.DropItem;
 import vegetation.Vegetation;
 
 /**
- * 
+ * The core class for engine "THH"
  * @author bluelaserpointer
  * @version alpha1.0
- *
  */
 
 public final class GHQ extends JPanel implements MouseListener,MouseMotionListener,MouseWheelListener,KeyListener,Runnable{
 	private static final long serialVersionUID = 123412351L;
 
+	/**
+	 * A static instance of GHQ for enabling static methods accessing non-static objects.
+	 * @since alpha1.0
+	 */
 	private static GHQ hq;
 	
 	public static final String
 		GHQ_VERSION = "Ver alpha1.0.0";
-	public static final int
-		NONE = -999999999,
-		ALL = -NONE,
+	/**
+	 * A major constant which describe various meaning related to "nothing".
+	 * @since alpha1.0
+	 */
+	public static final int NONE = -999999999;
+	public static final int  
 		MAX = Integer.MAX_VALUE,
 		MIN = Integer.MIN_VALUE;
 	public static final String
@@ -66,18 +72,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private boolean debugMode;
 	private long loadTime_total;
 	public static String errorPoint = "NONE";
-	
-	//event
-	public final int 
-		OPENING = 1000,
-		TITLE = 2000,
-		LOAD = 3000,
-		SAVE = 4000,
-		OPTION = 5000,OPTION_sound = 5100,OPTION_grahics = 5200,
-		ACTION_PART = 6000,
-		BATTLE = 7000,BATTLE_PAUSE = 7001,
-		EVENT_PART = 8000;
-	private int mainEvent = OPENING;
 	
 	//inputEvent
 	private static ArrayList<KeyListenerEx> keyListeners = new ArrayList<KeyListenerEx>();
@@ -487,7 +481,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return Arrays.copyOf(charaArray, founded);
 	}
-	public static final Unit[] getCharacters_team(HasStandpoint source) {
+	public static final Unit[] getCharacters_standPoint(HasStandpoint source) {
 		return getCharacters_standpoint(source,true);
 	}
 	public static final Unit[] getCharacters() {
@@ -642,10 +636,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final boolean inStage(int x,int y) {
 		return engine.inStage(x,y);
-	}
-	//information-team
-	public static final boolean isSameTeam(int team1,int team2) {
-		return team1 == team2 && team1 != NONE || team1 == ALL || team2 == ALL;
 	}
 	//information-GUI
 	public static final int getScreenW(){
@@ -1049,8 +1039,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			System.exit(0);
 		}
 		public void windowDeactivated(WindowEvent e){
-			if(mainEvent == BATTLE)
-				mainEvent = BATTLE_PAUSE;
+			//if(mainEvent == BATTLE)
+				//mainEvent = BATTLE_PAUSE;
 		}
 	}
 	
@@ -1078,8 +1068,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//generation
 	/**
-	 * Create a bullet and add it to current stage.
-	 * Parameters of the bullet refers {@link BulletInfo} settings.
+	 * Create a {@link Bullet} and add it to current stage.
+	 * Parameters of the bullet refers to {@link BulletInfo} settings.
 	 * @param source A shooter of this bullet(Unit, Bullet, etc.)
 	 * @return created Bullet
 	 * @since alpha1.0
@@ -1095,8 +1085,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return bullet;
 	}
 	/**
-	 * Create a effect and add it to current stage.
-	 * Parameters of the effect refers {@link EffectInfo} settings.
+	 * Create a {@link Effect} and add it to current stage.
+	 * Parameters of the effect refers to {@link EffectInfo} settings.
 	 * @param source A shooter of this effect(Unit, Bullet, etc.)
 	 * @return created Effect
 	 * @since alpha1.0
@@ -1112,7 +1102,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return effect;
 	}
 	/**
-	 * Add an unit to current stage.
+	 * Add an {@link Unit} to current stage.
 	 * @param unit
 	 * @return added unit
 	 */
@@ -1127,7 +1117,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return newUnit;
 	}
 	/**
-	 * Add a structure to current stage.
+	 * Add a {@link Structure} to current stage.
 	 * @param structure
 	 * @return added structure
 	 */
@@ -1136,7 +1126,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return structure;
 	}
 	/**
-	 * Add a vegetation to current stage.
+	 * Add a {@link Vegetation} to current stage.
 	 * @param vegetation
 	 * @return added vegetation
 	 */
@@ -1145,7 +1135,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return vegetation;
 	}
 	/**
-	 * Add a GUIParts.(Doesn't enable it automatically.)
+	 * Add a {@link GUIParts}.(Doesn't enable it automatically.)
 	 * @param GUIParts
 	 * @return added GUIParts
 	 */
@@ -1158,7 +1148,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return guiParts;
 	}
 	/**
-	 * Add a MouseListenerEx.(Doesn't enable it automatically.)
+	 * Add a {@link MouseListenerEx}.(Doesn't enable it automatically.)
 	 * @param GUIParts
 	 * @return added GUIParts
 	 */
@@ -1166,7 +1156,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		mouseListeners.add(mle);
 	}
 	/**
-	 * Add a KeyListenerEx.(Doesn't enable it automatically.)
+	 * Add a {@link KeyListenerEx}.(Doesn't enable it automatically.)
 	 * @param GUIParts
 	 * @return added GUIParts
 	 */
@@ -1174,7 +1164,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		keyListeners.add(kle);
 	}
 	/**
-	 * Add a KeyTypeListener.(Doesn't enable it automatically.)
+	 * Add a {@link KeyTypeListener}.(Doesn't enable it automatically.)
 	 * @param GUIParts
 	 * @return added GUIParts
 	 */
@@ -1728,7 +1718,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			return true;
 	}
 	/**
-	* Execute Math.toRadians only if the value doesen't have special meaning.
+	* Execute {@link Math#toRadians(double)} only if the value doesen't have special meaning.
 	* @param degress
 	* @since alpha1.0
 	*/

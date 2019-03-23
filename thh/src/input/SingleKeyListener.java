@@ -1,5 +1,10 @@
 package input;
 
+/**
+ * A major class for managing keyboard input event.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public class SingleKeyListener extends KeyListenerEx{
 	private static final long serialVersionUID = -7351066034418156232L;
 	public SingleKeyListener(int targetKeys[]) {
