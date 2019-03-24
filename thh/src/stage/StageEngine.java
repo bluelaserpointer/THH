@@ -5,6 +5,11 @@ import bullet.Bullet;
 import core.GHQ;
 import unit.Unit;
 
+/**
+ * A important class which is a frame of game main system.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public abstract class StageEngine{
 	protected final static int
 		//system
@@ -32,10 +37,26 @@ public abstract class StageEngine{
 	public abstract Unit[] callBulletEngage(Unit[] characters,Bullet bullet);
 	
 	//information
-	public abstract int getGameFrame();
+	/**
+	 * Return how many times the idle method of this class is called.
+	 * @return Times the idle class called.
+	 */
+	public abstract int getEngineGameFrame();
+	/**
+	 * Judge if a coordinate were in permitted area.
+	 * @return true - in stage / false - in outside of stage
+	 */
 	public boolean inStage(int x,int y) {
 		return 0 < x && x <= getStageW() && 0 < y && y <= getStageH();
 	}
+	/**
+	 * Return the maximum width of the stage.
+	 * @return maximum width
+	 */
 	public abstract int getStageW();
+	/**
+	 * Return the maximum height of the stage.
+	 * @return maximum height
+	 */
 	public abstract int getStageH();
 }

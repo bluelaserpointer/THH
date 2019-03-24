@@ -4,15 +4,24 @@ import java.io.Serializable;
 
 import item.Item;
 
+/**
+ * A class for managing unit's inventory, holds a final {@link Storage}{@literal <}{@link Item}{@literal >}.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public class ItemInventory implements Serializable{
 	private static final long serialVersionUID = 353322954827886207L;
 	public final Storage<Item> items;
+	/**
+	 * Create ItemInventory with a {@link Storage}{@literal <}{@link Item}{@literal >} or its subclasses.(like {@link TableStorage}{@literal <}{@link Item}{@literal >})
+	 * @param storage
+	 */
 	public ItemInventory(Storage<Item> storage) {
 		items = storage;
 	}
 	//control
 	/**
-	 * 
+	 * Add item with automatic stack.
 	 * @param newItem
 	 * @return true - successfully added / false - overflowed
 	 */

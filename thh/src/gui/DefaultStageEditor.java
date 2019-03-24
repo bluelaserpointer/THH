@@ -24,6 +24,11 @@ import unit.DummyUnit;
 import unit.Unit;
 import vegetation.Vegetation;
 
+/**
+ * A class provides a default stage editor.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public class DefaultStageEditor extends GUIGroup{
 	private static ArrayList<StructureScript<Tile>> tileScripts = new ArrayList<StructureScript<Tile>>();
 	private static ArrayList<StructureScript<Terrain>> terrainScripts = new ArrayList<StructureScript<Terrain>>();

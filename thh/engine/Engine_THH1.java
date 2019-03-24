@@ -289,7 +289,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 	}
 	//information
 	@Override
-	public final int getGameFrame() {
+	public final int getEngineGameFrame() {
 		return gameFrame;
 	}
 	@Override

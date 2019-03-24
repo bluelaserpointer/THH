@@ -5,6 +5,7 @@ import java.io.Serializable;
 import core.GHQ;
 import paint.DotPaint;
 import paint.HasDotPaint;
+import storage.Storage;
 import vegetation.DropItem;
 
 /**
@@ -92,5 +93,22 @@ public abstract class Item implements Serializable,HasDotPaint{
 			item.amount = 0;
 			return true;
 		}
+	}
+	
+	//public tool
+	public static boolean add_stack(Storage<Item> itemStorage, Item newItem) {
+		for(Item item : itemStorage) {
+			if(item.isStackable(newItem)) {
+				item.stack(newItem);
+				if(newItem.isEmpty()) {
+					if(newItem.keepEvenEmpty()){
+						return itemStorage.add(newItem);
+					}else
+						return true;
+				}
+			}
+		}
+		//not found same kind (stackable) item.
+		return itemStorage.add(newItem);
 	}
 }

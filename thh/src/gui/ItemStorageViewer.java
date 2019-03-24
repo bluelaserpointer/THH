@@ -9,8 +9,24 @@ import paint.HasDotPaint;
 import paint.RectPaint;
 import storage.TableStorage;
 
+/**
+ * A {@link GUIParts} subclass for managing Excel-like {@link Item} display, additionally draws their amount at the right-bottom corner.
+ * Mainly used for inventory display.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public class ItemStorageViewer extends TableStorageViewer<Item>{
 	protected RectPaint cellPaint;
+	/**
+	 * Create an ItemStorageViewer with an already existed {@link TableStorage}{@literal <}{@link Item}{@literal >}.
+	 * @param group - name of the group this GUI belong to(use in {@link GHQ#enableGUIs(String)}, {@link GHQ#disableGUIs(String)})
+	 * @param backgroundPaint - the {@link RectPaint} of this GUI background
+	 * @param cellPaint - the {@link RectPaint} of the cells background
+	 * @param x - the x coordinate of the upper-left corner of this GUI
+	 * @param y - the y coordinate of the upper-left corner of this GUI
+	 * @param cellSize - size of the cells
+	 * @param items - an already exist {@link TableStorage}{@literal <}{@link Item}{@literal >} to display
+	 */
 	public ItemStorageViewer(String group, RectPaint backgroundPaint, RectPaint cellPaint, int x, int y, int cellSize, TableStorage<Item> items) {
 		super(group, backgroundPaint, x, y, cellSize, items);
 		this.cellPaint = cellPaint;
