@@ -2,23 +2,30 @@ package geom;
 
 import java.awt.geom.Line2D;
 
-import physicis.Dynam;
-import physicis.DynamInteractable;
+import physicis.Coordinate;
+import physicis.CoordinateInteractable;
 
-public interface HitShape {
+/**
+ * 
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
+public abstract class HitShape implements CoordinateInteractable{
 	public static final int RECTANGLE = 0,OVAL = 1;
+	protected final Coordinate COORDINATE;
 	
-	public abstract boolean intersects(int x1, int y1, HitShape shape, int x2, int y2);
-	public abstract boolean intersects(int x1, int y1, Line2D line);
-	
-
-	public default boolean intersects(DynamInteractable sourceDI, HitShape shape, DynamInteractable targetDI) {
-		final Dynam D1 = sourceDI.getDynam(),D2 = targetDI.getDynam();
-		return intersects((int)D1.getX(),(int)D1.getY(),shape,(int)D2.getX(),(int)D2.getY());
+	public HitShape(Coordinate coordinate) {
+		COORDINATE = coordinate;
 	}
-	public default boolean intersects(DynamInteractable sourceDI, Line2D line) {
-		final Dynam D1 = sourceDI.getDynam();
-		return intersects((int)D1.getX(),(int)D1.getY(),line);
+	public final boolean intersects(HasHitShape target) {
+		final HitShape SHAPE = target.getHitShape();
+		return SHAPE == null ? false : intersects(SHAPE);
 	}
+	public abstract boolean intersects(HitShape shape);
+	public abstract boolean intersects(Line2D line);
 	
+	@Override
+	public Coordinate getCoordinate() {
+		return COORDINATE;
+	}
 }

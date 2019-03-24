@@ -5,4 +5,7 @@ public interface HasStandpoint {
 	public default boolean isFriendly(HasStandpoint target) {
 		return getStandpoint().isFriendly(target.getStandpoint());
 	}
+	public default boolean isEnemy(HasStandpoint target) {
+		return !isFriendly(target);
+	}
 }

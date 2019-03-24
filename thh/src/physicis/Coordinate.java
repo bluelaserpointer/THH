@@ -21,12 +21,12 @@ public class Coordinate {
 		this.x = x;
 		this.y = y;
 	}
-	public void setXY(DynamInteractable targetDI) {
-		if(targetDI == null)
+	public void setXY(CoordinateInteractable targetCI) {
+		if(targetCI == null)
 			return;
-		final Dynam targetDynam = targetDI.getDynam();
-		this.x = targetDynam.x;
-		this.y = targetDynam.y;
+		final Coordinate targetCoordinate = targetCI.getCoordinate();
+		this.x = targetCoordinate.x;
+		this.y = targetCoordinate.y;
 	}
 	public void setX(double x) {
 		this.x = x;
@@ -55,11 +55,11 @@ public class Coordinate {
 	public boolean inStage() {
 		return GHQ.inStage((int)x,(int)y);
 	}
-	public double getDistance(DynamInteractable targetDI) {
-		if(targetDI == null)
-			return GHQ.NONE;
-		final Dynam targetDynam = targetDI.getDynam();
-		return getDistance(targetDynam.x,targetDynam.y);
+	public double getDistance(CoordinateInteractable targetCI) {
+		return targetCI == null ? GHQ.NONE : getDistance(targetCI.getCoordinate());
+	}
+	public double getDistance(Coordinate coordinate) {
+		return getDistance(coordinate.x,coordinate.y);
 	}
 	public double getDistance(double x,double y) {
 		final double DX = x - this.x,DY = y - this.y;
@@ -74,5 +74,11 @@ public class Coordinate {
 			else
 				return sqrt(DX*DX + DY*DY);
 		}
+	}
+	public double getDX(Coordinate coordinate) {
+		return coordinate.x - x;
+	}
+	public double getDY(Coordinate coordinate) {
+		return coordinate.y - y;
 	}
 }

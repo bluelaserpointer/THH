@@ -6,11 +6,15 @@ package physicis;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public interface DynamInteractable {
+public interface DynamInteractable extends CoordinateInteractable{
 	public static final DynamInteractable BlankDI = new DynamInteractable() {
 		private final Dynam nullDynam = new Dynam();
 		@Override
 		public Dynam getDynam() {
+			return nullDynam;
+		}
+		@Override
+		public Coordinate getCoordinate() {
 			return nullDynam;
 		}
 	};
@@ -20,4 +24,7 @@ public interface DynamInteractable {
 	 * @return {@link Dynam}
 	 */
 	public abstract Dynam getDynam();
+	public default Coordinate getCoordinate() {
+		return getDynam();
+	}
 }
