@@ -1,9 +1,7 @@
 package stage;
 
 import java.awt.Graphics2D;
-import bullet.Bullet;
 import core.GHQ;
-import unit.Unit;
 
 /**
  * A important class which is a frame of game main system.
@@ -34,7 +32,6 @@ public abstract class StageEngine{
 	
 	//control
 	public abstract void resetStage();
-	public abstract Unit[] callBulletEngage(Unit[] characters,Bullet bullet);
 	
 	//information
 	/**

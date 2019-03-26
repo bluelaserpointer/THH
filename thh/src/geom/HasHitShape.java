@@ -5,6 +5,6 @@ package geom;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public interface HasHitShape {
+public interface HasHitShape{
 	public abstract HitShape getHitShape();
 }

@@ -4,11 +4,12 @@ import static java.lang.Math.PI;
 
 import core.Entity_double;
 import core.GHQ;
-import core.HasStandpoint;
+import core.HitInteractable;
 import core.Standpoint;
+import geom.HitShape;
 import paint.DotPaint;
 import paint.HasDotPaint;
-import physicis.DynamInteractable;
+import physicis.HasDynam;
 import unit.Unit;
 
 /**
@@ -16,7 +17,7 @@ import unit.Unit;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Bullet extends Entity_double implements DynamInteractable,HasStandpoint,HasDotPaint{
+public class Bullet extends Entity_double implements HitInteractable,HasDotPaint{
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;
 	
@@ -24,6 +25,7 @@ public class Bullet extends Entity_double implements DynamInteractable,HasStandp
 	
 	public final BulletScript SCRIPT; //a script of unique behaviors
 	public final Standpoint standpoint;
+	public final HitShape hitshape;
 	
 	public String name;
 	public final int
@@ -43,9 +45,8 @@ public class Bullet extends Entity_double implements DynamInteractable,HasStandp
 	public final DotPaint
 		paintScript;
 	public final boolean
-		HIT_ENEMY,
 		IS_LASER;
-	public Bullet(DynamInteractable source) {
+	public Bullet(HasDynam source) {
 		super(source,BulletBlueprint.dynam,BulletBlueprint.nowFrame);
 		UNIQUE_ID = ++nowMaxUniqueID;
 		SCRIPT = BulletBlueprint.script != null ? BulletBlueprint.script : BulletBlueprint.DEFAULT_SCRIPT;
@@ -54,13 +55,13 @@ public class Bullet extends Entity_double implements DynamInteractable,HasStandp
 		LIMIT_FRAME = BulletBlueprint.limitFrame;
 		LIMIT_RANGE = BulletBlueprint.limitRange;
 		standpoint = new Standpoint(BulletBlueprint.standpointGroup);
+		hitshape = BulletBlueprint.hitshape;
 		INITIAL_ATK = atk = BulletBlueprint.atk;
 		offSet = BulletBlueprint.offSet;
 		penetration = BulletBlueprint.penetration;
 		reflection = BulletBlueprint.reflection;
 		ACCEL = BulletBlueprint.accel;
 		paintScript = BulletBlueprint.paintScript;
-		HIT_ENEMY = BulletBlueprint.hitEnemy;
 		IS_LASER = BulletBlueprint.isLaser;
 	}
 	public Bullet(Bullet bullet) {
@@ -72,13 +73,13 @@ public class Bullet extends Entity_double implements DynamInteractable,HasStandp
 		LIMIT_FRAME = bullet.LIMIT_FRAME;
 		LIMIT_RANGE = bullet.LIMIT_RANGE;
 		standpoint = new Standpoint(bullet.standpoint.get());
+		hitshape = bullet.hitshape.clone();
 		INITIAL_ATK = atk = bullet.atk;
 		offSet = bullet.offSet;
 		penetration = bullet.penetration;
 		reflection = bullet.reflection;
 		ACCEL = bullet.ACCEL;
 		paintScript = bullet.paintScript;
-		HIT_ENEMY = bullet.HIT_ENEMY;
 		IS_LASER = bullet.IS_LASER;
 	}
 	@Override
@@ -157,7 +158,7 @@ public class Bullet extends Entity_double implements DynamInteractable,HasStandp
 			}
 		}
 		//entity collision
-		for(Unit chara : GHQ.callBulletEngage(GHQ.getCharacters_standpoint(this,!HIT_ENEMY),this)) {
+		for(Unit chara : GHQ.getHitCharacters(GHQ.getCharacters_standpoint(this, false),this)) {
 			chara.damage_amount(atk);
 			SCRIPT.bulletHitObject(this);
 			if(penetration > 0) {
@@ -244,11 +245,11 @@ public class Bullet extends Entity_double implements DynamInteractable,HasStandp
 		return standpoint;
 	}
 	@Override
-	public final DotPaint getPaintScript() {
-		return paintScript;
+	public final HitShape getHitShape() {
+		return hitshape;
 	}
 	@Override
-	public boolean isFriendly(HasStandpoint target) {
-		return standpoint.isFriendly(target.getStandpoint());
+	public final DotPaint getPaintScript() {
+		return paintScript;
 	}
 }

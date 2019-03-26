@@ -4,16 +4,16 @@ import java.io.Serializable;
 
 import core.GHQ;
 import physicis.Dynam;
-import physicis.DynamInteractable;
+import physicis.HasDynam;
 
 public class BulletScript implements Serializable{
 	private static final long serialVersionUID = -6286259077659200260L;
 
 	//generation
-	public final void create(DynamInteractable user) {
+	public final void create(HasDynam user) {
 		create(user,user.getDynam());
 	}
-	public void create(DynamInteractable user,Dynam baseDynam) {}
+	public void create(HasDynam user,Dynam baseDynam) {}
 	
 	//role
 	public void idle(Bullet bullet) { //Include painting

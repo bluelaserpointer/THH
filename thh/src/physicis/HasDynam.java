@@ -6,8 +6,8 @@ package physicis;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public interface DynamInteractable extends CoordinateInteractable{
-	public static final DynamInteractable BlankDI = new DynamInteractable() {
+public interface HasDynam extends HasCoordinate{
+	public static final HasDynam NULL_DYNAM_SOURCE = new HasDynam() {
 		private final Dynam nullDynam = new Dynam();
 		@Override
 		public Dynam getDynam() {

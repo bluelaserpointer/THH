@@ -16,6 +16,9 @@ public class Standpoint implements Serializable{
 	private int group;
 	public final int INITIAL_GROUP;
 	
+	public Standpoint() {
+		INITIAL_GROUP = GHQ.NONE;
+	}
 	public Standpoint(int initialGroup) {
 		INITIAL_GROUP = group = initialGroup;
 	}

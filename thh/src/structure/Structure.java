@@ -8,7 +8,7 @@ import core.HasBoundingBox;
 import core.HasStandpoint;
 import core.Standpoint;
 import physicis.Dynam;
-import physicis.DynamInteractable;
+import physicis.HasDynam;
 
 /**
  * A primal class for managing structure.
@@ -51,13 +51,13 @@ public abstract class Structure implements Serializable,HasBoundingBox,HasStandp
 	public abstract boolean contains(int x,int y,int w,int h);
 	public abstract boolean contains(int x,int y);
 	public boolean hit(HasStandpoint source,int x,int y,int w,int h) {
-		return isFriendly(source) && contains(x,y,w,h);
+		return isFriend(source) && contains(x,y,w,h);
 	}
 	public abstract boolean intersectsLine(Line2D line);
 	public final boolean intersectsLine(double x1,double y1,double x2,double y2) {
 		return intersectsLine(new Line2D.Double(x1,y1,x2,y2));
 	}
-	public final boolean intersectsLine(DynamInteractable d1,DynamInteractable d2) {
+	public final boolean intersectsLine(HasDynam d1,HasDynam d2) {
 		final Dynam D1 = d1.getDynam(),D2 = d2.getDynam();
 		return intersectsLine(D1.getX(),D1.getY(),D2.getX(),D2.getY());
 	}
@@ -69,7 +69,7 @@ public abstract class Structure implements Serializable,HasBoundingBox,HasStandp
 		return Standpoint.NULL_STANDPOINT;
 	}
 	@Override
-	public boolean isFriendly(HasStandpoint target) {
+	public boolean isFriend(HasStandpoint target) {
 		return Standpoint.NULL_STANDPOINT.isFriendly(target.getStandpoint());
 	}
 	

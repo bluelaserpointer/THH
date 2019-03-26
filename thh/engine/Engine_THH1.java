@@ -276,17 +276,6 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 	public final void resetStage() {
 		
 	}
-	@Override
-	public final Unit[] callBulletEngage(Unit[] characters,Bullet bullet) {
-		final Unit[] result = new Unit[characters.length];
-		int searched = 0;
-		for(int i = 0;i < characters.length;i++) {
-			final Unit chara = characters[i];
-			if(chara.bulletEngage(bullet))
-				result[searched++] = chara;
-		}
-		return Arrays.copyOf(result, searched);
-	}
 	//information
 	@Override
 	public final int getEngineGameFrame() {

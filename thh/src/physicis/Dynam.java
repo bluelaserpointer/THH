@@ -116,7 +116,7 @@ public class Dynam extends Coordinate{
 		xSpd = speed*cos_angle;
 		ySpd = speed*sin_angle;
 	}
-	public boolean isVisible(DynamInteractable targetDI) {
+	public boolean isVisible(HasDynam targetDI) {
 		if(targetDI == null)
 			return false;
 		final Dynam targetDynam = targetDI.getDynam();
@@ -131,7 +131,7 @@ public class Dynam extends Coordinate{
 	public double getAngle(double x,double y) {
 		return atan2(y - this.y, x - this.x);
 	}
-	public double getAngle(DynamInteractable targetDI) {
+	public double getAngle(HasDynam targetDI) {
 		if(targetDI == null)
 			return GHQ.NONE;
 		final Dynam targetDynam = targetDI.getDynam();
@@ -155,12 +155,12 @@ public class Dynam extends Coordinate{
 		xSpd = SPEED;
 		ySpd = 0.0;
 	}
-	public void setAngle(DynamInteractable targetDI) {
+	public void setAngle(HasDynam targetDI) {
 		if(targetDI == null)
 			return;
 		this.angle = getAngle(targetDI);
 	}
-	public void setAngle(DynamInteractable targetDI,double maxTurnAngle) {
+	public void setAngle(HasDynam targetDI,double maxTurnAngle) {
 		if(targetDI == null || maxTurnAngle <= 0)
 			return;
 		final double TARGET_ANGLE = getAngle(targetDI);
@@ -293,7 +293,7 @@ public class Dynam extends Coordinate{
 			y += DY*RATE;
 		}
 	}
-	public void approach(DynamInteractable targetDI,double speed) {
+	public void approach(HasDynam targetDI,double speed) {
 		if(targetDI == null)
 			return;
 		final Dynam targetDynam = targetDI.getDynam();

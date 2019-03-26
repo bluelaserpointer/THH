@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import core.GHQ;
 import physicis.Dynam;
-import physicis.DynamInteractable;
+import physicis.HasDynam;
 
 public class StructureScript<T extends Structure> implements Serializable{
 	private static final long serialVersionUID = -4624130557133104038L;
@@ -12,10 +12,10 @@ public class StructureScript<T extends Structure> implements Serializable{
 		return GHQ.NOT_NAMED;
 	}
 	//generation
-	public final void create(DynamInteractable user) {
+	public final void create(HasDynam user) {
 		create(user,user.getDynam());
 	}
-	public void create(DynamInteractable user,Dynam baseDynam) {}
+	public void create(HasDynam user,Dynam baseDynam) {}
 	
 	//role
 	public void idle(T structure) { //Include painting

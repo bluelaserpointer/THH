@@ -1,32 +1,39 @@
 package geom;
 
-import java.awt.geom.Line2D;
-
 import physicis.Coordinate;
 
 public class Circle extends HitShape{
+	private static final long serialVersionUID = -1809578801160258098L;
 	public final int RADIUS;
 	
-	public Circle(Coordinate coordinate, int radius) {
-		super(coordinate);
+	public Circle(int radius) {
 		RADIUS = radius;
 	}
 	@Override
-	public boolean intersects(HitShape shape) {
+	public boolean intersects(Coordinate coordinate1, HitShape shape, Coordinate coordinate2) {
 		if(shape instanceof Circle) {
 			final double DR = RADIUS + ((Circle)shape).RADIUS;
-			return super.COORDINATE.getDistance(shape.COORDINATE) < DR*DR;
+			return coordinate1.getDistance(coordinate2) < DR*DR;
 		}else if(shape instanceof Square) {
 			// TODO lacking strictness
-			final int S2 = (RADIUS + ((Square)shape).SIDE)/2;
-			return Math.abs(super.COORDINATE.getDX(shape.COORDINATE)) < S2 && Math.abs(super.COORDINATE.getDY(shape.COORDINATE)) < S2;
+			return coordinate1.isCloser_DXDY(coordinate2,(RADIUS + ((Square)shape).SIDE)/2);
 		}
 		return false;
 	}
-
+	
+	//tool
 	@Override
-	public boolean intersects(Line2D line) {
-		return line.ptLineDistSq(super.COORDINATE.getX() ,super.COORDINATE.getY()) <= RADIUS;
+	public HitShape clone() {
+		return new Circle(RADIUS);
 	}
-
+	
+	//information
+	@Override
+	public int getWidth() {
+		return RADIUS;
+	}
+	@Override
+	public int getHeight() {
+		return RADIUS;
+	}
 }

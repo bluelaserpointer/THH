@@ -4,26 +4,24 @@ import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
 import action.Action;
-import bullet.Bullet;
 import core.Entity_double;
 import core.ErrorCounter;
 import core.GHQ;
 import core.Standpoint;
+import geom.HitShape;
 import gui.MessageSource;
 import item.Item;
 import physicis.Dynam;
-import physicis.DynamInteractable;
 import storage.ItemInventory;
 import storage.Storage;
-import core.HasBoundingBox;
-import core.HasStandpoint;
+import core.HitInteractable;
 
 /**
  * A primal class for managing unit.
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Unit extends Entity_double implements MessageSource,DynamInteractable,Serializable,HasBoundingBox,HasStandpoint{
+public abstract class Unit extends Entity_double implements MessageSource,HitInteractable,Serializable{
 	private static final long serialVersionUID = 7140005723063155203L;
 
 	protected static final int
@@ -33,20 +31,20 @@ public abstract class Unit extends Entity_double implements MessageSource,DynamI
 		MIN = GHQ.MIN;
 	
 	public String originalName = "";
-	public final ActionPlan actions;
+	public final HitShape hitshape;
 	public final Status status;
 	public final ItemInventory inventory;
 	public final Standpoint standpoint;
 	
 	//Initialization
-	public Unit(Status status,int initialGroup) {
-		actions = new ActionPlan();
+	public Unit(HitShape hitshape, Status status, int initialGroup) {
+		this.hitshape = hitshape.clone();
 		this.status = status;
 		inventory = new ItemInventory(new Storage<Item>());
 		standpoint = new Standpoint(initialGroup);
 	}
-	public Unit(ActionPlan actionPlan,Status status,ItemInventory inventory,Standpoint standpoint) {
-		this.actions = actionPlan;
+	public Unit(HitShape hitshape,Status status,ItemInventory inventory,Standpoint standpoint) {
+		this.hitshape = hitshape.clone();
 		this.status = status;
 		this.inventory = inventory;
 		this.standpoint = standpoint;
@@ -99,31 +97,18 @@ public abstract class Unit extends Entity_double implements MessageSource,DynamI
 	public void dynam() {};
 	public void paint(boolean doAnimation) {};
 	
-	//control
-	@Override
-	public final Dynam getDynam() {
-		return dynam;
-	}
 	//move
 	public abstract void moveRel(int dx,int dy);
 	public abstract void moveTo(int x,int y);
 	public abstract void teleportRel(int dx,int dy);
 	public abstract void teleportTo(int x,int y);
 	public abstract void loadActionPlan(Action action);
+	
 	//judge
-	public abstract boolean bulletEngage(Bullet bullet);
 	@Override
 	public Rectangle2D getBoundingBox() {
 		final int DEFAULT_SIZE = 80;
 		return new Rectangle2D.Double(dynam.getX() - DEFAULT_SIZE/2,dynam.getY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
-	}
-	@Override
-	public final Standpoint getStandpoint() {
-		return standpoint;
-	}
-	@Override
-	public boolean isFriendly(HasStandpoint target) {
-		return standpoint.isFriendly(target.getStandpoint());
 	}
 	//decrease
 	public abstract int damage_amount(int damage);
@@ -131,9 +116,25 @@ public abstract class Unit extends Entity_double implements MessageSource,DynamI
 
 	public abstract boolean kill(boolean force);
 	public void killed() {}
+	
 	//information
 	public String getName() {
 		return GHQ.NOT_NAMED;
+	}
+	@Override
+	public final Standpoint getStandpoint() {
+		return standpoint;
+	}
+	@Override
+	public boolean isHit(HitInteractable object) {
+		return isAlive() && !isFriend(object) && getHitShape().intersects(dynam, object, object.getCoordinate());
+	}
+	@Override
+	public final Dynam getDynam() {
+		return dynam;
+	}
+	public HitShape getHitShape() {
+		return hitshape;
 	}
 	public abstract boolean isAlive();
 	public final Status getStatus() {

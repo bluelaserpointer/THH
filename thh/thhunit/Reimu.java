@@ -9,19 +9,16 @@ import core.GHQ;
 import effect.EffectBlueprint;
 import effect.EffectScript;
 import paint.ImageFrame;
-import physicis.DynamInteractable;
+import physicis.HasDynam;
 import weapon.Weapon;
 import weapon.WeaponInfo;
 
 public class Reimu extends THHUnit{
 	public Reimu(int initialGroup) {
-		super(initialGroup);
+		super(20, initialGroup);
 	}
 
 	private static final long serialVersionUID = 1669960313477709935L;
-	{
-		charaSize = 20;
-	}
 	@Override
 	public final String getName() {
 		return "Reimu";
@@ -101,7 +98,7 @@ public class Reimu extends THHUnit{
 		return weaponController[kind].trigger();
 	}
 	@Override
-	public final void setBullet(int kind,DynamInteractable user) {
+	public final void setBullet(int kind,HasDynam user) {
 		BulletBlueprint.clear(bulletScripts[kind],user.getDynam());
 		BulletBlueprint.standpointGroup = standpoint.get();
 		switch(kind){
@@ -140,7 +137,7 @@ public class Reimu extends THHUnit{
 		}
 	}
 	@Override
-	public final void setEffect(int kind,DynamInteractable user) {
+	public final void setEffect(int kind,HasDynam user) {
 		EffectBlueprint.clear(effectScripts[kind],user.getDynam());
 		switch(kind){
 		case LIGHTNING:
@@ -169,7 +166,7 @@ public class Reimu extends THHUnit{
 		bulletScripts[FUDA_KOUHAKU] = new BulletScript() {
 			@Override
 			public final void bulletHitObject(Bullet bullet) {
-				setEffect(FUDA_HIT_EF,(DynamInteractable)bullet);
+				setEffect(FUDA_HIT_EF,(HasDynam)bullet);
 			}
 		};
 		bulletScripts[FUDA_SHIROKURO] = BulletBlueprint.DEFAULT_SCRIPT;

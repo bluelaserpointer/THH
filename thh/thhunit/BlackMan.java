@@ -3,18 +3,17 @@ package thhunit;
 import unit.Unit;
 import core.GHQ;
 import paint.ImageFrame;
-import physicis.DynamInteractable;
+import physicis.HasDynam;
 import thhunit.EnemyBulletLibrary;
 import weapon.Weapon;
 
 public class BlackMan extends THHUnit{
 	private static final long serialVersionUID = -1004211237829934326L;
 	{
-		charaSize = 120;
 		charaSpeed = 2;
 	}
 	public BlackMan(int initialGroup) {
-		super(initialGroup);
+		super(120, initialGroup);
 	}
 	private final Weapon weaponController = EnemyBulletLibrary.getWeaponController(EnemyBulletLibrary.lightBall_S);
 	@Override
@@ -44,7 +43,7 @@ public class BlackMan extends THHUnit{
 		dynam.approach(charaDstX, charaDstY, charaSpeed);
 	}
 	@Override
-	public void setEffect(int kind,DynamInteractable source) {}
+	public void setEffect(int kind,HasDynam source) {}
 	@Override
-	public void setBullet(int kind,DynamInteractable source) {}
+	public void setBullet(int kind,HasDynam source) {}
 }

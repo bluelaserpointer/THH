@@ -4,7 +4,7 @@ import core.GHQ;
 import item.Item;
 import paint.DotPaint;
 import physicis.Dynam;
-import physicis.DynamInteractable;
+import physicis.HasDynam;
 
 public class DropItem extends Vegetation{
 	private static final long serialVersionUID = -8747093817175771314L;
@@ -22,7 +22,7 @@ public class DropItem extends Vegetation{
 		HITBOX_W = w;
 		HITBOX_H = h;
 	}
-	public boolean isCovered(DynamInteractable di, int distance) {
+	public boolean isCovered(HasDynam di, int distance) {
 		final Dynam DYNAM = di.getDynam();
 		return Math.abs(DYNAM.getX() - x) < ((HITBOX_W != GHQ.NONE ? HITBOX_W : paintScript.getDefaultW()) + distance)/2
 				&& Math.abs(DYNAM.getY() - y) < ((HITBOX_H != GHQ.NONE ? HITBOX_H : paintScript.getDefaultH()) + distance)/2;

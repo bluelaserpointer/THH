@@ -4,16 +4,16 @@ import java.io.Serializable;
 
 import core.GHQ;
 import physicis.Dynam;
-import physicis.DynamInteractable;
+import physicis.HasDynam;
 
 public class EffectScript implements Serializable{
 	private static final long serialVersionUID = -7528140745782034400L;
 
 	//generation
-	public final void create(DynamInteractable user) {
+	public final void create(HasDynam user) {
 		create(user,user.getDynam());
 	}
-	public void create(DynamInteractable user,Dynam baseDynam) {}
+	public void create(HasDynam user,Dynam baseDynam) {}
 	
 	//idle
 	public void idle(Effect effect) { //Include painting

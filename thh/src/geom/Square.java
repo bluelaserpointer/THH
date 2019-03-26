@@ -1,39 +1,39 @@
 package geom;
 
-import java.awt.geom.Line2D;
-
 import physicis.Coordinate;
 
 public class Square extends HitShape{
+	private static final long serialVersionUID = 8168254451812660305L;
 	public final int SIDE;
-	public Square(Coordinate coordinate, int side) {
-		super(coordinate);
+	public Square(int side) {
 		SIDE = side;
 	}
 	@Override
-	public boolean intersects(HitShape shape) {
-		final int DX = Math.abs((int)super.COORDINATE.getDX(shape.COORDINATE)),DY = Math.abs((int)super.COORDINATE.getDY(shape.COORDINATE));
+	public boolean intersects(Coordinate coordinate1, HitShape shape, Coordinate coordinate2) {
 		if(shape instanceof Square) {
-			final int S2 = (SIDE + ((Square)shape).SIDE)/2;
-			return DX < S2 && DY < S2;
+			return coordinate1.isCloser_DXDY(coordinate2, (SIDE + ((Square)shape).SIDE)/2);
 		}else if(shape instanceof Rectangle) {
-			return DX < (SIDE + ((Rectangle)shape).WIDTH)/2 && DY < (SIDE + ((Rectangle)shape).HEIGHT)/2;
+			return coordinate1.isCloser_DXDY(coordinate2, (SIDE + ((Rectangle)shape).WIDTH)/2, (SIDE + ((Rectangle)shape).HEIGHT)/2);
 		}else if(shape instanceof Circle) {
 			// TODO lacking strictness
-			final int S2 = (SIDE + ((Circle)shape).RADIUS)/2;
-			return DX < S2 && DY < S2;
+			return coordinate1.isCloser_DXDY(coordinate2, (SIDE + ((Circle)shape).RADIUS)/2);
 		}
 		return false;
 	}
-
+	
+	//tool
 	@Override
-	public boolean intersects(Line2D line) {
-		// TODO Auto-generated method stub
-		return false;
+	public HitShape clone() {
+		return new Square(SIDE);
 	}
 	
-	public int getSide() {
+	//information
+	@Override
+	public int getWidth() {
 		return SIDE;
 	}
-	
+	@Override
+	public int getHeight() {
+		return SIDE;
+	}
 }

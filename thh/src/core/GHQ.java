@@ -23,7 +23,7 @@ import input.KeyTypeListener;
 import input.MouseListenerEx;
 import item.Item;
 import physicis.Dynam;
-import physicis.DynamInteractable;
+import physicis.HasDynam;
 import structure.Structure;
 import stage.StageEngine;
 import unit.Unit;
@@ -331,12 +331,22 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		g.drawImage(offImage,0,0,screenW,screenH,this);
 		loadTime_total = System.currentTimeMillis() - LOAD_TIME_PAINTCOMPONENT;
 	}
-	
-	public static final Unit[] callBulletEngage(Bullet bullet) {
-		return engine.callBulletEngage(getCharacters_standpoint(bullet,false),bullet);
+	/**
+	 * A class helps {@link Bullet} or other objects to detect touching enemies.
+	 * @param bullet
+	 * @return
+	 */
+	public static final Unit[] getHitCharacters(HitInteractable object) {
+		return getHitCharacters(getCharacters_standpoint(object,false),object);
 	}
-	public static final Unit[] callBulletEngage(Unit[] characters,Bullet bullet) {
-		return engine.callBulletEngage(characters,bullet);
+	public static final Unit[] getHitCharacters(Unit[] characters,HitInteractable object) {
+		final Unit[] result = new Unit[characters.length];
+		int searched = 0;
+		for(Unit unit : characters) {
+			if(unit.isHit(object))
+				result[searched++] = unit;
+		}
+		return Arrays.copyOf(result, searched);
 	}
 	//idle-character
 	public static final void defaultCharaIdle(Unit[] characters) {
@@ -476,7 +486,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		final Unit[] charaArray = new Unit[characters.size()];
 		int founded = 0;
 		for(Unit chara : characters) {
-			if(white == source.isFriendly(chara))
+			if(white == source.isFriend(chara))
 				charaArray[founded++] = chara;
 		}
 		return Arrays.copyOf(charaArray, founded);
@@ -572,7 +582,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			vegetationArray[i] = vegetations.get(i);
 		return vegetationArray;
 	}
-	public static final DropItem getCoveredDropItem(DynamInteractable di, int distance) {
+	public static final DropItem getCoveredDropItem(HasDynam di, int distance) {
 		for(Vegetation vegetation : vegetations) {
 			if(vegetation instanceof DropItem && ((DropItem)vegetation).isCovered(di, distance)) {
 				return (DropItem)vegetation;
@@ -580,7 +590,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return null;
 	}
-	public static final Item getCoveredDropItem_pickup(DynamInteractable di, int distance) {
+	public static final Item getCoveredDropItem_pickup(HasDynam di, int distance) {
 		for(Vegetation vegetation : vegetations) {
 			if(vegetation instanceof DropItem && ((DropItem)vegetation).isCovered(di, distance)) {
 				return ((DropItem)vegetation).pickup();
@@ -606,7 +616,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		Structure result[] = new Structure[structures.size()];
 		int searched = 0;
 		for(Structure structure : structures) {
-			if(white == structure.isFriendly(source))
+			if(white == structure.isFriend(source))
 				result[searched++] = structure;
 		}
 		return Arrays.copyOf(result, searched);
@@ -629,7 +639,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		for(Structure structure : structures) {
 			if(structure.getStandpoint() == null)
 				System.out.println("bug.");
-			if(!standpoint.isFriendly(structure) && structure.contains(x, y, w, h))
+			if(!standpoint.isFriend(structure) && structure.contains(x, y, w, h))
 				return true;
 		}
 		return false;
@@ -753,7 +763,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public final int receiveDamageInSquare(HasStandpoint source,int hp,int x,int y,int size){
 		for(Bullet bullet : bullets){
-			if(!source.isFriendly(bullet) && bullet.atk > 0 && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2)){
+			if(!source.isFriend(bullet) && bullet.atk > 0 && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2)){
 				hp -= bullet.atk;
 				bullet.SCRIPT.bulletHitObject(bullet);
 				if(hp <= 0)
@@ -764,7 +774,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public final int receiveBulletInCircle(HasStandpoint source, int hp,int x,int y,int size){
 		for(Bullet bullet : bullets){
-			if(!source.isFriendly(bullet) && bullet.atk > 0 && circleCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)){ //ﾐnﾍｻ
+			if(!source.isFriend(bullet) && bullet.atk > 0 && circleCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)){ //ﾐnﾍｻ
 				hp -= bullet.atk;
 				bullet.SCRIPT.bulletHitObject(bullet);
 				if(hp <= 0)
@@ -776,7 +786,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public final Bullet searchBulletInSquare_single(HasStandpoint source,int x,int y,int size){
 		for(int i = 0;i < bullets.size();i++){
 			final Bullet bullet = bullets.get(i);
-			if(!source.isFriendly(bullet) && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2))
+			if(!source.isFriend(bullet) && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2))
 				return bullet; //return ID
 		}
 		return null; //Not found
@@ -786,7 +796,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		int foundAmount =  0;
 		for(int i = 0;i < bullets.size();i++){
 			final Bullet bullet = bullets.get(i);
-			if(!source.isFriendly(bullet) && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2))
+			if(!source.isFriend(bullet) && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2))
 				foundIDs[foundAmount++] = bullet; //record ID
 		}
 		return Arrays.copyOf(foundIDs,foundAmount);
@@ -1074,7 +1084,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @return created Bullet
 	 * @since alpha1.0
 	 */
-	public static final Bullet createBullet(DynamInteractable source){
+	public static final Bullet createBullet(HasDynam source){
 		final Bullet bullet = new Bullet(source);
 		bullets.add(bullet);
 		return bullet;
@@ -1091,7 +1101,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @return created Effect
 	 * @since alpha1.0
 	 */
-	public static final Effect createEffect(DynamInteractable source){
+	public static final Effect createEffect(HasDynam source){
 		final Effect effect = new Effect(source);
 		effects.add(effect);
 		return effect;

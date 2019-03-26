@@ -1,22 +1,18 @@
 package thhunit;
 
-
-import java.awt.geom.Rectangle2D;
-
 import action.Action;
 import action.ActionInfo;
-import bullet.Bullet;
 import core.GHQ;
+import geom.Square;
 import paint.DotPaint;
 import paint.RectPaint;
-import physicis.DynamInteractable;
+import physicis.HasDynam;
 import unit.Status;
 import unit.Unit;
 import weapon.Weapon;
 
 public abstract class THHUnit extends Unit {
 	private static final long serialVersionUID = 6736932836274080528L;
-	public int charaSize;
 	public double charaDstX, charaDstY, charaSpeed = 30;
 	public boolean charaOnLand;
 
@@ -46,8 +42,8 @@ public abstract class THHUnit extends Unit {
 		names[BLO] = "BLO";
 		names[STUN] = "STUN";
 	}
-	public THHUnit(int initialGroup) {
-		super(new Status(PARAMETER_AMOUNT), initialGroup);
+	public THHUnit(int charaSize, int initialGroup) {
+		super(new Square(charaSize), new Status(PARAMETER_AMOUNT), initialGroup);
 	}
 	
 	@Override
@@ -187,16 +183,6 @@ public abstract class THHUnit extends Unit {
 			
 		}
 	}
-	// judge
-	@Override
-	public final boolean bulletEngage(Bullet bullet) {
-		return status.isBigger0(HP) && dynam.squreCollision(bullet.dynam,(charaSize + bullet.SIZE)/2)
-				&& (bullet.isFriendly(this) ^ bullet.atk >= 0);
-	}
-	@Override
-	public Rectangle2D getBoundingBox() {
-		return new Rectangle2D.Double(dynam.getX() - charaSize/2,dynam.getY() - charaSize/2,charaSize,charaSize);
-	}
 	// HP
 	private final void dodge(double targetX, double targetY) {
 		dynam.addSpeed_DA(40, dynam.getAngle(targetX,targetY));
@@ -232,6 +218,6 @@ public abstract class THHUnit extends Unit {
 	public boolean useWeapon(int kind) {
 		return true;
 	}
-	public abstract void setBullet(int kind,DynamInteractable source);
-	public abstract void setEffect(int kind,DynamInteractable source);
+	public abstract void setBullet(int kind,HasDynam source);
+	public abstract void setEffect(int kind,HasDynam source);
 }

@@ -6,7 +6,7 @@ import core.Entity_double;
 import core.GHQ;
 import paint.DotPaint;
 import paint.HasDotPaint;
-import physicis.DynamInteractable;
+import physicis.HasDynam;
 
 /**
  * A primal class for managing effect.
@@ -29,7 +29,7 @@ public class Effect extends Entity_double implements HasDotPaint{
 	public final DotPaint
 		paintScript;
 	
-	public Effect(DynamInteractable source) {
+	public Effect(HasDynam source) {
 		super(source,EffectBlueprint.dynam,EffectBlueprint.nowFrame);
 		UNIQUE_ID = ++nowMaxUniqueID;
 		this.SCRIPT = EffectBlueprint.script != null ? EffectBlueprint.script : EffectBlueprint.DEFAULT_SCRIPT;

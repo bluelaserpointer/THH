@@ -1,10 +1,20 @@
 package core;
 
-import geom.HasHitShape;
-import physicis.CoordinateInteractable;
+import java.awt.geom.Rectangle2D;
 
-public interface HitInteractable extends CoordinateInteractable,HasHitShape,HasStandpoint{
+import geom.HasHitShape;
+import geom.HitShape;
+import physicis.Coordinate;
+import physicis.HasCoordinate;
+
+public interface HitInteractable extends HasCoordinate,HasHitShape,HasStandpoint,HasBoundingBox{
 	public default boolean isHit(HitInteractable target) {
-		return isEnemy(target) && getHitShape().intersects(target);
+		return !isFriend(target) && getHitShape().intersects(getCoordinate(), target, target.getCoordinate());
+	}
+	@Override
+	public default Rectangle2D getBoundingBox() {
+		final Coordinate cod = getCoordinate();
+		final HitShape hitshape = getHitShape();
+		return new Rectangle2D.Double(cod.getX(), cod.getY(), hitshape.getWidth(), hitshape.getHeight());
 	}
 }

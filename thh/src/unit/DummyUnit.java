@@ -1,8 +1,8 @@
 package unit;
 
 import action.Action;
-import bullet.Bullet;
 import core.GHQ;
+import geom.HitShape;
 import physicis.Dynam;
 
 public class DummyUnit extends Unit{
@@ -10,7 +10,7 @@ public class DummyUnit extends Unit{
 
 	private int dummyIID;
 	public DummyUnit(Dynam dynam) {
-		super(new Status(),GHQ.NONE);
+		super(HitShape.NULL_HITSHAPE, new Status(),GHQ.NONE);
 		super.dynam.setAllBySample(dynam);
 		dummyIID = GHQ.loadImage("thhimage/gui_editor/Unit.png");
 	}
@@ -56,12 +56,6 @@ public class DummyUnit extends Unit{
 	public void loadActionPlan(Action action) {
 		
 		
-	}
-
-	@Override
-	public boolean bulletEngage(Bullet bullet) {
-		
-		return false;
 	}
 
 	@Override

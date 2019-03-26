@@ -21,7 +21,7 @@ public class Coordinate {
 		this.x = x;
 		this.y = y;
 	}
-	public void setXY(CoordinateInteractable targetCI) {
+	public void setXY(HasCoordinate targetCI) {
 		if(targetCI == null)
 			return;
 		final Coordinate targetCoordinate = targetCI.getCoordinate();
@@ -55,7 +55,7 @@ public class Coordinate {
 	public boolean inStage() {
 		return GHQ.inStage((int)x,(int)y);
 	}
-	public double getDistance(CoordinateInteractable targetCI) {
+	public double getDistance(HasCoordinate targetCI) {
 		return targetCI == null ? GHQ.NONE : getDistance(targetCI.getCoordinate());
 	}
 	public double getDistance(Coordinate coordinate) {
@@ -80,5 +80,29 @@ public class Coordinate {
 	}
 	public double getDY(Coordinate coordinate) {
 		return coordinate.y - y;
+	}
+	public double getAbsDX(Coordinate coordinate) {
+		final double DX = coordinate.x - x;
+		return DX > 0 ? DX : -DX;
+	}
+	public double getAbsDY(Coordinate coordinate) {
+		final double DY = coordinate.y - y;
+		return DY > 0 ? DY : -DY;
+	}
+	public boolean isCloser_DX(Coordinate coordinate, double dx) {
+		final double DX = coordinate.x - x;
+		return DX < 0 ? (-dx < DX) : (DX < dx);
+	}
+	public boolean isCloser_DY(Coordinate coordinate, double dy) {
+		final double DY = coordinate.y - y;
+		return DY < 0 ? (-dy < DY) : (DY < dy);
+	}
+	public boolean isCloser_DXDY(Coordinate coordinate, double d) {
+		final double DX = coordinate.x - x,DY = coordinate.y - y;
+		return (DX < 0 ? (-d < DX) : (DX < d)) && (DY < 0 ? (-d < DY) : (DY < d));
+	}
+	public boolean isCloser_DXDY(Coordinate coordinate, double dx, double dy) {
+		final double DX = coordinate.x - x,DY = coordinate.y - y;
+		return (DX < 0 ? (-dx < DX) : (DX < dx)) && (DY < 0 ? (-dy < DY) : (DY < dy));
 	}
 }
