@@ -10,10 +10,8 @@ import core.GHQ;
 import core.Standpoint;
 import geom.HitShape;
 import gui.MessageSource;
-import item.Item;
+import physicis.Coordinate;
 import physicis.Dynam;
-import storage.ItemInventory;
-import storage.Storage;
 import core.HitInteractable;
 
 /**
@@ -32,29 +30,19 @@ public abstract class Unit extends Entity_double implements MessageSource,HitInt
 	
 	public String originalName = "";
 	public final HitShape hitshape;
-	public final Status status;
-	public final ItemInventory inventory;
 	public final Standpoint standpoint;
 	
 	//Initialization
-	public Unit(HitShape hitshape, Status status, int initialGroup) {
-		this.hitshape = hitshape.clone();
-		this.status = status;
-		inventory = new ItemInventory(new Storage<Item>());
+	public Unit(HitShape hitshape, int initialGroup) {
+		this.hitshape = (hitshape != null ? hitshape : HitShape.NULL_HITSHAPE);
 		standpoint = new Standpoint(initialGroup);
 	}
-	public Unit(HitShape hitshape,Status status,ItemInventory inventory,Standpoint standpoint) {
-		this.hitshape = hitshape.clone();
-		this.status = status;
-		this.inventory = inventory;
-		this.standpoint = standpoint;
-	}
-	public final Unit initialSpawn(int spawnX,int spawnY) {
-		loadImageData();
-		loadSoundData();
-		battleStarted();
-		respawn(spawnX,spawnY);
-		return this;
+	public static final <T extends Unit>T initialSpawn(T unit, int spawnX,int spawnY) {
+		unit.loadImageData();
+		unit.loadSoundData();
+		unit.battleStarted();
+		unit.respawn(spawnX,spawnY);
+		return unit;
 	}
 	public abstract void respawn(int spawnX,int spawnY);
 	public void loadImageData(){}
@@ -98,17 +86,27 @@ public abstract class Unit extends Entity_double implements MessageSource,HitInt
 	public void paint(boolean doAnimation) {};
 	
 	//move
-	public abstract void moveRel(int dx,int dy);
-	public abstract void moveTo(int x,int y);
-	public abstract void teleportRel(int dx,int dy);
-	public abstract void teleportTo(int x,int y);
+	public void moveRel(int dx,int dy) {
+		final Dynam DYNAM = getDynam();
+		DYNAM.approach(DYNAM.getX() + dx,DYNAM.getY() + dy, 10);
+	}
+	public void moveTo(int x,int y) {
+		getDynam().approach(x, y, 10);
+	}
+	public void teleportRel(int dx,int dy) {
+		getCoordinate().addXY(dx, dy);
+	}
+	public void teleportTo(int x,int y) {
+		getCoordinate().setXY(x, y);
+	}
 	public abstract void loadActionPlan(Action action);
 	
 	//judge
 	@Override
 	public Rectangle2D getBoundingBox() {
 		final int DEFAULT_SIZE = 80;
-		return new Rectangle2D.Double(dynam.getX() - DEFAULT_SIZE/2,dynam.getY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
+		final Coordinate COD = getCoordinate();
+		return new Rectangle2D.Double(COD.getX() - DEFAULT_SIZE/2,COD.getY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
 	}
 	//decrease
 	public abstract int damage_amount(int damage);
@@ -127,19 +125,12 @@ public abstract class Unit extends Entity_double implements MessageSource,HitInt
 	}
 	@Override
 	public boolean isHit(HitInteractable object) {
-		return isAlive() && !isFriend(object) && getHitShape().intersects(dynam, object, object.getCoordinate());
-	}
-	@Override
-	public final Dynam getDynam() {
-		return dynam;
+		return isAlive() && !isFriend(object) && getHitShape().intersects(getCoordinate(), object, object.getCoordinate());
 	}
 	public HitShape getHitShape() {
 		return hitshape;
 	}
 	public abstract boolean isAlive();
-	public final Status getStatus() {
-		return status;
-	}
 	
 	//specialEvent
 	public int weaponChangeOrder;

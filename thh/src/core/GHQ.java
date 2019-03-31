@@ -523,13 +523,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		for(Unit enemy : getCharacters_standpoint(unit,false)) {
 			if(!enemy.isAlive())
 				continue;
-			if(enemy.dynam.isVisible(unit))
+			if(enemy.getDynam().isVisible(unit))
 				visibleEnemies.add(enemy);
 		}
 		return visibleEnemies;
 	}
 	public static final Unit getNearstVisibleEnemy(Unit chara) {
-		final Dynam DYNAM = chara.dynam;
+		final Dynam DYNAM = chara.getDynam();
 		Unit neastVisibleEnemy = null;
 		double enemyDistance = MAX;
 		for(Unit enemy : getCharacters_standpoint(chara,false)) {
@@ -551,7 +551,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return neastVisibleEnemy;
 	}
 	public static final Unit getNearstVisibleEnemy(Bullet bullet) {
-		final Dynam DYNAM = bullet.dynam;
+		final Dynam DYNAM = bullet.getDynam();
 		Unit neastVisibleEnemy = null;
 		double enemyDistance = MAX;
 		for(Unit enemy : getCharacters_standpoint(bullet,false)) {
@@ -763,7 +763,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public final int receiveDamageInSquare(HasStandpoint source,int hp,int x,int y,int size){
 		for(Bullet bullet : bullets){
-			if(!source.isFriend(bullet) && bullet.atk > 0 && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2)){
+			if(!source.isFriend(bullet) && bullet.atk > 0 && bullet.getDynam().squreCollision(x,y,(bullet.SIZE + size)/2)){
 				hp -= bullet.atk;
 				bullet.SCRIPT.bulletHitObject(bullet);
 				if(hp <= 0)
@@ -774,7 +774,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public final int receiveBulletInCircle(HasStandpoint source, int hp,int x,int y,int size){
 		for(Bullet bullet : bullets){
-			if(!source.isFriend(bullet) && bullet.atk > 0 && circleCollision((int)bullet.dynam.getX(),(int)bullet.dynam.getY(),bullet.SIZE,x,y,size)){ //ﾐnﾍｻ
+			final Dynam BULLET_DYNAM = bullet.getDynam();
+			if(!source.isFriend(bullet) && bullet.atk > 0 && circleCollision((int)BULLET_DYNAM.getX(),(int)BULLET_DYNAM.getY(),bullet.SIZE,x,y,size)){ //ﾐnﾍｻ
 				hp -= bullet.atk;
 				bullet.SCRIPT.bulletHitObject(bullet);
 				if(hp <= 0)
@@ -782,24 +783,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			}
 		}
 		return hp;
-	}
-	public final Bullet searchBulletInSquare_single(HasStandpoint source,int x,int y,int size){
-		for(int i = 0;i < bullets.size();i++){
-			final Bullet bullet = bullets.get(i);
-			if(!source.isFriend(bullet) && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2))
-				return bullet; //return ID
-		}
-		return null; //Not found
-	}
-	public final Bullet[] searchBulletInSquare_multiple(HasStandpoint source,int x,int y,int size){
-		Bullet[] foundIDs = new Bullet[bullets.size()];
-		int foundAmount =  0;
-		for(int i = 0;i < bullets.size();i++){
-			final Bullet bullet = bullets.get(i);
-			if(!source.isFriend(bullet) && bullet.dynam.squreCollision(x,y,(bullet.SIZE + size)/2))
-				foundIDs[foundAmount++] = bullet; //record ID
-		}
-		return Arrays.copyOf(foundIDs,foundAmount);
 	}
 	//control-GUI
 	public static final void enableGUIs(String group) {
@@ -1121,7 +1104,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return unit;
 	}
 	public static final <T extends Unit>T replaceUnit(Unit targetUnit,T newUnit){
-		newUnit.dynam.setAllBySample(targetUnit.dynam);
+		newUnit.getDynam().setAllBySample(targetUnit.getDynam());
 		deleteUnit(targetUnit);
 		addUnit(newUnit);
 		return newUnit;
@@ -1280,8 +1263,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		System.gc();
 		System.out.println("add characters to the game");
 		engine.loadResource();
-		engine.charaSetup();
-		engine.stageSetup();
 		engine.openStage();
 	}
 	

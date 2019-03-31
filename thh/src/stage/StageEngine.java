@@ -22,8 +22,6 @@ public abstract class StageEngine{
 		return GHQ.NOT_NAMED;
 	}
 	public abstract void loadResource();
-	public abstract void charaSetup();
-	public abstract void stageSetup();
 	public abstract void openStage();
 	public abstract StageSaveData getStageSaveData();
 	

@@ -7,7 +7,7 @@ import paint.DotPaint;
 import physicis.Dynam;
 
 /**
- * A class helping initialize Bullet parameters.
+ * A class for easily initialize Bullet parameters.
  * @author bluelaserpointer
  * @since alpha1.0
  */
@@ -53,7 +53,7 @@ public final class BulletBlueprint {
 		if(baseDynam == null)
 			dynam.clear();
 		else
-			dynam.initBySample(baseDynam);
+			dynam.setAllBySample(baseDynam);
 		accel = 0.0;
 		paintScript = DotPaint.BLANK_SCRIPT;
 		isLaser = false;

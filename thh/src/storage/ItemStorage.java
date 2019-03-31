@@ -9,14 +9,21 @@ import item.Item;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class ItemInventory implements Serializable{
+public class ItemStorage implements Serializable{
 	private static final long serialVersionUID = 353322954827886207L;
 	public final Storage<Item> items;
+	/**
+	 * Create ItemInventory.It will use new {@link Storage}{@literal <}{@link Item}{@literal >} automatically.)
+	 * @param storage
+	 */
+	public ItemStorage() {
+		items = new Storage<Item>();
+	}
 	/**
 	 * Create ItemInventory with a {@link Storage}{@literal <}{@link Item}{@literal >} or its subclasses.(like {@link TableStorage}{@literal <}{@link Item}{@literal >})
 	 * @param storage
 	 */
-	public ItemInventory(Storage<Item> storage) {
+	public ItemStorage(Storage<Item> storage) {
 		items = storage;
 	}
 	//control

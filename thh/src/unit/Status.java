@@ -2,6 +2,7 @@ package unit;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import buff.Buff;
 import core.GHQ;
@@ -16,6 +17,10 @@ public class Status implements Serializable{
 	public static final int UNCHANGE = -1;
 
 	//initialization
+	public Status(Status sample) {
+		parameterDefaults = Arrays.copyOf(sample.parameterDefaults, sample.parameterDefaults.length);
+		parameters = Arrays.copyOf(sample.parameters, sample.parameters.length);
+	}
 	public Status(int parameterAmount) {
 		parameterDefaults = new int[parameterAmount];
 		parameters = new int[parameterAmount];
@@ -31,6 +36,7 @@ public class Status implements Serializable{
 		for(Buff buff : skillEffects)
 			buff.reset();
 	}
+	
 	//role
 	/**
 	 * Set a default value to a parameter.
@@ -120,6 +126,11 @@ public class Status implements Serializable{
 	 * @since alpha1.0
 	 */
 	public void capCheck(int index) {}
+	
+	//control
+	public Status clone() {
+		return new Status(this);
+	}
 	
 	//information
 	public final int getSize() {

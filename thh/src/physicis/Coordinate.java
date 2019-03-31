@@ -2,14 +2,17 @@ package physicis;
 
 import static java.lang.Math.sqrt;
 
+import java.io.Serializable;
+
 import core.GHQ;
 
-public class Coordinate {
+public class Coordinate implements Serializable{
+	private static final long serialVersionUID = 2768080843202856362L;
 	protected double x,y;
 	public Coordinate() {}
-	public Coordinate(Coordinate cod) {
-		x = cod.x;
-		y = cod.y;
+	public Coordinate(Coordinate coordinate) {
+		x = coordinate.x;
+		y = coordinate.y;
 	}
 	public Coordinate(double x,double y) {
 		this.x = x;
@@ -21,12 +24,14 @@ public class Coordinate {
 		this.x = x;
 		this.y = y;
 	}
-	public void setXY(HasCoordinate targetCI) {
-		if(targetCI == null)
+	public void setXY(HasCoordinate hasCoordinate) {
+		if(hasCoordinate == null)
 			return;
-		final Coordinate targetCoordinate = targetCI.getCoordinate();
-		this.x = targetCoordinate.x;
-		this.y = targetCoordinate.y;
+		setXY(hasCoordinate.getCoordinate());
+	}
+	public void setXY(Coordinate coordinate) {
+		this.x = coordinate.x;
+		this.y = coordinate.y;
 	}
 	public void setX(double x) {
 		this.x = x;

@@ -9,6 +9,8 @@ import core.Standpoint;
 import geom.HitShape;
 import paint.DotPaint;
 import paint.HasDotPaint;
+import physicis.DstCntDynam;
+import physicis.Dynam;
 import physicis.HasDynam;
 import unit.Unit;
 
@@ -26,6 +28,7 @@ public class Bullet extends Entity_double implements HitInteractable,HasDotPaint
 	public final BulletScript SCRIPT; //a script of unique behaviors
 	public final Standpoint standpoint;
 	public final HitShape hitshape;
+	private final DstCntDynam dynam = new DstCntDynam();
 	
 	public String name;
 	public final int
@@ -47,11 +50,12 @@ public class Bullet extends Entity_double implements HitInteractable,HasDotPaint
 	public final boolean
 		IS_LASER;
 	public Bullet(HasDynam source) {
-		super(source,BulletBlueprint.dynam,BulletBlueprint.nowFrame);
+		super(source, BulletBlueprint.nowFrame);
 		UNIQUE_ID = ++nowMaxUniqueID;
 		SCRIPT = BulletBlueprint.script != null ? BulletBlueprint.script : BulletBlueprint.DEFAULT_SCRIPT;
 		name = BulletBlueprint.name;
 		SIZE = BulletBlueprint.size;
+		dynam.setAllBySample(BulletBlueprint.dynam);
 		LIMIT_FRAME = BulletBlueprint.limitFrame;
 		LIMIT_RANGE = BulletBlueprint.limitRange;
 		standpoint = new Standpoint(BulletBlueprint.standpointGroup);
@@ -65,11 +69,12 @@ public class Bullet extends Entity_double implements HitInteractable,HasDotPaint
 		IS_LASER = BulletBlueprint.isLaser;
 	}
 	public Bullet(Bullet bullet) {
-		super(bullet.source,bullet.dynam,BulletBlueprint.nowFrame);
+		super(bullet.source, GHQ.getNowFrame());
 		UNIQUE_ID = ++nowMaxUniqueID;
 		SCRIPT = bullet.SCRIPT != null ? bullet.SCRIPT : BulletBlueprint.DEFAULT_SCRIPT;
 		name = bullet.name;
 		SIZE = bullet.SIZE;
+		dynam.setAllBySample(bullet.dynam);
 		LIMIT_FRAME = bullet.LIMIT_FRAME;
 		LIMIT_RANGE = bullet.LIMIT_RANGE;
 		standpoint = new Standpoint(bullet.standpoint.get());
@@ -251,5 +256,9 @@ public class Bullet extends Entity_double implements HitInteractable,HasDotPaint
 	@Override
 	public final DotPaint getPaintScript() {
 		return paintScript;
+	}
+	@Override
+	public final Dynam getDynam() {
+		return dynam;
 	}
 }

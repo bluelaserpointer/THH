@@ -7,19 +7,27 @@ import bullet.*;
 import core.GHQ;
 import effect.*;
 import paint.ImageFrame;
+import physicis.Dynam;
 import physicis.HasDynam;
 import weapon.Weapon;
 import weapon.WeaponInfo;
 
 public class Marisa extends THHUnit{
 	private static final long serialVersionUID = -1533719907505962673L;
-
+	
 	public Marisa(int initialGroup) {
 		super(20, initialGroup);
 	}
 	@Override
 	public final String getName() {
 		return "Marisa";
+	}
+	
+	//Dynam
+	private final Dynam dynam = new Dynam();
+	@Override
+	public final Dynam getDynam() {
+		return dynam;
 	}
 	
 	//weapon&bullet kind name
@@ -205,7 +213,7 @@ public class Marisa extends THHUnit{
 			EffectBlueprint.paintScript = effectPaint[kind];
 			for(int i = 0;i < 30;i++) {
 				EffectBlueprint.limitFrame = GHQ.random2(10,40);
-				GHQ.createEffect(this).dynam.fastParaAdd_DASpd(30,2*PI*random(),GHQ.random2(2,5));
+				GHQ.createEffect(this).getDynam().fastParaAdd_DASpd(30,2*PI*random(),GHQ.random2(2,5));
 			}
 			break;
 		}
@@ -218,13 +226,13 @@ public class Marisa extends THHUnit{
 			public final void idle(Bullet bullet) {
 				bullet.lifeSpanCheck();
 				int count = 0;
-				while(bullet.dynam.inStage()) {
+				while(bullet.getDynam().inStage()) {
 					bullet.dynam(++count % 5 == 0);
 					bullet.defaultPaint();
 				}
 				final HasDynam BULLET_SOURCE = bullet.source;
-				bullet.dynam.setXY(BULLET_SOURCE);
-				bullet.dynam.setAngle(BULLET_SOURCE.getDynam().getAngle());
+				bullet.getDynam().setXY(BULLET_SOURCE);
+				bullet.getDynam().setAngle(BULLET_SOURCE.getDynam().getAngle());
 			}
 			@Override
 			public final void bulletHitObject(Bullet bullet) {
@@ -235,7 +243,7 @@ public class Marisa extends THHUnit{
 			@Override
 			public final void idle(Bullet bullet) {
 				bullet.defaultIdle();
-				bullet.dynam.addSpeed(0.0,1.1);
+				bullet.getDynam().addSpeed(0.0,1.1);
 				bullet.defaultPaint();
 				if(random() < 0.2)
 					setEffect(LIGHTNING,(HasDynam)bullet);

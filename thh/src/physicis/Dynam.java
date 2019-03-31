@@ -12,9 +12,12 @@ import core.GHQ;
  * @since alpha1.0
  */
 public class Dynam extends Coordinate{
+	private static final long serialVersionUID = -3892193817831737958L;
+	
+	public static final Dynam NULL_DYNAM = new Dynam();
+	
 	
 	protected double xSpd,ySpd,angle;
-	protected double movedDistance;
 	public Dynam() {}
 	public Dynam(Dynam dynam) {
 		x = dynam.x;
@@ -46,15 +49,7 @@ public class Dynam extends Coordinate{
 		this.angle = angle;
 	}
 	public void clear() {
-		x = y = xSpd = ySpd = angle = movedDistance = 0.0;
-	}
-	public void initBySample(Dynam sample) {
-		x = sample.x;
-		y = sample.y;
-		xSpd = sample.xSpd;
-		ySpd = sample.ySpd;
-		angle = sample.angle;
-		movedDistance = 0.0;
+		x = y = xSpd = ySpd = angle = 0.0;
 	}
 	public void setAllBySample(Dynam sample) {
 		x = sample.x;
@@ -62,7 +57,9 @@ public class Dynam extends Coordinate{
 		xSpd = sample.xSpd;
 		ySpd = sample.ySpd;
 		angle = sample.angle;
-		movedDistance = sample.movedDistance;
+	}
+	public Dynam clone() {
+		return new Dynam(this);
 	}
 	public void addX_allowsAngle(double dx) {
 		x += dx*sin(angle);
@@ -267,9 +264,6 @@ public class Dynam extends Coordinate{
 	public void stop() {
 		xSpd = ySpd = 0.0;
 	}
-	public double getMovedDistance() {
-		return movedDistance;
-	}
 	public double getMouseAngle() {
 		return atan2(GHQ.getMouseY() - y, GHQ.getMouseX() - x);
 	}
@@ -305,7 +299,6 @@ public class Dynam extends Coordinate{
 		if(xSpd != 0 || ySpd != 0) {
 			x += xSpd;
 			y += ySpd;
-			movedDistance += sqrt(xSpd*xSpd + ySpd*ySpd);
 		}
 	}
 }

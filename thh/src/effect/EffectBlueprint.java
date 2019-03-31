@@ -4,6 +4,11 @@ import core.GHQ;
 import paint.DotPaint;
 import physicis.Dynam;
 
+/**
+ * A class for easily initializing Effect parameters.
+ * @author bluelaserpointer
+ * @since alpha1.0
+ */
 public class EffectBlueprint {
 	private final static int 
 		NONE = GHQ.NONE,
@@ -39,7 +44,7 @@ public class EffectBlueprint {
 		nowFrame = GHQ.getNowFrame();
 		limitFrame = MAX;
 		limitRange = MAX;
-		dynam.initBySample(baseDynam);
+		dynam.setAllBySample(baseDynam);
 		accel = 0.0;
 		paintScript = DotPaint.BLANK_SCRIPT;
 	}

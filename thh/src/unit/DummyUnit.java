@@ -9,9 +9,10 @@ public class DummyUnit extends Unit{
 	private static final long serialVersionUID = 411168207492887964L;
 
 	private int dummyIID;
+	private final Dynam dynam;
 	public DummyUnit(Dynam dynam) {
-		super(HitShape.NULL_HITSHAPE, new Status(),GHQ.NONE);
-		super.dynam.setAllBySample(dynam);
+		super(HitShape.NULL_HITSHAPE, GHQ.NONE);
+		this.dynam = new Dynam(dynam);
 		dummyIID = GHQ.loadImage("thhimage/gui_editor/Unit.png");
 	}
 	@Override
@@ -19,7 +20,7 @@ public class DummyUnit extends Unit{
 	}
 	@Override
 	public void paint(boolean doAnimation) {
-		GHQ.drawImageGHQ_center(dummyIID, (int)dynam.getX(), (int)dynam.getY());
+		GHQ.drawImageGHQ_center(dummyIID, (int)(getDynam().getX()), (int)(getDynam().getY()));
 	}
 
 	@Override
@@ -80,5 +81,10 @@ public class DummyUnit extends Unit{
 	public boolean isAlive() {
 		
 		return true;
+	}
+	
+	@Override
+	public Dynam getDynam() {
+		return dynam;
 	}
 }

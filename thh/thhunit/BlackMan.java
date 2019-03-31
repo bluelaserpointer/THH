@@ -3,6 +3,7 @@ package thhunit;
 import unit.Unit;
 import core.GHQ;
 import paint.ImageFrame;
+import physicis.Dynam;
 import physicis.HasDynam;
 import thhunit.EnemyBulletLibrary;
 import weapon.Weapon;
@@ -12,6 +13,13 @@ public class BlackMan extends THHUnit{
 	{
 		charaSpeed = 2;
 	}
+	//Dynam
+	private final Dynam dynam = new Dynam();
+	@Override
+	public final Dynam getDynam() {
+		return dynam;
+	}
+	
 	public BlackMan(int initialGroup) {
 		super(120, initialGroup);
 	}
@@ -30,16 +38,18 @@ public class BlackMan extends THHUnit{
 	}
 	@Override
 	public void activeCons() {
-		final int charaX = (int)dynam.getX(),charaY = (int)dynam.getY();
+		final int unitX = (int)dynam.getX(),unitY = (int)dynam.getY();
 		weaponController.defaultIdle();
 		final Unit targetEnemy = GHQ.getNearstVisibleEnemy(this);
 		if(targetEnemy != null && weaponController.trigger()) {
 			EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.BLACK_SLASH_BURST,bulletPaint[0],targetEnemy);
 			EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.BLACK_SLASH_BURST,bulletPaint[1],targetEnemy);
 		}
-		Unit chara = GHQ.getNearstEnemy(this, (int)charaX, (int)charaY);
-		if(chara != null) 
-			dynam.setAngle(dynam.getAngle(charaDstX = chara.dynam.getX(),charaDstY = chara.dynam.getY()));
+		Unit unit = GHQ.getNearstEnemy(this, (int)unitX, (int)unitY);
+		if(unit != null) {
+			final Dynam UNIT_DYNAM = unit.getDynam();
+			dynam.setAngle(dynam.getAngle(charaDstX = UNIT_DYNAM.getX(),charaDstY = UNIT_DYNAM.getY()));
+		}
 		dynam.approach(charaDstX, charaDstY, charaSpeed);
 	}
 	@Override

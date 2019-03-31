@@ -6,9 +6,7 @@ import static thhunit.THHUnit.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.File;
-import java.util.Arrays;
 
-import bullet.Bullet;
 import core.GHQ;
 import gui.DefaultStageEditor;
 import gui.MessageSource;
@@ -81,17 +79,22 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 	
 	@Override
 	public final void loadResource() {
+		/////////////////////////////////
+		//images this engine required
+		/////////////////////////////////
 		focusIID = GHQ.loadImage("thhimage/focus.png");
 		magicCircleIID = GHQ.loadImage("thhimage/MagicCircle.png");
+		/////////////////////////////////
+		//GUI
+		/////////////////////////////////
+		GHQ.addGUIParts(editor = new DefaultStageEditor(EDIT_GUI_GROUP, new File("stage/saveData1.txt")));
+		/////////////////////////////////
+		//input
+		/////////////////////////////////
 		GHQ.addListenerEx(s_mouseL);
 		GHQ.addListenerEx(s_keyL);
 		GHQ.addListenerEx(s_numKeyL);
 		GHQ.addListenerEx(d_numKeyL);
-		//GUI
-		GHQ.addGUIParts(editor = new DefaultStageEditor(EDIT_GUI_GROUP, new File("stage/saveData1.txt")));
-	}
-	@Override
-	public final void charaSetup() {
 		//formation
 		formationCenterX = GHQ.getScreenW()/2;formationCenterY = GHQ.getScreenH() - 100;
 		formationsX = new int[2];
@@ -100,9 +103,9 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		formationsX[1] = +15;formationsY[1] = 0;
 		//friend
 		friends = new THHUnit[2];
-		friends[0] = (THHUnit)new Marisa(FRIEND).initialSpawn(formationCenterX + formationsX[0],formationCenterY + formationsY[0]);
+		friends[0] = Unit.initialSpawn(new Marisa(FRIEND),formationCenterX + formationsX[0],formationCenterY + formationsY[0]);
 		friends[0].status.set(HP, 4000);
-		friends[1] = (THHUnit)new Reimu(FRIEND).initialSpawn(formationCenterX + formationsX[1],formationCenterY + formationsY[1]);
+		friends[1] = Unit.initialSpawn(new Reimu(FRIEND),formationCenterX + formationsX[1],formationCenterY + formationsY[1]);
 		friends[1].status.set(HP, 4000);
 		for(Unit friend : friends)
 			GHQ.addUnit(friend);
@@ -112,12 +115,12 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		//ActionInfo.addDstPlan(1000, GHQ.getScreenW() + 200, GHQ.getScreenH() + 100);
 		//final Action moveLeftToRight200 = new Action(this);
 		//enemy
-		GHQ.addUnit(new Fairy(ENEMY).initialSpawn(300, 100)).status.setDefault(HP, 2500);
-		GHQ.addUnit(new Fairy(ENEMY).initialSpawn(700, 20)).status.setDefault(HP, 2500);
-		GHQ.addUnit(new Fairy(ENEMY).initialSpawn(1200, 300)).status.setDefault(HP, 2500);
-		GHQ.addUnit(new Fairy(ENEMY).initialSpawn(1800, 700)).status.setDefault(HP, 2500);
-		GHQ.addUnit(new WhiteMan(ENEMY).initialSpawn(400, GHQ.random2(100, 150))).status.setDefault(HP, 50000);
-		GHQ.addUnit(new BlackMan(ENEMY).initialSpawn(200, GHQ.random2(100, 150))).status.setDefault(HP, 10000);
+		GHQ.addUnit(Unit.initialSpawn(new Fairy(ENEMY),300, 100)).status.setDefault(HP, 2500);
+		GHQ.addUnit(Unit.initialSpawn(new Fairy(ENEMY),700, 20)).status.setDefault(HP, 2500);
+		GHQ.addUnit(Unit.initialSpawn(new Fairy(ENEMY),1200, 300)).status.setDefault(HP, 2500);
+		GHQ.addUnit(Unit.initialSpawn(new Fairy(ENEMY),1800, 700)).status.setDefault(HP, 2500);
+		GHQ.addUnit(Unit.initialSpawn(new WhiteMan(ENEMY),400, GHQ.random2(100, 150))).status.setDefault(HP, 50000);
+		GHQ.addUnit(Unit.initialSpawn(new BlackMan(ENEMY),200, GHQ.random2(100, 150))).status.setDefault(HP, 10000);
 		//vegetation
 		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf.png"),1172,886));
 		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_flower.png"),1200,800));
@@ -126,19 +129,16 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf3.png"),1102,830));
 		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf3.png"),1122,815));
 		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf3.png"),822,886));
+		stageW = stageH = 5000;
 	}
 	@Override
-	public final void stageSetup() {
-		stageW = stageH = 5000;
+	public final void openStage() {
 		stages[0] = (Stage_THH1)GHQ.loadData(new File("stage/saveData1.txt"));
 		if(stages[0] != null) {
 			for(Structure structure : stages[0].STRUCTURES) {
 				GHQ.addStructure(structure);
 			}
 		}
-	}
-	@Override
-	public final void openStage() {
 		GHQ.addMessage(this,"This is a prototype stage.");
 		s_mouseL.enable();
 		s_keyL.enable();
@@ -190,13 +190,13 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 					if(enemy.getName() == "FairyA") {
 						final int FRAME = gameFrame % 240;
 						if(FRAME < 100)
-							enemy.dynam.setSpeed(-5, 0);
+							enemy.getDynam().setSpeed(-5, 0);
 						else if(FRAME < 120)
-							enemy.dynam.setSpeed(0, 0);
+							enemy.getDynam().setSpeed(0, 0);
 						else if(FRAME < 220)
-							enemy.dynam.setSpeed(5, 0);
+							enemy.getDynam().setSpeed(5, 0);
 						else
-							enemy.dynam.setSpeed(0, 0);
+							enemy.getDynam().setSpeed(0, 0);
 					}
 				}
 				//leap

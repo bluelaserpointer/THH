@@ -6,6 +6,8 @@ import core.Entity_double;
 import core.GHQ;
 import paint.DotPaint;
 import paint.HasDotPaint;
+import physicis.DstCntDynam;
+import physicis.Dynam;
 import physicis.HasDynam;
 
 /**
@@ -18,6 +20,7 @@ public class Effect extends Entity_double implements HasDotPaint{
 	public static int nowMaxUniqueID = -1;
 	
 	public final EffectScript SCRIPT;
+	private final DstCntDynam dynam = new DstCntDynam();
 	
 	public String name;
 	public final int
@@ -30,11 +33,12 @@ public class Effect extends Entity_double implements HasDotPaint{
 		paintScript;
 	
 	public Effect(HasDynam source) {
-		super(source,EffectBlueprint.dynam,EffectBlueprint.nowFrame);
+		super(source, EffectBlueprint.nowFrame);
 		UNIQUE_ID = ++nowMaxUniqueID;
 		this.SCRIPT = EffectBlueprint.script != null ? EffectBlueprint.script : EffectBlueprint.DEFAULT_SCRIPT;
 		name = EffectBlueprint.name;
 		SIZE = EffectBlueprint.size;
+		dynam.setAllBySample(EffectBlueprint.dynam);
 		LIMIT_FRAME = EffectBlueprint.limitFrame;
 		LIMIT_RANGE = EffectBlueprint.limitRange;
 		ACCEL = EffectBlueprint.accel;
@@ -42,11 +46,12 @@ public class Effect extends Entity_double implements HasDotPaint{
 	}
 	
 	public Effect(Effect effect) {
-		super(effect.source,effect.dynam,EffectBlueprint.nowFrame);
+		super(effect.source, GHQ.getNowFrame());
 		UNIQUE_ID = ++nowMaxUniqueID;
 		SCRIPT = effect.SCRIPT != null ? effect.SCRIPT : EffectBlueprint.DEFAULT_SCRIPT;
 		name = effect.name;
 		SIZE = effect.SIZE;
+		dynam.setAllBySample(effect.dynam);
 		LIMIT_FRAME = effect.LIMIT_FRAME;
 		LIMIT_RANGE = effect.LIMIT_RANGE;
 		ACCEL = effect.ACCEL;
@@ -120,5 +125,9 @@ public class Effect extends Entity_double implements HasDotPaint{
 	@Override
 	public final DotPaint getPaintScript() {
 		return paintScript;
+	}
+	@Override
+	public final Dynam getDynam() {
+		return dynam;
 	}
 }

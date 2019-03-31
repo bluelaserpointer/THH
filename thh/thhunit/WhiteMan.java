@@ -2,7 +2,9 @@ package thhunit;
 
 import core.GHQ;
 import paint.ImageFrame;
+import physicis.Dynam;
 import physicis.HasDynam;
+import unit.Status;
 import unit.Unit;
 
 public class WhiteMan extends THHUnit{
@@ -18,6 +20,13 @@ public class WhiteMan extends THHUnit{
 		return "WhiteMan";
 	}
 	
+	//Dynam
+	private final Dynam dynam = new Dynam();
+	@Override
+	public final Dynam getDynam() {
+		return dynam;
+	}
+	
 	@Override
 	public final void loadImageData(){
 		super.loadImageData();
@@ -29,10 +38,12 @@ public class WhiteMan extends THHUnit{
 		final Unit blackManAdress = GHQ.getChara("BlackMan");
 		if(blackManAdress == null)
 			return;
-		charaDstX = blackManAdress.dynam.getX();
-		charaDstY = blackManAdress.dynam.getY();
-		if(blackManAdress.status.isBigger0(HP) && blackManAdress.status.isSmaller(HP,10000) && dynam.getDistance(charaDstX, charaDstY) < 200){
-			blackManAdress.status.add(HP, 100);
+		final Dynam THE_DYNAM = blackManAdress.getDynam();
+		charaDstX = THE_DYNAM.getX();
+		charaDstY = THE_DYNAM.getY();
+		final Status THE_STATUS = ((THHUnit)blackManAdress).status;
+		if(THE_STATUS.isBigger0(HP) && THE_STATUS.isSmaller(HP,10000) && dynam.getDistance(charaDstX, charaDstY) < 200){
+			THE_STATUS.add(HP, 100);
 		}
 		dynam.approach(charaDstX, charaDstY, charaSpeed);
 	}

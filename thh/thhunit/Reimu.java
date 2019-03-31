@@ -9,6 +9,7 @@ import core.GHQ;
 import effect.EffectBlueprint;
 import effect.EffectScript;
 import paint.ImageFrame;
+import physicis.Dynam;
 import physicis.HasDynam;
 import weapon.Weapon;
 import weapon.WeaponInfo;
@@ -23,7 +24,13 @@ public class Reimu extends THHUnit{
 	public final String getName() {
 		return "Reimu";
 	}
-	
+
+	//Dynam
+	private final Dynam dynam = new Dynam();
+	@Override
+	public final Dynam getDynam() {
+		return dynam;
+	}
 	//weapon&bullet kind name
 	final int
 		FUDA_KOUHAKU = 0,FUDA_SHIROKURO = 1,FUDA_SOUHAKU = 2;

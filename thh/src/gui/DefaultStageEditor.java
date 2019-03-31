@@ -274,7 +274,7 @@ public class DefaultStageEditor extends GUIGroup{
 		G2.setColor(Color.GRAY);
 		G2.setFont(GHQ.basicFont.deriveFont(20.0f));
 		for(Unit unit : GHQ.getCharacterList())
-			G2.drawString(unit.originalName, (int)unit.dynam.getX(), (int)unit.dynam.getY());
+			G2.drawString(unit.originalName, (int)unit.getDynam().getX(), (int)unit.getDynam().getY());
 		G2.setFont(GHQ.basicFont);
 
 		GHQ.translateForGUI(true);
