@@ -2,12 +2,11 @@ package effect;
 
 import static java.lang.Math.PI;
 
-import core.Entity_double;
+import core.Entity;
 import core.GHQ;
 import paint.DotPaint;
 import paint.HasDotPaint;
 import physicis.DstCntDynam;
-import physicis.Dynam;
 import physicis.HasDynam;
 
 /**
@@ -15,12 +14,12 @@ import physicis.HasDynam;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Effect extends Entity_double implements HasDotPaint{
+public class Effect extends Entity implements HasDotPaint{
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;
-	
+
+	public final HasDynam source; //an information source of user
 	public final EffectScript SCRIPT;
-	private final DstCntDynam dynam = new DstCntDynam();
 	
 	public String name;
 	public final int
@@ -33,12 +32,12 @@ public class Effect extends Entity_double implements HasDotPaint{
 		paintScript;
 	
 	public Effect(HasDynam source) {
-		super(source, EffectBlueprint.nowFrame);
+		super(new DstCntDynam(EffectBlueprint.dynam), EffectBlueprint.nowFrame);
 		UNIQUE_ID = ++nowMaxUniqueID;
+		this.source = source;
 		this.SCRIPT = EffectBlueprint.script != null ? EffectBlueprint.script : EffectBlueprint.DEFAULT_SCRIPT;
 		name = EffectBlueprint.name;
 		SIZE = EffectBlueprint.size;
-		dynam.setAllBySample(EffectBlueprint.dynam);
 		LIMIT_FRAME = EffectBlueprint.limitFrame;
 		LIMIT_RANGE = EffectBlueprint.limitRange;
 		ACCEL = EffectBlueprint.accel;
@@ -46,12 +45,12 @@ public class Effect extends Entity_double implements HasDotPaint{
 	}
 	
 	public Effect(Effect effect) {
-		super(effect.source, GHQ.getNowFrame());
+		super(new DstCntDynam(effect.dynam), GHQ.getNowFrame());
 		UNIQUE_ID = ++nowMaxUniqueID;
+		this.source = effect.source;
 		SCRIPT = effect.SCRIPT != null ? effect.SCRIPT : EffectBlueprint.DEFAULT_SCRIPT;
 		name = effect.name;
 		SIZE = effect.SIZE;
-		dynam.setAllBySample(effect.dynam);
 		LIMIT_FRAME = effect.LIMIT_FRAME;
 		LIMIT_RANGE = effect.LIMIT_RANGE;
 		ACCEL = effect.ACCEL;
@@ -66,7 +65,7 @@ public class Effect extends Entity_double implements HasDotPaint{
 			GHQ.deleteEffect(this);
 			return false;
 		}
-		if(LIMIT_RANGE <= dynam.getMovedDistance()){
+		if(LIMIT_RANGE <= ((DstCntDynam)dynam).getMovedDistance()){
 			SCRIPT.effectOutOfRange(this);
 			GHQ.deleteEffect(this);
 			return false;
@@ -125,9 +124,5 @@ public class Effect extends Entity_double implements HasDotPaint{
 	@Override
 	public final DotPaint getPaintScript() {
 		return paintScript;
-	}
-	@Override
-	public final Dynam getDynam() {
-		return dynam;
 	}
 }

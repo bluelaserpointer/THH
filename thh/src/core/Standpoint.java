@@ -22,7 +22,7 @@ public class Standpoint implements Serializable{
 	public Standpoint(int initialGroup) {
 		INITIAL_GROUP = group = initialGroup;
 	}
-	public boolean isFriendly(Standpoint standpoint) {
+	public boolean isFriend(Standpoint standpoint) {
 		return group == standpoint.group && group != GHQ.NONE || group == ALL || standpoint.group == ALL;
 	}
 	public void set(int group) {

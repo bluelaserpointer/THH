@@ -4,7 +4,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
 import action.Action;
-import core.Entity_double;
+import core.Entity;
 import core.ErrorCounter;
 import core.GHQ;
 import core.Standpoint;
@@ -19,7 +19,7 @@ import core.HitInteractable;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Unit extends Entity_double implements MessageSource,HitInteractable,Serializable{
+public abstract class Unit extends Entity implements MessageSource,HitInteractable,Serializable{
 	private static final long serialVersionUID = 7140005723063155203L;
 
 	protected static final int
@@ -33,6 +33,11 @@ public abstract class Unit extends Entity_double implements MessageSource,HitInt
 	public final Standpoint standpoint;
 	
 	//Initialization
+	public Unit(Dynam dynam, HitShape hitshape, int initialGroup) {
+		super(dynam);
+		this.hitshape = (hitshape != null ? hitshape : HitShape.NULL_HITSHAPE);
+		standpoint = new Standpoint(initialGroup);
+	}
 	public Unit(HitShape hitshape, int initialGroup) {
 		this.hitshape = (hitshape != null ? hitshape : HitShape.NULL_HITSHAPE);
 		standpoint = new Standpoint(initialGroup);

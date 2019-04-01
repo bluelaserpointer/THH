@@ -635,11 +635,11 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return false;
 	}
-	public static final boolean hitLandscape_Rect(HasStandpoint standpoint,int x,int y,int w,int h){
+	public static final boolean hitStructure(HitInteractable object){
 		for(Structure structure : structures) {
 			if(structure.getStandpoint() == null)
 				System.out.println("bug.");
-			if(!standpoint.isFriend(structure) && structure.contains(x, y, w, h))
+			if(!object.isFriend(structure) && structure.contains((int)object.getCoordinate().getX(), (int)object.getCoordinate().getY(), object.getHitShape().getWidth(), object.getHitShape().getHeight()))
 				return true;
 		}
 		return false;

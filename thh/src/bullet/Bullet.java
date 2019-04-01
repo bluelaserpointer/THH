@@ -2,7 +2,7 @@ package bullet;
 
 import static java.lang.Math.PI;
 
-import core.Entity_double;
+import core.Entity;
 import core.GHQ;
 import core.HitInteractable;
 import core.Standpoint;
@@ -10,7 +10,6 @@ import geom.HitShape;
 import paint.DotPaint;
 import paint.HasDotPaint;
 import physicis.DstCntDynam;
-import physicis.Dynam;
 import physicis.HasDynam;
 import unit.Unit;
 
@@ -19,16 +18,16 @@ import unit.Unit;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Bullet extends Entity_double implements HitInteractable,HasDotPaint{
+public class Bullet extends Entity implements HitInteractable,HasDotPaint{
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;
 	
 	private int idleExecuted = 0;
-	
+
+	public final HasDynam source; //an information source of user
 	public final BulletScript SCRIPT; //a script of unique behaviors
 	public final Standpoint standpoint;
 	public final HitShape hitshape;
-	private final DstCntDynam dynam = new DstCntDynam();
 	
 	public String name;
 	public final int
@@ -50,12 +49,12 @@ public class Bullet extends Entity_double implements HitInteractable,HasDotPaint
 	public final boolean
 		IS_LASER;
 	public Bullet(HasDynam source) {
-		super(source, BulletBlueprint.nowFrame);
+		super(new DstCntDynam(BulletBlueprint.dynam), BulletBlueprint.nowFrame);
 		UNIQUE_ID = ++nowMaxUniqueID;
+		this.source = source;
 		SCRIPT = BulletBlueprint.script != null ? BulletBlueprint.script : BulletBlueprint.DEFAULT_SCRIPT;
 		name = BulletBlueprint.name;
 		SIZE = BulletBlueprint.size;
-		dynam.setAllBySample(BulletBlueprint.dynam);
 		LIMIT_FRAME = BulletBlueprint.limitFrame;
 		LIMIT_RANGE = BulletBlueprint.limitRange;
 		standpoint = new Standpoint(BulletBlueprint.standpointGroup);
@@ -69,12 +68,12 @@ public class Bullet extends Entity_double implements HitInteractable,HasDotPaint
 		IS_LASER = BulletBlueprint.isLaser;
 	}
 	public Bullet(Bullet bullet) {
-		super(bullet.source, GHQ.getNowFrame());
+		super(new DstCntDynam(bullet.dynam), GHQ.getNowFrame());
+		source = bullet.source;
 		UNIQUE_ID = ++nowMaxUniqueID;
 		SCRIPT = bullet.SCRIPT != null ? bullet.SCRIPT : BulletBlueprint.DEFAULT_SCRIPT;
 		name = bullet.name;
 		SIZE = bullet.SIZE;
-		dynam.setAllBySample(bullet.dynam);
 		LIMIT_FRAME = bullet.LIMIT_FRAME;
 		LIMIT_RANGE = bullet.LIMIT_RANGE;
 		standpoint = new Standpoint(bullet.standpoint.get());
@@ -117,7 +116,7 @@ public class Bullet extends Entity_double implements HitInteractable,HasDotPaint
 		return lifeSpanCheck(LIMIT_FRAME);
 	}
 	public final boolean rangeCheck(int limitRange) {
-		if(limitRange <= dynam.getMovedDistance() && SCRIPT.bulletOutOfRange(this)){
+		if(limitRange <= ((DstCntDynam)dynam).getMovedDistance() && SCRIPT.bulletOutOfRange(this)){
 			GHQ.deleteBullet(this);
 			return true;
 		}
@@ -146,7 +145,7 @@ public class Bullet extends Entity_double implements HitInteractable,HasDotPaint
 		if(!doHit)
 			return true;
 		//landscape collision
-		if(SCRIPT.bulletIfHitLandscape(this,(int)dynam.getX(),(int)dynam.getY())){
+		if(SCRIPT.bulletIfHitLandscape(this)){
 			SCRIPT.bulletHitObject(this);
 			if(penetration > 0) {
 				if(penetration != GHQ.MAX)
@@ -256,9 +255,5 @@ public class Bullet extends Entity_double implements HitInteractable,HasDotPaint
 	@Override
 	public final DotPaint getPaintScript() {
 		return paintScript;
-	}
-	@Override
-	public final Dynam getDynam() {
-		return dynam;
 	}
 }

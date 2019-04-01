@@ -3,7 +3,6 @@ package thhunit;
 import core.GHQ;
 import paint.DotPaint;
 import paint.ImageFrame;
-import physicis.Dynam;
 import physicis.HasDynam;
 import thhunit.EnemyBulletLibrary;
 import unit.Unit;
@@ -19,13 +18,6 @@ public class Fairy extends THHUnit{
 	@Override
 	public final String getName() {
 		return "FairyA";
-	}
-	
-	//Dynam
-	private final Dynam dynam = new Dynam();
-	@Override
-	public final Dynam getDynam() {
-		return dynam;
 	}
 	
 	@Override

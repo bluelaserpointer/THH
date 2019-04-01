@@ -38,8 +38,8 @@ public class BulletScript implements Serializable{
 		return true;
 	}
 	public void bulletHitObject(Bullet bullet) {}
-	public boolean bulletIfHitLandscape(Bullet bullet,int x,int y){
-		return GHQ.hitLandscape_Rect(bullet,x,y,bullet.SIZE,bullet.SIZE);
+	public boolean bulletIfHitLandscape(Bullet bullet){
+		return GHQ.hitStructure(bullet);
 	}
 	
 	//judge

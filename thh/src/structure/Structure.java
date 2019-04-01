@@ -70,7 +70,7 @@ public abstract class Structure implements Serializable,HasBoundingBox,HasStandp
 	}
 	@Override
 	public boolean isFriend(HasStandpoint target) {
-		return Standpoint.NULL_STANDPOINT.isFriendly(target.getStandpoint());
+		return Standpoint.NULL_STANDPOINT.isFriend(target.getStandpoint());
 	}
 	
 }

@@ -20,13 +20,6 @@ public class WhiteMan extends THHUnit{
 		return "WhiteMan";
 	}
 	
-	//Dynam
-	private final Dynam dynam = new Dynam();
-	@Override
-	public final Dynam getDynam() {
-		return dynam;
-	}
-	
 	@Override
 	public final void loadImageData(){
 		super.loadImageData();

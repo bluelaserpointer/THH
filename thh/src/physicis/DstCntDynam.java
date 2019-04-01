@@ -14,6 +14,14 @@ public class DstCntDynam extends Dynam{
 	
 	protected double movedDistance;
 	
+	//init
+	public DstCntDynam() {
+		super();
+	}
+	public DstCntDynam(Dynam sample) {
+		super(sample);
+	}
+	
 	//control
 	@Override
 	public void setAllBySample(Dynam sample) {

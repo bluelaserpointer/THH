@@ -7,7 +7,6 @@ import bullet.*;
 import core.GHQ;
 import effect.*;
 import paint.ImageFrame;
-import physicis.Dynam;
 import physicis.HasDynam;
 import weapon.Weapon;
 import weapon.WeaponInfo;
@@ -21,13 +20,6 @@ public class Marisa extends THHUnit{
 	@Override
 	public final String getName() {
 		return "Marisa";
-	}
-	
-	//Dynam
-	private final Dynam dynam = new Dynam();
-	@Override
-	public final Dynam getDynam() {
-		return dynam;
 	}
 	
 	//weapon&bullet kind name

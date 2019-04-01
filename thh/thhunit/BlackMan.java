@@ -13,12 +13,6 @@ public class BlackMan extends THHUnit{
 	{
 		charaSpeed = 2;
 	}
-	//Dynam
-	private final Dynam dynam = new Dynam();
-	@Override
-	public final Dynam getDynam() {
-		return dynam;
-	}
 	
 	public BlackMan(int initialGroup) {
 		super(120, initialGroup);
