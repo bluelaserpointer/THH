@@ -87,23 +87,107 @@ public class DefaultStageEditor extends GUIGroup{
 	private static HasBoundingBox selectObject,mouseOveredObject;
 	//GUI_GROUP_ID
 	private final String
-		EDIT_MENU_GROUP,
-		OBJECT_CONFIG_GROUP;
+		EDIT_MENU_GROUP;
 	//GUI
 	private static TitledLabel configLabel;
 	private static CombinedButtons CB_placeKind;
 	//init
 	public DefaultStageEditor(String group,File stageFile) {
 		super(group, RectPaint.BLANK_SCRIPT, 0, 0, GHQ.getScreenW(), GHQ.getScreenH());
-		EDIT_MENU_GROUP = group + ">EDIT_MENU_GROUP";
-		OBJECT_CONFIG_GROUP = group + ">OBJECT_CONFIG_GROUP";
+		EDIT_MENU_GROUP = group + ">EDIT_MENU_GROUP>";
 		final int SCREEN_W = GHQ.getScreenW(),SCREEN_H = GHQ.getScreenH();
 		GHQ.addListenerEx(keyListener);
 		super.addParts(new BasicButton(EDIT_MENU_GROUP,new ColorFraming(Color.WHITE,GHQ.stroke3),150,0,SCREEN_W - 150,SCREEN_H) {
 			@Override
+			public void idle() {
+				super.idle();
+				if(isMouseEntered()) {
+					final Graphics2D G2 = GHQ.getGraphics2D();
+					GHQ.translateForGUI(false);
+					//guide
+					switch(CB_placeKind.getSelection()) {
+					case POINTING:
+						mouseOveredObject = GHQ.getMouseOverChara();
+						if(mouseOveredObject == null)
+							mouseOveredObject = GHQ.getMouseOverVegetation();
+						if(mouseOveredObject == null)
+							mouseOveredObject = GHQ.getMouseOverStructure();
+						if(mouseOveredObject != null && mouseOveredObject != selectObject) {
+							final Rectangle2D RECT = mouseOveredObject.getBoundingBox();
+							G2.setColor(Color.WHITE);
+							G2.setStroke(GHQ.stroke5);
+							G2.draw(RECT);
+							G2.drawOval((int)RECT.getX() - 9,(int)RECT.getY() - 9,18,18);
+							G2.drawOval(GHQ.getMouseX() - 5,GHQ.getMouseY() - 5,10,10);
+						}
+						if(selectObject != null) {
+							//changeSlot(Left side menu bar)
+							if(keyListener.pullEvent(VK_TAB)) {
+								if(++nowSlot > slot_max)
+									nowSlot = 0;
+								if(nowSlot == 1) { //select script
+									configLabel.clicked();
+								}else {
+									configLabel.outsideClicked();
+								}
+							}
+							//delete
+							if(!configLabel.activated && keyListener.pullEvent(VK_BACK_SPACE)) {
+								if(selectObject instanceof Unit)
+									GHQ.deleteUnit((Unit)selectObject);
+								else if(selectObject instanceof Structure)
+									GHQ.deleteStructure((Structure)selectObject);
+								else if(selectObject instanceof Vegetation)
+									GHQ.deleteVegetation((Vegetation)selectObject);
+								selectObject = null;
+								break;
+							}
+							//script install / name change
+							scriptInstall:{
+								if(selectObject instanceof Tile) {
+									for(StructureScript<Tile> script : tileScripts) {
+										if(configLabel.textEquals(script.getName())) {
+											((Tile)selectObject).setScript(script);
+											break scriptInstall;
+										}
+									}
+									((Tile)selectObject).setScript(new StructureScript<Tile>());
+								}else if(selectObject instanceof Terrain) {
+									for(StructureScript<Terrain> script : terrainScripts) {
+										if(configLabel.textEquals(script.getName())) {
+											((Terrain)selectObject).setScript(script);
+											break scriptInstall;
+										}
+									}
+									((Terrain)selectObject).setScript(new StructureScript<Terrain>());
+								}else if(selectObject instanceof Unit) {
+									((Unit)selectObject).originalName = configLabel.getText();
+								}
+							}
+							//draw selection guide
+							final Rectangle2D RECT = selectObject.getBoundingBox();
+							RECT.setRect(RECT.getX(),RECT.getY(),RECT.getWidth() + 4,RECT.getHeight() + 4);
+							G2.setColor(Color.WHITE);
+							G2.setStroke(GHQ.stroke5);
+							G2.draw(RECT);
+							G2.setColor(Color.RED);
+							G2.setStroke(GHQ.stroke3);
+							G2.draw(RECT);
+							break;
+						}
+					case TERRAIN:
+						Terrain.makeGuiding(G2);
+						break;
+					case TILES:
+						Tile.makeGuiding(G2);
+						break;
+					}
+					GHQ.translateForGUI(true);
+				}
+			}
+			@Override
 			public void clicked() {
 				if(CB_placeKind.isDefaultSelection()) { //not selected any placeKind = object select
-					GHQ.enableGUIs(OBJECT_CONFIG_GROUP);
 					selectObject = mouseOveredObject;
 					keyListener.enable();
 					final String labelText;
@@ -123,7 +207,6 @@ public class DefaultStageEditor extends GUIGroup{
 						labelText = "";
 					configLabel.setText(labelText.equals(GHQ.NOT_NAMED) ? "" : labelText);
 				}else { //object deselect
-					GHQ.disableGUIs(OBJECT_CONFIG_GROUP);
 					selectObject = null;
 					keyListener.disable();
 					switch(CB_placeKind.getSelection()) {
@@ -151,12 +234,12 @@ public class DefaultStageEditor extends GUIGroup{
 				}
 			}
 		});
-		super.addParts(CB_placeKind = new CombinedButtons(EDIT_MENU_GROUP, POINTING, 0, 0, 150, SCREEN_H));
+		super.addParts(CB_placeKind = new CombinedButtons(EDIT_MENU_GROUP + "CombinedButtons", POINTING, 25, 155, 85, 85));
 		CB_placeKind.addButton(TILES, new ImageFrame("thhimage/gui_editor/Tiles.png"),25,155,40,40);
 		CB_placeKind.addButton(TERRAIN, new ImageFrame("thhimage/gui_editor/FreeShape.png"),70,155,40,40);
 		CB_placeKind.addButton(UNIT, new ImageFrame("thhimage/gui_editor/Unit.png"),25,200,40,40);
 		CB_placeKind.addButton(VEGETATION, new ImageFrame("thhimage/gui_editor/Vegetation.png"),70,200,40,40);
-		super.addParts(new BasicButton(EDIT_MENU_GROUP,new ImageFrame("thhimage/gui_editor/Save.png"),25,500,85,40) {
+		super.addParts(new BasicButton("SAVE_BUTTON", new ImageFrame("thhimage/gui_editor/Save.png"),25,500,85,40) {
 			@Override
 			public void clicked() {
 				System.out.println("saving...");
@@ -164,7 +247,7 @@ public class DefaultStageEditor extends GUIGroup{
 				System.out.println("complete!");
 			}
 		});
-		super.addParts(configLabel = new TitledLabel(OBJECT_CONFIG_GROUP,new ColorFilling(Color.WHITE),25,300,120,25){
+		super.addParts(configLabel = new TitledLabel(EDIT_MENU_GROUP + "CONFIG_LABEL",new ColorFilling(Color.WHITE),25,300,120,25){
 			
 		});
 		super.addParts(new InputOptionList(configLabel)).addWord("WHITE_WALL", "ABCD", "ABNK");
@@ -172,6 +255,7 @@ public class DefaultStageEditor extends GUIGroup{
 	//role
 	@Override
 	public void idle() {
+		super.idle();
 		final Graphics2D G2 = GHQ.getGraphics2D();
 		GHQ.translateForGUI(false);
 		//mouse
@@ -191,84 +275,6 @@ public class DefaultStageEditor extends GUIGroup{
 		}else {
 			placeX = GHQ.getMouseX();
 			placeY = GHQ.getMouseY();
-		}
-		//guide
-		switch(CB_placeKind.getSelection()) {
-		case POINTING:
-			mouseOveredObject = GHQ.getMouseOverChara();
-			if(mouseOveredObject == null)
-				mouseOveredObject = GHQ.getMouseOverVegetation();
-			if(mouseOveredObject == null)
-				mouseOveredObject = GHQ.getMouseOverStructure();
-			if(mouseOveredObject != null && mouseOveredObject != selectObject) {
-				final Rectangle2D RECT = mouseOveredObject.getBoundingBox();
-				G2.setColor(Color.WHITE);
-				G2.setStroke(GHQ.stroke5);
-				G2.draw(RECT);
-				G2.drawOval((int)RECT.getX() - 9,(int)RECT.getY() - 9,18,18);
-				G2.drawOval(GHQ.getMouseX() - 5,GHQ.getMouseY() - 5,10,10);
-			}
-			if(selectObject != null) {
-				//changeSlot(Left side menu bar)
-				if(keyListener.pullEvent(VK_TAB)) {
-					if(++nowSlot > slot_max)
-						nowSlot = 0;
-					if(nowSlot == 1) { //select script
-						configLabel.clicked();
-					}else {
-						configLabel.outsideClicked();
-					}
-				}
-				//delete
-				if(!configLabel.activated && keyListener.pullEvent(VK_BACK_SPACE)) {
-					if(selectObject instanceof Unit)
-						GHQ.deleteUnit((Unit)selectObject);
-					else if(selectObject instanceof Structure)
-						GHQ.deleteStructure((Structure)selectObject);
-					else if(selectObject instanceof Vegetation)
-						GHQ.deleteVegetation((Vegetation)selectObject);
-					selectObject = null;
-					break;
-				}
-				//script install / name change
-				scriptInstall:{
-					if(selectObject instanceof Tile) {
-						for(StructureScript<Tile> script : tileScripts) {
-							if(configLabel.textEquals(script.getName())) {
-								((Tile)selectObject).setScript(script);
-								break scriptInstall;
-							}
-						}
-						((Tile)selectObject).setScript(new StructureScript<Tile>());
-					}else if(selectObject instanceof Terrain) {
-						for(StructureScript<Terrain> script : terrainScripts) {
-							if(configLabel.textEquals(script.getName())) {
-								((Terrain)selectObject).setScript(script);
-								break scriptInstall;
-							}
-						}
-						((Terrain)selectObject).setScript(new StructureScript<Terrain>());
-					}else if(selectObject instanceof Unit) {
-						((Unit)selectObject).originalName = configLabel.getText();
-					}
-				}
-				//draw selection guide
-				final Rectangle2D RECT = selectObject.getBoundingBox();
-				RECT.setRect(RECT.getX(),RECT.getY(),RECT.getWidth() + 4,RECT.getHeight() + 4);
-				G2.setColor(Color.WHITE);
-				G2.setStroke(GHQ.stroke5);
-				G2.draw(RECT);
-				G2.setColor(Color.RED);
-				G2.setStroke(GHQ.stroke3);
-				G2.draw(RECT);
-				break;
-			}
-		case TERRAIN:
-			Terrain.makeGuiding(G2);
-			break;
-		case TILES:
-			Tile.makeGuiding(G2);
-			break;
 		}
 		//originalName display
 		G2.setColor(Color.GRAY);

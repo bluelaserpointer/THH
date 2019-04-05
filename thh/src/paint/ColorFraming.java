@@ -1,5 +1,6 @@
 package paint;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
@@ -22,6 +23,10 @@ public class ColorFraming implements RectPaint{
 	public ColorFraming(Color color,Stroke stroke) {
 		COLOR = color;
 		STROKE = stroke;
+	}
+	public ColorFraming(Color color,float strokeSize) {
+		COLOR = color;
+		STROKE = new BasicStroke(strokeSize);
 	}
 	@Override
 	public void rectPaint(int x, int y, int w, int h) {

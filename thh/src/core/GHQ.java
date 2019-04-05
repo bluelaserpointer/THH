@@ -826,7 +826,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//input
 	private static int mouseX,mouseY;
-	
 	public void mouseWheelMoved(MouseWheelEvent e){}
 	public void mouseEntered(MouseEvent e){}
 	public void mouseExited(MouseEvent e){}
@@ -848,6 +847,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			}
 		}
 		//GUIParts click event
+		guiPartsClickCheck(guiParts);
+	}
+	public static final void guiPartsClickCheck(ArrayList<GUIParts> guiParts) {
 		boolean alreadyClicked = false;
 		for(GUIParts parts : guiParts) {
 			if(parts.isEnabled()) {
@@ -882,6 +884,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public void mouseMoved(MouseEvent e){
 		final int x = e.getX(),y = e.getY();
 		mouseX = x;mouseY = y;
+		guiPartsMouseOverCheck(guiParts);
+	}
+	public static final void guiPartsMouseOverCheck(ArrayList<GUIParts> guiParts) {
 		boolean alreadyOvered = false;
 		for(GUIParts parts : guiParts) {
 			if(parts.isEnabled()) {
@@ -913,8 +918,16 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final boolean isMouseInArea_Stage(int x,int y,int w,int h) {
 		return abs(x - mouseX + viewX) < w/2 && abs(y - mouseY + viewY) < h/2;
 	}
-	public static final boolean isMouseInArea_Screen(int x,int y,int w,int h) {
-		return abs(x - mouseX) < w/2 && abs(y - mouseY) < h/2;
+	/**
+	 * Check if the mouse coordinate is in this rectangle area.
+	 * @param luX
+	 * @param luY
+	 * @param w
+	 * @param h
+	 * @return true - in / false - out
+	 */
+	public static final boolean isMouseInArea_Screen(int luX,int luY,int w,int h) {
+		return luX < mouseX && mouseX < luX + w && luY < mouseY && mouseY < luY + h;
 	}
 	public final boolean isMouseOnImage(int imgID,int x,int y) {
 		final Image img = arrayImage[imgID];

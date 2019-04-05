@@ -1,35 +1,33 @@
 package gui;
 
 import java.awt.Color;
-import java.util.ArrayList;
 
 import core.GHQ;
 import paint.ColorFraming;
 import paint.RectPaint;
 
-public class CombinedButtons extends GUIParts{
+public class CombinedButtons extends GUIGroup{
 	private int selection;
 	private int defaultSelection;
 	private RectPaint emphasizer = new ColorFraming(Color.RED,GHQ.stroke3);
-	private final ArrayList<BasicButton> buttons = new ArrayList<BasicButton>();
 	public CombinedButtons(String group, int defaultValue, RectPaint paintScript,int x, int y, int w, int h) {
-		super(group, paintScript, x, y, w, h, false);
+		super(group, paintScript, x, y, w, h);
 		selection = this.defaultSelection = defaultValue;
 	}
 	public CombinedButtons(String group, int defaultValue) {
-		super(group, null, 0, 0, 0, 0, false);
+		super(group, null);
 		selection = this.defaultSelection = defaultValue;
 	}
 	public CombinedButtons(String group, RectPaint paintScript,int x, int y, int w, int h) {
-		super(group, paintScript, x, y, w, h, false);
+		super(group, paintScript, x, y, w, h);
 		selection = this.defaultSelection = GHQ.NONE;
 	}
 	public CombinedButtons(String group, int defaultValue,int x, int y, int w, int h) {
-		super(group, null, x, y, w, h, false);
+		super(group, null, x, y, w, h);
 		selection = this.defaultSelection = defaultValue;
 	}
 	public CombinedButtons(String group) {
-		super(group, null, 0, 0, 0, 0, false);
+		super(group, null);
 		selection = this.defaultSelection = GHQ.NONE;
 	}
 	//init
@@ -53,8 +51,7 @@ public class CombinedButtons extends GUIParts{
 					emphasizer.rectPaint(x, y, w, h);
 			}
 		};
-		GHQ.addGUIParts(BUTTON);
-		buttons.add(BUTTON);
+		super.addParts(BUTTON);
 	}
 	//control
 	public void setSelection(int id) {
@@ -62,18 +59,6 @@ public class CombinedButtons extends GUIParts{
 	}
 	public void reset() {
 		selection = defaultSelection;
-	}
-	@Override
-	public void enable() {
-		super.enable();
-		for(BasicButton button : buttons)
-			button.enable();
-	}
-	@Override
-	public void disable() {
-		super.disable();
-		for(BasicButton button : buttons)
-			button.disable();
 	}
 	//information
 	public int getSelection() {

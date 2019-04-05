@@ -8,15 +8,24 @@ import input.KeyTypeListener;
 import paint.RectPaint;
 
 public class TitledLabel extends GUIParts{
-	private final KeyTypeListener typeListener = new KeyTypeListener(w/5) {
-		@Override
-		public void typeEnd(String text) {
-			typeEnded(text);
-		}
-	};
+	private final KeyTypeListener typeListener;
 	public TitledLabel(String group, RectPaint paintScript, int x, int y, int w, int h) {
 		super(group, paintScript, x, y, w, h, true);
-		GHQ.addListenerEx(typeListener);
+		GHQ.addListenerEx(typeListener = new KeyTypeListener(w/5) {
+			@Override
+			public void typeEnd(String text) {
+				typeEnded(text);
+			}
+		});
+	}
+	public TitledLabel(String group, RectPaint paintScript) {
+		super(group, paintScript, true);
+		GHQ.addListenerEx(typeListener = new KeyTypeListener() {
+			@Override
+			public void typeEnd(String text) {
+				typeEnded(text);
+			}
+		});
 	}
 	private String titleStr = "";
 	public boolean activated;
@@ -25,13 +34,11 @@ public class TitledLabel extends GUIParts{
 	}
 	@Override
 	public void clicked() {
-		activated = true;
-		typeListener.enable();
+		enableInputMode();
 	}
 	@Override
 	public void outsideClicked() {
-		activated = false;
-		typeListener.disable();
+		disableInputMode();
 	}
 	@Override
 	public void idle() {
@@ -44,6 +51,7 @@ public class TitledLabel extends GUIParts{
 		G2.setColor(Color.BLACK);
 		G2.setStroke(activated ? GHQ.stroke3 : GHQ.stroke1);
 		G2.drawRect(x, y, w, h);
+		//System.out.println(typeListener.getText());
 		G2.drawString(typeListener.getText(), x + 3, y + 20);
 	}
 	public void typeEnded(String text) {}
@@ -61,9 +69,11 @@ public class TitledLabel extends GUIParts{
 	}
 	public void enableInputMode() {
 		activated = true;
+		typeListener.enable();
 	}
 	public void disableInputMode() {
 		activated = false;
+		typeListener.disable();
 	}
 	@Override
 	public void disable() {

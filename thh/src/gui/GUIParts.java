@@ -13,15 +13,20 @@ public abstract class GUIParts {
 	protected boolean isEnabled;
 	private final boolean absorbsClickEvent;
 	public int x,y;
-	public final int w,h;
+	public int w,h;
 	protected final RectPaint PAINT_SCRIPT;
-	public GUIParts(String group,RectPaint paintScript,int x,int y,int w,int h,boolean absorbsClickEvent) {
+	public GUIParts(String group, RectPaint paintScript, int x, int y, int w, int h, boolean absorbsClickEvent) {
 		GROUP = group;
 		PAINT_SCRIPT = paintScript == null ? RectPaint.BLANK_SCRIPT : paintScript;
 		this.x = x;
 		this.y = y;
 		this.w = w;
 		this.h = h;
+		this.absorbsClickEvent = absorbsClickEvent;
+	}
+	public GUIParts(String group, RectPaint paintScript, boolean absorbsClickEvent) {
+		GROUP = group;
+		PAINT_SCRIPT = paintScript == null ? RectPaint.BLANK_SCRIPT : paintScript;
 		this.absorbsClickEvent = absorbsClickEvent;
 	}
 	public final void defaultIdle() {
@@ -41,7 +46,7 @@ public abstract class GUIParts {
 		return isEnabled;
 	}
 	public boolean isMouseEntered() {
-		return GHQ.isMouseInArea_Screen(x + w/2, y + h/2, w, h);
+		return GHQ.isMouseInArea_Screen(x, y, w, h);
 	}
 	public void clicked() {}
 	public void outsideClicked() {}
@@ -50,9 +55,18 @@ public abstract class GUIParts {
 	public final boolean absorbsClickEvent() {
 		return absorbsClickEvent;
 	}
-	public void setBounds(int x,int y) {
+	public void setXY(int x, int y) {
 		this.x = x;
 		this.y = y;
+	}
+	public void addXY(int dx, int dy) {
+		this.x += dx;
+		this.y += dy;
+	}
+	public void setBounds(int x, int y, int w, int h) {
+		setXY(x, y);
+		this.w = w;
+		this.h = h;
 	}
 	public void flit() {
 		if(isEnabled)
