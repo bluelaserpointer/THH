@@ -4,16 +4,16 @@ import core.GHQ;
 import paint.DotPaint;
 import paint.ImageFrame;
 import physicis.HasDynam;
-import thhunit.EnemyBulletLibrary;
+import thhunit.EnemyWeaponLibrary;
 import unit.Unit;
 import weapon.Weapon;
 
-public class Fairy extends THHUnit{
+public class Fairy extends THH_BasicUnit{
 	private static final long serialVersionUID = -8167654165444569286L;
 	public Fairy(int initialGroup) {
 		super(70, initialGroup);
 	}
-	private final Weapon weaponController = EnemyBulletLibrary.getWeaponController(EnemyBulletLibrary.lightBall_S);
+	private final Weapon weapon = EnemyWeaponLibrary.getWeaponController(EnemyWeaponLibrary.lightBall_S);
 	private DotPaint magicCircleIID;
 	@Override
 	public final String getName() {
@@ -29,10 +29,10 @@ public class Fairy extends THHUnit{
 	}
 	@Override
 	public void activeCons() {
-		weaponController.defaultIdle();
+		weapon.idle();
 		final Unit targetEnemy = GHQ.getNearstVisibleEnemy(this);
-		if(targetEnemy != null && weaponController.trigger())
-			EnemyBulletLibrary.inputBulletInfo(this,EnemyBulletLibrary.lightBall_ROUND,bulletPaint[0],targetEnemy);
+		if(targetEnemy != null && weapon.trigger(this))
+			EnemyWeaponLibrary.inputBulletInfo(this,EnemyWeaponLibrary.lightBall_ROUND,bulletPaint[0],targetEnemy);
 	}
 	@Override
 	public void paint(boolean doAnimation) {
@@ -41,8 +41,6 @@ public class Fairy extends THHUnit{
 		super.paintMode_magicCircle(magicCircleIID);
 		GHQ.paintHPArc((int) dynam.getX(), (int) dynam.getY(), 20,status.get(HP), status.getDefault(HP));
 	}
-	@Override
-	public void setEffect(int kind,HasDynam source) {}
 	@Override
 	public void setBullet(int kind,HasDynam source) {}
 }

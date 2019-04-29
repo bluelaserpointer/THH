@@ -40,18 +40,15 @@ public class Dynam extends Coordinate{
 		this.y = y;
 		this.xSpd = xSpd;
 		this.ySpd = ySpd;
-	}
-	public Dynam(double x,double y,double xSpd,double ySpd,double angle) {
-		this.x = x;
-		this.y = y;
-		this.xSpd = xSpd;
-		this.ySpd = ySpd;
-		this.angle = angle;
+		this.angle = atan2(ySpd, xSpd);
 	}
 	public void clear() {
 		x = y = xSpd = ySpd = angle = 0.0;
 	}
-	public void setAllBySample(Dynam sample) {
+	public void setAll(HasDynam hasSample) {
+		setAll(hasSample.getDynam());
+	}
+	public void setAll(Dynam sample) {
 		x = sample.x;
 		y = sample.y;
 		xSpd = sample.xSpd;
@@ -66,8 +63,8 @@ public class Dynam extends Coordinate{
 		y -= dx*cos(angle);
 	}
 	public void addY_allowsAngle(double dy) {
-		x += dy*sin(angle);
-		y += dy*cos(angle);
+		x += dy*cos(angle);
+		y += dy*sin(angle);
 	}
 	public void addXY_DA(double distance,double angle) {
 		x += distance*cos(angle);
@@ -113,10 +110,10 @@ public class Dynam extends Coordinate{
 		xSpd = speed*cos_angle;
 		ySpd = speed*sin_angle;
 	}
-	public boolean isVisible(HasDynam targetDI) {
-		if(targetDI == null)
+	public boolean isVisible(HasDynam target) {
+		if(target == null)
 			return false;
-		final Dynam targetDynam = targetDI.getDynam();
+		final Dynam targetDynam = target.getDynam();
 		return GHQ.checkLoS(new Line2D.Double(x,y,targetDynam.x,targetDynam.y));
 	}
 	public boolean isVisible(double x,double y) {
@@ -128,10 +125,10 @@ public class Dynam extends Coordinate{
 	public double getAngle(double x,double y) {
 		return atan2(y - this.y, x - this.x);
 	}
-	public double getAngle(HasDynam targetDI) {
-		if(targetDI == null)
+	public double getAngleToTarget(HasDynam target) {
+		if(target == null)
 			return GHQ.NONE;
-		final Dynam targetDynam = targetDI.getDynam();
+		final Dynam targetDynam = target.getDynam();
 		return atan2(targetDynam.y - this.y, targetDynam.x - this.x);
 	}
 	public void setAngle(double angle) {
@@ -140,27 +137,20 @@ public class Dynam extends Coordinate{
 		xSpd = SPEED*cos(angle);
 		ySpd = SPEED*sin(angle);
 	}
-	public void spin(double angle) {
-		this.angle += angle;
-		final double SPEED = getSpeed();
-		xSpd = SPEED*cos(this.angle);
-		ySpd = SPEED*sin(this.angle);
-	}
-	public void setAngle_right() {
-		this.angle = 0.0;
-		final double SPEED = getSpeed();
-		xSpd = SPEED;
-		ySpd = 0.0;
-	}
-	public void setAngle(HasDynam targetDI) {
-		if(targetDI == null)
+	public void setAngle(HasDynam sample) {
+		if(sample == null)
 			return;
-		this.angle = getAngle(targetDI);
+		setAngle(sample.getDynam().angle);
 	}
-	public void setAngle(HasDynam targetDI,double maxTurnAngle) {
-		if(targetDI == null || maxTurnAngle <= 0)
+	public void setAngleToTarget(HasDynam target) {
+		if(target == null)
 			return;
-		final double TARGET_ANGLE = getAngle(targetDI);
+		setAngle(getAngleToTarget(target));
+	}
+	public void setAngleToTarget(HasDynam target,double maxTurnAngle) {
+		if(target == null || maxTurnAngle <= 0)
+			return;
+		final double TARGET_ANGLE = getAngleToTarget(target);
 		final double D_ANGLE = GHQ.angleFormat(TARGET_ANGLE - this.angle);
 		if(D_ANGLE < 0) {
 			if(D_ANGLE < -maxTurnAngle)
@@ -173,6 +163,18 @@ public class Dynam extends Coordinate{
 			else
 				setAngle(TARGET_ANGLE);
 		}
+	}
+	public void spin(double angle) {
+		this.angle += angle;
+		final double SPEED = getSpeed();
+		xSpd = SPEED*cos(this.angle);
+		ySpd = SPEED*sin(this.angle);
+	}
+	public void setAngle_right() {
+		this.angle = 0.0;
+		final double SPEED = getSpeed();
+		xSpd = SPEED;
+		ySpd = 0.0;
 	}
 	public boolean isMovable() {
 		return true;
@@ -287,18 +289,41 @@ public class Dynam extends Coordinate{
 			y += DY*RATE;
 		}
 	}
-	public void approach(HasDynam targetDI,double speed) {
-		if(targetDI == null)
+	public void approach(HasDynam target,double speed) {
+		if(target == null)
 			return;
-		final Dynam targetDynam = targetDI.getDynam();
+		final Dynam targetDynam = target.getDynam();
 		approach(targetDynam.x,targetDynam.y,speed);
 	}
 	
 	//control
+	/**
+	 * Move forward.
+	 */
 	public void move() {
-		if(xSpd != 0 || ySpd != 0) {
+		if(xSpd == 0 && ySpd == 0)
+			return;
+		x += xSpd;
+		y += ySpd;
+	}
+	/**
+	 * Move forward with a limited length.
+	 * @param lengthCap
+	 * @return lest length need to go
+	 */
+	public double move(double lengthCap) {
+		if(xSpd == 0 && ySpd == 0)
+			return 0;
+		final double SPEED = getSpeed();
+		if(SPEED <= lengthCap) {
 			x += xSpd;
 			y += ySpd;
+			return 0;
+		}else {
+			final double RATE = lengthCap/SPEED;
+			x += xSpd*RATE;
+			y += ySpd*RATE;
+			return SPEED - lengthCap;
 		}
 	}
 }

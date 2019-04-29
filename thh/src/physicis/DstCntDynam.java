@@ -24,19 +24,22 @@ public class DstCntDynam extends Dynam{
 	
 	//control
 	@Override
-	public void setAllBySample(Dynam sample) {
-		super.setAllBySample(sample);
+	public void setAll(Dynam sample) {
+		super.setAll(sample);
 		if(sample instanceof DstCntDynam)
 			movedDistance = ((DstCntDynam) sample).movedDistance;
 	}
 	public void setAllBySampleAndInitDistCnt(Dynam sample) {
-		super.setAllBySample(sample);
+		super.setAll(sample);
 		movedDistance = 0;
 	}
 	@Override
 	public void clear() {
 		super.clear();
 		movedDistance = 0.0;
+	}
+	public void resetMovedDistanceCount() {
+		movedDistance = 0;
 	}
 	@Override
 	public void move() {

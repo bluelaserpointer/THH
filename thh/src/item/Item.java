@@ -21,7 +21,7 @@ public abstract class Item implements Serializable,HasDotPaint{
 	protected final DotPaint paintScript;
 	public abstract String getName();
 	
-	public static final Item BLANK_ITEM = new Item(null) {
+	public static final Item BLANK_ITEM = new Item(null){
 		private static final long serialVersionUID = 7797829501331686714L;
 
 		@Override
@@ -56,8 +56,11 @@ public abstract class Item implements Serializable,HasDotPaint{
 	public boolean keepEvenEmpty() {
 		return false;
 	}
-	public int getAmount() {
+	public final int getAmount() {
 		return amount;
+	}
+	public final int getLeftSpace() {
+		return STACK_CAP != GHQ.MAX ? STACK_CAP - amount : GHQ.MAX;
 	}
 	@Override
 	public final DotPaint getPaintScript() {
@@ -68,47 +71,78 @@ public abstract class Item implements Serializable,HasDotPaint{
 		this.amount = 0;
 	}
 	public int add(int amount) {
-		final int leftSpace = STACK_CAP - (this.amount + amount);
-		if(leftSpace <= 0)
-			this.amount = STACK_CAP;
-		else if(this.amount < 0)
-			this.amount = 0;
-		else
+		final int LFET_SPACE = getLeftSpace();
+		if(LFET_SPACE > amount) {
 			this.amount += amount;
-		return leftSpace;
+			return amount;
+		}else {
+			this.amount = STACK_CAP;
+			return LFET_SPACE;
+		}
+	}
+	public int consume(int amount) {
+		if(this.amount > amount) {
+			this.amount -= amount;
+			return amount;
+		}else {
+			final int CONSUMED = this.amount;
+			this.amount = 0;
+			return CONSUMED;
+		}
 	}
 	/**
 	 * 
 	 * @param item
-	 * @return true - not overflowed / false - overflowed
+	 * @return
 	 */
-	public boolean stack(Item item) {
-		final int leftSpace = STACK_CAP - (amount + item.amount);
-		if(leftSpace <= 0) {
-			this.amount = STACK_CAP;
-			item.amount = -leftSpace;
-			return false;
-		}else {
-			this.amount += amount;
-			item.amount = 0;
-			return true;
-		}
+	public int stack(Item item) {
+		final int ADDED = add(item.amount);
+		item.consume(ADDED);
+		return ADDED;
 	}
-	
+	/**
+	 * 
+	 * @param item
+	 * @return
+	 */
+	public int setOff(Item item) {
+		final int CONSUMED = consume(item.amount);
+		item.consume(CONSUMED);
+		return CONSUMED;
+	}
 	//public tool
-	public static boolean add_stack(Storage<Item> itemStorage, Item newItem) {
-		for(Item item : itemStorage) {
-			if(item.isStackable(newItem)) {
-				item.stack(newItem);
-				if(newItem.isEmpty()) {
-					if(newItem.keepEvenEmpty()){
-						return itemStorage.add(newItem);
+	public static boolean addInInventory(Storage<Item> itemStorage, Item targetItem) {
+		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
+			final Item ITEM = itemStorage.get(i);
+			if(ITEM.isStackable(targetItem)) {
+				ITEM.stack(targetItem);
+				if(targetItem.isEmpty()) {
+					if(targetItem.keepEvenEmpty()){
+						return itemStorage.add(targetItem);
 					}else
 						return true;
 				}
 			}
 		}
 		//not found same kind (stackable) item.
-		return itemStorage.add(newItem);
+		return itemStorage.add(targetItem);
+	}
+	public static int removeInInventory(Storage<Item> itemStorage, Item targetItem) {
+		int removed = 0;
+		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
+			final Item ITEM = itemStorage.get(i);
+			if(ITEM.isStackable(targetItem)) {
+				removed += ITEM.setOff(targetItem);
+				if(targetItem.isEmpty())
+					return removed;
+			}
+		}
+		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
+			final Item ITEM = itemStorage.get(i);
+			if(ITEM.isEmpty() && !ITEM.keepEvenEmpty())
+				itemStorage.remove(ITEM);
+		}
+		//not found enough amount of the item.
+		return removed;
 	}
 }

@@ -81,12 +81,25 @@ public class GUIGroup extends GUIParts{
 	}
 	@Override
 	public void clicked() {
+		super.clicked();
 		GHQ.guiPartsClickCheck(parts);
 	}
 	@Override
 	public void outsideClicked() {
+		super.outsideClicked();
 		for(GUIParts ver : parts)
 			ver.outsideClicked();
+	}
+	@Override
+	public void released() {
+		super.released();
+		GHQ.guiPartsReleaseCheck(parts);
+	}
+	@Override
+	public void outsideReleased() {
+		super.outsideReleased();
+		for(GUIParts ver : parts)
+			ver.outsideReleased();
 	}
 	@Override
 	public void mouseOvered() {

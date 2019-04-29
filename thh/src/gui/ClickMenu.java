@@ -5,7 +5,7 @@ import paint.RectPaint;
 
 public class ClickMenu<T> extends AutoResizeMenu{
 	
-	private T targetObject;
+	protected T targetObject;
 	
 	public ClickMenu(String group, RectPaint paintScript, int w, int defaultLineH) {
 		super(group, paintScript, 0, 0, w, defaultLineH);

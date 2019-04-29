@@ -9,13 +9,13 @@ import paint.DotPaint;
 import paint.RectPaint;
 import physicis.Dynam;
 import physicis.HasDynam;
+import status.StatusWithDefaultValue;
 import storage.ItemStorage;
 import storage.Storage;
-import unit.Status;
 import unit.Unit;
 import weapon.Weapon;
 
-public abstract class THHUnit extends Unit {
+public abstract class THH_BasicUnit extends Unit {
 	private static final long serialVersionUID = 6736932836274080528L;
 	public double charaDstX, charaDstY, charaSpeed = 30;
 	public boolean charaOnLand;
@@ -24,7 +24,7 @@ public abstract class THHUnit extends Unit {
 	public int slot_spell, slot_weapon;
 	public final int spellSlot_max = 6, weaponSlot_max = 6, weapon_max = 10;
 	public final int[] spellSlot = new int[spellSlot_max], weaponSlot = new int[weaponSlot_max];
-	protected final Weapon weaponController[] = new Weapon[10];
+	protected final Weapon weapon[] = new Weapon[10];
 
 	// GUI
 	public RectPaint iconPaint;
@@ -46,16 +46,16 @@ public abstract class THHUnit extends Unit {
 		names[BLO] = "BLO";
 		names[STUN] = "STUN";
 	}
-	public final Status status = new Status(PARAMETER_AMOUNT);
+	public final StatusWithDefaultValue status = new StatusWithDefaultValue(PARAMETER_AMOUNT);
 	
 	//inventory
 	public final ItemStorage inventory;
 	
-	public THHUnit(int charaSize, int initialGroup) {
+	public THH_BasicUnit(int charaSize, int initialGroup) {
 		super(new Square(charaSize), initialGroup);
 		inventory = new ItemStorage(new Storage<Item>());
 	}
-	public THHUnit(int charaSize, int initialGroup, Storage<Item> itemStorageKind) {
+	public THH_BasicUnit(int charaSize, int initialGroup, Storage<Item> itemStorageKind) {
 		super(new Square(charaSize), initialGroup);
 		inventory = new ItemStorage(itemStorageKind);
 	}
@@ -66,19 +66,32 @@ public abstract class THHUnit extends Unit {
 
 	@Override
 	public void respawn(int x, int y) {
-		super.resetOrder();
+		resetOrder();
 		status.reset();
-		Dynam DYNAM = getDynam();
-		DYNAM.clear();
-		DYNAM.setXY(charaDstX = x, charaDstY = y);
+		dynam.clear();
+		dynam.setXY(charaDstX = x, charaDstY = y);
 		charaOnLand = false;
 		slot_spell = 0;
+	}
+	public void resetOrder() {
+		weaponChangeOrder = 0;
+		attackOrder = moveOrder = dodgeOrder = spellOrder = false;
+	}
+	public void resetSingleOrder() {
+		weaponChangeOrder = 0;
+		spellOrder = dodgeOrder = false;
 	}
 	@Override
 	public void dynam() {
 		Dynam DYNAM = getDynam();
 		DYNAM.move();
 		DYNAM.accelerate_MUL(0.9);
+	}
+	public int weaponChangeOrder;
+	public boolean attackOrder,moveOrder,dodgeOrder,spellOrder;
+	@Override
+	public void passiveCons() {
+		resetSingleOrder();
 	}
 	@Override
 	public void activeCons() {
@@ -90,27 +103,27 @@ public abstract class THHUnit extends Unit {
 		Dynam DYNAM = getDynam();
 		DYNAM.setAngle(DYNAM.getMouseAngle());
 		// dodge
-		if (super.dodgeOrder)
+		if (dodgeOrder)
 			dodge(mouseX, mouseY);
 		// attack
-		if (super.attackOrder) {
+		if (attackOrder) {
 			final int weapon = weaponSlot[slot_weapon];
 			if (weapon != NONE && useWeapon(weapon))
 				setBullet(weapon,this);
 		}
 		// spell
-		if (super.spellOrder) {
+		if (spellOrder) {
 			final int spell = spellSlot[slot_spell];
 			if (spell != NONE && useWeapon(spell))
 				setBullet(spell,this);
 		}
 		// move
-		if (super.moveOrder) {
+		if (moveOrder) {
 			//under edit
 		}
 		DYNAM.approach(charaDstX, charaDstY, charaSpeed);
 		// weaponChange
-		int roll = super.weaponChangeOrder;
+		int roll = weaponChangeOrder;
 		if (roll != 0) {
 			int target = slot_spell;
 			if (roll > 0) {
@@ -171,10 +184,6 @@ public abstract class THHUnit extends Unit {
 	}
 	private Action actionPlan;
 	private int initialFrame;
-	@Override
-	public void loadActionPlan(Action action) {
-		actionPlan = action;
-	}
 	protected void doActionPlan() {
 		int countedFrame = 0;
 		final Dynam DYNAM = getDynam();
@@ -217,13 +226,8 @@ public abstract class THHUnit extends Unit {
 	}
 
 	@Override
-	public final int damage_rate(double rate) {
-		return status.reduce_rate(HP, rate);
-	}
-
-	@Override
 	public final boolean kill(boolean force) {
-		status.set0(HP);
+		status.set(HP, 0);
 		return true;
 	}
 
@@ -237,8 +241,7 @@ public abstract class THHUnit extends Unit {
 		return status.get(HP) > 0;
 	}
 	public boolean useWeapon(int kind) {
-		return true;
+		return weapon[kind].trigger(this);
 	}
 	public abstract void setBullet(int kind,HasDynam source);
-	public abstract void setEffect(int kind,HasDynam source);
 }

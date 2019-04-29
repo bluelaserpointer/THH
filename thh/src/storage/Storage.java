@@ -22,8 +22,10 @@ public class Storage<T> extends ArrayList<T>{
 	}
 	//control
 	protected void initFill(T element) {
-		for(int i = 0;i < max_amount;i++)
+		super.clear();
+		for(int i = 0;i < max_amount;i++) {
 			super.add(element);
+		}
 	}
 	public boolean add(T element) {
 		if(amount == max_amount)
@@ -65,6 +67,12 @@ public class Storage<T> extends ArrayList<T>{
 	}
 	
 	//information
+	public final int traverseFirst() {
+		return traverseNext(-1);
+	}
+	public int traverseNext(int currentIndex) {
+		return currentIndex + 1 < size() ? currentIndex + 1 : -1;
+	}
 	public final double fillRate() {
 		return amount/max_amount;
 	}

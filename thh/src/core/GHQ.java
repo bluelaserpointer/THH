@@ -59,10 +59,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		NOT_NAMED = "<Not Named>";
 	
 	//File Pass
-	public final URL CHARA_DIC_URL = getClass().getResource("../chara");
+	public final URL UNIT_DIC_URL = getClass().getResource("../unit");
 	final String
 		ASSETS_URL = "assets",
-		CHARA_FOLDERS_URL = "assets/chara",
+		UNIT_FOLDERS_URL = "assets/chara",
 		LOCAL_IMAGE_URL = "assets/image",
 		LOCAL_SOUND_URL = "assets/sound",
 		LOCAL_FONT_URL = "assets/font";
@@ -80,7 +80,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//stopEvent
 	private static int stopEventKind = NONE;
-	public static final int STOP = 0,NO_ANM_STOP = 1;
+	public static final int STOP = 0;
 	public static boolean messageStop,spellStop;
 	
 	//screen
@@ -95,8 +95,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	//stage
 	private static StageEngine engine;
 
-	//character data
-	private static final ArrayListEx<Unit> characters = new ArrayListEx<Unit>();
+	//unit data
+	private static final ArrayListEx<Unit> units = new ArrayListEx<Unit>();
 	
 	//bullet data
 	private static final ArrayListEx<Bullet> bullets = new ArrayListEx<Bullet>();
@@ -231,6 +231,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		////////////////////////////////////////////////////////////////////////
 		//GUIIdle
 		g2.translate(-TRANSLATE_X_double, -TRANSLATE_Y_double);
+		g2.setFont(basicFont);
+		g2.setStroke(stroke5);
 		{
 			//gui parts////////////////////
 			for(GUIParts parts : guiParts)
@@ -304,7 +306,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 					}
 				}
 				//entityInfo
-				g2.drawString("Chara:" + characters.size() + " EF:" + effects.size() + " B:" + bullets.size(),30,100);
+				g2.drawString("Unit:" + units.size() + " EF:" + effects.size() + " B:" + bullets.size(),30,100);
 				g2.drawString("LoadTime(ms):" + loadTime_total,30,120);
 				//g2.drawString("EM:" + loadTime_enemy + " ET:" + loadTime_entity + " G:" + loadTime_gimmick + " EF:" + loadTime_effect + " B:" + loadTime_bullet + " I:" + loadTime_item + " W: " + loadTime_weapon + " Other: " + loadTime_other,30,140);
 				g2.drawString("GameTime(ms):" + gameFrame,30,160);
@@ -317,14 +319,14 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				g2.drawLine(MOUSE_X, MOUSE_Y - 15, MOUSE_X, MOUSE_Y + 15);
 				g2.setStroke(stroke5);
 				g2.drawString("(" + (MOUSE_X - (int)viewX) + "," + (MOUSE_Y - (int)viewY) + ")",MOUSE_X + 20,MOUSE_Y + 40);
-				//charaInfo
-				for(Unit chara : characters) {
-					final int RECT_X = (int)chara.getDynam().getX() + (int)viewX,RECT_Y = (int)chara.getDynam().getY() + (int)viewY;
+				//unitInfo
+				for(Unit unit : units) {
+					final int RECT_X = (int)unit.getDynam().getX() + (int)viewX,RECT_Y = (int)unit.getDynam().getY() + (int)viewY;
 					g2.setStroke(stroke1);
 					g2.drawRect(RECT_X - 50, RECT_Y - 50, 100,100);
 					g2.drawLine(RECT_X + 50, RECT_Y - 50, RECT_X + 60, RECT_Y - 60);
 					g2.setStroke(stroke5);
-					g2.drawString(chara.getName(), RECT_X + 62, RECT_Y - 68);
+					g2.drawString(unit.getName(), RECT_X + 62, RECT_Y - 68);
 				}
 			}
 		}
@@ -336,62 +338,50 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @param bullet
 	 * @return
 	 */
-	public static final Unit[] getHitCharacters(HitInteractable object) {
-		return getHitCharacters(getCharacters_standpoint(object,false),object);
+	public static final Unit[] getHitUnits(HitInteractable object) {
+		return getHitUnits(getUnits_standpoint(object,false),object);
 	}
-	public static final Unit[] getHitCharacters(Unit[] characters,HitInteractable object) {
-		final Unit[] result = new Unit[characters.length];
+	public static final Unit[] getHitUnits(Unit[] units,HitInteractable object) {
+		final Unit[] result = new Unit[units.length];
 		int searched = 0;
-		for(Unit unit : characters) {
+		for(Unit unit : units) {
 			if(unit.isHit(object))
 				result[searched++] = unit;
 		}
 		return Arrays.copyOf(result, searched);
 	}
 	//idle-character
-	public static final void defaultCharaIdle(Unit[] characters) {
+	public static final void defaultCharaIdle(Unit[] units) {
 		switch(stopEventKind) {
 		case STOP:
-			for(Unit chara : characters)
-				chara.idle(Unit.PASSIVE_CONS);
-			break;
-		case NO_ANM_STOP:
-			for(Unit chara : characters)
-				chara.idle(Unit.PAINT_FREEZED);
+			for(Unit unit : units)
+				unit.idle(Unit.PASSIVE_CONS);
 			break;
 		default:
-			for(Unit chara : characters) {
-				chara.defaultIdle();
-				chara.resetSingleOrder();
-			}
+			for(Unit unit : units)
+				unit.idle();
 		}
 		removeDeadUnits();
 	}
-	public static final void defaultCharaIdle(ArrayList<Unit> characters) {
+	public static final void defaultCharaIdle(ArrayList<Unit> units) {
 		switch(stopEventKind) {
 		case STOP:
-			for(Unit chara : characters)
-				chara.idle(Unit.PASSIVE_CONS);
-			break;
-		case NO_ANM_STOP:
-			for(Unit chara : characters)
-				chara.idle(Unit.PAINT_FREEZED);
+			for(Unit unit : units)
+				unit.idle(Unit.PASSIVE_CONS);
 			break;
 		default:
-			for(Unit chara : characters) {
-				chara.defaultIdle();
-				chara.resetSingleOrder();
-			}
+			for(Unit unit : units)
+				unit.idle();
 		}
 		removeDeadUnits();
 	}
 	public static final int removeDeadUnits() {
 		int deleted = 0;
-		characters.setIterator(0);
-		while(characters.hasNext()) {
-			final Unit UNIT = characters.next();
+		units.setIterator(-1);
+		while(units.hasNext()) {
+			final Unit UNIT = units.next();
 			if(!UNIT.isAlive()) {
-				characters.removeCurrent();
+				units.removeCurrent();
 				deleted++;
 			}
 		}
@@ -399,56 +389,42 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	//idle-entity
 	public static final void defaultEntityIdle() {
-		bullets.setIterator(0);
-		effects.setIterator(0);
+		bullets.setIterator(-1);
+		effects.setIterator(-1);
 		switch(stopEventKind) {
 		case STOP:
 			while(bullets.hasNext()) {
 				final Bullet bullet = bullets.next();
-				bullet.SCRIPT.paint(bullet);
+				bullet.paint();
 			}
 			while(effects.hasNext()) {
 				final Effect effect = effects.next();
-				effect.SCRIPT.paint(effect);
-			}
-			break;
-		case NO_ANM_STOP:
-			while(bullets.hasNext()) {
-				final Bullet bullet = bullets.next();
-				bullet.SCRIPT.noAnmPaint(bullet);
-			}
-			while(effects.hasNext()) {
-				final Effect effect = effects.next();
-				effect.SCRIPT.noAnmPaint(effect);
+				effect.paint();
 			}
 			break;
 		default:
 			while(bullets.hasNext()) {
 				final Bullet bullet = bullets.next();
-				bullet.SCRIPT.idle(bullet);
+				bullet.idle();
 			}
 			while(effects.hasNext()) {
 				final Effect effect = effects.next();
-				effect.SCRIPT.idle(effect);
+				effect.idle();
 			}
 		}
 	}
-	public static final void defaultCharaIdle(Unit chara) {
+	public static final void defaultUnitIdle(Unit unit) {
 		switch(stopEventKind) {
 		case STOP:
-			chara.idle(Unit.PASSIVE_CONS);
-			break;
-		case NO_ANM_STOP:
-			chara.idle(Unit.PAINT_FREEZED);
+			unit.idle(Unit.PASSIVE_CONS);
 			break;
 		default:
-			chara.defaultIdle();
-			chara.resetSingleOrder();
+			unit.idle();
 		}
 	}
 	//information-get-mouseOver
-	public static final Unit getMouseOverChara() {
-		for(Unit unit : characters) {
+	public static final Unit getMouseOverUnit() {
+		for(Unit unit : units) {
 			if(unit.isMouseOveredBoundingBox())
 				return unit;
 		}
@@ -468,59 +444,56 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return null;
 	}
-	//information-characters
-	public static final Unit getChara(String name) {
-		for(Unit chara : characters) {
-			if(chara.getName() == name)
-				return chara;
+	//information-units
+	public static final Unit getUnit(String name) {
+		for(Unit unit : units) {
+			if(unit.getName() == name)
+				return unit;
 		}
 		return null;
 	}
-	public static final ArrayListEx<Unit> getCharacterList() {
-		return characters;
+	public static final ArrayListEx<Unit> getUnitList() {
+		return units;
 	}
-	public static final Unit getCharacter(int index) {
-		return characters.get(index);
+	public static final Unit getUnit(int index) {
+		return units.get(index);
 	}
-	public static final Unit[] getCharacters_standpoint(HasStandpoint source,boolean white) {
-		final Unit[] charaArray = new Unit[characters.size()];
-		int founded = 0;
-		for(Unit chara : characters) {
-			if(white == source.isFriend(chara))
-				charaArray[founded++] = chara;
-		}
-		return Arrays.copyOf(charaArray, founded);
-	}
-	public static final Unit[] getCharacters_standPoint(HasStandpoint source) {
-		return getCharacters_standpoint(source,true);
-	}
-	public static final Unit[] getCharacters() {
-		final Unit[] unitArray = new Unit[characters.size()];
+	public static final Unit[] getUnits() {
+		final Unit[] unitArray = new Unit[units.size()];
 		for(int i = 0;i < unitArray.length;i++)
-			unitArray[i] = characters.get(i);
+			unitArray[i] = units.get(i);
 		return unitArray;
+	}
+	public static final Unit[] getUnits_standpoint(HasStandpoint source,boolean white) {
+		final Unit[] unitArray = new Unit[units.size()];
+		int founded = 0;
+		for(Unit unit : units) {
+			if(white == source.isFriend(unit))
+				unitArray[founded++] = unit;
+		}
+		return Arrays.copyOf(unitArray, founded);
+	}
+	public static final Unit[] getUnits_standPoint(HasStandpoint source) {
+		return getUnits_standpoint(source,true);
 	}
 	public static final Unit getNearstEnemy(HasStandpoint source,int x,int y) {
 		double nearstDistance = NONE;
-		Unit nearstChara = null;
-		for(Unit enemy : getCharacters_standpoint(source,false)) {
+		Unit nearstUnit = null;
+		for(Unit enemy : getUnits_standpoint(source,false)) {
 			if(!enemy.isAlive())
 				continue;
 			final double distance = abs(enemy.getDynam().getDistance(x, y));
-			if(nearstChara == null || distance < nearstDistance) {
+			if(nearstUnit == null || distance < nearstDistance) {
 				nearstDistance = distance;
-				nearstChara = enemy;
+				nearstUnit = enemy;
 			}
 		}
-		return nearstChara;
+		return nearstUnit;
 		
-	}
-	public static final int getCharaAmount() {
-		return characters.size();
 	}
 	public static final ArrayList<Unit> getVisibleEnemies(Unit unit) {
 		final ArrayList<Unit> visibleEnemies = new ArrayList<Unit>();
-		for(Unit enemy : getCharacters_standpoint(unit,false)) {
+		for(Unit enemy : getUnits_standpoint(unit,false)) {
 			if(!enemy.isAlive())
 				continue;
 			if(enemy.getDynam().isVisible(unit))
@@ -528,11 +501,11 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return visibleEnemies;
 	}
-	public static final Unit getNearstVisibleEnemy(Unit chara) {
-		final Dynam DYNAM = chara.getDynam();
+	public static final Unit getNearstVisibleEnemy(Unit unit) {
+		final Dynam DYNAM = unit.getDynam();
 		Unit neastVisibleEnemy = null;
 		double enemyDistance = MAX;
-		for(Unit enemy : getCharacters_standpoint(chara,false)) {
+		for(Unit enemy : getUnits_standpoint(unit,false)) {
 			if(!enemy.isAlive())
 				continue;
 			if(enemyDistance == MAX) {
@@ -554,7 +527,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		final Dynam DYNAM = bullet.getDynam();
 		Unit neastVisibleEnemy = null;
 		double enemyDistance = MAX;
-		for(Unit enemy : getCharacters_standpoint(bullet,false)) {
+		for(Unit enemy : getUnits_standpoint(bullet,false)) {
 			if(!enemy.isAlive())
 				continue;
 			if(enemyDistance == MAX) {
@@ -572,6 +545,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return neastVisibleEnemy;
 	}
+	public static final int getUnitAmount() {
+		return units.size();
+	}
+	
 	//information-vegetation
 	public static ArrayList<Vegetation> getVegetationList(){
 		return vegetations;
@@ -724,18 +701,16 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	//control-add
 
 	//control-delete
-	public static final boolean deleteBullet(Bullet bullet) {
-		if(bullet.SCRIPT.deleteBullet(bullet))
-			return bullets.remove(bullet);
-		return false;
+	public static final void deleteBullet(Bullet bullet) {
+		bullet.beforeDelete();
+		bullets.remove(bullet);
 	}
-	public static final boolean deleteEffect(Effect effect) {
-		if(effect.SCRIPT.deleteEffect(effect))
-			return effects.remove(effect);
-		return false;
+	public static final void deleteEffect(Effect effect) {
+		effect.beforeDelete();
+		effects.remove(effect);
 	}
 	public static final boolean deleteUnit(Unit unit) {
-		return characters.remove(unit);
+		return units.remove(unit);
 	}
 	public static final boolean deleteStructure(Structure structure) {
 		return structures.remove(structure);
@@ -760,29 +735,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		G2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
 		G2.drawArc(x - radius,y - radius,radius*2,radius*2,90,(int)((double)hp/(double)maxHP*360));
 		G2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
-	}
-	public final int receiveDamageInSquare(HasStandpoint source,int hp,int x,int y,int size){
-		for(Bullet bullet : bullets){
-			if(!source.isFriend(bullet) && bullet.atk > 0 && bullet.getDynam().squreCollision(x,y,(bullet.SIZE + size)/2)){
-				hp -= bullet.atk;
-				bullet.SCRIPT.bulletHitObject(bullet);
-				if(hp <= 0)
-					break;
-			}
-		}
-		return hp;
-	}
-	public final int receiveBulletInCircle(HasStandpoint source, int hp,int x,int y,int size){
-		for(Bullet bullet : bullets){
-			final Dynam BULLET_DYNAM = bullet.getDynam();
-			if(!source.isFriend(bullet) && bullet.atk > 0 && circleCollision((int)BULLET_DYNAM.getX(),(int)BULLET_DYNAM.getY(),bullet.SIZE,x,y,size)){ //ﾐnﾍｻ
-				hp -= bullet.atk;
-				bullet.SCRIPT.bulletHitObject(bullet);
-				if(hp <= 0)
-					break;
-			}
-		}
-		return hp;
 	}
 	//control-GUI
 	public static final void enableGUIs(String group) {
@@ -876,6 +828,21 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			case MouseEvent.BUTTON3:
 				mle.pullButton3Event();
 				break;
+			}
+		}
+		//GUIParts release event
+		guiPartsReleaseCheck(guiParts);
+	}
+	public static final void guiPartsReleaseCheck(ArrayList<GUIParts> guiParts) {
+		boolean alreadyClicked = false;
+		for(GUIParts parts : guiParts) {
+			if(parts.isEnabled()) {
+				if(alreadyClicked || !parts.isMouseEntered()) {
+					parts.outsideReleased();
+				}else {
+					parts.released();
+					alreadyClicked = parts.absorbsClickEvent();
+				}
 			}
 		}
 	}
@@ -1061,9 +1028,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final void stopScreen() {
 		stopEventKind = STOP;
 	}
-	public static final void stopScreen_noAnm() {
-		stopEventKind = NO_ANM_STOP;
-	}
 	/**
 	 * Clear freeze screen and other stopEvents.
 	 * @since alpha1.0
@@ -1074,37 +1038,27 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//generation
 	/**
-	 * Create a {@link Bullet} and add it to current stage.
+	 * Add an {@link Bullet} to current stage.
 	 * Parameters of the bullet refers to {@link BulletInfo} settings.
-	 * @param source A shooter of this bullet(Unit, Bullet, etc.)
+	 * @param bullet
 	 * @return created Bullet
 	 * @since alpha1.0
 	 */
-	public static final Bullet createBullet(HasDynam source){
-		final Bullet bullet = new Bullet(source);
-		bullets.add(bullet);
-		return bullet;
-	}
-	public static final Bullet createBullet(Bullet sampleBullet){
-		final Bullet bullet = new Bullet(sampleBullet);
-		bullets.add(bullet);
+	public static final <T extends Bullet>T addBullet(T bullet){
+		if(!bullets.contains(bullet))
+			bullets.add(bullet);
 		return bullet;
 	}
 	/**
-	 * Create a {@link Effect} and add it to current stage.
+	 * Add an {@link Effect} to current stage.
 	 * Parameters of the effect refers to {@link EffectInfo} settings.
-	 * @param source A shooter of this effect(Unit, Bullet, etc.)
+	 * @param effect
 	 * @return created Effect
 	 * @since alpha1.0
 	 */
-	public static final Effect createEffect(HasDynam source){
-		final Effect effect = new Effect(source);
-		effects.add(effect);
-		return effect;
-	}
-	public static final Effect createEffect(Effect sampleEffect){
-		final Effect effect = new Effect(sampleEffect);
-		effects.add(effect);
+	public static final <T extends Effect>T addEffect(T effect){
+		if(!effects.contains(effect))
+			effects.add(effect);
 		return effect;
 	}
 	/**
@@ -1113,11 +1067,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @return added unit
 	 */
 	public static final <T extends Unit>T addUnit(T unit) {
-		characters.add(unit);
+		if(!units.contains(unit))
+			units.add(unit);
 		return unit;
 	}
 	public static final <T extends Unit>T replaceUnit(Unit targetUnit,T newUnit){
-		newUnit.getDynam().setAllBySample(targetUnit.getDynam());
+		newUnit.getDynam().setAll(targetUnit.getDynam());
 		deleteUnit(targetUnit);
 		addUnit(newUnit);
 		return newUnit;
@@ -1128,7 +1083,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @return added structure
 	 */
 	public static final <T extends Structure>T addStructure(T structure) {
-		structures.add(structure);
+		if(!structures.contains(structure))
+			structures.add(structure);
 		return structure;
 	}
 	/**
@@ -1137,7 +1093,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @return added vegetation
 	 */
 	public static final <T extends Vegetation>T addVegetation(T vegetation){
-		vegetations.add(vegetation);
+		if(!vegetations.contains(vegetation))
+			vegetations.add(vegetation);
 		return vegetation;
 	}
 	/**
@@ -1274,7 +1231,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		ErrorCounter.clear();
 		gameFrame = 0;
 		System.gc();
-		System.out.println("add characters to the game");
+		System.out.println("add units to the game");
 		engine.loadResource();
 		engine.openStage();
 	}
@@ -1398,34 +1355,34 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				return name.endsWith(".class");
 			}
 		};
-		File charaFolder = null;
+		File unitFolder = null;
 		try{
-			charaFolder = new File(url.toURI());
+			unitFolder = new File(url.toURI());
 		}catch(URISyntaxException | NullPointerException e){
 			System.out.println("Unable to load Unit class.");
 		}
-		if(charaFolder == null){
+		if(unitFolder == null){
 			System.out.println("Pass does not exist.");
 			return new Unit[0];
 		}
 		int classAmount = 0;
-		final Unit[] charaClass = new Unit[64];
-		for(String className : charaFolder.list(classFilter)){
+		final Unit[] unitClass = new Unit[64];
+		for(String unitName : unitFolder.list(classFilter)){
 			try{
-				final Object obj = Class.forName("chara." + className.substring(0,className.length() - 6)).newInstance();
+				final Object obj = Class.forName("unit." + unitName.substring(0,unitName.length() - 6)).newInstance();
 				if(obj instanceof Unit){
 					final Unit cls = (Unit)obj;
 					cls.loadImageData();
 					cls.loadSoundData();
-					charaClass[classAmount++] = cls;
+					unitClass[classAmount++] = cls;
 				}
 			}catch(InstantiationException e) {
-				System.out.println("ignored abstract class: " + className);
+				System.out.println("ignored abstract class: " + unitName);
 			}catch(ClassNotFoundException | IllegalAccessException e){
 				System.out.println(e);
 			}
 		}
-		return Arrays.copyOf(charaClass,classAmount);
+		return Arrays.copyOf(unitClass,classAmount);
 	}
 	
 	//PaintTool
@@ -1761,6 +1718,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			return 0.0;
 		else
 			return Math.random()*value*2 - value;
+	}
+	public static final int arrangeIn(int value, int min, int max) {
+		if(value < min)
+			return min;
+		if(value > max)
+			return max;
+		return value;
 	}
 	//message window
 	/**

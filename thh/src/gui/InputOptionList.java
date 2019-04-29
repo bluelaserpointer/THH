@@ -73,8 +73,10 @@ public class InputOptionList extends GUIParts{
 	}
 	@Override
 	public void clicked() {
-		if(hoveredPosition != GHQ.NONE)
+		if(hoveredPosition != GHQ.NONE) {
 			label.setText(hoveredString);
+			label.typeEnded(hoveredString);
+		}
 	}
 	@Override
 	public void mouseOvered() {

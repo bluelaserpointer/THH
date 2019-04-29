@@ -8,6 +8,27 @@ import physicis.Coordinate;
 import physicis.HasCoordinate;
 
 public interface HitInteractable extends HasCoordinate,HasHitShape,HasStandpoint,HasBoundingBox{
+	public static final HitInteractable NULL_HIT_INTERACTABLE = new HitInteractable() {
+
+		@Override
+		public Coordinate getCoordinate() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public HitShape getHitShape() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Standpoint getStandpoint() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	};
 	public default boolean isHit(HitInteractable target) {
 		return !isFriend(target) && getHitShape().intersects(getCoordinate(), target, target.getCoordinate());
 	}

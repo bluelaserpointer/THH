@@ -7,11 +7,13 @@ import core.GHQ;
 import core.HitInteractable;
 import core.Standpoint;
 import geom.HitShape;
+import geom.Square;
 import paint.DotPaint;
 import paint.HasDotPaint;
 import physicis.DstCntDynam;
 import physicis.HasDynam;
 import unit.Unit;
+import weapon.Weapon;
 
 /**
  * A primal class for managing bullet.
@@ -24,217 +26,259 @@ public class Bullet extends Entity implements HitInteractable,HasDotPaint{
 	
 	private int idleExecuted = 0;
 
-	public final HasDynam source; //an information source of user
-	public final BulletScript SCRIPT; //a script of unique behaviors
-	public final Standpoint standpoint;
-	public final HitShape hitshape;
+	public final Weapon ORIGIN_WEAPON;
+	public final HasDynam SHOOTER; //an information source of user
+	public final Standpoint STANDPOINT;
+	public HitShape hitShape;
 	
 	public String name;
-	public final int
-		SIZE,
-		INITIAL_ATK;
 	public int
-		atk,
-		offSet;
-	private final int
-		LIMIT_FRAME,
-		LIMIT_RANGE;
-	private int
+		damage;
+	public int
+		limitFrame,
+		limitRange;
+	public int
 		penetration,
 		reflection;
-	private final double
-		ACCEL;
-	public final DotPaint
+	public double
+		accel;
+	public DotPaint
 		paintScript;
-	public final boolean
-		IS_LASER;
-	public Bullet(HasDynam source) {
-		super(new DstCntDynam(BulletBlueprint.dynam), BulletBlueprint.nowFrame);
+	public Bullet(Weapon originWeapon, HasDynam shooter, Standpoint standpoint) {
+		super(new DstCntDynam(shooter.getDynam()), GHQ.getNowFrame());
 		UNIQUE_ID = ++nowMaxUniqueID;
-		this.source = source;
-		SCRIPT = BulletBlueprint.script != null ? BulletBlueprint.script : BulletBlueprint.DEFAULT_SCRIPT;
-		name = BulletBlueprint.name;
-		SIZE = BulletBlueprint.size;
-		LIMIT_FRAME = BulletBlueprint.limitFrame;
-		LIMIT_RANGE = BulletBlueprint.limitRange;
-		standpoint = new Standpoint(BulletBlueprint.standpointGroup);
-		hitshape = BulletBlueprint.hitshape;
-		INITIAL_ATK = atk = BulletBlueprint.atk;
-		offSet = BulletBlueprint.offSet;
-		penetration = BulletBlueprint.penetration;
-		reflection = BulletBlueprint.reflection;
-		ACCEL = BulletBlueprint.accel;
-		paintScript = BulletBlueprint.paintScript;
-		IS_LASER = BulletBlueprint.isLaser;
+		ORIGIN_WEAPON = originWeapon;
+		SHOOTER = shooter;
+		name = GHQ.NOT_NAMED;
+		hitShape = new Square(10);
+		damage = 0;
+		limitFrame = GHQ.MAX;
+		limitRange = GHQ.MAX;
+		this.STANDPOINT = standpoint;
+		penetration = 1;
+		reflection = 0;
+		accel = 0.0;
+		paintScript = DotPaint.BLANK_SCRIPT;
 	}
 	public Bullet(Bullet bullet) {
 		super(new DstCntDynam(bullet.dynam), GHQ.getNowFrame());
-		source = bullet.source;
 		UNIQUE_ID = ++nowMaxUniqueID;
-		SCRIPT = bullet.SCRIPT != null ? bullet.SCRIPT : BulletBlueprint.DEFAULT_SCRIPT;
+		ORIGIN_WEAPON = bullet.ORIGIN_WEAPON;
+		SHOOTER = bullet.SHOOTER;
 		name = bullet.name;
-		SIZE = bullet.SIZE;
-		LIMIT_FRAME = bullet.LIMIT_FRAME;
-		LIMIT_RANGE = bullet.LIMIT_RANGE;
-		standpoint = new Standpoint(bullet.standpoint.get());
-		hitshape = bullet.hitshape.clone();
-		INITIAL_ATK = atk = bullet.atk;
-		offSet = bullet.offSet;
+		hitShape = bullet.hitShape.clone();
+		damage = 0;
+		limitFrame = bullet.limitFrame;
+		limitRange = bullet.limitRange;
+		STANDPOINT = new Standpoint(bullet.STANDPOINT.get());
 		penetration = bullet.penetration;
 		reflection = bullet.reflection;
-		ACCEL = bullet.ACCEL;
+		accel = bullet.accel;
 		paintScript = bullet.paintScript;
-		IS_LASER = bullet.IS_LASER;
 	}
+	
 	@Override
+	public boolean idle() {
+		return defaultIdle();
+	}
 	public final boolean defaultIdle() {
-		if(allDeleteCheck())
+		if(defaultDeleteCheck())
 			return false;
-		dynam();
+		if(!dynamIdle())
+			return false;
+		paint();
 		return true;
 	}
-	public final boolean allDeleteCheck() {
-		if(lifeSpanCheck())
-			return true;
-		if(rangeCheck())
-			return true;
-		if(inStageCheck())
-			return true;
+	public final boolean defaultDeleteCheck() {
+		if(checkIsOutofLifeSpan())
+			return outOfLifeSpan();
+		if(checkIsOutOfRange())
+			return outOfRange();
+		if(isOutOfStage())
+			return outOfStage();
 		return false;
 	}
-	public final boolean lifeSpanCheck() {
-		return lifeSpanCheck(LIMIT_FRAME);
+	public boolean checkIsOutofLifeSpan(){
+		return checkIsOutofLifeSpan(limitFrame);
 	}
-	public final boolean lifeSpanCheck(int limitFrame) {
-		if(limitFrame <= GHQ.getPassedFrame(super.INITIAL_FRAME) && SCRIPT.bulletOutOfLifeSpan(this)) {
-			GHQ.deleteBullet(this);
-			return true;
-		}
-		return false;
+	public boolean checkIsOutofLifeSpan(int lifeSpan) {
+		return lifeSpan <= GHQ.getPassedFrame(super.INITIAL_FRAME);
 	}
-	public final boolean rangeCheck() {
-		return lifeSpanCheck(LIMIT_FRAME);
+	public boolean checkIsOutOfRange(){
+		return checkIsOutOfRange(limitRange);
 	}
-	public final boolean rangeCheck(int limitRange) {
-		if(limitRange <= ((DstCntDynam)dynam).getMovedDistance() && SCRIPT.bulletOutOfRange(this)){
-			GHQ.deleteBullet(this);
-			return true;
-		}
-		return false;
+	public boolean checkIsOutOfRange(int range) {
+		return range <= ((DstCntDynam)dynam).getMovedDistance();
 	}
-	public final boolean inStageCheck() {
-		if(!dynam.inStage()){
-			GHQ.deleteBullet(this);
-			return true;
-		}
-		return false;
+	public boolean isOutOfStage() {
+		return !dynam.inStage();
 	}
-	public final boolean dynam() {
-		return dynam(true,GHQ.MAX);
+	public boolean outOfLifeSpan() {
+		delete();
+		return true;
 	}
-	public final boolean dynam(boolean doHit) {
-		return dynam(doHit,GHQ.MAX);
+	public boolean outOfRange() {
+		delete();
+		return true;
 	}
-	public final boolean dynam(int maxGap) {
-		return dynam(true,maxGap);
+	public boolean outOfStage() {
+		delete();
+		return true;
 	}
-	public final boolean dynam(boolean doHit,int maxGap) {
-		//speed & acceleration
-		dynam.move();
-		dynam.addSpeed(ACCEL,true);
-		if(!doHit)
-			return true;
-		//landscape collision
-		if(SCRIPT.bulletIfHitLandscape(this)){
-			SCRIPT.bulletHitObject(this);
-			if(penetration > 0) {
-				if(penetration != GHQ.MAX)
-					penetration--;
-			}else {
-				if(reflection > 0) {
-					if(reflection != GHQ.MAX)
-						reflection--;
-					//edit reflection process
-				}else if(SCRIPT.bulletOutOfDurability(this)) {
-					GHQ.deleteBullet(this);
+	public final boolean dynamIdle() {
+		return dynamIdle(GHQ.MAX);
+	}
+	public final boolean dynamIdle(int maxGap) {
+		double length = GHQ.MAX;
+		do {
+			////////////
+			//speed
+			////////////
+			length = dynam.move(Math.min(length, maxGap));
+			
+			////////////
+			//landscape collision
+			////////////
+			if(judgeLandscapeCollision())
+				return !hitLandScapeDeleteCheck();
+			
+			////////////
+			//entity collision
+			////////////
+			for(Unit unit : GHQ.getHitUnits(GHQ.getUnits_standpoint(this, false),this)) {
+				if(hitUnitDeleteCheck(unit))
 					return false;
-				}
 			}
-		}
-		//entity collision
-		for(Unit chara : GHQ.getHitCharacters(GHQ.getCharacters_standpoint(this, false),this)) {
-			chara.damage_amount(atk);
-			SCRIPT.bulletHitObject(this);
-			if(penetration > 0) {
-				if(penetration != GHQ.MAX)
-					penetration--;
-			}else if(SCRIPT.bulletOutOfDurability(this)) {
-				GHQ.deleteBullet(this);
-				return false;
-			}
-		}
+		} while(length > 0);
+		
+		////////////
+		//acceleration
+		////////////
+		dynam.addSpeed(accel,true);
 		return true;
+	}
+	public void paint() {
+		defaultPaint();
 	}
 	@Override
 	public final void defaultPaint() {
 		paintScript.dotPaint_turn((int)dynam.getX(),(int)dynam.getY(), dynam.getAngle());
 	}
-	//tool
+	//extends
+	public boolean judgeLandscapeCollision() {
+		return GHQ.hitStructure(this);
+	}
+	public boolean hitLandScapeDeleteCheck() {
+		hitObject();
+		if(penetration > 0) {
+			if(penetration != GHQ.MAX)
+				penetration--;
+		}else {
+			if(reflection > 0) {
+				if(reflection != GHQ.MAX)
+					reflection--;
+				//edit reflection process
+			}else {
+				return outOfPenetration();
+			}
+		}
+		return false;
+	}
+	public boolean hitUnitDeleteCheck(Unit unit) {
+		unit.damage_amount(damage);
+		hitObject();
+		if(penetration > 0) {
+			if(penetration != GHQ.MAX)
+				penetration--;
+		}else {
+			return outOfPenetration();
+		}
+		return false;
+	}
+	public boolean outOfPenetration() {
+		GHQ.deleteBullet(this);
+		return true;
+	}
+	public void hitObject() {
+	}
+	public void beforeDelete() {
+	}
+	public final void delete() {
+		beforeDelete();
+		GHQ.deleteBullet(this);
+	}
+	
+	//////////////
+	//clone and split
+	//////////////
+	public Bullet getOriginal() {
+		return new Bullet(this);
+	}
+	public final Bullet getClone() {
+		Bullet BULLET = getOriginal();
+		BULLET.dynam.setAll(dynam);
+		return BULLET;
+	}
+	public final Bullet addCloneToGHQ() {
+		return GHQ.addBullet(getClone());
+	}
 	public void split_xMirror(double dx,double dy) {
 		this.dynam.addXY_allowsAngle(-dx/2,dy);
-		GHQ.createBullet(this).dynam.addX_allowsAngle(dx);
+		addCloneToGHQ().dynam.addX_allowsAngle(dx);
 	}
 	public void split_yMirror(double dx,double dy) {
 		this.dynam.addXY_allowsAngle(dx,-dy/2);
-		GHQ.createBullet(this).dynam.addY_allowsAngle(dy);
+		addCloneToGHQ().dynam.addY_allowsAngle(dy);
 	}
 	public void split_Round(int radius,int amount) {
 		final double D_ANGLE = 2*PI/amount;
 		for(int i = 1;i < amount;i++)
-			GHQ.createBullet(this).dynam.addXY_DA(radius, D_ANGLE*i);
+			addCloneToGHQ().dynam.addXY_DA(radius, D_ANGLE*i);
 		this.dynam.addXY_DA(radius, 0);
 	}
 	public void clone_Round(int radius,int amount) {
 		final double D_ANGLE = 2*PI/amount;
 		for(int i = 0;i < amount;i++)
-			GHQ.createBullet(this).dynam.addXY_DA(radius, D_ANGLE*i);
+			addCloneToGHQ().dynam.addXY_DA(radius, D_ANGLE*i);
 	}
 	public void split_Burst(int radius,int amount,double speed) {
 		final double D_ANGLE = 2*PI/amount;
 		for(int i = 1;i < amount;i++)
-			GHQ.createBullet(this).dynam.fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
+			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
 		this.dynam.fastParaAdd_DASpd(radius, 0, speed);
 	}
 	public void clone_Burst(int radius,int amount,double speed) {
 		final double D_ANGLE = 2*PI/amount;
 		for(int i = 0;i < amount;i++)
-			GHQ.createBullet(this).dynam.fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
+			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
 	}
 	public void split_NWay(int radius,double[] angles,double speed) {
 		for(int i = 1;i < angles.length;i++)
-			GHQ.createBullet(this).dynam.fastParaAdd_DASpd(radius, angles[i], speed);
+			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, angles[i], speed);
 		this.dynam.fastParaAdd_DASpd(radius, angles[0], speed);
 	}
 	public void clone_NWay(int radius,double[] angles,double speed) {
 		for(double angle : angles)
-			GHQ.createBullet(this).dynam.fastParaAdd_DASpd(radius, angle, speed);
+			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, angle, speed);
 	}
 	public void split_NWay(int radius,double marginAngle,double amount,double speed) {
 		this.dynam.spin(-marginAngle*(double)(amount - 1)/2.0);
 		for(int i = 1;i < amount;i++)
-			GHQ.createBullet(this).dynam.fastParaAdd_DASpd(radius, marginAngle*i, speed);
+			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, marginAngle*i, speed);
 		this.dynam.fastParaAdd_DSpd(radius, speed);
 	}
 	public void clone_NWay(int radius,double marginAngle,double amount,double speed) {
 		this.dynam.spin(-marginAngle*(double)(amount - 1)/2.0);
 		for(int i = 0;i < amount;i++)
-			GHQ.createBullet(this).dynam.fastParaAdd_DASpd(radius, marginAngle*i, speed);
+			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, marginAngle*i, speed);
 	}
+
+	//////////////
+	//information
+	//////////////
 	public int getPassedFrame() {
 		return GHQ.getPassedFrame(INITIAL_FRAME);
 	}
-	
-	//information
 	public final int getIdleCount() {
 		return idleExecuted;
 	}
@@ -246,11 +290,11 @@ public class Bullet extends Entity implements HitInteractable,HasDotPaint{
 	}
 	@Override
 	public final Standpoint getStandpoint() {
-		return standpoint;
+		return STANDPOINT;
 	}
 	@Override
 	public final HitShape getHitShape() {
-		return hitshape;
+		return hitShape;
 	}
 	@Override
 	public final DotPaint getPaintScript() {

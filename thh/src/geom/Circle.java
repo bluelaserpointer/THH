@@ -13,7 +13,7 @@ public class Circle extends HitShape{
 	public boolean intersects(Coordinate coordinate1, HitShape shape, Coordinate coordinate2) {
 		if(shape instanceof Circle) {
 			final double DR = RADIUS + ((Circle)shape).RADIUS;
-			return coordinate1.getDistance(coordinate2) < DR*DR;
+			return coordinate1.getDistancePow(coordinate2) < DR*DR;
 		}else if(shape instanceof Square) {
 			// TODO lacking strictness
 			return coordinate1.isCloser_DXDY(coordinate2,(RADIUS + ((Square)shape).SIDE)/2);

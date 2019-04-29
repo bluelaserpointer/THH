@@ -1,7 +1,7 @@
 package engine;
 
 import static java.awt.event.KeyEvent.*;
-import static thhunit.THHUnit.*;
+import static thhunit.THH_BasicUnit.*;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -24,7 +24,7 @@ import thhunit.WhiteMan;
 import vegetation.Vegetation;
 
 public class Engine_THH1 extends StageEngine implements MessageSource{
-	private static THHUnit[] friends;
+	private static THH_BasicUnit[] friends;
 	private static final Stage_THH1[] stages = new Stage_THH1[1];
 	private int nowStage;
 	private int stageW,stageH;
@@ -95,6 +95,14 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		GHQ.addListenerEx(s_keyL);
 		GHQ.addListenerEx(s_numKeyL);
 		GHQ.addListenerEx(d_numKeyL);
+		/////////////////////////////////
+		//bullets && effects
+		/////////////////////////////////
+		THH_BulletLibrary.loadResource();
+		THH_EffectLibrary.loadResource();
+		/////////////////////////////////
+		//units
+		/////////////////////////////////
 		//formation
 		formationCenterX = GHQ.getScreenW()/2;formationCenterY = GHQ.getScreenH() - 100;
 		formationsX = new int[2];
@@ -102,7 +110,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		formationsX[0] = -15;formationsY[0] = 0;
 		formationsX[1] = +15;formationsY[1] = 0;
 		//friend
-		friends = new THHUnit[2];
+		friends = new THH_BasicUnit[2];
 		friends[0] = Unit.initialSpawn(new Marisa(FRIEND),formationCenterX + formationsX[0],formationCenterY + formationsY[0]);
 		friends[0].status.set(HP, 4000);
 		friends[1] = Unit.initialSpawn(new Reimu(FRIEND),formationCenterX + formationsX[1],formationCenterY + formationsY[1]);
@@ -147,7 +155,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 	}
 	@Override
 	public final StageSaveData getStageSaveData() {
-		return new Stage_THH1(GHQ.getCharacters(),GHQ.getStructures(),GHQ.getVegetations());
+		return new Stage_THH1(GHQ.getUnits(),GHQ.getStructures(),GHQ.getVegetations());
 	}
 	//idle
 	private int gameFrame;
@@ -180,13 +188,11 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 			case 0:
 				for(int i = 0;i < friends.length;i++)
 					friends[i].teleportTo(formationCenterX + formationsX[i], formationCenterY + formationsY[i]);
-				//friend
-				GHQ.defaultCharaIdle(friends);
 				//enemy
-				for(Unit enemy : GHQ.getCharacterList()) {
+				for(Unit enemy : GHQ.getUnitList()) {
 					if(!enemy.isAlive())
 						continue;
-					GHQ.defaultCharaIdle(enemy);
+					GHQ.defaultUnitIdle(enemy);
 					if(enemy.getName() == "FairyA") {
 						final int FRAME = gameFrame % 240;
 						if(FRAME < 100)
@@ -211,7 +217,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 						friends[i].teleportTo(formationCenterX + formationsX[i], formationCenterY + formationsY[i]);
 				}
 				//shot
-				for(Unit chara : friends)
+				for(THH_BasicUnit chara : friends)
 					chara.attackOrder = s_mouseL.hasButton1Event();
 				//spell
 				{
@@ -224,8 +230,8 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 				}
 				break;
 			}
-		}else if(stopEventKind == GHQ.STOP || stopEventKind == GHQ.NO_ANM_STOP)
-			GHQ.defaultCharaIdle(GHQ.getCharacterList());
+		}else if(stopEventKind == GHQ.STOP || stopEventKind == GHQ.STOP)
+			GHQ.defaultCharaIdle(GHQ.getUnitList());
 		GHQ.defaultEntityIdle();
 		//focus
 		g2.setColor(new Color(200,120,10,100));
@@ -239,7 +245,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		if(!editor.isEnabled()){ //game GUI
 			GHQ.translateForGUI(true);
 			int pos = 1;
-			for(THHUnit chara : friends) 
+			for(THH_BasicUnit chara : friends) 
 				chara.iconPaint.rectPaint(pos++*90 + 10, GHQ.getScreenH() - 40, 80, 30);
 			GHQ.translateForGUI(false);
 		}

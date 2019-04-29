@@ -58,27 +58,26 @@ public class Coordinate implements Serializable{
 		return y;
 	}
 	public boolean inStage() {
-		return GHQ.inStage((int)x,(int)y);
+		return GHQ.inStage((int)x, (int)y);
 	}
 	public double getDistance(HasCoordinate targetCI) {
 		return targetCI == null ? GHQ.NONE : getDistance(targetCI.getCoordinate());
 	}
 	public double getDistance(Coordinate coordinate) {
-		return getDistance(coordinate.x,coordinate.y);
+		return getDistance(coordinate.x, coordinate.y);
 	}
-	public double getDistance(double x,double y) {
+	public double getDistance(double x, double y) {
+		return sqrt(getDistancePow(x, y));
+	}
+	public double getDistancePow(double x, double y) {
 		final double DX = x - this.x,DY = y - this.y;
-		if(DX == 0.0) {
-			if(DY == 0.0)
-				return 0.0;
-			else
-				return DY;
-		}else {
-			if(DY == 0.0)
-				return DX;
-			else
-				return sqrt(DX*DX + DY*DY);
-		}
+		return DX*DX + DY*DY;
+	}
+	public double getDistancePow(Coordinate coordinate) {
+		return getDistancePow(coordinate.x, coordinate.y);
+	}
+	public double getDistancePow(HasCoordinate targetCI) {
+		return targetCI == null ? GHQ.NONE : getDistancePow(targetCI.getCoordinate());
 	}
 	public double getDX(Coordinate coordinate) {
 		return coordinate.x - x;

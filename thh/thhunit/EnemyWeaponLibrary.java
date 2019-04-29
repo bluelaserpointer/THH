@@ -1,15 +1,14 @@
 package thhunit;
 
 import static java.lang.Math.*;
-import bullet.BulletAgent;
-import bullet.BulletBlueprint;
+
 import core.GHQ;
 import paint.DotPaint;
 import unit.Unit;
 import weapon.Weapon;
 import weapon.WeaponInfo;
 
-public class EnemyBulletLibrary extends BulletAgent{
+public class EnemyWeaponLibrary{
 	public static final int lightBall_S = 0,lightBall_ROUND = 1,BLACK_SLASH_BURST = 2,HEAL_SHOTGUN = 3;
 	
 	public static Weapon getWeaponController(int bulletKind) {
@@ -39,40 +38,19 @@ public class EnemyBulletLibrary extends BulletAgent{
 		}
 	}
 	public static void inputBulletInfo(Unit user,int bulletKind,DotPaint paintScript,Unit targetChara) {
-		BulletBlueprint.clear(BulletBlueprint.DEFAULT_SCRIPT,user.getDynam());
-		BulletBlueprint.dynam.setAngle(targetChara);
-		BulletBlueprint.standpointGroup = user.getStandpoint().get();
 		switch(bulletKind) {
 		case lightBall_S:
-			BulletBlueprint.name = "lightBall_S";
-			BulletBlueprint.dynam.fastParaAdd_DSpd(10,3);
-			BulletBlueprint.atk = 20;
-			BulletBlueprint.paintScript = paintScript;
-			GHQ.createBullet(user);
+			GHQ.addBullet(new THH_BulletLibrary.LightBall(user));
 			break;
 		case lightBall_ROUND:
-			BulletBlueprint.name = "lightBall_ROUND";
-			BulletBlueprint.atk = 20;
-			BulletBlueprint.paintScript = paintScript;
-			GHQ.createBullet(user).split_Burst(5, 10, 12.0);
+			GHQ.addBullet(new THH_BulletLibrary.LightBall(user)).split_Burst(5, 10, 12.0);
 			break;
 		case HEAL_SHOTGUN:
-			BulletBlueprint.name = "HEAL_SHOTGUN";
-			BulletBlueprint.atk = -20;
-			BulletBlueprint.limitRange = 150;
-			BulletBlueprint.paintScript = paintScript;
-			GHQ.createBullet(user).split_Burst(10, 16, 15.0);
+			GHQ.addBullet(new THH_BulletLibrary.HealShotgun(user)).split_Burst(10, 16, 15.0);
 			break;
 		case BLACK_SLASH_BURST:
-			BulletBlueprint.name = "BLACK_SLASH_BURST";
-			BulletBlueprint.size = 10;
-			BulletBlueprint.atk = 20;
-			BulletBlueprint.offSet = 3;
-			BulletBlueprint.reflection = 1;
-			BulletBlueprint.limitFrame = 200;
-			BulletBlueprint.paintScript = paintScript;
 			final double DEG10 = PI/18;
-			GHQ.createBullet(user).split_NWay(10,new double[] {-DEG10, 0, +DEG10},20);
+			GHQ.addBullet(new THH_BulletLibrary.BlackSlashBurst(user)).split_NWay(10,new double[] {-DEG10, 0.0, +DEG10},20);
 			break;
 		}
 	}

@@ -61,10 +61,19 @@ public class TableStorageViewer<T extends HasDotPaint> extends GUIParts{
 	@Override
 	public void idle() {
 		//paint
-		for(int xi = 0;xi < storageW;xi++) {
-			for(int yi = 0;yi < storageH;yi++) {
-				final int INDEX = xi + yi*storageW;
-				paintOfCell(INDEX < storage.size() ? storage.get(INDEX) : null, super.x + xi*CELL_SIZE, super.y + yi*CELL_SIZE);
+		if(storage instanceof TableStorage<?>) {
+			storageW = ((TableStorage<?>)storage).getStorageW();
+			storageH = ((TableStorage<?>)storage).getStorageH();
+			for(int xi = 0;xi < storageW;xi++) {
+				for(int yi = 0;yi < storageH;yi++)
+					paintOfCell(((TableStorage<? extends HasDotPaint>) storage).getCell(xi, yi), super.x + xi*CELL_SIZE, super.y + yi*CELL_SIZE);
+			}
+		}else {
+			for(int xi = 0;xi < storageW;xi++) {
+				for(int yi = 0;yi < storageH;yi++) {
+					final int INDEX = xi + yi*storageW;
+					paintOfCell(INDEX < storage.size() ? storage.get(INDEX) : null, super.x + xi*CELL_SIZE, super.y + yi*CELL_SIZE);
+				}
 			}
 		}
 	}

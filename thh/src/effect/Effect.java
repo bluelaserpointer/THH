@@ -18,109 +18,177 @@ public class Effect extends Entity implements HasDotPaint{
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;
 
-	public final HasDynam source; //an information source of user
-	public final EffectScript SCRIPT;
-	
-	public String name;
-	public final int
-		SIZE,
-		LIMIT_FRAME,
-		LIMIT_RANGE;
-	private final double
-		ACCEL;
-	public final DotPaint
+	public final HasDynam SHOOTER;
+	public String
+		name;
+	public int
+		limitFrame,
+		limitRange;
+	public double
+		accel;
+	public DotPaint
 		paintScript;
 	
-	public Effect(HasDynam source) {
-		super(new DstCntDynam(EffectBlueprint.dynam), EffectBlueprint.nowFrame);
+	public Effect() {
+		super(new DstCntDynam(), GHQ.getNowFrame());
+		SHOOTER = HasDynam.NULL_DYNAM_SOURCE;
 		UNIQUE_ID = ++nowMaxUniqueID;
-		this.source = source;
-		this.SCRIPT = EffectBlueprint.script != null ? EffectBlueprint.script : EffectBlueprint.DEFAULT_SCRIPT;
-		name = EffectBlueprint.name;
-		SIZE = EffectBlueprint.size;
-		LIMIT_FRAME = EffectBlueprint.limitFrame;
-		LIMIT_RANGE = EffectBlueprint.limitRange;
-		ACCEL = EffectBlueprint.accel;
-		paintScript = EffectBlueprint.paintScript;
+		name = GHQ.NOT_NAMED;
+		limitFrame = GHQ.MAX;
+		limitRange = GHQ.MAX;
+		accel = 0.0;
+		paintScript = DotPaint.BLANK_SCRIPT;
 	}
-	
+	public Effect(HasDynam source) {
+		super(new DstCntDynam(source.getDynam()), GHQ.getNowFrame());
+		SHOOTER = source;
+		UNIQUE_ID = ++nowMaxUniqueID;
+		name = GHQ.NOT_NAMED;
+		limitFrame = GHQ.MAX;
+		limitRange = GHQ.MAX;
+		accel = 0.0;
+		paintScript = DotPaint.BLANK_SCRIPT;
+	}
 	public Effect(Effect effect) {
 		super(new DstCntDynam(effect.dynam), GHQ.getNowFrame());
+		SHOOTER = effect.SHOOTER;
 		UNIQUE_ID = ++nowMaxUniqueID;
-		this.source = effect.source;
-		SCRIPT = effect.SCRIPT != null ? effect.SCRIPT : EffectBlueprint.DEFAULT_SCRIPT;
 		name = effect.name;
-		SIZE = effect.SIZE;
-		LIMIT_FRAME = effect.LIMIT_FRAME;
-		LIMIT_RANGE = effect.LIMIT_RANGE;
-		ACCEL = effect.ACCEL;
+		limitFrame = effect.limitFrame;
+		limitRange = effect.limitRange;
+		accel = effect.accel;
 		paintScript = effect.paintScript;
 	}
 
 	@Override
+	public boolean idle() {
+		return defaultIdle();
+	}
 	public final boolean defaultIdle() {
 		//LifeSpan & Range
-		if(LIMIT_FRAME <= GHQ.getPassedFrame(super.INITIAL_FRAME)) {
-			SCRIPT.effectOutOfLifeSpan(this);
-			GHQ.deleteEffect(this);
+		if(isOutOfLifeSpan() && outOfLifeSpanProcess())
 			return false;
-		}
-		if(LIMIT_RANGE <= ((DstCntDynam)dynam).getMovedDistance()){
-			SCRIPT.effectOutOfRange(this);
-			GHQ.deleteEffect(this);
+		if(isOutOfRange() && outOfRangeProcess())
 			return false;
-		}
 		//OutOfStage
-		if(!dynam.inStage()){
-			GHQ.deleteEffect(this);
+		if(isOutOfRange() && outOfStageProcess())
 			return false;
-		}
 		//Speed & Acceleration
 		dynam.move();
-		dynam.addSpeed(ACCEL,true);
+		dynam.addSpeed(accel,true);
+		//Paint
+		paint();
 		return true;
+	}
+	public void paint() {
+		defaultPaint();
 	}
 	@Override
 	public final void defaultPaint() {
 		paintScript.dotPaint_turn((int)dynam.getX(), (int)dynam.getY(), dynam.getAngle());
 	}
 	
+	//extends
+	public boolean isOutOfLifeSpan() {
+		return limitFrame <= GHQ.getPassedFrame(super.INITIAL_FRAME);
+	}
+	public boolean isOutOfRange() {
+		return limitRange <= ((DstCntDynam)dynam).getMovedDistance();
+	}
+	public boolean isOutOfStage() {
+		return !dynam.inStage();
+	}
+	public boolean outOfLifeSpanProcess() {
+		delete();
+		return true;
+	}
+	public boolean outOfRangeProcess() {
+		delete();
+		return true;
+	}
+	public boolean outOfStageProcess() {
+		delete();
+		return true;
+	}
+	public void beforeDelete() {
+		
+	}
+	public final void delete() {
+		beforeDelete();
+		GHQ.deleteEffect(this);
+	}
+	
 	//tool
+	//////////////
+	//paint
+	//////////////
+	public final void fadingPaint() {
+		GHQ.setImageAlpha((float)(1.0 - (double)GHQ.getPassedFrame(INITIAL_FRAME)/limitFrame));
+		defaultPaint();
+		GHQ.setImageAlpha();
+	}
+	public final void fadingPaint(int delay) {
+		final int PASSED_FRAME = GHQ.getPassedFrame(INITIAL_FRAME);
+		if(PASSED_FRAME < delay)
+			defaultPaint();
+		else {
+			GHQ.setImageAlpha((float)(1.0 - (double)(PASSED_FRAME - delay)/(limitFrame - delay)));
+			defaultPaint();
+			GHQ.setImageAlpha();
+		}
+	}
+	
+	//////////////
+	//clone and split
+	//////////////
+	public Effect getOriginal() {
+		return new Effect(this);
+	}
+	public Effect getClone() {
+		final Effect EFFECT = getOriginal();
+		EFFECT.dynam.setAll(dynam);
+		return EFFECT;
+	}
+	public final Effect addCloneToGHQ() {
+		return GHQ.addEffect(getClone());
+	}
 	public void split_xMirror(double dx,double dy) {
 		this.dynam.addXY_allowsAngle(-dx/2,dy);
-		GHQ.createEffect(this).dynam.addX_allowsAngle(dx);
+		addCloneToGHQ().dynam.addX_allowsAngle(dx);
 	}
 	public void split_yMirror(double dx,double dy) {
 		this.dynam.addXY_allowsAngle(dx,-dy/2);
-		GHQ.createEffect(this).dynam.addY_allowsAngle(dy);
+		addCloneToGHQ().dynam.addY_allowsAngle(dy);
 	}
 	public void split_Round(int radius,int amount) {
 		final double D_ANGLE = 2*PI/amount;
 		for(int i = 1;i < amount;i++)
-			GHQ.createEffect(this).dynam.addXY_DA(radius, D_ANGLE*i);
+			addCloneToGHQ().dynam.addXY_DA(radius, D_ANGLE*i);
 		this.dynam.addXY_DA(radius, 0);
 	}
 	public void clone_Round(int radius,int amount) {
 		final double D_ANGLE = 2*PI/amount;
 		for(int i = 0;i < amount;i++)
-			GHQ.createEffect(this).dynam.addXY_DA(radius, D_ANGLE*i);
+			addCloneToGHQ().dynam.addXY_DA(radius, D_ANGLE*i);
 	}
 	public void split_Burst(int radius,int amount,double speed) {
 		final double D_ANGLE = 2*PI/amount;
 		for(int i = 1;i < amount;i++)
-			GHQ.createEffect(this).dynam.fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
+			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
 		this.dynam.fastParaAdd_DASpd(radius, 0 ,speed);
 	}
 	public void clone_Burst(int radius,int amount,double speed) {
 		final double D_ANGLE = 2*PI/amount;
 		for(int i = 0;i < amount;i++)
-			GHQ.createEffect(this).dynam.fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
+			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
 	}
+	
+	//////////////
+	//information
+	//////////////
 	public int getPassedFrame() {
 		return GHQ.getPassedFrame(INITIAL_FRAME);
 	}
-	
-	//information
 	@Override
 	public final DotPaint getPaintScript() {
 		return paintScript;

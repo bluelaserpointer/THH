@@ -3,7 +3,6 @@ package unit;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
-import action.Action;
 import core.Entity;
 import core.ErrorCounter;
 import core.GHQ;
@@ -23,7 +22,6 @@ public abstract class Unit extends Entity implements MessageSource,HitInteractab
 	private static final long serialVersionUID = 7140005723063155203L;
 
 	protected static final int
-		//system
 		NONE = GHQ.NONE,
 		MAX = GHQ.MAX,
 		MIN = GHQ.MIN;
@@ -31,8 +29,10 @@ public abstract class Unit extends Entity implements MessageSource,HitInteractab
 	public String originalName = "";
 	public final HitShape hitshape;
 	public final Standpoint standpoint;
-	
+
+	/////////////
 	//Initialization
+	/////////////
 	public Unit(Dynam dynam, HitShape hitshape, int initialGroup) {
 		super(dynam);
 		this.hitshape = (hitshape != null ? hitshape : HitShape.NULL_HITSHAPE);
@@ -54,10 +54,12 @@ public abstract class Unit extends Entity implements MessageSource,HitInteractab
 	public void loadSoundData(){}
 	public void battleStarted(){}
 	
-	//idles
+	/////////////
+	//idle
+	/////////////
 	public static final int ACITIVE_CONS = 0,PASSIVE_CONS = 1,DYNAM = 2,PAINT_ANIMATED = 3,PAINT_FREEZED = 4,STOP_ALL = 5;
 	@Override
-	public final boolean defaultIdle() {
+	public final boolean idle() {
 		this.idle(ACITIVE_CONS);
 		return isAlive();
 	}
@@ -89,8 +91,11 @@ public abstract class Unit extends Entity implements MessageSource,HitInteractab
 	public void passiveCons() {};
 	public void dynam() {};
 	public void paint(boolean doAnimation) {};
-	
-	//move
+	public abstract int damage_amount(int value);
+
+	/////////////
+	//control
+	/////////////
 	public void moveRel(int dx,int dy) {
 		final Dynam DYNAM = getDynam();
 		DYNAM.approach(DYNAM.getX() + dx,DYNAM.getY() + dy, 10);
@@ -104,23 +109,12 @@ public abstract class Unit extends Entity implements MessageSource,HitInteractab
 	public void teleportTo(int x,int y) {
 		getCoordinate().setXY(x, y);
 	}
-	public abstract void loadActionPlan(Action action);
-	
-	//judge
-	@Override
-	public Rectangle2D getBoundingBox() {
-		final int DEFAULT_SIZE = 80;
-		final Coordinate COD = getCoordinate();
-		return new Rectangle2D.Double(COD.getX() - DEFAULT_SIZE/2,COD.getY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
-	}
-	//decrease
-	public abstract int damage_amount(int damage);
-	public abstract int damage_rate(double rate);
-
 	public abstract boolean kill(boolean force);
 	public void killed() {}
 	
+	/////////////
 	//information
+	/////////////
 	public String getName() {
 		return GHQ.NOT_NAMED;
 	}
@@ -129,23 +123,17 @@ public abstract class Unit extends Entity implements MessageSource,HitInteractab
 		return standpoint;
 	}
 	@Override
+	public Rectangle2D getBoundingBox() {
+		final int DEFAULT_SIZE = 80;
+		final Coordinate COD = getCoordinate();
+		return new Rectangle2D.Double(COD.getX() - DEFAULT_SIZE/2,COD.getY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
+	}
+	@Override
 	public boolean isHit(HitInteractable object) {
-		return isAlive() && !isFriend(object) && getHitShape().intersects(getCoordinate(), object, object.getCoordinate());
+		return isAlive() && !isFriend(object) && hitshape.intersects(getCoordinate(), object, object.getCoordinate());
 	}
 	public HitShape getHitShape() {
 		return hitshape;
 	}
 	public abstract boolean isAlive();
-	
-	//specialEvent
-	public int weaponChangeOrder;
-	public boolean attackOrder,moveOrder,dodgeOrder,spellOrder;
-	public void resetOrder() {
-		weaponChangeOrder = 0;
-		attackOrder = moveOrder = dodgeOrder = spellOrder = false;
-	}
-	public void resetSingleOrder() {
-		weaponChangeOrder = 0;
-		spellOrder = dodgeOrder = false;
-	}
 }

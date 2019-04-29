@@ -107,7 +107,7 @@ public class DefaultStageEditor extends GUIGroup{
 					//guide
 					switch(CB_placeKind.getSelection()) {
 					case POINTING:
-						mouseOveredObject = GHQ.getMouseOverChara();
+						mouseOveredObject = GHQ.getMouseOverUnit();
 						if(mouseOveredObject == null)
 							mouseOveredObject = GHQ.getMouseOverVegetation();
 						if(mouseOveredObject == null)
@@ -279,7 +279,7 @@ public class DefaultStageEditor extends GUIGroup{
 		//originalName display
 		G2.setColor(Color.GRAY);
 		G2.setFont(GHQ.basicFont.deriveFont(20.0f));
-		for(Unit unit : GHQ.getCharacterList())
+		for(Unit unit : GHQ.getUnitList())
 			G2.drawString(unit.originalName, (int)unit.getDynam().getX(), (int)unit.getDynam().getY());
 		G2.setFont(GHQ.basicFont);
 
@@ -299,7 +299,7 @@ public class DefaultStageEditor extends GUIGroup{
 	@Override
 	public void enable() {
 		super.enable();
-		GHQ.stopScreen_noAnm();
+		GHQ.stopScreen();
 		selectObject = mouseOveredObject = null;
 	}
 	@Override

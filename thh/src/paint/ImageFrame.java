@@ -1,5 +1,7 @@
 package paint;
 
+import java.util.HashMap;
+
 import core.GHQ;
 
 /**
@@ -10,22 +12,39 @@ import core.GHQ;
 public class ImageFrame implements RectPaint,DotPaint{
 	private static final long serialVersionUID = -1537274221051413163L;
 	private final int IMAGE_IID;
-	private final double BASE_ANGLE;
+	private double baseAngle;
+	private static final HashMap<String, ImageFrame> createdList = new HashMap<String, ImageFrame>();
+	
+	//init
 	public ImageFrame(String imageURL, double angle) {
 		IMAGE_IID = GHQ.loadImage(imageURL);
-		BASE_ANGLE = angle;
+		baseAngle = angle;
+		if(!createdList.containsKey(imageURL))
+			createdList.put(imageURL, this);
 	}
 	public ImageFrame(String imageURL) {
 		IMAGE_IID = GHQ.loadImage(imageURL);
-		BASE_ANGLE = 0.0;
+		if(!createdList.containsKey(imageURL))
+			createdList.put(imageURL, this);
 	}
+	public static ImageFrame createNew(String imageURL) {
+		final ImageFrame IMAGE_FRAME = createdList.get(imageURL);
+		return IMAGE_FRAME != null ? IMAGE_FRAME : new ImageFrame(imageURL);
+	}
+	public static ImageFrame createNew(String imageURL, double angle) {
+		final ImageFrame IMAGE_FRAME = createNew(imageURL);
+		IMAGE_FRAME.baseAngle = angle;
+		return IMAGE_FRAME;
+	}
+	
+	//main role
 	@Override
 	public void dotPaint(int x,int y) {
-		GHQ.drawImageGHQ_center(IMAGE_IID, x, y, BASE_ANGLE);
+		GHQ.drawImageGHQ_center(IMAGE_IID, x, y, baseAngle);
 	}
 	@Override
 	public void dotPaint_turn(int x,int y,double angle) {
-		GHQ.drawImageGHQ_center(IMAGE_IID, x, y, BASE_ANGLE + angle);
+		GHQ.drawImageGHQ_center(IMAGE_IID, x, y, baseAngle + angle);
 	}
 	@Override
 	public void dotPaint_capSize(int x,int y,int maxSize) {
@@ -46,8 +65,10 @@ public class ImageFrame implements RectPaint,DotPaint{
 	}
 	@Override
 	public void rectPaint(int x,int y,int w,int h) {
-		GHQ.drawImageGHQ(IMAGE_IID, x, y, w, h, BASE_ANGLE);
+		GHQ.drawImageGHQ(IMAGE_IID, x, y, w, h, baseAngle);
 	}
+	
+	//information
 	@Override
 	public int getDefaultW() {
 		return GHQ.getImageWByID(IMAGE_IID);

@@ -11,6 +11,7 @@ import paint.RectPaint;
 public abstract class GUIParts {
 	public final String GROUP;
 	protected boolean isEnabled;
+	protected boolean isClicking;
 	private final boolean absorbsClickEvent;
 	public int x,y;
 	public int w,h;
@@ -40,16 +41,30 @@ public abstract class GUIParts {
 		isEnabled = true;
 	}
 	public void disable() {
+		isClicking = false;
 		isEnabled = false;
 	}
 	public final boolean isEnabled() {
 		return isEnabled;
 	}
+	public final boolean isClicking() {
+		return isClicking;
+	}
 	public boolean isMouseEntered() {
 		return GHQ.isMouseInArea_Screen(x, y, w, h);
 	}
-	public void clicked() {}
-	public void outsideClicked() {}
+	public void clicked() {
+		isClicking = true;
+	}
+	public void outsideClicked() {
+		isClicking = false;
+	}
+	public void released() {
+		isClicking = false;
+	}
+	public void outsideReleased() {
+		isClicking = false;
+	}
 	public void mouseOvered() {}
 	public void outsideMouseOvered() {}
 	public final boolean absorbsClickEvent() {

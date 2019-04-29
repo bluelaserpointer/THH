@@ -1,6 +1,5 @@
 package unit;
 
-import action.Action;
 import core.GHQ;
 import geom.HitShape;
 import physicis.Dynam;
@@ -52,19 +51,7 @@ public class DummyUnit extends Unit{
 	}
 
 	@Override
-	public void loadActionPlan(Action action) {
-		
-		
-	}
-
-	@Override
 	public int damage_amount(int damage) {
-		
-		return 0;
-	}
-
-	@Override
-	public int damage_rate(double rate) {
 		
 		return 0;
 	}

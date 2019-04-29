@@ -29,24 +29,41 @@ public class ItemStorage implements Serializable{
 	//control
 	/**
 	 * Add item with automatic stack.
-	 * @param newItem
+	 * @param targetItem
 	 * @return true - successfully added / false - overflowed
 	 */
-	public boolean add_stack(Item newItem) {
-		for(Item item : items) {
-			if(item.isStackable(newItem)) {
-				item.stack(newItem);
-				if(newItem.isEmpty()) {
-					if(newItem.keepEvenEmpty()){
-						return items.add(newItem);
+	public boolean add_stack(Item targetItem) {
+		for(int i = items.traverseFirst();i != -1;i = items.traverseNext(i)) {
+			final Item ITEM = items.get(i);
+			if(ITEM.isStackable(targetItem)) {
+				ITEM.stack(targetItem);
+				if(targetItem.isEmpty()) {
+					if(targetItem.keepEvenEmpty()){
+						return items.add(targetItem);
 					}else
 						return true;
 				}
 			}
 		}
 		//not found same kind (stackable) item.
-		return items.add(newItem);
+		return items.add(targetItem);
 	}
 	
 	//information
+	public int countItem(Item targetItem) {
+		int total = 0;
+		for(int i = items.traverseFirst();i != -1;i = items.traverseNext(i)) {
+			if(targetItem.isStackable(items.get(i)))
+				total += items.get(i).getAmount();
+		}
+		return total;
+	}
+	public int countItemByName(String targetItemName) {
+		int total = 0;
+		for(int i = items.traverseFirst();i != -1;i = items.traverseNext(i)) {
+			if(targetItemName.equals(items.get(i).getName()))
+				total += items.get(i).getAmount();
+		}
+		return total;
+	}
 }

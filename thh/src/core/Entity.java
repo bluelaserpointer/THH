@@ -24,7 +24,7 @@ public abstract class Entity implements HasDynam{
 		INITIAL_FRAME = nowFrame;
 	}
 	
-	abstract public boolean defaultIdle();
+	abstract public boolean idle();
 	abstract public void defaultPaint();
 	
 	@Override

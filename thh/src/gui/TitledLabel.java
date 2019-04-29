@@ -52,7 +52,10 @@ public class TitledLabel extends GUIParts{
 		G2.setStroke(activated ? GHQ.stroke3 : GHQ.stroke1);
 		G2.drawRect(x, y, w, h);
 		//System.out.println(typeListener.getText());
-		G2.drawString(typeListener.getText(), x + 3, y + 20);
+		if(activated && GHQ.getNowTime() % 1000 < 500)
+			G2.drawString(typeListener.getText() + "|", x + 3, y + 20);
+		else
+			G2.drawString(typeListener.getText(), x + 3, y + 20);
 	}
 	public void typeEnded(String text) {}
 	public void setText(String text) {

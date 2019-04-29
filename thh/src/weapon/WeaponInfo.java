@@ -3,13 +3,9 @@ package weapon;
 import java.io.BufferedWriter;
 
 import core.Config;
-import core.ErrorCounter;
 import core.GHQ;
 
 public class WeaponInfo {
-	private final static int
-		NONE = core.GHQ.NONE,
-		MAX = core.GHQ.MAX;
 	public static String name;
 	public static int
 		coolTime,
@@ -17,8 +13,9 @@ public class WeaponInfo {
 		reloadTime,
 		reloadSpeed,
 		magazineSize,
-		magazineConsumption,
-		reloadOption;
+		magazineConsumptionSpeed;
+	public static boolean
+		autoReload;
 	public static final int
 		EMPTY = 0,ALWAYS = 1;
 	
@@ -28,9 +25,9 @@ public class WeaponInfo {
 		coolSpeed = 1;
 		reloadTime = 0;
 		reloadSpeed = 1;
-		magazineSize = MAX;
-		magazineConsumption = 1;
-		reloadOption = EMPTY;
+		magazineSize = GHQ.MAX;
+		magazineConsumptionSpeed = 1;
+		autoReload = true;
 	}
 	public static final boolean readConfig(String str) {
 		final String[] _str = GHQ.split2(str, "=");
@@ -54,11 +51,12 @@ public class WeaponInfo {
 			reloadSpeed = Config.parseInt2(str, 1);
 			break;
 		case "magazineSize":
-			magazineSize = Config.parseInt2(str,MAX);
+			magazineSize = Config.parseInt2(str,GHQ.MAX);
 			break;
 		case "magazineConsumption":
-			magazineConsumption = Config.parseInt2(str,1);
+			magazineConsumptionSpeed = Config.parseInt2(str,1);
 			break;
+		/*
 		case "reloadOption":
 			if(str.equalsIgnoreCase("ALWAYS"))
 				reloadOption = ALWAYS;
@@ -70,6 +68,8 @@ public class WeaponInfo {
 				ErrorCounter.putWithPrint("WeaponConfig.readConfig�β���ʹ�ã�(" + property + ", " + str + ")");
 				reloadOption = EMPTY;
 			}
+			break;
+		*/
 		default:
 			return false;
 		}
@@ -83,8 +83,9 @@ public class WeaponInfo {
 		sb.append("reloadTime = ").append(reloadTime).append(ENDL);
 		sb.append("reloadSpeed = ").append(reloadSpeed).append(ENDL);
 		sb.append("magazineSize = ").append(magazineSize).append(ENDL);
-		sb.append("magazineConsumption = ").append(magazineConsumption).append(ENDL);
+		sb.append("magazineConsumption = ").append(magazineConsumptionSpeed).append(ENDL);
 		sb.append("reloadOption = ");
+		/*
 		switch(reloadOption) {
 		case ALWAYS:
 			sb.append("ALWAYS");
@@ -96,6 +97,7 @@ public class WeaponInfo {
 			sb.append("NONE");
 			break;
 		}
+		*/
 		sb.append(ENDL);
 	}
 }

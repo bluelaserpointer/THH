@@ -3,12 +3,12 @@ package buff;
 import java.io.Serializable;
 
 import core.GHQ;
-import unit.Status;
+import status.StatusWithDefaultValue;
 
 public abstract class Buff implements Serializable{
 	private static final long serialVersionUID = -6546281620292643179L;
 	final int INITIAL_FRAME;
-	protected Status targetStatus;
+	protected StatusWithDefaultValue targetStatus;
 	
 	public Buff() {
 		INITIAL_FRAME = GHQ.getNowFrame();
