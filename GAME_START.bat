@@ -1,7 +1,4 @@
 rem Start THH game
-
 cd thh/bin
-
-java thh.THH
-
+java engine.Engine_THH1
 pause
