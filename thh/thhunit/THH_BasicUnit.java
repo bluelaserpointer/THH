@@ -7,7 +7,6 @@ import geom.Square;
 import item.Item;
 import paint.DotPaint;
 import paint.RectPaint;
-import physicis.Dynam;
 import physicis.HasDynam;
 import status.StatusWithDefaultValue;
 import storage.ItemStorage;
@@ -72,90 +71,44 @@ public abstract class THH_BasicUnit extends Unit {
 		dynam.setXY(charaDstX = x, charaDstY = y);
 		charaOnLand = false;
 		slot_spell = 0;
+		for(Weapon ver : weapon) {
+			if(ver != null)
+				ver.reset();
+		}
 	}
 	public void resetOrder() {
 		weaponChangeOrder = 0;
-		attackOrder = moveOrder = dodgeOrder = spellOrder = false;
+		attackOrder = dodgeOrder = spellOrder = false;
 	}
 	public void resetSingleOrder() {
 		weaponChangeOrder = 0;
 		spellOrder = dodgeOrder = false;
 	}
 	@Override
-	public void dynam() {
-		Dynam DYNAM = getDynam();
-		DYNAM.moveIfNoObstacles(this);
-		DYNAM.accelerate_MUL(0.9);
+	public void baseIdle() {
+		////////////
+		//weapon
+		////////////
+		for(Weapon ver : weapon) {
+			if(ver != null)
+				ver.idle();
+		}
+		////////////
+		//dynam
+		////////////
+		dynam.moveIfNoObstacles(this);
+		dynam.accelerate_MUL(0.9);
 	}
 	public int weaponChangeOrder;
-	public boolean attackOrder,moveOrder,dodgeOrder,spellOrder;
-	@Override
-	public void passiveCons() {
-		resetSingleOrder();
-	}
-	@Override
-	public void activeCons() {
-		// death
-		if (status.get(HP) <= 0) {
-			return;
-		}
-		final int mouseX = GHQ.getMouseX(), mouseY = GHQ.getMouseY();
-		Dynam DYNAM = getDynam();
-		DYNAM.setAngle(DYNAM.getMouseAngle());
-		// dodge
-		if (dodgeOrder)
-			dodge(mouseX, mouseY);
-		// attack
-		if (attackOrder) {
-			final int weapon = weaponSlot[slot_weapon];
-			if (weapon != NONE && useWeapon(weapon))
-				setBullet(weapon,this);
-		}
-		// spell
-		if (spellOrder) {
-			final int spell = spellSlot[slot_spell];
-			if (spell != NONE && useWeapon(spell))
-				setBullet(spell,this);
-		}
-		// move
-		if (moveOrder) {
-			//under edit
-		}
-		DYNAM.approachIfNoObstacles(this, charaDstX, charaDstY, charaSpeed);
-		// weaponChange
-		int roll = weaponChangeOrder;
-		if (roll != 0) {
-			int target = slot_spell;
-			if (roll > 0) {
-				while (target < spellSlot_max - 1) {
-					if (spellSlot[++target] != NONE) {
-						if (--roll == 0)
-							break;
-					}
-				}
-			} else {
-				while (target > 0) {
-					if (spellSlot[--target] != NONE) {
-						if (++roll == 0)
-							break;
-					}
-				}
-			}
-			slot_spell = target;
-		}
-	}
+	public boolean attackOrder, dodgeOrder, spellOrder;
 	@Override
 	public void paint(boolean doAnimation) {
-		if(status.get(HP) <= 0)
-			return;
-		final Dynam DYNAM = getDynam();
-		final int X = (int) DYNAM.getX(),Y = (int) DYNAM.getY();
+		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
 		charaPaint.dotPaint(X, Y);
 		GHQ.paintHPArc(X, Y, 20,status.get(HP), status.getDefault(HP));
 	}
 	protected final void paintMode_magicCircle(DotPaint paintScript) {
-		final Dynam DYNAM = getDynam();
-		final int X = (int) DYNAM.getX(),Y = (int) DYNAM.getY();
+		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
 		paintScript.dotPaint_turn(X, Y, (double)GHQ.getNowFrame()/35.0);
 		charaPaint.dotPaint(X, Y);
 	}
@@ -174,19 +127,18 @@ public abstract class THH_BasicUnit extends Unit {
 	}
 	@Override
 	public void teleportRel(int x,int y) {
-		getDynam().addXY(x, y);
+		dynam.addXY(x, y);
 		charaDstX += x;
 		charaDstY += y;
 	}
 	@Override
 	public void teleportTo(int x,int y) {
-		getDynam().setXY(charaDstX = x, charaDstY = y);
+		dynam.setXY(charaDstX = x, charaDstY = y);
 	}
 	private Action actionPlan;
 	private int initialFrame;
 	protected void doActionPlan() {
 		int countedFrame = 0;
-		final Dynam DYNAM = getDynam();
 		for(int i = 0;i < actionPlan.frame.length;i++) {
 			final int FRAME = actionPlan.frame[i];
 			if((countedFrame += FRAME) == initialFrame) { //reach planned timing
@@ -198,14 +150,14 @@ public abstract class THH_BasicUnit extends Unit {
 					charaDstY = Y;
 					break;
 				case ActionInfo.MOVE:
-					charaDstX = DYNAM.getX() + X;
-					charaDstY = DYNAM.getY() + Y;
+					charaDstX = dynam.getX() + X;
+					charaDstY = dynam.getY() + Y;
 					break;
 				case ActionInfo.ATTACK:
 					setBullet(weaponSlot[slot_weapon],this);
 					break;
 				case ActionInfo.SPEED:
-					DYNAM.addXY(X,Y);
+					dynam.addXY(X,Y);
 					break;
 				}
 			}
@@ -213,9 +165,8 @@ public abstract class THH_BasicUnit extends Unit {
 		}
 	}
 	// HP
-	private final void dodge(double targetX, double targetY) {
-		final Dynam DYNAM = getDynam();
-		DYNAM.addSpeed_DA(40, DYNAM.getAngle(targetX,targetY));
+	protected final void dodge(double targetX, double targetY) {
+		dynam.addSpeed_DA(40, dynam.getAngle(targetX,targetY));
 		charaOnLand = false;
 	}
 

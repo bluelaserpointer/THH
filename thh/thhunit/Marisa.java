@@ -6,7 +6,7 @@ import physicis.HasDynam;
 import weapon.Weapon;
 import weapon.WeaponInfo;
 
-public class Marisa extends THH_BasicUnit{
+public class Marisa extends THH_BasicPlayer{
 	private static final long serialVersionUID = -1533719907505962673L;
 	
 	public Marisa(int initialGroup) {
@@ -70,20 +70,8 @@ public class Marisa extends THH_BasicUnit{
 		slot_spell = 0;
 	}
 	@Override
-	public final void respawn(int x,int y){
-		super.respawn(x,y);
-		for(Weapon ver : weapon) {
-			if(ver != null)
-				ver.reset();
-		}
-	}	
-	@Override
-	public void activeCons() {
-		super.activeCons();
-		for(Weapon ver : weapon) {
-			if(ver != null)
-				ver.idle();
-		}
+	public final void extendIdle() {
+		dynam.setAngle(dynam.getMouseAngle());
 	}
 	@Override
 	public final void setBullet(int kind,HasDynam user) {

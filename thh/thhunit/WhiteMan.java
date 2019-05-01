@@ -7,7 +7,7 @@ import physicis.HasDynam;
 import status.StatusWithDefaultValue;
 import unit.Unit;
 
-public class WhiteMan extends THH_BasicUnit{
+public class WhiteMan extends THH_BasicEnemy{
 	private static final long serialVersionUID = -3224085275647002850L;
 	public WhiteMan(int initialGroup) {
 		super(120, initialGroup);
@@ -27,10 +27,7 @@ public class WhiteMan extends THH_BasicUnit{
 		bulletPaint[0] = new ImageFrame("thhimage/LightBallA.png");
 	}
 	@Override
-	public void activeCons() {
-		super.activeCons();
-		if(!isAlive())
-			return;
+	public void extendIdle() {
 		final Unit blackManAdress = GHQ.getUnit("BlackMan");
 		if(blackManAdress == null)
 			return;
@@ -41,6 +38,7 @@ public class WhiteMan extends THH_BasicUnit{
 		if(THE_STATUS.isBigger0(HP) && THE_STATUS.isSmaller(HP,10000) && dynam.getDistance(charaDstX, charaDstY) < 200){
 			THE_STATUS.add(HP, 100);
 		}
+		dynam.approachIfNoObstacles(this, charaDstX, charaDstY, charaSpeed);
 	}
 	@Override
 	public void setBullet(int kind,HasDynam source) {}

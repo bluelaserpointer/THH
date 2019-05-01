@@ -354,26 +354,22 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	//idle-character
 	public static final void defaultCharaIdle(Unit[] units) {
-		switch(stopEventKind) {
-		case STOP:
-			for(Unit unit : units)
-				unit.idle(Unit.PASSIVE_CONS);
-			break;
-		default:
+		if(stopEventKind == NONE) {
 			for(Unit unit : units)
 				unit.idle();
+		}else {
+			for(Unit unit : units)
+				unit.paint(false);
 		}
 		removeDeadUnits();
 	}
 	public static final void defaultCharaIdle(ArrayList<Unit> units) {
-		switch(stopEventKind) {
-		case STOP:
-			for(Unit unit : units)
-				unit.idle(Unit.PASSIVE_CONS);
-			break;
-		default:
+		if(stopEventKind == NONE) {
 			for(Unit unit : units)
 				unit.idle();
+		}else {
+			for(Unit unit : units)
+				unit.paint(false);
 		}
 		removeDeadUnits();
 	}
@@ -413,15 +409,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				final Effect effect = effects.next();
 				effect.idle();
 			}
-		}
-	}
-	public static final void defaultUnitIdle(Unit unit) {
-		switch(stopEventKind) {
-		case STOP:
-			unit.idle(Unit.PASSIVE_CONS);
-			break;
-		default:
-			unit.idle();
 		}
 	}
 	//information-get-mouseOver

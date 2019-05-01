@@ -4,7 +4,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
 import core.Entity;
-import core.ErrorCounter;
 import core.GHQ;
 import core.Standpoint;
 import geom.HitShape;
@@ -57,40 +56,32 @@ public abstract class Unit extends Entity implements MessageSource,HitInteractab
 	/////////////
 	//idle
 	/////////////
-	public static final int ACITIVE_CONS = 0,PASSIVE_CONS = 1,DYNAM = 2,PAINT_ANIMATED = 3,PAINT_FREEZED = 4,STOP_ALL = 5;
 	@Override
 	public final boolean idle() {
-		this.idle(ACITIVE_CONS);
+		//baseIdle
+		if(isAlive()) {
+			baseIdle();
+		}else
+			return false;
+		//extendIdle
+		if(isAlive()) {
+			extendIdle();
+		}else
+			return false;
+		//paint
+		if(isAlive()) {
+			paint(GHQ.isNoStopEvent());
+		}else
+			return false;
 		return isAlive();
 	}
 	@Override
 	public final void defaultPaint() {
-		this.idle(PAINT_ANIMATED);
+		paint(true);
 	}
-	public void idle(int stopLevel) {
-		switch(stopLevel) {
-		case 0:
-			activeCons();
-		case 1:
-			passiveCons();
-		case 2:
-			dynam();
-		case 3:
-			paint(true);
-			break;
-		case 4:
-			paint(false);
-			break;
-		case 5:
-			break;
-		default:
-			ErrorCounter.put("Chara.idle error:\"" + stopLevel + "\"");
-		}
-	}
-	public void activeCons() {};
-	public void passiveCons() {};
-	public void dynam() {};
-	public void paint(boolean doAnimation) {};
+	protected void baseIdle() {}
+	protected void extendIdle() {}
+	public void paint(boolean doAnimation) {}
 	public abstract int damage_amount(int value);
 
 	/////////////
@@ -110,7 +101,7 @@ public abstract class Unit extends Entity implements MessageSource,HitInteractab
 		getCoordinate().setXY(x, y);
 	}
 	public abstract boolean kill(boolean force);
-	public void killed() {}
+	protected void killed() {}
 	
 	/////////////
 	//information

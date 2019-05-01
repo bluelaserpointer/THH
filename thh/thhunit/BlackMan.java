@@ -6,9 +6,8 @@ import paint.ImageFrame;
 import physicis.Dynam;
 import physicis.HasDynam;
 import thhunit.EnemyWeaponLibrary;
-import weapon.Weapon;
 
-public class BlackMan extends THH_BasicUnit{
+public class BlackMan extends THH_BasicEnemy{
 	private static final long serialVersionUID = -1004211237829934326L;
 	{
 		charaSpeed = 2;
@@ -17,7 +16,6 @@ public class BlackMan extends THH_BasicUnit{
 	public BlackMan(int initialGroup) {
 		super(120, initialGroup);
 	}
-	private final Weapon weapon = EnemyWeaponLibrary.getWeaponController(EnemyWeaponLibrary.lightBall_S);
 	@Override
 	public final String getName() {
 		return "BlackMan";
@@ -31,14 +29,14 @@ public class BlackMan extends THH_BasicUnit{
 		bulletPaint[1] = new ImageFrame("thhimage/DodgeMarker.png");
 	}
 	@Override
-	public void activeCons() {
-		super.activeCons();
-		if(!isAlive())
-			return;
+	public final void battleStarted() {
+		weapon[0] = EnemyWeaponLibrary.getWeaponController(EnemyWeaponLibrary.lightBall_S);
+	}
+	@Override
+	public void extendIdle() {
 		final int unitX = (int)dynam.getX(),unitY = (int)dynam.getY();
-		weapon.idle();
 		final Unit targetEnemy = GHQ.getNearstVisibleEnemy(this);
-		if(targetEnemy != null && weapon.trigger(this)) {
+		if(targetEnemy != null && weapon[0].trigger(this)) {
 			EnemyWeaponLibrary.inputBulletInfo(this,EnemyWeaponLibrary.BLACK_SLASH_BURST,bulletPaint[0],targetEnemy);
 			EnemyWeaponLibrary.inputBulletInfo(this,EnemyWeaponLibrary.BLACK_SLASH_BURST,bulletPaint[1],targetEnemy);
 		}
@@ -47,6 +45,7 @@ public class BlackMan extends THH_BasicUnit{
 			final Dynam UNIT_DYNAM = unit.getDynam();
 			dynam.setAngle(dynam.getAngle(charaDstX = UNIT_DYNAM.getX(),charaDstY = UNIT_DYNAM.getY()));
 		}
+		dynam.approachIfNoObstacles(this, charaDstX, charaDstY, charaSpeed);
 	}
 	@Override
 	public void setBullet(int kind,HasDynam source) {}

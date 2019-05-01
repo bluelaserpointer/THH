@@ -8,7 +8,7 @@ import physicis.HasDynam;
 import weapon.Weapon;
 import weapon.WeaponInfo;
 
-public class Reimu extends THH_BasicUnit{
+public class Reimu extends THH_BasicPlayer{
 	public Reimu(int initialGroup) {
 		super(20, initialGroup);
 	}
@@ -22,8 +22,6 @@ public class Reimu extends THH_BasicUnit{
 	//weapon&bullet kind name
 	static final int
 		FUDA_KOUHAKU = 0,FUDA_SHIROKURO = 1,FUDA_SOUHAKU = 2;
-	//effect kind name
-	private static final int LIGHTNING = 0,FUDA_HIT_EF = 1;
 	
 	//Images
 		
@@ -34,11 +32,6 @@ public class Reimu extends THH_BasicUnit{
 		super.loadImageData();
 		charaPaint = new ImageFrame("thhimage/Reimu.png");
 		iconPaint = new ImageFrame("thhimage/ReimuIcon.png");
-		bulletPaint[FUDA_KOUHAKU] = new ImageFrame("thhimage/KouhakuNoFuda.png");
-		bulletPaint[FUDA_SHIROKURO] = new ImageFrame("thhimage/ShirokuroNoFuda.png");
-		bulletPaint[FUDA_SOUHAKU] = new ImageFrame("thhimage/SouhakuNoFuda.png");
-		effectPaint[LIGHTNING] = new ImageFrame("thhimage/ReuseBomb_Effect.png");
-		effectPaint[FUDA_HIT_EF] = new ImageFrame("thhimage/FudaHitEffect.png");
 	}
 	
 	@Override
@@ -71,22 +64,9 @@ public class Reimu extends THH_BasicUnit{
 		slot_spell = 0;
 	}
 	@Override
-	public final void respawn(int x,int y){
-		super.respawn(x,y);
-		for(Weapon ver : weapon) {
-			if(ver != null)
-				ver.reset();
-		}
+	public final void extendIdle() {
+		dynam.setAngle(dynam.getMouseAngle());
 	}
-	@Override
-	public void activeCons() {
-		super.activeCons();
-		for(Weapon ver : weapon) {
-			if(ver != null)
-				ver.idle();
-		}
-	}
-	//bullet
 	@Override
 	public final void setBullet(int kind,HasDynam user) {
 		switch(kind){

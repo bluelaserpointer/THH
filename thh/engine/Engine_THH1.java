@@ -39,7 +39,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		return "alpha1.0.0";
 	}
 	//inputEvnet
-	private final int inputKeys[] = 
+	private static final int inputKeys[] = 
 	{
 		VK_W,
 		VK_A,
@@ -56,10 +56,10 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		VK_ESCAPE,
 		VK_F6,
 	};
-	private final MouseListenerEx s_mouseL = new MouseListenerEx();
-	private final SingleKeyListener s_keyL = new SingleKeyListener(inputKeys);
-	private final SingleNumKeyListener s_numKeyL = new SingleNumKeyListener();
-	private final DoubleNumKeyListener d_numKeyL = new DoubleNumKeyListener(20);
+	private static final MouseListenerEx s_mouseL = new MouseListenerEx();
+	private static final SingleKeyListener s_keyL = new SingleKeyListener(inputKeys);
+	private static final SingleNumKeyListener s_numKeyL = new SingleNumKeyListener();
+	private static final DoubleNumKeyListener d_numKeyL = new DoubleNumKeyListener(20);
 	
 	//images
 	private int focusIID,magicCircleIID;
@@ -158,7 +158,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		return new Stage_THH1(GHQ.getUnits(),GHQ.getStructures(),GHQ.getVegetations());
 	}
 	//idle
-	private int gameFrame;
+	private static int gameFrame;
 	@Override
 	public final void idle(Graphics2D g2,int stopEventKind) {
 		gameFrame++;
@@ -192,7 +192,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 				for(Unit enemy : GHQ.getUnitList()) {
 					if(!enemy.isAlive())
 						continue;
-					GHQ.defaultUnitIdle(enemy);
+					enemy.idle();
 					if(enemy.getName() == "FairyA") {
 						final int FRAME = gameFrame % 240;
 						if(FRAME < 100)
@@ -230,7 +230,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 				}
 				break;
 			}
-		}else if(stopEventKind == GHQ.STOP || stopEventKind == GHQ.STOP)
+		}else if(stopEventKind == GHQ.STOP)
 			GHQ.defaultCharaIdle(GHQ.getUnitList());
 		GHQ.defaultEntityIdle();
 		//focus
