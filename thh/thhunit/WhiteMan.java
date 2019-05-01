@@ -28,6 +28,9 @@ public class WhiteMan extends THH_BasicUnit{
 	}
 	@Override
 	public void activeCons() {
+		super.activeCons();
+		if(!isAlive())
+			return;
 		final Unit blackManAdress = GHQ.getUnit("BlackMan");
 		if(blackManAdress == null)
 			return;
@@ -38,7 +41,6 @@ public class WhiteMan extends THH_BasicUnit{
 		if(THE_STATUS.isBigger0(HP) && THE_STATUS.isSmaller(HP,10000) && dynam.getDistance(charaDstX, charaDstY) < 200){
 			THE_STATUS.add(HP, 100);
 		}
-		dynam.approach(charaDstX, charaDstY, charaSpeed);
 	}
 	@Override
 	public void setBullet(int kind,HasDynam source) {}

@@ -32,6 +32,9 @@ public class BlackMan extends THH_BasicUnit{
 	}
 	@Override
 	public void activeCons() {
+		super.activeCons();
+		if(!isAlive())
+			return;
 		final int unitX = (int)dynam.getX(),unitY = (int)dynam.getY();
 		weapon.idle();
 		final Unit targetEnemy = GHQ.getNearstVisibleEnemy(this);
@@ -44,7 +47,6 @@ public class BlackMan extends THH_BasicUnit{
 			final Dynam UNIT_DYNAM = unit.getDynam();
 			dynam.setAngle(dynam.getAngle(charaDstX = UNIT_DYNAM.getX(),charaDstY = UNIT_DYNAM.getY()));
 		}
-		dynam.approach(charaDstX, charaDstY, charaSpeed);
 	}
 	@Override
 	public void setBullet(int kind,HasDynam source) {}

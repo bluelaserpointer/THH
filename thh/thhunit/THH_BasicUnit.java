@@ -84,7 +84,7 @@ public abstract class THH_BasicUnit extends Unit {
 	@Override
 	public void dynam() {
 		Dynam DYNAM = getDynam();
-		DYNAM.move();
+		DYNAM.moveIfNoObstacles(this);
 		DYNAM.accelerate_MUL(0.9);
 	}
 	public int weaponChangeOrder;
@@ -121,7 +121,7 @@ public abstract class THH_BasicUnit extends Unit {
 		if (moveOrder) {
 			//under edit
 		}
-		DYNAM.approach(charaDstX, charaDstY, charaSpeed);
+		DYNAM.approachIfNoObstacles(this, charaDstX, charaDstY, charaSpeed);
 		// weaponChange
 		int roll = weaponChangeOrder;
 		if (roll != 0) {

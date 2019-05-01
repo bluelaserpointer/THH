@@ -5,6 +5,7 @@ import static java.lang.Math.*;
 import java.awt.geom.Line2D;
 
 import core.GHQ;
+import core.HitInteractable;
 
 /**
  * A major class for managing object physics.
@@ -295,6 +296,19 @@ public class Dynam extends Coordinate{
 		final Dynam targetDynam = target.getDynam();
 		approach(targetDynam.x,targetDynam.y,speed);
 	}
+	public void approachIfNoObstacles(HitInteractable source, double dstX,double dstY,double speed) {
+		final double DX = dstX - x,DY = dstY - y;
+		final double DISTANCE = sqrt(DX*DX + DY*DY);
+		if(DISTANCE > speed) {
+			final double RATE = speed/DISTANCE;
+			dstX = x + DX*RATE;
+			dstY = y + DY*RATE;
+		}
+		if(!GHQ.hitObstacle_DSTXY(source, (int)dstX, (int)dstY)) {
+			x = dstX;
+			y = dstY;
+		}
+	}
 	
 	//control
 	/**
@@ -302,6 +316,12 @@ public class Dynam extends Coordinate{
 	 */
 	public void move() {
 		if(xSpd == 0 && ySpd == 0)
+			return;
+		x += xSpd;
+		y += ySpd;
+	}
+	public void moveIfNoObstacles(HitInteractable source) {
+		if(xSpd == 0 && ySpd == 0 || GHQ.hitObstacle_DXDY(source, (int)xSpd, (int)ySpd))
 			return;
 		x += xSpd;
 		y += ySpd;

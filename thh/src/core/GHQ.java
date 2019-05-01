@@ -22,7 +22,9 @@ import input.KeyListenerEx;
 import input.KeyTypeListener;
 import input.MouseListenerEx;
 import item.Item;
+import physicis.Coordinate;
 import physicis.Dynam;
+import physicis.HasCoordinate;
 import physicis.HasDynam;
 import structure.Structure;
 import stage.StageEngine;
@@ -621,8 +623,41 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return false;
 	}
+	public static final boolean hitObstacle(HitInteractable object) {
+		return hitStructure(object) || !inStage(object);
+	}
+	public static final boolean hitStructure_DXDY(HitInteractable object, int dx, int dy){
+		for(Structure structure : structures) {
+			if(structure.getStandpoint() == null)
+				System.out.println("bug.");
+			if(!object.isFriend(structure) && structure.contains((int)object.getCoordinate().getX() + dx, (int)object.getCoordinate().getY() + dy, object.getHitShape().getWidth(), object.getHitShape().getHeight()))
+				return true;
+		}
+		return false;
+	}
+	public static final boolean hitObstacle_DXDY(HitInteractable object, int dx, int dy) {
+		return hitStructure_DXDY(object, dx, dy) || !inStage((int)object.getCoordinate().getX() + dx, (int)object.getCoordinate().getY() + dy);
+	}
+	public static final boolean hitStructure_DSTXY(HitInteractable object, int dstX, int dstY){
+		for(Structure structure : structures) {
+			if(structure.getStandpoint() == null)
+				System.out.println("bug.");
+			if(!object.isFriend(structure) && structure.contains(dstX, dstY, object.getHitShape().getWidth(), object.getHitShape().getHeight()))
+				return true;
+		}
+		return false;
+	}
+	public static final boolean hitObstacle_DSTXY(HitInteractable object, int dstX, int dstY) {
+		return hitStructure_DSTXY(object, dstX, dstY) || !inStage(dstX, dstY);
+	}
 	public static final boolean inStage(int x,int y) {
 		return engine.inStage(x,y);
+	}
+	public static final boolean inStage(HasCoordinate object) {
+		if(object == null)
+			return false;
+		final Coordinate COD = object.getCoordinate();
+		return inStage((int)(COD.getX()), (int)(COD.getY()));
 	}
 	//information-GUI
 	public static final int getScreenW(){
