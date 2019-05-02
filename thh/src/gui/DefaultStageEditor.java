@@ -66,6 +66,7 @@ public class DefaultStageEditor extends GUIGroup{
 	private static final int inputKeys[] = 
 	{
 		VK_BACK_SPACE,
+		VK_DELETE,
 		VK_C,
 		VK_V,
 		VK_TAB,
@@ -132,7 +133,7 @@ public class DefaultStageEditor extends GUIGroup{
 								}
 							}
 							//delete
-							if(!configLabel.activated && keyListener.pullEvent(VK_BACK_SPACE)) {
+							if(!configLabel.activated && keyListener.pullEvent(VK_DELETE)) {
 								if(selectObject instanceof Unit)
 									GHQ.deleteUnit((Unit)selectObject);
 								else if(selectObject instanceof Structure)

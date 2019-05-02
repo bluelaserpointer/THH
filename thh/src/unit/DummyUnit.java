@@ -9,7 +9,7 @@ public class DummyUnit extends Unit{
 
 	private int dummyIID;
 	public DummyUnit(Dynam dynam) {
-		super(HitShape.NULL_HITSHAPE, GHQ.NONE);
+		super(dynam, HitShape.NULL_HITSHAPE, GHQ.NONE);
 		dummyIID = GHQ.loadImage("thhimage/gui_editor/Unit.png");
 	}
 	@Override

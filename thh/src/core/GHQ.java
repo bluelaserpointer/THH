@@ -821,7 +821,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			}
 		}
 		//GUIParts click event
-		guiPartsClickCheck(guiParts);
+		if(e.getButton() == MouseEvent.BUTTON1)
+			guiPartsClickCheck(guiParts);
 	}
 	public static final void guiPartsClickCheck(ArrayList<GUIParts> guiParts) {
 		boolean alreadyClicked = false;
@@ -853,7 +854,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			}
 		}
 		//GUIParts release event
-		guiPartsReleaseCheck(guiParts);
+		if(e.getButton() == MouseEvent.BUTTON1)
+			guiPartsReleaseCheck(guiParts);
 	}
 	public static final void guiPartsReleaseCheck(ArrayList<GUIParts> guiParts) {
 		boolean alreadyClicked = false;
