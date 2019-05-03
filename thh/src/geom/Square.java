@@ -1,6 +1,6 @@
 package geom;
 
-import physicis.Coordinate;
+import physics.Coordinate;
 
 public class Square extends HitShape{
 	private static final long serialVersionUID = 8168254451812660305L;

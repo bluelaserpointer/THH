@@ -6,8 +6,8 @@ import core.Entity;
 import core.GHQ;
 import paint.DotPaint;
 import paint.HasDotPaint;
-import physicis.DstCntDynam;
-import physicis.HasDynam;
+import physics.DstCntDynam;
+import physics.HasDynam;
 
 /**
  * A primal class for managing effect.

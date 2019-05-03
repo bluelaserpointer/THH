@@ -3,8 +3,8 @@ package structure;
 import java.io.Serializable;
 
 import core.GHQ;
-import physicis.Dynam;
-import physicis.HasDynam;
+import physics.Dynam;
+import physics.HasDynam;
 
 public class StructureScript<T extends Structure> implements Serializable{
 	private static final long serialVersionUID = -4624130557133104038L;

@@ -1,6 +1,6 @@
 package geom;
 
-import physicis.Coordinate;
+import physics.Coordinate;
 
 public class Circle extends HitShape{
 	private static final long serialVersionUID = -1809578801160258098L;

@@ -3,7 +3,7 @@ package thhunit;
 import core.GHQ;
 import paint.DotPaint;
 import paint.ImageFrame;
-import physicis.HasDynam;
+import physics.HasDynam;
 import thhunit.EnemyWeaponLibrary;
 import unit.Unit;
 

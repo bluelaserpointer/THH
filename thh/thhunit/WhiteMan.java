@@ -2,8 +2,8 @@ package thhunit;
 
 import core.GHQ;
 import paint.ImageFrame;
-import physicis.Dynam;
-import physicis.HasDynam;
+import physics.Dynam;
+import physics.HasDynam;
 import status.StatusWithDefaultValue;
 import unit.Unit;
 

@@ -3,7 +3,7 @@ package geom;
 import java.io.Serializable;
 
 import core.HitInteractable;
-import physicis.Coordinate;
+import physics.Coordinate;
 
 /**
  * A primal class for managing object hit area.Need {@link Coordinate} to create this instance.<br>

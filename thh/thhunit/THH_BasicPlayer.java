@@ -20,6 +20,8 @@ public abstract class THH_BasicPlayer extends THH_BasicUnit{
 		////////////
 		//main
 		////////////
+		// angle
+		baseAngle.set(dynam.getMouseAngle());
 		// dodge
 		if (dodgeOrder)
 			dodge(mouseX, mouseY);

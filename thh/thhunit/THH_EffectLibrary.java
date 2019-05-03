@@ -7,7 +7,7 @@ import core.GHQ;
 import effect.Effect;
 import paint.DotPaint;
 import paint.ImageFrame;
-import physicis.HasDynam;
+import physics.HasDynam;
 
 public abstract class THH_EffectLibrary extends Effect{
 	public static void loadResource() {

@@ -2,7 +2,7 @@ package unit;
 
 import core.GHQ;
 import geom.HitShape;
-import physicis.Dynam;
+import physics.Dynam;
 
 public class DummyUnit extends Unit{
 	private static final long serialVersionUID = 411168207492887964L;

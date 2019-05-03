@@ -3,8 +3,8 @@ package vegetation;
 import core.GHQ;
 import item.Item;
 import paint.DotPaint;
-import physicis.Dynam;
-import physicis.HasDynam;
+import physics.Dynam;
+import physics.HasDynam;
 
 public class DropItem extends Vegetation{
 	private static final long serialVersionUID = -8747093817175771314L;

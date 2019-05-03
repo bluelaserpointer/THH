@@ -7,8 +7,8 @@ import core.GHQ;
 import core.HasBoundingBox;
 import core.HasStandpoint;
 import core.Standpoint;
-import physicis.Dynam;
-import physicis.HasDynam;
+import physics.Dynam;
+import physics.HasDynam;
 
 /**
  * A primal class for managing structure.

@@ -7,7 +7,7 @@ import geom.Square;
 import item.Item;
 import paint.DotPaint;
 import paint.RectPaint;
-import physicis.HasDynam;
+import physics.HasDynam;
 import status.StatusWithDefaultValue;
 import storage.ItemStorage;
 import storage.Storage;

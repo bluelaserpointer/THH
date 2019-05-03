@@ -1,4 +1,4 @@
-package physicis;
+package physics;
 
 import static java.lang.Math.*;
 
@@ -18,14 +18,28 @@ public class Dynam extends Coordinate{
 	public static final Dynam NULL_DYNAM = new Dynam();
 	
 	
-	protected double xSpd,ySpd,angle;
+	protected double xSpd,ySpd;
+	protected final Angle angle = new Angle() {
+		private static final long serialVersionUID = 6971378942148992685L;
+		@Override
+		public void set(double angle) {
+			super.set(angle);
+			final double SPEED = getSpeed();
+			xSpd = SPEED*cos();
+			ySpd = SPEED*sin();
+		}
+		@Override
+		public void spin(double angle) {
+			this.set(this.angle + angle);
+		}
+	};
 	public Dynam() {}
 	public Dynam(Dynam dynam) {
 		x = dynam.x;
 		y = dynam.y;
 		xSpd = dynam.xSpd;
 		ySpd = dynam.ySpd;
-		angle = dynam.angle;
+		angle.set(dynam.angle);
 	}
 	public Dynam(double x,double y) {
 		this.x = x;
@@ -34,17 +48,23 @@ public class Dynam extends Coordinate{
 	public Dynam(double x,double y,double angle) {
 		this.x = x;
 		this.y = y;
-		this.angle = angle;
+		this.angle.set(angle);
 	}
 	public Dynam(double x,double y,double xSpd,double ySpd) {
 		this.x = x;
 		this.y = y;
 		this.xSpd = xSpd;
 		this.ySpd = ySpd;
-		this.angle = atan2(ySpd, xSpd);
+		angle.set(xSpd, ySpd);
+	}
+	public Dynam(IsTurningPoint sample) {
+		x = sample.getCoordinate().getX();
+		y = sample.getCoordinate().getY();
+		angle.set(sample.getAngle());
 	}
 	public void clear() {
-		x = y = xSpd = ySpd = angle = 0.0;
+		x = y = xSpd = ySpd;
+		angle.clear();
 	}
 	public void setAll(HasDynam hasSample) {
 		setAll(hasSample.getDynam());
@@ -54,25 +74,25 @@ public class Dynam extends Coordinate{
 		y = sample.y;
 		xSpd = sample.xSpd;
 		ySpd = sample.ySpd;
-		angle = sample.angle;
+		angle.set(sample.angle);
 	}
 	public Dynam clone() {
 		return new Dynam(this);
 	}
 	public void addX_allowsAngle(double dx) {
-		x += dx*sin(angle);
-		y -= dx*cos(angle);
+		x += dx*angle.sin();
+		y -= dx*angle.cos();
 	}
 	public void addY_allowsAngle(double dy) {
-		x += dy*cos(angle);
-		y += dy*sin(angle);
+		x += dy*angle.cos();
+		y += dy*angle.sin();
 	}
 	public void addXY_DA(double distance,double angle) {
 		x += distance*cos(angle);
 		y += distance*sin(angle);
 	}
 	public void addXY_allowsAngle(double dx,double dy) {
-		final double cos_angle = cos(angle),sin_angle = sin(angle);
+		final double cos_angle = angle.cos(),sin_angle = angle.sin();
 		if(dx != 0.0) {
 			x += dx*sin_angle;
 			y -= dx*cos_angle;
@@ -83,8 +103,8 @@ public class Dynam extends Coordinate{
 		}
 	}
 	public void fastParaAdd_ADXYSpd(double angle,double dx,double dy,double speed) {
-		this.angle += angle;
-		final double cos_angle = cos(this.angle),sin_angle = sin(this.angle);
+		this.angle.spin(angle);
+		final double cos_angle = this.angle.cos(), sin_angle = this.angle.sin();
 		if(dx != 0.0) {
 			x += dx*sin_angle;
 			y -= dx*cos_angle;
@@ -97,15 +117,15 @@ public class Dynam extends Coordinate{
 		ySpd = speed*sin_angle;
 	}
 	public void fastParaAdd_DASpd(double distance,double angle,double speed) {
-		this.angle += angle;
-		final double cos_angle = cos(this.angle),sin_angle = sin(this.angle);
+		this.angle.spin(angle);
+		final double cos_angle = this.angle.cos(), sin_angle = this.angle.sin();
 		x += distance*cos_angle;
 		y += distance*sin_angle;
 		xSpd = speed*cos_angle;
 		ySpd = speed*sin_angle;
 	}
 	public void fastParaAdd_DSpd(double distance,double speed) {
-		final double cos_angle = cos(angle),sin_angle = sin(angle);
+		final double cos_angle = angle.cos(),sin_angle = angle.sin();
 		x += distance*cos_angle;
 		y += distance*sin_angle;
 		xSpd = speed*cos_angle;
@@ -121,61 +141,42 @@ public class Dynam extends Coordinate{
 		return GHQ.checkLoS(new Line2D.Double(this.x,this.y,x,y));
 	}
 	public double getAngle() {
-		return angle;
+		return angle.get();
 	}
 	public double getAngle(double x,double y) {
 		return atan2(y - this.y, x - this.x);
 	}
-	public double getAngleToTarget(HasDynam target) {
+	public double getAngleToTarget(HasCoordinate target) {
 		if(target == null)
 			return GHQ.NONE;
-		final Dynam targetDynam = target.getDynam();
+		final Coordinate targetDynam = target.getCoordinate();
 		return atan2(targetDynam.y - this.y, targetDynam.x - this.x);
 	}
 	public void setAngle(double angle) {
-		this.angle = angle;
-		final double SPEED = getSpeed();
-		xSpd = SPEED*cos(angle);
-		ySpd = SPEED*sin(angle);
+		this.angle.set(angle);
 	}
-	public void setAngle(HasDynam sample) {
+	public void setAngle(HasAngle sample) {
 		if(sample == null)
 			return;
-		setAngle(sample.getDynam().angle);
+		setAngle(sample.getAngle().get());
 	}
-	public void setAngleToTarget(HasDynam target) {
+	public void setAngleToTarget(HasCoordinate target) {
 		if(target == null)
 			return;
 		setAngle(getAngleToTarget(target));
 	}
-	public void setAngleToTarget(HasDynam target,double maxTurnAngle) {
-		if(target == null || maxTurnAngle <= 0)
-			return;
-		final double TARGET_ANGLE = getAngleToTarget(target);
-		final double D_ANGLE = GHQ.angleFormat(TARGET_ANGLE - this.angle);
-		if(D_ANGLE < 0) {
-			if(D_ANGLE < -maxTurnAngle)
-				spin(-maxTurnAngle);
-			else
-				setAngle(TARGET_ANGLE);
-		}else if(D_ANGLE > 0){
-			if(D_ANGLE > maxTurnAngle)
-				spin(maxTurnAngle);
-			else
-				setAngle(TARGET_ANGLE);
-		}
+	public double spinToTargetCapped(HasDynam target, double maxTurnAngle) {
+		if(target == null)
+			return GHQ.MAX;
+		return angle.spinToTargetCapped(getAngleToTarget(target), maxTurnAngle);
+	}
+	public double spinToTargetSuddenly(HasDynam target, double turnFrame) {
+		if(target == null)
+			return GHQ.MAX;
+		return angle.spinToTargetSuddenly(getAngleToTarget(target), turnFrame);
 	}
 	public void spin(double angle) {
-		this.angle += angle;
-		final double SPEED = getSpeed();
-		xSpd = SPEED*cos(this.angle);
-		ySpd = SPEED*sin(this.angle);
-	}
-	public void setAngle_right() {
-		this.angle = 0.0;
-		final double SPEED = getSpeed();
-		xSpd = SPEED;
-		ySpd = 0.0;
+		this.angle.spin(angle);
 	}
 	public boolean isMovable() {
 		return true;
@@ -203,20 +204,20 @@ public class Dynam extends Coordinate{
 		}
 	}
 	public void setXSpeed(double xSpeed) {
-		angle = atan2(ySpd,xSpd = xSpeed);
+		angle.set(xSpd = xSpeed, ySpd);
 	}
 	public void setYSpeed(double ySpeed) {
-		angle = atan2(ySpd = ySpeed,xSpd);
+		angle.set(xSpd, ySpd = ySpeed);
 	}
 	public void setSpeed(double xSpeed,double ySpeed) {
-		angle = atan2(ySpd = ySpeed,xSpd = xSpeed);
+		angle.set(xSpd = xSpeed, ySpd = ySpeed);
 	}
 	public void setSpeed(double speed) {
-		xSpd = speed*cos(angle);
-		ySpd = speed*sin(angle);
+		xSpd = speed*angle.cos();
+		ySpd = speed*angle.sin();
 	}
 	public void addSpeed(double xSpeed,double ySpeed) {
-		angle = atan2(ySpd += ySpeed,xSpd += xSpeed);
+		angle.set(xSpd += xSpeed, ySpd += ySpeed);
 	}
 	public void addSpeed(double accel) {
 		final double SPEED = getSpeed();
@@ -225,8 +226,8 @@ public class Dynam extends Coordinate{
 			xSpd *= RATE;
 			ySpd *= RATE;
 		}else {
-			xSpd = accel*cos(angle);
-			ySpd = accel*sin(angle);
+			xSpd = accel*angle.cos();
+			ySpd = accel*angle.sin();
 		}
 	}
 	public void addSpeed(double accel,boolean brakeMode) {
@@ -239,13 +240,13 @@ public class Dynam extends Coordinate{
 				xSpd *= RATE;
 				ySpd *= RATE;
 			}else {
-				xSpd = accel*cos(angle);
-				ySpd = accel*sin(angle);
+				xSpd = accel*angle.cos();
+				ySpd = accel*angle.sin();
 			}
 		}
 	}
 	public void addSpeed_DA(double distance,double angle) {
-		angle = atan2(ySpd += distance*sin(angle),xSpd += distance*cos(angle));
+		this.angle.set(xSpd += distance*cos(angle), ySpd += distance*sin(angle));
 	}
 	public void accelerate_MUL(double rate) {
 		if(rate == 0.0)

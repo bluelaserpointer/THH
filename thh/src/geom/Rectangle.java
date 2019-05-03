@@ -1,6 +1,6 @@
 package geom;
 
-import physicis.Coordinate;
+import physics.Coordinate;
 
 public class Rectangle extends HitShape{
 	private static final long serialVersionUID = 3869237032416439346L;

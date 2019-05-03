@@ -8,7 +8,7 @@ import core.Standpoint;
 import geom.Circle;
 import paint.DotPaint;
 import paint.ImageFrame;
-import physicis.HasDynam;
+import physics.IsTurningPoint;
 import unit.Unit;
 import weapon.Weapon;
 
@@ -38,7 +38,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 		BlackSlashBurst.paint = ImageFrame.createNew("thhimage/DarkNiddle.png");
 	}
 	
-	public THH_BulletLibrary(Weapon sourceWeapon, HasDynam shooter, Standpoint standpoint) {
+	public THH_BulletLibrary(Weapon sourceWeapon, IsTurningPoint shooter, Standpoint standpoint) {
 		super(sourceWeapon, shooter, standpoint);
 	}
 	/////////////////
@@ -167,7 +167,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 					break;
 			}
 			dynam.setXY(SHOOTER);
-			dynam.setAngle(SHOOTER);
+			dynam.setAngle(SHOOTER.getAngle().get());
 			return true;
 		}
 		@Override

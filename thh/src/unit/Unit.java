@@ -8,8 +8,10 @@ import core.GHQ;
 import core.Standpoint;
 import geom.HitShape;
 import gui.MessageSource;
-import physicis.Coordinate;
-import physicis.Dynam;
+import physics.Angle;
+import physics.Coordinate;
+import physics.Dynam;
+import physics.IsTurningDynamPoint;
 import core.HitInteractable;
 
 /**
@@ -17,7 +19,7 @@ import core.HitInteractable;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Unit extends Entity implements MessageSource,HitInteractable,Serializable{
+public abstract class Unit extends Entity implements MessageSource, HitInteractable, IsTurningDynamPoint, Serializable{
 	private static final long serialVersionUID = 7140005723063155203L;
 
 	protected static final int
@@ -28,7 +30,9 @@ public abstract class Unit extends Entity implements MessageSource,HitInteractab
 	public String originalName = "";
 	public final HitShape hitshape;
 	public final Standpoint standpoint;
-
+	
+	public final Angle baseAngle = new Angle();
+	
 	/////////////
 	//Initialization
 	/////////////
@@ -118,6 +122,10 @@ public abstract class Unit extends Entity implements MessageSource,HitInteractab
 		final int DEFAULT_SIZE = 80;
 		final Coordinate COD = getCoordinate();
 		return new Rectangle2D.Double(COD.getX() - DEFAULT_SIZE/2,COD.getY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
+	}
+	@Override
+	public Angle getAngle() {
+		return baseAngle;
 	}
 	@Override
 	public boolean isHit(HitInteractable object) {

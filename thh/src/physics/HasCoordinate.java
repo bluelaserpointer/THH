@@ -1,4 +1,4 @@
-package physicis;
+package physics;
 
 public interface HasCoordinate {
 	public static final HasCoordinate NULL_COORDINATE_SOURCE = new HasCoordinate() {

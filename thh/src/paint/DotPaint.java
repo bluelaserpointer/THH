@@ -4,6 +4,8 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import core.GHQ;
+import physics.Coordinate;
+import physics.IsTurningPoint;
 
 /**
  * One of the major PaintScript's direct subinterfaces.Describes a paint method which has original width and height but need specified coordinate
@@ -56,6 +58,9 @@ public interface DotPaint extends PaintScript{
 	 * @param y
 	 * @param maxSize
 	 */
+	public default void dotPaint(Coordinate coordinate) {
+		dotPaint((int)coordinate.getX(), (int)coordinate.getY());
+	}
 	public abstract void dotPaint_capSize(int x,int y,int maxSize);
 	/**
 	 * Drawing at specified coordinate but resize it by a rate.
@@ -72,9 +77,13 @@ public interface DotPaint extends PaintScript{
 	 */
 	public default void dotPaint_turn(int x,int y,double angle) {
 		final Graphics2D G2 = GHQ.getGraphics2D();
-		G2.rotate(angle);
+		G2.rotate(angle, x, y);
 		dotPaint(x,y);
-		G2.rotate(-angle);
+		G2.rotate(-angle, x, y);
+	}
+	public default void dotPaint_turn(IsTurningPoint source) {
+		final Coordinate COORDINATE = source.getCoordinate();
+		dotPaint_turn((int)COORDINATE.getX(), (int)COORDINATE.getY(), source.getAngle().get());
 	}
 	/**
 	 * Drawing at specified coordinate but change its angle and keep its maxSize lower than a value.
@@ -85,8 +94,8 @@ public interface DotPaint extends PaintScript{
 	 */
 	public default void dotPaint_turnAndCapSize(int x,int y,double angle,int maxSize) {
 		final Graphics2D G2 = GHQ.getGraphics2D();
-		G2.rotate(angle);
-		dotPaint_capSize(x,y,maxSize);
-		G2.rotate(-angle);
+		G2.rotate(angle, x, y);
+		dotPaint_capSize(x, y, maxSize);
+		G2.rotate(-angle, x, y);
 	}
 }

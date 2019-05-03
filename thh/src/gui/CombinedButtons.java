@@ -53,11 +53,17 @@ public class CombinedButtons extends GUIGroup{
 		};
 		super.addParts(BUTTON);
 	}
+	//extend
+	@Override
+	public void disable() {
+		super.disable();
+		resetSelection();
+	}
 	//control
 	public void setSelection(int id) {
 		selection = id;
 	}
-	public void reset() {
+	public void resetSelection() {
 		selection = defaultSelection;
 	}
 	//information

@@ -1,4 +1,4 @@
-package physicis;
+package physics;
 
 /**
  * Subclasses of this has a accessible {@link Dynam} instance.

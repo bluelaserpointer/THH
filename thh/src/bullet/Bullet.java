@@ -10,8 +10,8 @@ import geom.HitShape;
 import geom.Square;
 import paint.DotPaint;
 import paint.HasDotPaint;
-import physicis.DstCntDynam;
-import physicis.HasDynam;
+import physics.DstCntDynam;
+import physics.IsTurningPoint;
 import unit.Unit;
 import weapon.Weapon;
 
@@ -27,7 +27,7 @@ public class Bullet extends Entity implements HitInteractable,HasDotPaint{
 	private int idleExecuted = 0;
 
 	public final Weapon ORIGIN_WEAPON;
-	public final HasDynam SHOOTER; //an information source of user
+	public final IsTurningPoint SHOOTER; //an information source of user
 	public final Standpoint STANDPOINT;
 	public HitShape hitShape;
 	
@@ -44,8 +44,8 @@ public class Bullet extends Entity implements HitInteractable,HasDotPaint{
 		accel;
 	public DotPaint
 		paintScript;
-	public Bullet(Weapon originWeapon, HasDynam shooter, Standpoint standpoint) {
-		super(new DstCntDynam(shooter.getDynam()), GHQ.getNowFrame());
+	public Bullet(Weapon originWeapon, IsTurningPoint shooter, Standpoint standpoint) {
+		super(new DstCntDynam(shooter), GHQ.getNowFrame());
 		UNIQUE_ID = ++nowMaxUniqueID;
 		ORIGIN_WEAPON = originWeapon;
 		SHOOTER = shooter;

@@ -4,8 +4,8 @@ import java.awt.geom.Rectangle2D;
 
 import geom.HasHitShape;
 import geom.HitShape;
-import physicis.Coordinate;
-import physicis.HasCoordinate;
+import physics.Coordinate;
+import physics.HasCoordinate;
 
 public interface HitInteractable extends HasCoordinate,HasHitShape,HasStandpoint,HasBoundingBox{
 	public static final HitInteractable NULL_HIT_INTERACTABLE = new HitInteractable() {

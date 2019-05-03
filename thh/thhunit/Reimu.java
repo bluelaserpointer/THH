@@ -4,7 +4,7 @@ import static java.lang.Math.*;
 
 import core.GHQ;
 import paint.ImageFrame;
-import physicis.HasDynam;
+import physics.HasDynam;
 import weapon.Weapon;
 import weapon.WeaponInfo;
 

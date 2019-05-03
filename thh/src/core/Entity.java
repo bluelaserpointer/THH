@@ -1,7 +1,7 @@
 package core;
 
-import physicis.Dynam;
-import physicis.HasDynam;
+import physics.Dynam;
+import physics.HasDynam;
 
 public abstract class Entity implements HasDynam{
 	public final int INITIAL_FRAME;

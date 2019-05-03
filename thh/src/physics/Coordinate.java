@@ -1,4 +1,4 @@
-package physicis;
+package physics;
 
 import static java.lang.Math.sqrt;
 

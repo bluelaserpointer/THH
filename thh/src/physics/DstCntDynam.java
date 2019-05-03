@@ -1,4 +1,4 @@
-package physicis;
+package physics;
 
 import static java.lang.Math.sqrt;
 
@@ -22,6 +22,9 @@ public class DstCntDynam extends Dynam{
 		super();
 	}
 	public DstCntDynam(Dynam sample) {
+		super(sample);
+	}
+	public DstCntDynam(IsTurningPoint sample) {
 		super(sample);
 	}
 	

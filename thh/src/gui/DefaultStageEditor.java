@@ -15,7 +15,7 @@ import paint.ColorFilling;
 import paint.ColorFraming;
 import paint.ImageFrame;
 import paint.RectPaint;
-import physicis.Dynam;
+import physics.Dynam;
 import structure.Structure;
 import structure.StructureScript;
 import structure.Terrain;
