@@ -17,7 +17,7 @@ public class DummyUnit extends Unit{
 	}
 	@Override
 	public void paint(boolean doAnimation) {
-		GHQ.drawImageGHQ_center(dummyIID, (int)(getDynam().getX()), (int)(getDynam().getY()));
+		GHQ.drawImageGHQ_center(dummyIID, getDynam().intX(), getDynam().intY());
 	}
 
 	@Override

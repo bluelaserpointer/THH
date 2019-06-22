@@ -24,7 +24,7 @@ public class DstCntDynam extends Dynam{
 	public DstCntDynam(Dynam sample) {
 		super(sample);
 	}
-	public DstCntDynam(IsTurningPoint sample) {
+	public DstCntDynam(HasAnglePoint sample) {
 		super(sample);
 	}
 	

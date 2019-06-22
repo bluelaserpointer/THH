@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import core.GHQ;
 import core.Standpoint;
-import physics.IsTurningPoint;
+import physics.HasAnglePoint;
 import unit.Unit;
 
 /**
@@ -96,7 +96,7 @@ public class Weapon implements Serializable{
 	 * @param standpoint
 	 * @return
 	 */
-	public boolean trigger(IsTurningPoint shooter, Standpoint standpoint) {
+	public boolean trigger(HasAnglePoint shooter, Standpoint standpoint) {
 		if(canFire()) {
 			startCool();
 			if(magazine != GHQ.MAX)
@@ -113,7 +113,7 @@ public class Weapon implements Serializable{
 	 * Set bullets.
 	 * @param shooter - the shooter of the bullets
 	 */
-	public void setBullets(IsTurningPoint shooter, Standpoint standpoint) {
+	public void setBullets(HasAnglePoint shooter, Standpoint standpoint) {
 		
 	}
 	///////////////////

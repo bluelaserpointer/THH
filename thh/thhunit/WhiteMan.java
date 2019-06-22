@@ -32,10 +32,10 @@ public class WhiteMan extends THH_BasicEnemy{
 		if(blackManAdress == null)
 			return;
 		final Dynam THE_DYNAM = blackManAdress.getDynam();
-		charaDstX = THE_DYNAM.getX();
-		charaDstY = THE_DYNAM.getY();
+		charaDstX = THE_DYNAM.doubleX();
+		charaDstY = THE_DYNAM.doubleY();
 		final StatusWithDefaultValue THE_STATUS = ((THH_BasicUnit)blackManAdress).status;
-		if(THE_STATUS.isBigger0(HP) && THE_STATUS.isSmaller(HP,10000) && dynam.getDistance(charaDstX, charaDstY) < 200){
+		if(THE_STATUS.isBigger0(HP) && THE_STATUS.isSmaller(HP,10000) && dynam.inRange(charaDstX, charaDstY, 200)){
 			THE_STATUS.add(HP, 100);
 		}
 		dynam.approachIfNoObstacles(this, charaDstX, charaDstY, charaSpeed);

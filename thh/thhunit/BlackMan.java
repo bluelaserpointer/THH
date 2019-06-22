@@ -37,8 +37,8 @@ public class BlackMan extends THH_BasicEnemy{
 		final Unit targetEnemy = GHQ.getNearstVisibleEnemy(this);
 		if(targetEnemy != null) {
 			final Dynam UNIT_DYNAM = targetEnemy.getDynam();
-			dynam.setAngle(dynam.getAngle(charaDstX = UNIT_DYNAM.getX(),charaDstY = UNIT_DYNAM.getY()));
-			baseAngle.set(dynam.getAngleToTarget(targetEnemy));
+			dynam.setAngle(dynam.angleTo(charaDstX = UNIT_DYNAM.doubleX(),charaDstY = UNIT_DYNAM.doubleY()));
+			baseAngle.set(dynam.angleTo(targetEnemy));
 			if(weapon[0].trigger(this)) {
 				EnemyWeaponLibrary.inputBulletInfo(this,EnemyWeaponLibrary.BLACK_SLASH_BURST,bulletPaint[0],targetEnemy);
 				EnemyWeaponLibrary.inputBulletInfo(this,EnemyWeaponLibrary.BLACK_SLASH_BURST,bulletPaint[1],targetEnemy);

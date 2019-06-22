@@ -1,6 +1,6 @@
 package geom;
 
-import physics.Coordinate;
+import physics.Point;
 
 public class Rectangle extends HitShape{
 	private static final long serialVersionUID = 3869237032416439346L;
@@ -10,12 +10,12 @@ public class Rectangle extends HitShape{
 		HEIGHT = h;
 	}
 	@Override
-	public boolean intersects(Coordinate coordinate1, HitShape shape, Coordinate coordinate2) {
+	public boolean intersects(Point coordinate1, HitShape shape, Point coordinate2) {
 		if(shape instanceof Rectangle) {
-			return coordinate1.isCloser_DXDY(coordinate2, (WIDTH + ((Rectangle)shape).WIDTH)/2, (HEIGHT + ((Rectangle)shape).HEIGHT)/2);
+			return coordinate1.inRangeXY(coordinate2, (WIDTH + ((Rectangle)shape).WIDTH)/2, (HEIGHT + ((Rectangle)shape).HEIGHT)/2);
 		}else if(shape instanceof Square) {
 			final int SIDE = ((Square)shape).SIDE;
-			return coordinate1.isCloser_DXDY(coordinate2, (WIDTH + SIDE)/2, (HEIGHT + SIDE)/2);
+			return coordinate1.inRangeXY(coordinate2, (WIDTH + SIDE)/2, (HEIGHT + SIDE)/2);
 		}
 		return false;
 	}

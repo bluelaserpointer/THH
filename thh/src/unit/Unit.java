@@ -9,9 +9,9 @@ import core.Standpoint;
 import geom.HitShape;
 import gui.MessageSource;
 import physics.Angle;
-import physics.Coordinate;
 import physics.Dynam;
-import physics.IsTurningDynamPoint;
+import physics.HasAngleDynam;
+import physics.Point;
 import core.HitInteractable;
 
 /**
@@ -19,7 +19,7 @@ import core.HitInteractable;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Unit extends Entity implements MessageSource, HitInteractable, IsTurningDynamPoint, Serializable{
+public abstract class Unit extends Entity implements MessageSource, HitInteractable, HasAngleDynam, Serializable{
 	private static final long serialVersionUID = 7140005723063155203L;
 
 	protected static final int
@@ -93,16 +93,16 @@ public abstract class Unit extends Entity implements MessageSource, HitInteracta
 	/////////////
 	public void moveRel(int dx,int dy) {
 		final Dynam DYNAM = getDynam();
-		DYNAM.approach(DYNAM.getX() + dx,DYNAM.getY() + dy, 10);
+		DYNAM.approach(DYNAM.doubleX() + dx,DYNAM.doubleY() + dy, 10);
 	}
 	public void moveTo(int x,int y) {
 		getDynam().approach(x, y, 10);
 	}
 	public void teleportRel(int dx,int dy) {
-		getCoordinate().addXY(dx, dy);
+		getPoint().addXY(dx, dy);
 	}
 	public void teleportTo(int x,int y) {
-		getCoordinate().setXY(x, y);
+		getPoint().setXY(x, y);
 	}
 	public abstract boolean kill(boolean force);
 	protected void killed() {}
@@ -120,8 +120,8 @@ public abstract class Unit extends Entity implements MessageSource, HitInteracta
 	@Override
 	public Rectangle2D getBoundingBox() {
 		final int DEFAULT_SIZE = 80;
-		final Coordinate COD = getCoordinate();
-		return new Rectangle2D.Double(COD.getX() - DEFAULT_SIZE/2,COD.getY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
+		final Point COD = getPoint();
+		return new Rectangle2D.Double(COD.intX() - DEFAULT_SIZE/2,COD.intY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
 	}
 	@Override
 	public Angle getAngle() {
@@ -129,7 +129,7 @@ public abstract class Unit extends Entity implements MessageSource, HitInteracta
 	}
 	@Override
 	public boolean isHit(HitInteractable object) {
-		return isAlive() && !isFriend(object) && hitshape.intersects(getCoordinate(), object, object.getCoordinate());
+		return isAlive() && !isFriend(object) && hitshape.intersects(getPoint(), object, object.getPoint());
 	}
 	public HitShape getHitShape() {
 		return hitshape;

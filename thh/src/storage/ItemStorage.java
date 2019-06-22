@@ -2,28 +2,28 @@ package storage;
 
 import java.io.Serializable;
 
-import item.Item;
+import item.ItemData;
 
 /**
- * A class for managing unit's inventory, holds a final {@link Storage}{@literal <}{@link Item}{@literal >}.
+ * A class for managing unit's inventory, holds a final {@link Storage}{@literal <}{@link ItemData}{@literal >}.
  * @author bluelaserpointer
  * @since alpha1.0
  */
 public class ItemStorage implements Serializable{
 	private static final long serialVersionUID = 353322954827886207L;
-	public final Storage<Item> items;
+	public final Storage<ItemData> items;
 	/**
-	 * Create ItemInventory.It will use new {@link Storage}{@literal <}{@link Item}{@literal >} automatically.)
+	 * Create ItemInventory.It will use new {@link Storage}{@literal <}{@link ItemData}{@literal >} automatically.)
 	 * @param storage
 	 */
 	public ItemStorage() {
-		items = new Storage<Item>();
+		items = new Storage<ItemData>();
 	}
 	/**
-	 * Create ItemInventory with a {@link Storage}{@literal <}{@link Item}{@literal >} or its subclasses.(like {@link TableStorage}{@literal <}{@link Item}{@literal >})
+	 * Create ItemInventory with a {@link Storage}{@literal <}{@link ItemData}{@literal >} or its subclasses.(like {@link TableStorage}{@literal <}{@link ItemData}{@literal >})
 	 * @param storage
 	 */
-	public ItemStorage(Storage<Item> storage) {
+	public ItemStorage(Storage<ItemData> storage) {
 		items = storage;
 	}
 	//control
@@ -32,9 +32,9 @@ public class ItemStorage implements Serializable{
 	 * @param targetItem
 	 * @return true - successfully added / false - overflowed
 	 */
-	public boolean add_stack(Item targetItem) {
+	public boolean add_stack(ItemData targetItem) {
 		for(int i = items.traverseFirst();i != -1;i = items.traverseNext(i)) {
-			final Item ITEM = items.get(i);
+			final ItemData ITEM = items.get(i);
 			if(ITEM.isStackable(targetItem)) {
 				ITEM.stack(targetItem);
 				if(targetItem.isEmpty()) {
@@ -50,7 +50,7 @@ public class ItemStorage implements Serializable{
 	}
 	
 	//information
-	public int countItem(Item targetItem) {
+	public int countItem(ItemData targetItem) {
 		int total = 0;
 		for(int i = items.traverseFirst();i != -1;i = items.traverseNext(i)) {
 			if(targetItem.isStackable(items.get(i)))

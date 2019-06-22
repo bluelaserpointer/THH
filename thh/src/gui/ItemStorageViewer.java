@@ -4,30 +4,30 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import core.GHQ;
-import item.Item;
+import item.ItemData;
 import paint.HasDotPaint;
 import paint.RectPaint;
 import storage.TableStorage;
 
 /**
- * A {@link GUIParts} subclass for managing Excel-like {@link Item} display, additionally draws their amount at the right-bottom corner.
+ * A {@link GUIParts} subclass for managing Excel-like {@link ItemData} display, additionally draws their amount at the right-bottom corner.
  * Mainly used for inventory display.
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class ItemStorageViewer extends TableStorageViewer<Item>{
+public class ItemStorageViewer extends TableStorageViewer<ItemData>{
 	protected RectPaint cellPaint;
 	/**
-	 * Create an ItemStorageViewer with an already existed {@link TableStorage}{@literal <}{@link Item}{@literal >}.
+	 * Create an ItemStorageViewer with an already existed {@link TableStorage}{@literal <}{@link ItemData}{@literal >}.
 	 * @param group - name of the group this GUI belong to(use in {@link GHQ#enableGUIs(String)}, {@link GHQ#disableGUIs(String)})
 	 * @param backgroundPaint - the {@link RectPaint} of this GUI background
 	 * @param cellPaint - the {@link RectPaint} of the cells background
 	 * @param x - the x coordinate of the upper-left corner of this GUI
 	 * @param y - the y coordinate of the upper-left corner of this GUI
 	 * @param cellSize - size of the cells
-	 * @param items - an already exist {@link TableStorage}{@literal <}{@link Item}{@literal >} to display
+	 * @param items - an already exist {@link TableStorage}{@literal <}{@link ItemData}{@literal >} to display
 	 */
-	public ItemStorageViewer(String group, RectPaint backgroundPaint, RectPaint cellPaint, int x, int y, int cellSize, TableStorage<Item> items) {
+	public ItemStorageViewer(String group, RectPaint backgroundPaint, RectPaint cellPaint, int x, int y, int cellSize, TableStorage<ItemData> items) {
 		super(group, backgroundPaint, x, y, cellSize, items);
 		this.cellPaint = cellPaint;
 	}
@@ -47,8 +47,8 @@ public class ItemStorageViewer extends TableStorageViewer<Item>{
 			G2.setColor(Color.GRAY);
 			G2.drawString("Empty", x + CELL_SIZE - 23, y + CELL_SIZE - 9);
 		}
-		if(object instanceof Item && object != Item.BLANK_ITEM) {
-			final int AMOUNT = ((Item)object).getAmount();
+		if(object instanceof ItemData && object != ItemData.BLANK_ITEM) {
+			final int AMOUNT = ((ItemData)object).getAmount();
 			final Graphics2D G2 = GHQ.getGraphics2D();
 			G2.setColor(Color.GRAY);
 			G2.drawString(String.valueOf(AMOUNT), x + CELL_SIZE - 23, y + CELL_SIZE - 9);

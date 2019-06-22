@@ -85,7 +85,7 @@ public class Effect extends Entity implements HasDotPaint{
 	}
 	@Override
 	public final void defaultPaint() {
-		paintScript.dotPaint_turn((int)dynam.getX(), (int)dynam.getY(), dynam.getAngle());
+		paintScript.dotPaint_turn(dynam, dynam.moveAngle());
 	}
 	
 	//extends

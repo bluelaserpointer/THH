@@ -57,12 +57,11 @@ public abstract class Structure implements Serializable,HasBoundingBox,HasStandp
 	public final boolean intersectsLine(double x1,double y1,double x2,double y2) {
 		return intersectsLine(new Line2D.Double(x1,y1,x2,y2));
 	}
-	public final boolean intersectsLine(HasDynam d1,HasDynam d2) {
-		final Dynam D1 = d1.getDynam(),D2 = d2.getDynam();
-		return intersectsLine(D1.getX(),D1.getY(),D2.getX(),D2.getY());
+	public final boolean intersectsLine(Dynam dynam1,Dynam dynam2) {
+		return intersectsLine(dynam1.doubleX(),dynam1.doubleY(),dynam2.doubleX(),dynam2.doubleY());
 	}
-	public final boolean intersectsLine(Dynam d1,Dynam d2) {
-		return intersectsLine(d1.getX(),d1.getY(),d2.getX(),d2.getY());
+	public final boolean intersectsLine(HasDynam object1,HasDynam object2) {
+		return object1 == null || object2 == null ? false : intersectsLine(object1.getDynam(), object2.getDynam());
 	}
 	@Override
 	public final Standpoint getStandpoint() {

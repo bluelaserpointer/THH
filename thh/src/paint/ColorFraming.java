@@ -15,6 +15,7 @@ import core.GHQ;
  */
 public class ColorFraming implements RectPaint{
 	private static final long serialVersionUID = 6260543840507733715L;
+	
 	private final Color COLOR;
 	private final Stroke STROKE;
 	/**

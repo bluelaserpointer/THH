@@ -38,7 +38,7 @@ public class Fairy extends THH_BasicEnemy{
 	@Override
 	public void paint(boolean doAnimation) {
 		super.paintMode_magicCircle(magicCircleIID);
-		GHQ.paintHPArc((int) dynam.getX(), (int) dynam.getY(), 20,status.get(HP), status.getDefault(HP));
+		GHQ.paintHPArc(dynam.intX(), dynam.intY(), 20,status.get(HP), status.getDefault(HP));
 	}
 	@Override
 	public void setBullet(int kind,HasDynam source) {}

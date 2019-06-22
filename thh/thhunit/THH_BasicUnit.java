@@ -4,7 +4,7 @@ import action.Action;
 import action.ActionInfo;
 import core.GHQ;
 import geom.Square;
-import item.Item;
+import item.ItemData;
 import paint.DotPaint;
 import paint.RectPaint;
 import physics.HasDynam;
@@ -52,9 +52,9 @@ public abstract class THH_BasicUnit extends Unit {
 	
 	public THH_BasicUnit(int charaSize, int initialGroup) {
 		super(new Square(charaSize), initialGroup);
-		inventory = new ItemStorage(new Storage<Item>());
+		inventory = new ItemStorage(new Storage<ItemData>());
 	}
-	public THH_BasicUnit(int charaSize, int initialGroup, Storage<Item> itemStorageKind) {
+	public THH_BasicUnit(int charaSize, int initialGroup, Storage<ItemData> itemStorageKind) {
 		super(new Square(charaSize), initialGroup);
 		inventory = new ItemStorage(itemStorageKind);
 	}
@@ -103,12 +103,12 @@ public abstract class THH_BasicUnit extends Unit {
 	public boolean attackOrder, dodgeOrder, spellOrder;
 	@Override
 	public void paint(boolean doAnimation) {
-		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
+		final int X = dynam.intX(),Y = dynam.intY();
 		charaPaint.dotPaint(X, Y);
 		GHQ.paintHPArc(X, Y, 20,status.get(HP), status.getDefault(HP));
 	}
 	protected final void paintMode_magicCircle(DotPaint paintScript) {
-		final int X = (int) dynam.getX(),Y = (int) dynam.getY();
+		final int X = dynam.intX(),Y = dynam.intY();
 		paintScript.dotPaint_turn(X, Y, (double)GHQ.getNowFrame()/35.0);
 		charaPaint.dotPaint(X, Y);
 	}
@@ -150,8 +150,8 @@ public abstract class THH_BasicUnit extends Unit {
 					charaDstY = Y;
 					break;
 				case ActionInfo.MOVE:
-					charaDstX = dynam.getX() + X;
-					charaDstY = dynam.getY() + Y;
+					charaDstX = dynam.doubleX() + X;
+					charaDstY = dynam.doubleY() + Y;
 					break;
 				case ActionInfo.ATTACK:
 					setBullet(weaponSlot[slot_weapon],this);
@@ -166,7 +166,7 @@ public abstract class THH_BasicUnit extends Unit {
 	}
 	// HP
 	protected final void dodge(double targetX, double targetY) {
-		dynam.addSpeed_DA(40, dynam.getAngle(targetX,targetY));
+		dynam.addSpeed_DA(40, dynam.angleTo(targetX,targetY));
 		charaOnLand = false;
 	}
 

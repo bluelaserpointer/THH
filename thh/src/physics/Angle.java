@@ -61,7 +61,7 @@ public class Angle implements Serializable{
 		angle = GHQ.NONE;
 	}
 	//information
-	public double get() {
+	public double angle() {
 		return angle;
 	}
 	public double sin() {

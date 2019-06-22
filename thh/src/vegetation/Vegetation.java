@@ -5,6 +5,8 @@ import java.io.Serializable;
 
 import core.HasBoundingBox;
 import paint.HasDotPaint;
+import physics.HasPoint;
+import physics.Point;
 import paint.DotPaint;
 
 /**
@@ -12,26 +14,29 @@ import paint.DotPaint;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Vegetation implements Serializable,HasBoundingBox,HasDotPaint{
+public class Vegetation implements Serializable, HasPoint, HasBoundingBox, HasDotPaint{
 	private static final long serialVersionUID = -5536970507937704287L;
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;
 	
 	protected final DotPaint paintScript;
-	protected int x,y;
+	protected final Point.IntPoint point;
 
 	//init
 	public Vegetation(DotPaint paintScript,int x,int y) {
 		UNIQUE_ID = ++nowMaxUniqueID;
 		this.paintScript = paintScript;
-		this.x = x;
-		this.y = y;
+		point = new Point.IntPoint(x, y);
+	}
+	public Vegetation(DotPaint paintScript,Point point) {
+		UNIQUE_ID = ++nowMaxUniqueID;
+		this.paintScript = paintScript;
+		this.point = new Point.IntPoint(point);
 	}
 	public Vegetation(Vegetation sample) {
 		UNIQUE_ID = ++nowMaxUniqueID;
 		this.paintScript = sample.paintScript;
-		this.x = sample.x;
-		this.y = sample.y;
+		point = new Point.IntPoint();
 	}
 	//idle
 	public void idle() {
@@ -40,23 +45,23 @@ public class Vegetation implements Serializable,HasBoundingBox,HasDotPaint{
 	public void paint() {
 		if(paintScript == null)
 			return;
-		paintScript.dotPaint(x, y);
+		paintScript.dotPaint(point);
 	}
 	//control
 	@Override
 	public Vegetation clone() {
 		return new Vegetation(this);
 	}
-	public void setXY(int x,int y) {
-		this.x = x;
-		this.y = y;
-	}
 	
 	//information
 	@Override
+	public Point getPoint() {
+		return point;
+	}
+	@Override
 	public Rectangle2D getBoundingBox() {
 		final int W = paintScript.getDefaultW(),H = paintScript.getDefaultH();
-		return new Rectangle2D.Double(x - W/2, y - H/2, W, H);
+		return new Rectangle2D.Double(point.intX() - W/2, point.intY() - H/2, W, H);
 	}
 	@Override
 	public final DotPaint getPaintScript() {

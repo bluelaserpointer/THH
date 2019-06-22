@@ -11,7 +11,7 @@ import geom.Square;
 import paint.DotPaint;
 import paint.HasDotPaint;
 import physics.DstCntDynam;
-import physics.IsTurningPoint;
+import physics.HasAnglePoint;
 import unit.Unit;
 import weapon.Weapon;
 
@@ -27,7 +27,7 @@ public class Bullet extends Entity implements HitInteractable,HasDotPaint{
 	private int idleExecuted = 0;
 
 	public final Weapon ORIGIN_WEAPON;
-	public final IsTurningPoint SHOOTER; //an information source of user
+	public final HasAnglePoint SHOOTER; //an information source of user
 	public final Standpoint STANDPOINT;
 	public HitShape hitShape;
 	
@@ -44,7 +44,7 @@ public class Bullet extends Entity implements HitInteractable,HasDotPaint{
 		accel;
 	public DotPaint
 		paintScript;
-	public Bullet(Weapon originWeapon, IsTurningPoint shooter, Standpoint standpoint) {
+	public Bullet(Weapon originWeapon, HasAnglePoint shooter, Standpoint standpoint) {
 		super(new DstCntDynam(shooter), GHQ.getNowFrame());
 		UNIQUE_ID = ++nowMaxUniqueID;
 		ORIGIN_WEAPON = originWeapon;
@@ -162,7 +162,7 @@ public class Bullet extends Entity implements HitInteractable,HasDotPaint{
 	}
 	@Override
 	public final void defaultPaint() {
-		paintScript.dotPaint_turn((int)dynam.getX(),(int)dynam.getY(), dynam.getAngle());
+		paintScript.dotPaint_turn(dynam, dynam.moveAngle());
 	}
 	//extends
 	public boolean judgeLandscapeCollision() {

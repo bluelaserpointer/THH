@@ -1,6 +1,6 @@
 package geom;
 
-import physics.Coordinate;
+import physics.Point;
 
 public class Circle extends HitShape{
 	private static final long serialVersionUID = -1809578801160258098L;
@@ -10,13 +10,13 @@ public class Circle extends HitShape{
 		RADIUS = radius;
 	}
 	@Override
-	public boolean intersects(Coordinate coordinate1, HitShape shape, Coordinate coordinate2) {
+	public boolean intersects(Point coordinate1, HitShape shape, Point coordinate2) {
 		if(shape instanceof Circle) {
 			final double DR = RADIUS + ((Circle)shape).RADIUS;
-			return coordinate1.getDistancePow(coordinate2) < DR*DR;
+			return coordinate1.distanceSq(coordinate2) < DR*DR;
 		}else if(shape instanceof Square) {
 			// TODO lacking strictness
-			return coordinate1.isCloser_DXDY(coordinate2,(RADIUS + ((Square)shape).SIDE)/2);
+			return coordinate1.inRangeXY(coordinate2,(RADIUS + ((Square)shape).SIDE)/2);
 		}
 		return false;
 	}

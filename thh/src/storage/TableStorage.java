@@ -1,6 +1,6 @@
 package storage;
 
-import item.Item;
+import item.ItemData;
 
 /**
  * A class for managing array like Excel.Can set any cell as empty and skip them when traversing. 
@@ -41,7 +41,7 @@ public class TableStorage<T> extends Storage<T>{
 			return false;
 		}
 		for(int i = 0;i < size();i++) {
-			if(get(i) == NULL_ELEMENT || get(i) == null || get(i) == Item.BLANK_ITEM) {
+			if(get(i) == NULL_ELEMENT || get(i) == null || get(i) == ItemData.BLANK_ITEM) {
 				set(i, element);
 				return true;
 			}

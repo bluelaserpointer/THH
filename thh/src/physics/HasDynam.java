@@ -6,7 +6,7 @@ package physics;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public interface HasDynam extends HasCoordinate{
+public interface HasDynam extends HasPoint{
 	public static final HasDynam NULL_DYNAM_SOURCE = new HasDynam() {
 		private final Dynam nullDynam = new Dynam();
 		@Override
@@ -14,7 +14,7 @@ public interface HasDynam extends HasCoordinate{
 			return nullDynam;
 		}
 		@Override
-		public Coordinate getCoordinate() {
+		public Point getPoint() {
 			return nullDynam;
 		}
 	};
@@ -24,7 +24,7 @@ public interface HasDynam extends HasCoordinate{
 	 * @return {@link Dynam}
 	 */
 	public abstract Dynam getDynam();
-	public default Coordinate getCoordinate() {
+	public default Point getPoint() {
 		return getDynam();
 	}
 }

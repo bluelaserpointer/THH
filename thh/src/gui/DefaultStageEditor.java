@@ -260,7 +260,7 @@ public class DefaultStageEditor extends GUIGroup{
 		final Graphics2D G2 = GHQ.getGraphics2D();
 		GHQ.translateForGUI(false);
 		//mouse
-		if(GHQ.key_shift) {
+		if(true /*GHQ.key_shift*/) {
 			G2.setColor(Color.RED);
 			final int N = 100;
 			int S = 4;
@@ -273,20 +273,20 @@ public class DefaultStageEditor extends GUIGroup{
 			G2.drawOval(SX*N - S/2, SY*N - S/2, S, S);
 			placeX = SX*N;
 			placeY = SY*N;
-		}else {
+		}/*else {
 			placeX = GHQ.getMouseX();
 			placeY = GHQ.getMouseY();
-		}
+		}*/
 		//originalName display
 		G2.setColor(Color.GRAY);
 		G2.setFont(GHQ.basicFont.deriveFont(20.0f));
 		for(Unit unit : GHQ.getUnitList())
-			G2.drawString(unit.originalName, (int)unit.getDynam().getX(), (int)unit.getDynam().getY());
+			G2.drawString(unit.originalName, unit.getDynam().intX(), unit.getDynam().intY());
 		G2.setFont(GHQ.basicFont);
 
 		GHQ.translateForGUI(true);
 		//GUI
-		G2.setColor(Color.WHITE);
+		G2.setColor(Color.BLACK);
 		G2.drawString("EDIT_MODE", 20, 20);
 	}
 	

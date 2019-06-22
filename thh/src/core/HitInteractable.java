@@ -4,38 +4,31 @@ import java.awt.geom.Rectangle2D;
 
 import geom.HasHitShape;
 import geom.HitShape;
-import physics.Coordinate;
-import physics.HasCoordinate;
+import physics.HasPoint;
+import physics.Point;
 
-public interface HitInteractable extends HasCoordinate,HasHitShape,HasStandpoint,HasBoundingBox{
+public interface HitInteractable extends HasPoint,HasHitShape,HasStandpoint,HasBoundingBox{
 	public static final HitInteractable NULL_HIT_INTERACTABLE = new HitInteractable() {
-
 		@Override
-		public Coordinate getCoordinate() {
-			// TODO Auto-generated method stub
+		public Point getPoint() {
 			return null;
 		}
-
 		@Override
 		public HitShape getHitShape() {
-			// TODO Auto-generated method stub
 			return null;
 		}
-
 		@Override
 		public Standpoint getStandpoint() {
-			// TODO Auto-generated method stub
 			return null;
 		}
-		
 	};
 	public default boolean isHit(HitInteractable target) {
-		return !isFriend(target) && getHitShape().intersects(getCoordinate(), target, target.getCoordinate());
+		return !isFriend(target) && getHitShape().intersects(getPoint(), target, target.getPoint());
 	}
 	@Override
 	public default Rectangle2D getBoundingBox() {
-		final Coordinate cod = getCoordinate();
+		final Point cod = getPoint();
 		final HitShape hitshape = getHitShape();
-		return new Rectangle2D.Double(cod.getX(), cod.getY(), hitshape.getWidth(), hitshape.getHeight());
+		return new Rectangle2D.Double(cod.doubleX(), cod.doubleY(), hitshape.getWidth(), hitshape.getHeight());
 	}
 }

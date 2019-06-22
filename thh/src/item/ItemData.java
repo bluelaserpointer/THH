@@ -9,19 +9,19 @@ import storage.Storage;
 import vegetation.DropItem;
 
 /**
- * A primal class for managing item.
+ * A primal class for managing item data.
  * Note that Item class and {@link DropItem} class is different.(One commonly put in {@link storage.Storage} but the another one can put in stage as {@link vegetation.Vegetation} object.)
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Item implements Serializable,HasDotPaint{
+public abstract class ItemData implements Serializable,HasDotPaint{
 	private static final long serialVersionUID = 1587964067620280674L;
 	protected int amount;
 	protected final int STACK_CAP;
 	protected final DotPaint paintScript;
 	public abstract String getName();
 	
-	public static final Item BLANK_ITEM = new Item(null){
+	public static final ItemData BLANK_ITEM = new ItemData(null){
 		private static final long serialVersionUID = 7797829501331686714L;
 
 		@Override
@@ -31,11 +31,11 @@ public abstract class Item implements Serializable,HasDotPaint{
 	};
 	
 	//init
-	public Item(int stackCap,DotPaint paintScript) {
+	public ItemData(int stackCap,DotPaint paintScript) {
 		STACK_CAP = stackCap;
 		this.paintScript = paintScript == null ? DotPaint.BLANK_SCRIPT : paintScript;
 	}
-	public Item(DotPaint paintScript) {
+	public ItemData(DotPaint paintScript) {
 		STACK_CAP = GHQ.MAX;
 		this.paintScript = paintScript == null ? DotPaint.BLANK_SCRIPT : paintScript;
 	}
@@ -47,7 +47,7 @@ public abstract class Item implements Serializable,HasDotPaint{
 		return new DropItem(this,paintScript,x,y);
 	}
 	//information
-	public boolean isStackable(Item item) {
+	public boolean isStackable(ItemData item) {
 		return item.getName().equals(this.getName());
 	}
 	public final boolean isEmpty() {
@@ -95,7 +95,7 @@ public abstract class Item implements Serializable,HasDotPaint{
 	 * @param item
 	 * @return
 	 */
-	public int stack(Item item) {
+	public int stack(ItemData item) {
 		final int ADDED = add(item.amount);
 		item.consume(ADDED);
 		return ADDED;
@@ -105,15 +105,15 @@ public abstract class Item implements Serializable,HasDotPaint{
 	 * @param item
 	 * @return
 	 */
-	public int setOff(Item item) {
+	public int setOff(ItemData item) {
 		final int CONSUMED = consume(item.amount);
 		item.consume(CONSUMED);
 		return CONSUMED;
 	}
 	//public tool
-	public static boolean addInInventory(Storage<Item> itemStorage, Item targetItem) {
+	public static boolean addInInventory(Storage<ItemData> itemStorage, ItemData targetItem) {
 		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
-			final Item ITEM = itemStorage.get(i);
+			final ItemData ITEM = itemStorage.get(i);
 			if(ITEM.isStackable(targetItem)) {
 				ITEM.stack(targetItem);
 				if(targetItem.isEmpty()) {
@@ -127,10 +127,10 @@ public abstract class Item implements Serializable,HasDotPaint{
 		//not found same kind (stackable) item.
 		return itemStorage.add(targetItem);
 	}
-	public static int removeInInventory(Storage<Item> itemStorage, Item targetItem) {
+	public static int removeInInventory(Storage<ItemData> itemStorage, ItemData targetItem) {
 		int removed = 0;
 		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
-			final Item ITEM = itemStorage.get(i);
+			final ItemData ITEM = itemStorage.get(i);
 			if(ITEM.isStackable(targetItem)) {
 				removed += ITEM.setOff(targetItem);
 				if(targetItem.isEmpty())
@@ -138,7 +138,7 @@ public abstract class Item implements Serializable,HasDotPaint{
 			}
 		}
 		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
-			final Item ITEM = itemStorage.get(i);
+			final ItemData ITEM = itemStorage.get(i);
 			if(ITEM.isEmpty() && !ITEM.keepEvenEmpty())
 				itemStorage.remove(ITEM);
 		}

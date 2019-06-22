@@ -3,7 +3,17 @@ package core;
 import static java.awt.event.KeyEvent.*;
 import static java.lang.Math.*;
 
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.RenderingHints;
 import java.awt.event.*;
 import java.awt.image.*;
 import java.awt.geom.*;
@@ -21,10 +31,8 @@ import gui.MessageSource;
 import input.KeyListenerEx;
 import input.KeyTypeListener;
 import input.MouseListenerEx;
-import item.Item;
-import physics.Coordinate;
+import item.ItemData;
 import physics.Dynam;
-import physics.HasCoordinate;
 import physics.HasDynam;
 import structure.Structure;
 import stage.StageEngine;
@@ -323,7 +331,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				g2.drawString("(" + (MOUSE_X - (int)viewX) + "," + (MOUSE_Y - (int)viewY) + ")",MOUSE_X + 20,MOUSE_Y + 40);
 				//unitInfo
 				for(Unit unit : units) {
-					final int RECT_X = (int)unit.getDynam().getX() + (int)viewX,RECT_Y = (int)unit.getDynam().getY() + (int)viewY;
+					final int RECT_X = unit.getDynam().intX() + (int)viewX,RECT_Y = unit.getDynam().intY() + (int)viewY;
 					g2.setStroke(stroke1);
 					g2.drawRect(RECT_X - 50, RECT_Y - 50, 100,100);
 					g2.drawLine(RECT_X + 50, RECT_Y - 50, RECT_X + 60, RECT_Y - 60);
@@ -466,14 +474,14 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return getUnits_standpoint(source,true);
 	}
 	public static final Unit getNearstEnemy(HasStandpoint source,int x,int y) {
-		double nearstDistance = NONE;
+		double nearstDistanceSq = NONE;
 		Unit nearstUnit = null;
 		for(Unit enemy : getUnits_standpoint(source,false)) {
 			if(!enemy.isAlive())
 				continue;
-			final double distance = abs(enemy.getDynam().getDistance(x, y));
-			if(nearstUnit == null || distance < nearstDistance) {
-				nearstDistance = distance;
+			final double DISTANCE_SQ = enemy.getDynam().distanceSq(x, y);
+			if(nearstUnit == null || DISTANCE_SQ < nearstDistanceSq) {
+				nearstDistanceSq = DISTANCE_SQ;
 				nearstUnit = enemy;
 			}
 		}
@@ -492,47 +500,43 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final Unit getNearstVisibleEnemy(Unit unit) {
 		final Dynam DYNAM = unit.getDynam();
-		Unit neastVisibleEnemy = null;
-		double enemyDistance = MAX;
+		Unit nearstVisibleEnemy = null;
+		double nearstDistanceSq = MAX;
 		for(Unit enemy : getUnits_standpoint(unit,false)) {
-			if(!enemy.isAlive())
+			if(!enemy.isAlive() || !DYNAM.isVisible(enemy))
 				continue;
-			if(enemyDistance == MAX) {
-				if(DYNAM.isVisible(enemy)) {
-					neastVisibleEnemy = enemy;
-					enemyDistance = DYNAM.getDistance(enemy);
-				}
+			if(nearstDistanceSq == MAX) {
+				nearstVisibleEnemy = enemy;
+				nearstDistanceSq = DYNAM.distanceSq(enemy);
 			}else {
-				final double DISTANCE = DYNAM.getDistance(enemy);
-				if(enemyDistance > DISTANCE && DYNAM.isVisible(enemy)) {
-					neastVisibleEnemy = enemy;
-					enemyDistance = DISTANCE;
+				final double DISTANCE = DYNAM.distanceSq(enemy);
+				if(nearstDistanceSq > DISTANCE) {
+					nearstVisibleEnemy = enemy;
+					nearstDistanceSq = DISTANCE;
 				}
 			}
 		}
-		return neastVisibleEnemy;
+		return nearstVisibleEnemy;
 	}
 	public static final Unit getNearstVisibleEnemy(Bullet bullet) {
 		final Dynam DYNAM = bullet.getDynam();
-		Unit neastVisibleEnemy = null;
-		double enemyDistance = MAX;
+		Unit nearstVisibleEnemy = null;
+		double nearstDistanceSq = MAX;
 		for(Unit enemy : getUnits_standpoint(bullet,false)) {
-			if(!enemy.isAlive())
+			if(!enemy.isAlive() || !DYNAM.isVisible(enemy))
 				continue;
-			if(enemyDistance == MAX) {
-				if(DYNAM.isVisible(enemy)) {
-					neastVisibleEnemy = enemy;
-					enemyDistance = DYNAM.getDistance(enemy);
-				}
+			if(nearstDistanceSq == MAX) {
+				nearstVisibleEnemy = enemy;
+				nearstDistanceSq = DYNAM.distanceSq(enemy);
 			}else {
-				final double DISTANCE = DYNAM.getDistance(enemy);
-				if(enemyDistance > DISTANCE && DYNAM.isVisible(enemy)) {
-					neastVisibleEnemy = enemy;
-					enemyDistance = DISTANCE;
+				final double DISTANCE = DYNAM.distanceSq(enemy);
+				if(nearstDistanceSq > DISTANCE) {
+					nearstVisibleEnemy = enemy;
+					nearstDistanceSq = DISTANCE;
 				}
 			}
 		}
-		return neastVisibleEnemy;
+		return nearstVisibleEnemy;
 	}
 	public static final int getUnitAmount() {
 		return units.size();
@@ -556,7 +560,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return null;
 	}
-	public static final Item getCoveredDropItem_pickup(HasDynam di, int distance) {
+	public static final ItemData getCoveredDropItem_pickup(HasDynam di, int distance) {
 		for(Vegetation vegetation : vegetations) {
 			if(vegetation instanceof DropItem && ((DropItem)vegetation).isCovered(di, distance)) {
 				return ((DropItem)vegetation).pickup();
@@ -605,25 +609,25 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		for(Structure structure : structures) {
 			if(structure.getStandpoint() == null)
 				System.out.println("bug.");
-			if(!object.isFriend(structure) && structure.contains((int)object.getCoordinate().getX(), (int)object.getCoordinate().getY(), object.getHitShape().getWidth(), object.getHitShape().getHeight()))
+			if(!object.isFriend(structure) && structure.contains(object.getPoint().intX(), object.getPoint().intY(), object.getHitShape().getWidth(), object.getHitShape().getHeight()))
 				return true;
 		}
 		return false;
 	}
 	public static final boolean hitObstacle(HitInteractable object) {
-		return hitStructure(object) || !inStage(object);
+		return hitStructure(object) || !object.getPoint().inStage();
 	}
 	public static final boolean hitStructure_DXDY(HitInteractable object, int dx, int dy){
 		for(Structure structure : structures) {
 			if(structure.getStandpoint() == null)
 				System.out.println("bug.");
-			if(!object.isFriend(structure) && structure.contains((int)object.getCoordinate().getX() + dx, (int)object.getCoordinate().getY() + dy, object.getHitShape().getWidth(), object.getHitShape().getHeight()))
+			if(!object.isFriend(structure) && structure.contains(object.getPoint().intX() + dx, object.getPoint().intY() + dy, object.getHitShape().getWidth(), object.getHitShape().getHeight()))
 				return true;
 		}
 		return false;
 	}
 	public static final boolean hitObstacle_DXDY(HitInteractable object, int dx, int dy) {
-		return hitStructure_DXDY(object, dx, dy) || !inStage((int)object.getCoordinate().getX() + dx, (int)object.getCoordinate().getY() + dy);
+		return hitStructure_DXDY(object, dx, dy) || !inStage(object.getPoint().intX() + dx, object.getPoint().intY() + dy);
 	}
 	public static final boolean hitStructure_DSTXY(HitInteractable object, int dstX, int dstY){
 		for(Structure structure : structures) {
@@ -639,12 +643,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final boolean inStage(int x,int y) {
 		return engine.inStage(x,y);
-	}
-	public static final boolean inStage(HasCoordinate object) {
-		if(object == null)
-			return false;
-		final Coordinate COD = object.getCoordinate();
-		return inStage((int)(COD.getX()), (int)(COD.getY()));
 	}
 	//information-GUI
 	public static final int getScreenW(){

@@ -2,8 +2,6 @@ package physics;
 
 import static java.lang.Math.*;
 
-import java.awt.geom.Line2D;
-
 import core.GHQ;
 import core.HitInteractable;
 
@@ -12,7 +10,7 @@ import core.HitInteractable;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Dynam extends Coordinate{
+public class Dynam extends Point.DoublePoint{
 	private static final long serialVersionUID = -3892193817831737958L;
 	
 	public static final Dynam NULL_DYNAM = new Dynam();
@@ -57,9 +55,9 @@ public class Dynam extends Coordinate{
 		this.ySpd = ySpd;
 		angle.set(xSpd, ySpd);
 	}
-	public Dynam(IsTurningPoint sample) {
-		x = sample.getCoordinate().getX();
-		y = sample.getCoordinate().getY();
+	public Dynam(HasAnglePoint sample) {
+		x = sample.getPoint().doubleX();
+		y = sample.getPoint().doubleY();
 		angle.set(sample.getAngle());
 	}
 	public void clear() {
@@ -131,26 +129,8 @@ public class Dynam extends Coordinate{
 		xSpd = speed*cos_angle;
 		ySpd = speed*sin_angle;
 	}
-	public boolean isVisible(HasDynam target) {
-		if(target == null)
-			return false;
-		final Dynam targetDynam = target.getDynam();
-		return GHQ.checkLoS(new Line2D.Double(x,y,targetDynam.x,targetDynam.y));
-	}
-	public boolean isVisible(double x,double y) {
-		return GHQ.checkLoS(new Line2D.Double(this.x,this.y,x,y));
-	}
-	public double getAngle() {
-		return angle.get();
-	}
-	public double getAngle(double x,double y) {
-		return atan2(y - this.y, x - this.x);
-	}
-	public double getAngleToTarget(HasCoordinate target) {
-		if(target == null)
-			return GHQ.NONE;
-		final Coordinate targetDynam = target.getCoordinate();
-		return atan2(targetDynam.y - this.y, targetDynam.x - this.x);
+	public double moveAngle() {
+		return angle.angle();
 	}
 	public void setAngle(double angle) {
 		this.angle.set(angle);
@@ -158,22 +138,17 @@ public class Dynam extends Coordinate{
 	public void setAngle(HasAngle sample) {
 		if(sample == null)
 			return;
-		setAngle(sample.getAngle().get());
+		setAngle(sample.getAngle().angle());
 	}
-	public void setAngleToTarget(HasCoordinate target) {
-		if(target == null)
-			return;
-		setAngle(getAngleToTarget(target));
+	public void setAngleToTarget(HasPoint target) {
+		if(target != null)
+			setAngle(angleTo(target));
 	}
 	public double spinToTargetCapped(HasDynam target, double maxTurnAngle) {
-		if(target == null)
-			return GHQ.MAX;
-		return angle.spinToTargetCapped(getAngleToTarget(target), maxTurnAngle);
+		return target == null ? GHQ.MAX : angle.spinToTargetCapped(angleTo(target), maxTurnAngle);
 	}
 	public double spinToTargetSuddenly(HasDynam target, double turnFrame) {
-		if(target == null)
-			return GHQ.MAX;
-		return angle.spinToTargetSuddenly(getAngleToTarget(target), turnFrame);
+		return target == null ? GHQ.MAX : angle.spinToTargetSuddenly(angleTo(target), turnFrame);
 	}
 	public void spin(double angle) {
 		this.angle.spin(angle);
