@@ -230,11 +230,11 @@ public abstract class Point implements Serializable{
 		}
 		@Override
 		public double doubleX() {
-			return x;
+			return intX();
 		}
 		@Override
 		public double doubleY() {
-			return y;
+			return intY();
 		}
 		@Override
 		public void setX(int x){
@@ -246,34 +246,34 @@ public abstract class Point implements Serializable{
 		}
 		@Override
 		public void setX(double x){
-			this.x = (int)x;
+			setX((int)x);
 		}
 		@Override
 		public void setY(double y){
-			this.y = (int)y;
+			setY((int)y);
 		}
 		@Override
 		public void setX(Point p){
-			x = p.intX();
+			setX(p.doubleX());
 		}
 		@Override
 		public void setY(Point p){
-			y = p.intY();
+			setY(p.doubleY());
 		}
 		@Override
 		public void setXY(int x, int y){
-			this.x = x;
-			this.y = y;
+			setX(x);
+			setY(y);
 		}
 		@Override
 		public void setXY(double x, double y){
-			this.x = (int)x;
-			this.y = (int)y;
+			setX(x);
+			setY(y);
 		}
 		@Override
 		public void setXY(Point p){
-			x = p.intX();
-			y = p.intY();
+			setX(p.doubleX());
+			setY(p.doubleY());
 		}
 		@Override
 		public Point.IntPoint clone() {
@@ -298,11 +298,11 @@ public abstract class Point implements Serializable{
 		}
 		@Override
 		public int intX() {
-			return (int)x;
+			return (int)doubleX();
 		}
 		@Override
 		public int intY() {
-			return (int)y;
+			return (int)doubleY();
 		}
 		@Override
 		public double doubleX() {
@@ -314,11 +314,11 @@ public abstract class Point implements Serializable{
 		}
 		@Override
 		public void setX(int x){
-			this.x = x;
+			setX((double)x);
 		}
 		@Override
 		public void setY(int y){
-			this.y = y;
+			setX((double)y);
 		}
 		@Override
 		public void setX(double x){
@@ -330,30 +330,110 @@ public abstract class Point implements Serializable{
 		}
 		@Override
 		public void setX(Point p){
-			x = p.doubleX();
+			setX(p.doubleX());
 		}
 		@Override
 		public void setY(Point p){
-			y = p.doubleY();
+			setY(p.doubleY());
 		}
 		@Override
 		public void setXY(int x, int y){
-			this.x = x;
-			this.y = y;
+			setX(x);
+			setY(y);
 		}
 		@Override
 		public void setXY(double x, double y){
-			this.x = x;
-			this.y = y;
+			setX(x);
+			setY(y);
 		}
 		@Override
 		public void setXY(Point p){
-			x = p.doubleX();
-			y = p.doubleY();
+			setX(p.doubleX());
+			setY(p.doubleY());
 		}
 		@Override
 		public Point.DoublePoint clone() {
 			return new Point.DoublePoint(this);
+		}
+	}
+
+	///////////////
+	//IntVersionPassivePoint
+	///////////////
+	public static class IntPassivePoint extends IntPoint{
+		private static final long serialVersionUID = 3696216604252789195L;
+
+		private Point activePoint;
+		
+		public IntPassivePoint() {}
+		public IntPassivePoint(Point activePoint, int x, int y) {
+			super(x, y);
+			this.activePoint = activePoint;
+		}
+		public IntPassivePoint(Point activePoint, Point point) {
+			super(point);
+			this.activePoint = activePoint;
+		}
+		public IntPassivePoint(int x, int y) {
+			super(x, y);
+		}
+		public IntPassivePoint(Point point) {
+			super(point);
+		}
+		
+		public void setActivePoint(Point point) {
+			activePoint = point;
+		}
+		public void removeActivePoint() {
+			setActivePoint(null);
+		}
+		@Override
+		public int intX() {
+			return activePoint == null ? x : activePoint.intX() + x;
+		}
+		@Override
+		public int intY() {
+			return activePoint == null ? y : activePoint.intY() + y;
+		}
+	}
+
+	///////////////
+	//DoubleVersionPassivePoint
+	///////////////
+	public static class DoublePassivePoint extends DoublePoint{
+		private static final long serialVersionUID = 3696216604252789195L;
+
+		private Point activePoint;
+		
+		public DoublePassivePoint() {}
+		public DoublePassivePoint(Point activePoint, double x, double y) {
+			super(x, y);
+			this.activePoint = activePoint;
+		}
+		public DoublePassivePoint(Point activePoint, Point point) {
+			super(point);
+			this.activePoint = activePoint;
+		}
+		public DoublePassivePoint(double x, double y) {
+			super(x, y);
+		}
+		public DoublePassivePoint(Point point) {
+			super(point);
+		}
+		
+		public void setActivePoint(Point point) {
+			activePoint = point;
+		}
+		public void removeActivePoint() {
+			activePoint = null;
+		}
+		@Override
+		public double doubleX() {
+			return activePoint == null ? x : activePoint.doubleX() + x;
+		}
+		@Override
+		public double doubleY() {
+			return activePoint == null ? y : activePoint.doubleY() + y;
 		}
 	}
 }

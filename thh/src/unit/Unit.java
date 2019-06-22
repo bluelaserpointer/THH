@@ -3,6 +3,7 @@ package unit;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
+import core.Deletable;
 import core.Entity;
 import core.GHQ;
 import core.Standpoint;
@@ -19,7 +20,7 @@ import core.HitInteractable;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Unit extends Entity implements MessageSource, HitInteractable, HasAngleDynam, Serializable{
+public abstract class Unit extends Entity implements MessageSource, HitInteractable, HasAngleDynam, Deletable, Serializable{
 	private static final long serialVersionUID = 7140005723063155203L;
 
 	protected static final int
@@ -104,8 +105,11 @@ public abstract class Unit extends Entity implements MessageSource, HitInteracta
 	public void teleportTo(int x,int y) {
 		getPoint().setXY(x, y);
 	}
-	public abstract boolean kill(boolean force);
-	protected void killed() {}
+	public void beforeDelete() {}
+	@Override
+	public final void delete() {
+		GHQ.deleteUnit(this);
+	}
 	
 	/////////////
 	//information
@@ -135,4 +139,8 @@ public abstract class Unit extends Entity implements MessageSource, HitInteracta
 		return hitshape;
 	}
 	public abstract boolean isAlive();
+	@Override
+	public boolean isDeleted() {
+		return !isAlive();
+	}
 }

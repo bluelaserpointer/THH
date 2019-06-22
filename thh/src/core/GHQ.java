@@ -730,6 +730,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		effects.remove(effect);
 	}
 	public static final boolean deleteUnit(Unit unit) {
+		unit.beforeDelete();
 		return units.remove(unit);
 	}
 	public static final boolean deleteStructure(Structure structure) {

@@ -175,8 +175,6 @@ public abstract class THH_BasicUnit extends Unit {
 	public final int damage_amount(int amount) {
 		return status.add(HP, -amount);
 	}
-
-	@Override
 	public final boolean kill(boolean force) {
 		status.set(HP, 0);
 		return true;

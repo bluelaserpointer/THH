@@ -3,6 +3,8 @@ package vegetation;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
+import core.Deletable;
+import core.GHQ;
 import core.HasBoundingBox;
 import paint.HasDotPaint;
 import physics.HasPoint;
@@ -14,13 +16,14 @@ import paint.DotPaint;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Vegetation implements Serializable, HasPoint, HasBoundingBox, HasDotPaint{
+public class Vegetation implements Serializable, HasPoint, HasBoundingBox, HasDotPaint, Deletable{
 	private static final long serialVersionUID = -5536970507937704287L;
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;
 	
 	protected final DotPaint paintScript;
 	protected final Point.IntPoint point;
+	private boolean isDeleted;
 
 	//init
 	public Vegetation(DotPaint paintScript,int x,int y) {
@@ -52,6 +55,13 @@ public class Vegetation implements Serializable, HasPoint, HasBoundingBox, HasDo
 	public Vegetation clone() {
 		return new Vegetation(this);
 	}
+	public void beforeDelete() {
+		isDeleted = true;
+	}
+	@Override
+	public void delete() {
+		GHQ.deleteVegetation(this);
+	}
 	
 	//information
 	@Override
@@ -66,5 +76,9 @@ public class Vegetation implements Serializable, HasPoint, HasBoundingBox, HasDo
 	@Override
 	public final DotPaint getPaintScript() {
 		return paintScript;
+	}
+	@Override
+	public final boolean isDeleted() {
+		return isDeleted;
 	}
 }

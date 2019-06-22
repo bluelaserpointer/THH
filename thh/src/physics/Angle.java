@@ -28,22 +28,22 @@ public class Angle implements Serializable{
 	public void spin(double angle) {
 		this.angle += angle;
 	}
-	public double spinToTargetCapped(double targetAngle, double maxTurnAngle) {
-		if(maxTurnAngle <= 0)
+	public double spinTo_ConstSpd(double targetAngle, double angularSpeed) {
+		if(angularSpeed <= 0)
 			return GHQ.MAX;
 		final double D_ANGLE = getDelta(targetAngle);
 		if(D_ANGLE < 0) {
-			if(D_ANGLE < -maxTurnAngle) {
-				spin(-maxTurnAngle);
-				return Math.abs(D_ANGLE + maxTurnAngle);
+			if(D_ANGLE < -angularSpeed) {
+				spin(-angularSpeed);
+				return Math.abs(D_ANGLE + angularSpeed);
 			} else {
 				set(targetAngle);
 				return 0.0;
 			}
 		}else if(D_ANGLE > 0){
-			if(D_ANGLE > maxTurnAngle) {
-				spin(maxTurnAngle);
-				return Math.abs(D_ANGLE - maxTurnAngle);
+			if(D_ANGLE > angularSpeed) {
+				spin(angularSpeed);
+				return Math.abs(D_ANGLE - angularSpeed);
 			} else {
 				set(targetAngle);
 				return 0.0;
@@ -51,7 +51,7 @@ public class Angle implements Serializable{
 		}else
 			return 0.0;
 	}
-	public double spinToTargetSuddenly(double targetAngle, double turnFrame) {
+	public double spinTo_Suddenly(double targetAngle, double turnFrame) {
 		final double D_ANGLE = getDelta(targetAngle);
 		final double TURN_ANGLE = D_ANGLE/turnFrame;
 		spin(TURN_ANGLE);

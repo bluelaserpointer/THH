@@ -3,6 +3,7 @@ package structure;
 import java.awt.geom.Line2D;
 import java.io.Serializable;
 
+import core.Deletable;
 import core.GHQ;
 import core.HasBoundingBox;
 import core.HasStandpoint;
@@ -15,7 +16,7 @@ import physics.HasDynam;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Structure implements Serializable,HasBoundingBox,HasStandpoint{
+public abstract class Structure implements Serializable, HasBoundingBox, HasStandpoint, Deletable{
 	private static final long serialVersionUID = -641218813005671688L;
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;
@@ -23,6 +24,7 @@ public abstract class Structure implements Serializable,HasBoundingBox,HasStandp
 		NONE = GHQ.NONE;
 	
 	public final Standpoint standpoint = Standpoint.NULL_STANDPOINT;
+	private boolean isDeleted;
 	
 	//init
 	public Structure(int initialStandpoint) {
@@ -45,6 +47,15 @@ public abstract class Structure implements Serializable,HasBoundingBox,HasStandp
 	public abstract void paint(boolean doAnimation);
 	public final void paint() {
 		paint(true);
+	}
+	
+	//control
+	public void beforeDelete() {
+		isDeleted = true;
+	}
+	@Override
+	public void delete() {
+		GHQ.deleteStructure(this);
 	}
 	
 	//information
@@ -70,6 +81,10 @@ public abstract class Structure implements Serializable,HasBoundingBox,HasStandp
 	@Override
 	public boolean isFriend(HasStandpoint target) {
 		return Standpoint.NULL_STANDPOINT.isFriend(target.getStandpoint());
+	}
+	@Override
+	public final boolean isDeleted() {
+		return isDeleted;
 	}
 	
 }

@@ -55,13 +55,7 @@ public class DummyUnit extends Unit{
 		
 		return 0;
 	}
-
-	@Override
-	public boolean kill(boolean force) {
-		
-		return false;
-	}
-
+	
 	@Override
 	public boolean isAlive() {
 		

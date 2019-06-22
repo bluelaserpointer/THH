@@ -2,6 +2,7 @@ package effect;
 
 import static java.lang.Math.PI;
 
+import core.Deletable;
 import core.Entity;
 import core.GHQ;
 import paint.DotPaint;
@@ -14,11 +15,12 @@ import physics.HasDynam;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Effect extends Entity implements HasDotPaint{
+public class Effect extends Entity implements HasDotPaint, Deletable{
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;
 
 	public final HasDynam SHOOTER;
+	private boolean isDeleted = false;
 	public String
 		name;
 	public int
@@ -111,10 +113,10 @@ public class Effect extends Entity implements HasDotPaint{
 		return true;
 	}
 	public void beforeDelete() {
-		
+		isDeleted = true;
 	}
+	@Override
 	public final void delete() {
-		beforeDelete();
 		GHQ.deleteEffect(this);
 	}
 	
@@ -192,5 +194,9 @@ public class Effect extends Entity implements HasDotPaint{
 	@Override
 	public final DotPaint getPaintScript() {
 		return paintScript;
+	}
+	@Override
+	public final boolean isDeleted() {
+		return isDeleted;
 	}
 }

@@ -2,6 +2,7 @@ package bullet;
 
 import static java.lang.Math.PI;
 
+import core.Deletable;
 import core.Entity;
 import core.GHQ;
 import core.HitInteractable;
@@ -20,7 +21,7 @@ import weapon.Weapon;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Bullet extends Entity implements HitInteractable,HasDotPaint{
+public class Bullet extends Entity implements HitInteractable, HasDotPaint, Deletable{
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;
 	
@@ -30,6 +31,7 @@ public class Bullet extends Entity implements HitInteractable,HasDotPaint{
 	public final HasAnglePoint SHOOTER; //an information source of user
 	public final Standpoint STANDPOINT;
 	public HitShape hitShape;
+	private boolean isDeleted;
 	
 	public String name;
 	public int
@@ -202,9 +204,10 @@ public class Bullet extends Entity implements HitInteractable,HasDotPaint{
 	public void hitObject() {
 	}
 	public void beforeDelete() {
+		isDeleted = true;
 	}
+	@Override
 	public final void delete() {
-		beforeDelete();
 		GHQ.deleteBullet(this);
 	}
 	
@@ -299,5 +302,9 @@ public class Bullet extends Entity implements HitInteractable,HasDotPaint{
 	@Override
 	public final DotPaint getPaintScript() {
 		return paintScript;
+	}
+	@Override
+	public final boolean isDeleted() {
+		return isDeleted;
 	}
 }

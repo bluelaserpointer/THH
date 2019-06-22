@@ -145,10 +145,10 @@ public class Dynam extends Point.DoublePoint{
 			setAngle(angleTo(target));
 	}
 	public double spinToTargetCapped(HasDynam target, double maxTurnAngle) {
-		return target == null ? GHQ.MAX : angle.spinToTargetCapped(angleTo(target), maxTurnAngle);
+		return target == null ? GHQ.MAX : angle.spinTo_ConstSpd(angleTo(target), maxTurnAngle);
 	}
 	public double spinToTargetSuddenly(HasDynam target, double turnFrame) {
-		return target == null ? GHQ.MAX : angle.spinToTargetSuddenly(angleTo(target), turnFrame);
+		return target == null ? GHQ.MAX : angle.spinTo_Suddenly(angleTo(target), turnFrame);
 	}
 	public void spin(double angle) {
 		this.angle.spin(angle);
