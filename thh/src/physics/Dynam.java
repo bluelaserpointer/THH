@@ -17,7 +17,7 @@ public class Dynam extends Point.DoublePoint{
 	
 	
 	protected double xSpd,ySpd;
-	protected final Angle angle = new Angle() {
+	protected final Angle moveAngle = new Angle() {
 		private static final long serialVersionUID = 6971378942148992685L;
 		@Override
 		public void set(double angle) {
@@ -37,32 +37,32 @@ public class Dynam extends Point.DoublePoint{
 		y = dynam.y;
 		xSpd = dynam.xSpd;
 		ySpd = dynam.ySpd;
-		angle.set(dynam.angle);
+		moveAngle.set(dynam.moveAngle);
 	}
 	public Dynam(double x,double y) {
 		this.x = x;
 		this.y = y;
 	}
-	public Dynam(double x,double y,double angle) {
+	public Dynam(double x,double y,double moveAngle) {
 		this.x = x;
 		this.y = y;
-		this.angle.set(angle);
+		this.moveAngle.set(moveAngle);
 	}
 	public Dynam(double x,double y,double xSpd,double ySpd) {
 		this.x = x;
 		this.y = y;
 		this.xSpd = xSpd;
 		this.ySpd = ySpd;
-		angle.set(xSpd, ySpd);
+		moveAngle.set(xSpd, ySpd);
 	}
 	public Dynam(HasAnglePoint sample) {
 		x = sample.getPoint().doubleX();
 		y = sample.getPoint().doubleY();
-		angle.set(sample.getAngle());
+		moveAngle.set(sample.getAngle());
 	}
 	public void clear() {
 		x = y = xSpd = ySpd;
-		angle.clear();
+		moveAngle.clear();
 	}
 	public void setAll(HasDynam hasSample) {
 		setAll(hasSample.getDynam());
@@ -72,25 +72,25 @@ public class Dynam extends Point.DoublePoint{
 		y = sample.y;
 		xSpd = sample.xSpd;
 		ySpd = sample.ySpd;
-		angle.set(sample.angle);
+		moveAngle.set(sample.moveAngle);
 	}
 	public Dynam clone() {
 		return new Dynam(this);
 	}
-	public void addX_allowsAngle(double dx) {
-		x += dx*angle.sin();
-		y -= dx*angle.cos();
+	public void addX_allowsMoveAngle(double dx) {
+		x += dx*moveAngle.sin();
+		y -= dx*moveAngle.cos();
 	}
-	public void addY_allowsAngle(double dy) {
-		x += dy*angle.cos();
-		y += dy*angle.sin();
+	public void addY_allowsMoveAngle(double dy) {
+		x += dy*moveAngle.cos();
+		y += dy*moveAngle.sin();
 	}
 	public void addXY_DA(double distance,double angle) {
 		x += distance*cos(angle);
 		y += distance*sin(angle);
 	}
-	public void addXY_allowsAngle(double dx,double dy) {
-		final double cos_angle = angle.cos(),sin_angle = angle.sin();
+	public void addXY_allowsMoveAngle(double dx,double dy) {
+		final double cos_angle = moveAngle.cos(),sin_angle = moveAngle.sin();
 		if(dx != 0.0) {
 			x += dx*sin_angle;
 			y -= dx*cos_angle;
@@ -101,8 +101,8 @@ public class Dynam extends Point.DoublePoint{
 		}
 	}
 	public void fastParaAdd_ADXYSpd(double angle,double dx,double dy,double speed) {
-		this.angle.spin(angle);
-		final double cos_angle = this.angle.cos(), sin_angle = this.angle.sin();
+		this.moveAngle.spin(angle);
+		final double cos_angle = this.moveAngle.cos(), sin_angle = this.moveAngle.sin();
 		if(dx != 0.0) {
 			x += dx*sin_angle;
 			y -= dx*cos_angle;
@@ -115,43 +115,43 @@ public class Dynam extends Point.DoublePoint{
 		ySpd = speed*sin_angle;
 	}
 	public void fastParaAdd_DASpd(double distance,double angle,double speed) {
-		this.angle.spin(angle);
-		final double cos_angle = this.angle.cos(), sin_angle = this.angle.sin();
+		this.moveAngle.spin(angle);
+		final double cos_angle = this.moveAngle.cos(), sin_angle = this.moveAngle.sin();
 		x += distance*cos_angle;
 		y += distance*sin_angle;
 		xSpd = speed*cos_angle;
 		ySpd = speed*sin_angle;
 	}
 	public void fastParaAdd_DSpd(double distance,double speed) {
-		final double cos_angle = angle.cos(),sin_angle = angle.sin();
+		final double cos_angle = moveAngle.cos(),sin_angle = moveAngle.sin();
 		x += distance*cos_angle;
 		y += distance*sin_angle;
 		xSpd = speed*cos_angle;
 		ySpd = speed*sin_angle;
 	}
 	public double moveAngle() {
-		return angle.angle();
+		return moveAngle.angle();
 	}
-	public void setAngle(double angle) {
-		this.angle.set(angle);
+	public void setMoveAngle(double angle) {
+		this.moveAngle.set(angle);
 	}
-	public void setAngle(HasAngle sample) {
+	public void setMoveAngle(HasAngle sample) {
 		if(sample == null)
 			return;
-		setAngle(sample.getAngle().angle());
+		setMoveAngle(sample.getAngle().angle());
 	}
-	public void setAngleToTarget(HasPoint target) {
+	public void setMoveAngleToTarget(HasPoint target) {
 		if(target != null)
-			setAngle(angleTo(target));
+			setMoveAngle(angleTo(target));
 	}
-	public double spinToTargetCapped(HasDynam target, double maxTurnAngle) {
-		return target == null ? GHQ.MAX : angle.spinTo_ConstSpd(angleTo(target), maxTurnAngle);
+	public double spinMoveAngleToTargetCapped(HasDynam target, double maxTurnAngle) {
+		return target == null ? GHQ.MAX : moveAngle.spinTo_ConstSpd(angleTo(target), maxTurnAngle);
 	}
-	public double spinToTargetSuddenly(HasDynam target, double turnFrame) {
-		return target == null ? GHQ.MAX : angle.spinTo_Suddenly(angleTo(target), turnFrame);
+	public double spinMoveAngleToTargetSuddenly(HasDynam target, double turnFrame) {
+		return target == null ? GHQ.MAX : moveAngle.spinTo_Suddenly(angleTo(target), turnFrame);
 	}
-	public void spin(double angle) {
-		this.angle.spin(angle);
+	public void spinMoveAngle(double angle) {
+		this.moveAngle.spin(angle);
 	}
 	public boolean isMovable() {
 		return true;
@@ -179,20 +179,20 @@ public class Dynam extends Point.DoublePoint{
 		}
 	}
 	public void setXSpeed(double xSpeed) {
-		angle.set(xSpd = xSpeed, ySpd);
+		moveAngle.set(xSpd = xSpeed, ySpd);
 	}
 	public void setYSpeed(double ySpeed) {
-		angle.set(xSpd, ySpd = ySpeed);
+		moveAngle.set(xSpd, ySpd = ySpeed);
 	}
-	public void setSpeed(double xSpeed,double ySpeed) {
-		angle.set(xSpd = xSpeed, ySpd = ySpeed);
+	public void setSpeed(double xSpeed, double ySpeed) {
+		moveAngle.set(xSpd = xSpeed, ySpd = ySpeed);
 	}
 	public void setSpeed(double speed) {
-		xSpd = speed*angle.cos();
-		ySpd = speed*angle.sin();
+		xSpd = speed*moveAngle.cos();
+		ySpd = speed*moveAngle.sin();
 	}
-	public void addSpeed(double xSpeed,double ySpeed) {
-		angle.set(xSpd += xSpeed, ySpd += ySpeed);
+	public void addSpeed(double xSpeed, double ySpeed) {
+		moveAngle.set(xSpd += xSpeed, ySpd += ySpeed);
 	}
 	public void addSpeed(double accel) {
 		final double SPEED = getSpeed();
@@ -201,11 +201,11 @@ public class Dynam extends Point.DoublePoint{
 			xSpd *= RATE;
 			ySpd *= RATE;
 		}else {
-			xSpd = accel*angle.cos();
-			ySpd = accel*angle.sin();
+			xSpd = accel*moveAngle.cos();
+			ySpd = accel*moveAngle.sin();
 		}
 	}
-	public void addSpeed(double accel,boolean brakeMode) {
+	public void addSpeed(double accel, boolean brakeMode) {
 		final double SPEED = getSpeed(),NEW_SPEED = SPEED + accel;
 		if(accel < 0 && brakeMode && NEW_SPEED <= 0)
 				xSpd = ySpd = 0;
@@ -215,13 +215,13 @@ public class Dynam extends Point.DoublePoint{
 				xSpd *= RATE;
 				ySpd *= RATE;
 			}else {
-				xSpd = accel*angle.cos();
-				ySpd = accel*angle.sin();
+				xSpd = accel*moveAngle.cos();
+				ySpd = accel*moveAngle.sin();
 			}
 		}
 	}
-	public void addSpeed_DA(double distance,double angle) {
-		this.angle.set(xSpd += distance*cos(angle), ySpd += distance*sin(angle));
+	public void addSpeed_DA(double distance, double angle) {
+		this.moveAngle.set(xSpd += distance*cos(angle), ySpd += distance*sin(angle));
 	}
 	public void accelerate_MUL(double rate) {
 		if(rate == 0.0)
@@ -242,48 +242,6 @@ public class Dynam extends Point.DoublePoint{
 	}
 	public void stop() {
 		xSpd = ySpd = 0.0;
-	}
-	public double getMouseAngle() {
-		return atan2(GHQ.getMouseY() - y, GHQ.getMouseX() - x);
-	}
-	public boolean squreCollision(Dynam targetDynam,int distance) {
-		final int DX = (int)(targetDynam.x - x),DY = (int)(targetDynam.y - y);
-		return (DX > 0 ? DX < distance : DX > -distance) && (DY > 0 ? DY < distance : DY > -distance);
-	}
-	public boolean squreCollision(int x,int y,int distance) {
-		final int DX = (int)(x - this.x),DY = (int)(y - this.y);
-		return (DX > 0 ? DX < distance : DX > -distance) && (DY > 0 ? DY < distance : DY > -distance);
-	}
-	public void approach(double dstX,double dstY,double speed) {
-		final double DX = dstX - x,DY = dstY - y;
-		final double DISTANCE = sqrt(DX*DX + DY*DY);
-		if(DISTANCE <= speed) {
-			x = dstX;
-			y = dstY;
-		}else {
-			final double RATE = speed/DISTANCE;
-			x += DX*RATE;
-			y += DY*RATE;
-		}
-	}
-	public void approach(HasDynam target,double speed) {
-		if(target == null)
-			return;
-		final Dynam targetDynam = target.getDynam();
-		approach(targetDynam.x,targetDynam.y,speed);
-	}
-	public void approachIfNoObstacles(HitInteractable source, double dstX,double dstY,double speed) {
-		final double DX = dstX - x,DY = dstY - y;
-		final double DISTANCE = sqrt(DX*DX + DY*DY);
-		if(DISTANCE > speed) {
-			final double RATE = speed/DISTANCE;
-			dstX = x + DX*RATE;
-			dstY = y + DY*RATE;
-		}
-		if(!GHQ.hitObstacle_DSTXY(source, (int)dstX, (int)dstY)) {
-			x = dstX;
-			y = dstY;
-		}
 	}
 	
 	//control

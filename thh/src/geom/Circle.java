@@ -16,7 +16,7 @@ public class Circle extends HitShape{
 			return coordinate1.distanceSq(coordinate2) < DR*DR;
 		}else if(shape instanceof Square) {
 			// TODO lacking strictness
-			return coordinate1.inRangeXY(coordinate2,(RADIUS + ((Square)shape).SIDE)/2);
+			return coordinate1.inRangeXY(coordinate2, (RADIUS + ((Square)shape).SIDE)/2);
 		}
 		return false;
 	}

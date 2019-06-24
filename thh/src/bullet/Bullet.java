@@ -226,12 +226,12 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint, Dele
 		return GHQ.addBullet(getClone());
 	}
 	public void split_xMirror(double dx,double dy) {
-		this.dynam.addXY_allowsAngle(-dx/2,dy);
-		addCloneToGHQ().dynam.addX_allowsAngle(dx);
+		this.dynam.addXY_allowsMoveAngle(-dx/2,dy);
+		addCloneToGHQ().dynam.addX_allowsMoveAngle(dx);
 	}
 	public void split_yMirror(double dx,double dy) {
-		this.dynam.addXY_allowsAngle(dx,-dy/2);
-		addCloneToGHQ().dynam.addY_allowsAngle(dy);
+		this.dynam.addXY_allowsMoveAngle(dx,-dy/2);
+		addCloneToGHQ().dynam.addY_allowsMoveAngle(dy);
 	}
 	public void split_Round(int radius,int amount) {
 		final double D_ANGLE = 2*PI/amount;
@@ -265,13 +265,13 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint, Dele
 			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, angle, speed);
 	}
 	public void split_NWay(int radius,double marginAngle,double amount,double speed) {
-		this.dynam.spin(-marginAngle*(double)(amount - 1)/2.0);
+		this.dynam.spinMoveAngle(-marginAngle*(double)(amount - 1)/2.0);
 		for(int i = 1;i < amount;i++)
 			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, marginAngle*i, speed);
 		this.dynam.fastParaAdd_DSpd(radius, speed);
 	}
 	public void clone_NWay(int radius,double marginAngle,double amount,double speed) {
-		this.dynam.spin(-marginAngle*(double)(amount - 1)/2.0);
+		this.dynam.spinMoveAngle(-marginAngle*(double)(amount - 1)/2.0);
 		for(int i = 0;i < amount;i++)
 			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, marginAngle*i, speed);
 	}

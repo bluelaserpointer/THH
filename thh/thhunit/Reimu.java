@@ -65,7 +65,7 @@ public class Reimu extends THH_BasicPlayer{
 	}
 	@Override
 	public final void extendIdle() {
-		dynam.setAngle(dynam.getMouseAngle());
+		dynam.setMoveAngle(dynam.angleToMouse());
 	}
 	@Override
 	public final void setBullet(int kind,HasDynam user) {

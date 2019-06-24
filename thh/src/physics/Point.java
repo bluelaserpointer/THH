@@ -1,11 +1,13 @@
 package physics;
 
 import static java.lang.Math.atan2;
+import static java.lang.Math.sqrt;
 
 import java.awt.geom.Line2D;
 import java.io.Serializable;
 
 import core.GHQ;
+import core.HitInteractable;
 
 /**
  * A major class for managing object coordinate.
@@ -66,6 +68,23 @@ public abstract class Point implements Serializable{
 		setX(doubleX() + x);
 		setY(doubleY() + y);
 	}
+	///////////////shift
+	public void shift(Direction4 direction, int distance) {
+		switch(direction) {
+		case W:
+			addY(-distance);
+			break;
+		case S:
+			addY(distance);
+			break;
+		case A:
+			addX(-distance);
+			break;
+		case D:
+			addX(distance);
+			break;
+		}
+	}
 	
 	///////////////
 	//information
@@ -83,6 +102,10 @@ public abstract class Point implements Serializable{
 	}
 	public double angleTo(HasPoint hasPoint) {
 		return hasPoint == null ? GHQ.NONE : angleTo(hasPoint.getPoint());
+	}
+	///////////////angleToMouse
+	public double angleToMouse() {
+		return angleTo(GHQ.getMouseX(), GHQ.getMouseY());
 	}
 	///////////////intDX&DY
 	public final int intDX(int x) {
@@ -138,16 +161,28 @@ public abstract class Point implements Serializable{
 	}
 	///////////////inRangeX&Y&XY
 	public final boolean inRangeX(Point point, int xDistance) {
-		return intDX(point) < xDistance;
+		return intAbsDX(point) < xDistance;
 	}
 	public final boolean inRangeY(Point point, int yDistance) {
-		return intDY(point) < yDistance;
+		return intAbsDY(point) < yDistance;
 	}
-	public final boolean inRangeXY(Point point, int distance) {
-		return intDX(point) < distance && intDY(point) < distance;
+	public final boolean inRangeX(Point point, double xDistance) {
+		return doubleAbsDX(point) < xDistance;
+	}
+	public final boolean inRangeY(Point point, double yDistance) {
+		return doubleAbsDY(point) < yDistance;
 	}
 	public final boolean inRangeXY(Point point, int xDistance, int yDistance) {
-		return intDX(point) < xDistance && intDY(point) < yDistance;
+		return inRangeX(point, xDistance) && inRangeY(point, yDistance);
+	}
+	public final boolean inRangeXY(Point point, int distance) {
+		return inRangeXY(point, distance, distance);
+	}
+	public final boolean inRangeXY(Point point, double xDistance, double yDistance) {
+		return inRangeX(point, xDistance) && inRangeY(point, yDistance);
+	}
+	public final boolean inRangeXY(Point point, double distance) {
+		return inRangeXY(point, distance, distance);
 	}
 	///////////////distance&distanceSq
 	public final double distanceSq(double x, double y) {
@@ -202,6 +237,81 @@ public abstract class Point implements Serializable{
 	}
 	public boolean isVisible(HasPoint hasPoint) {
 		return hasPoint == null ? false : isVisible(hasPoint.getPoint());
+	}
+	///////////////checkVertical&checkHorizontal
+	public boolean checkVert_int(Point point) {
+		return point == null ? false : intX() == point.intX();
+	}
+	public boolean checkVert_double(Point point) {
+		return point == null ? false : doubleX() == point.doubleX();
+	}
+	public boolean checkHorz_int(Point point) {
+		return point == null ? false : intY() == point.intY();
+	}
+	public boolean checkHorz_double(Point point) {
+		return point == null ? false : doubleY() == point.doubleY();
+	}
+	///////////////checkDirection
+	public boolean checkDirection_int(Point point, Direction4 direction) {
+		if(point == null)
+			return false;
+		switch(direction) {
+		case W:
+			return point.intY() < intY();
+		case S:
+			return point.intY() > intY();
+		case A:
+			return point.intX() < intX();
+		case D:
+			return point.intX() > intX();
+		default:
+			return false;
+		}
+	}
+	public boolean checkDirection_double(Point point, Direction4 direction) {
+		if(point == null)
+			return false;
+		switch(direction) {
+		case W:
+			return point.doubleY() < doubleY();
+		case S:
+			return point.doubleY() > doubleY();
+		case A:
+			return point.doubleX() < doubleX();
+		case D:
+			return point.doubleX() > doubleX();
+		default:
+			return false;
+		}
+	}
+	///////////////approach&approachIfNoObstacles
+	public void approach(double dstX, double dstY, double speed) {
+		final double DX = dstX - doubleX(),DY = dstY - doubleY();
+		final double DISTANCE = sqrt(DX*DX + DY*DY);
+		if(DISTANCE <= speed)
+			setXY(dstX, dstY);
+		else {
+			final double RATE = speed/DISTANCE;
+			addXY(DX*RATE, DY*RATE);
+		}
+	}
+	public void approach(Point point, double speed) {
+		approach(point.doubleX(), point.doubleY(), speed);
+	}
+	public void approach(HasPoint target, double speed) {
+		if(target != null)
+			approach(target.getPoint(), speed);
+	}
+	public void approachIfNoObstacles(HitInteractable source, double dstX,double dstY,double speed) {
+		final double DX = dstX - doubleX(),DY = dstY - doubleY();
+		final double DISTANCE = sqrt(DX*DX + DY*DY);
+		if(DISTANCE > speed) {
+			final double RATE = speed/DISTANCE;
+			dstX = doubleX() + DX*RATE;
+			dstY = doubleY() + DY*RATE;
+		}
+		if(!GHQ.hitObstacle_DSTXY(source, (int)dstX, (int)dstY))
+			setXY(dstX, dstY);
 	}
 	//////////////////////////////classes
 

@@ -39,7 +39,7 @@ public abstract class THH_EffectLibrary extends Effect{
 			paintScript = paint;
 			limitFrame = 3;
 			dynam.stop();
-			dynam.setAngle(GHQ.random2(0, 2*PI));
+			dynam.setMoveAngle(GHQ.random2(0, 2*PI));
 		}
 		public SparkHitEF getOriginal(){
 			return new SparkHitEF(SHOOTER);

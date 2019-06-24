@@ -155,12 +155,12 @@ public class Effect extends Entity implements HasDotPaint, Deletable{
 		return GHQ.addEffect(getClone());
 	}
 	public void split_xMirror(double dx,double dy) {
-		this.dynam.addXY_allowsAngle(-dx/2,dy);
-		addCloneToGHQ().dynam.addX_allowsAngle(dx);
+		this.dynam.addXY_allowsMoveAngle(-dx/2,dy);
+		addCloneToGHQ().dynam.addX_allowsMoveAngle(dx);
 	}
 	public void split_yMirror(double dx,double dy) {
-		this.dynam.addXY_allowsAngle(dx,-dy/2);
-		addCloneToGHQ().dynam.addY_allowsAngle(dy);
+		this.dynam.addXY_allowsMoveAngle(dx,-dy/2);
+		addCloneToGHQ().dynam.addY_allowsMoveAngle(dy);
 	}
 	public void split_Round(int radius,int amount) {
 		final double D_ANGLE = 2*PI/amount;

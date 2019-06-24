@@ -167,7 +167,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 					break;
 			}
 			dynam.setXY(SHOOTER);
-			dynam.setAngle(SHOOTER.getAngle().angle());
+			dynam.setMoveAngle(SHOOTER.getAngle().angle());
 			return true;
 		}
 		@Override

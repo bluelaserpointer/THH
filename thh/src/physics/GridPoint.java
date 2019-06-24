@@ -36,18 +36,18 @@ public class GridPoint extends Point.IntPoint{
 		return this;
 	}
 	public GridPoint moveBack() {
-		this.move(direction.getBack());
+		this.move(direction.back());
 		return this;
 	}
 	public GridPoint turnLeft() {
-		direction = direction.getLeft();
+		direction = direction.left();
 		return this;
 	}
 	public GridPoint turnRight() {
-		direction = direction.getRight();
+		direction = direction.right();
 		return this;
 	}
 	public void turnBack() {
-		direction = direction.getBack();
+		direction = direction.back();
 	}
 }
