@@ -6,6 +6,12 @@ public enum Direction4 {
 	W, D, S, A;
 	
 	public static final int W_ID = 0, D_ID = 1, S_ID = 2, A_ID = 3;
+	public boolean isVert() {
+		return this == W || this == S;
+	}
+	public boolean isHorz() {
+		return this == A || this == D;
+	}
 	public Direction8 left45() {
 		switch(this) {
 		case W:
@@ -112,70 +118,42 @@ public enum Direction4 {
 	///////////////
 	//getVertHorzClosest
 	///////////////
-	public static Point[] getVertHorzClosest_int(Point basePoint, Direction4[] directions, Collection<? extends Point> points) {
-		if(directions.length == 0 || points == null)
+	public static Point[] getVertHorzClosest_int(Point basePoint, Collection<? extends Point> points, Direction4...directions) {
+		if(points == null)
 			return null;
 		final Point[] assumePoints = new Point[directions.length];
 		for(Point point : points) {
 			if(point == null)
 				continue;
-			if(point.checkVert_int(basePoint)) { //vertical - W or S
+			if(point.isVert_int(basePoint)) { //vertical - W or S
 				for(int i = 0;i < directions.length;i++) {
-					switch(directions[i]) {
-					case W:
-					case S:
-						if(basePoint.checkDirection_int(point, directions[i]) && (assumePoints[i] == null || point.checkDirection_int(assumePoints[i], directions[i])))
-							assumePoints[i] = point;
-					default:
-						continue;
-					}
+					if(directions[i].isVert() && basePoint.checkDirection_int(point, directions[i]) && (assumePoints[i] == null || point.checkDirection_int(assumePoints[i], directions[i])))
+						assumePoints[i] = point;
 				}
-			}else if(point.checkHorz_int(basePoint)) { //horizontal - A or D
+			}else if(point.isHorz_int(basePoint)) { //horizontal - A or D
 				for(int i = 0;i < directions.length;i++) {
-					switch(directions[i]) {
-					case A:
-					case D:
-						if(basePoint.checkDirection_int(point, directions[i]) && (assumePoints[i] == null || point.checkDirection_int(assumePoints[i], directions[i])))
-							assumePoints[i] = point;
-					default:
-						continue;
-					}
+					if(directions[i].isHorz() && basePoint.checkDirection_int(point, directions[i]) && (assumePoints[i] == null || point.checkDirection_int(assumePoints[i], directions[i])))
+						assumePoints[i] = point;
 				}
 			}
 		}
 		return assumePoints;
 	}
-	public static Point[] getVertHorzClosest_double(Point basePoint, Direction4[] directions, Collection<? extends Point> points) {
-		if(directions.length == 0 || points == null)
+	public static <T extends Point>T getVertHorzClosest_int(Point basePoint, Collection<T> points, Direction4 direction) {
+		if(points == null)
 			return null;
-		final Point[] assumePoints = new Point[directions.length];
-		for(Point point : points) {
+		T assumePoint = null;
+		for(T point : points) {
 			if(point == null)
 				continue;
-			if(point.checkVert_double(basePoint)) { //vertical - W or S
-				for(int i = 0;i < directions.length;i++) {
-					switch(directions[i]) {
-					case W:
-					case S:
-						if(basePoint.checkDirection_double(point, directions[i]) && (assumePoints[i] == null || point.checkDirection_double(assumePoints[i], directions[i])))
-							assumePoints[i] = point;
-					default:
-						continue;
-					}
-				}
-			}else if(point.checkHorz_double(basePoint)) { //horizontal - A or D
-				for(int i = 0;i < directions.length;i++) {
-					switch(directions[i]) {
-					case A:
-					case D:
-						if(basePoint.checkDirection_double(point, directions[i]) && (assumePoints[i] == null || point.checkDirection_double(assumePoints[i], directions[i])))
-							assumePoints[i] = point;
-					default:
-						continue;
-					}
-				}
+			if(point.isVert_int(basePoint)) { //vertical - W or S
+				if(direction.isVert() && basePoint.checkDirection_int(point, direction) && (assumePoint == null || point.checkDirection_int(assumePoint, direction)))
+					assumePoint = point;
+			}else if(point.isHorz_int(basePoint)) { //horizontal - A or D
+				if(direction.isHorz() && basePoint.checkDirection_int(point, direction) && (assumePoint == null || point.checkDirection_int(assumePoint, direction)))
+					assumePoint = point;
 			}
 		}
-		return assumePoints;
+		return assumePoint;
 	}
 }

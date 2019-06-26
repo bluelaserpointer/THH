@@ -1,14 +1,12 @@
 package core;
 
 import static physics.Direction4.*;
-import static physics.Direction8.*;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
 import physics.Direction4;
-import physics.GridPoint;
 import physics.Point;
 
 public abstract class CornerNavigation {
@@ -51,40 +49,40 @@ public abstract class CornerNavigation {
 		}
 		protected void explore0() {
 			//find 4 neighbor Corner
-			Point neighbors[] = Direction4.getVertHorzClosest_int(this, new Direction4[]{W, D, S, A}, corners);
+			Point neighbors[] = Direction4.getVertHorzClosest_int(this, corners, W, D, S, A);
 			//check 4 neighbor Corner are reachable
-			addAnchorIfNotNull(explore1(Direction4.W, y - neighbors[Direction4.W_ID].intY(), (Corner)neighbors[Direction4.W_ID]));
-			addAnchorIfNotNull(explore1(Direction4.D, neighbors[Direction4.D_ID].intX() - x, (Corner)neighbors[Direction4.D_ID]));
-			addAnchorIfNotNull(explore1(Direction4.S, x - neighbors[Direction4.S_ID].intX(), (Corner)neighbors[Direction4.S_ID]));
-			addAnchorIfNotNull(explore1(Direction4.A, neighbors[Direction4.A_ID].intY() - y, (Corner)neighbors[Direction4.A_ID]));
+			addAnchorIfNotNull(explore1(Direction4.W, (Corner)neighbors[Direction4.W_ID]));
+			addAnchorIfNotNull(explore1(Direction4.D, (Corner)neighbors[Direction4.D_ID]));
+			addAnchorIfNotNull(explore1(Direction4.S, (Corner)neighbors[Direction4.S_ID]));
+			addAnchorIfNotNull(explore1(Direction4.A, (Corner)neighbors[Direction4.A_ID]));
 			//
 		}
 		protected Anchor[] explore0(Anchor settedAnchors[]) {
 			//find 4 neighbor Corner
 			Corner neighbors[] = searchCorner4direction(x, y);
 			//check 4 neighbor Corner are reachable
-			settedAnchors[Direction4.W_ID] = explore1(Direction4.W, y - neighbors[Direction4.W_ID].y, neighbors[Direction4.W_ID]);
-			settedAnchors[Direction4.D_ID] = explore1(Direction4.D, neighbors[Direction4.D_ID].x - x, neighbors[Direction4.D_ID]);
-			settedAnchors[Direction4.S_ID] = explore1(Direction4.S, x - neighbors[Direction4.S_ID].x, neighbors[Direction4.S_ID]);
-			settedAnchors[Direction4.A_ID] = explore1(Direction4.A, neighbors[Direction4.A_ID].y - y, neighbors[Direction4.A_ID]);
+			settedAnchors[Direction4.W_ID] = explore1(Direction4.W, neighbors[Direction4.W_ID]);
+			settedAnchors[Direction4.D_ID] = explore1(Direction4.D, neighbors[Direction4.D_ID]);
+			settedAnchors[Direction4.S_ID] = explore1(Direction4.S, neighbors[Direction4.S_ID]);
+			settedAnchors[Direction4.A_ID] = explore1(Direction4.A, neighbors[Direction4.A_ID]);
 			//
 			return settedAnchors;
 		}
-		protected Anchor explore1(Direction4 direction, int limitDistance, Corner neighborPoint) {
-			GridPoint gridPoint = new GridPoint(x, y, EQUAL_GAP, direction);
-			if(hasWall(gridPoint.moveFoward())) { //has wall in first step
-				linkableCorners[gridPoint.direction.left45().getID()] = null;
-				linkableCorners[gridPoint.direction.right45().getID()] = null;
+		protected Anchor explore1(Direction4 direction, Corner neighborPoint) {
+			Point point = new Point.IntPoint(this);
+			if(hasWall(point.shift(direction, EQUAL_GAP))) { //has wall in first step
+				linkableCorners[direction.left45().getID()] = null;
+				linkableCorners[direction.right45().getID()] = null;
 				return null;
 			}else {
 				while(true) {
-					if(hasWall(gridPoint.moveFoward())) {
-						gridPoint.moveBack();
-						return new Anchor(this, gridPoint, direction);
+					if(hasWall(point.shift(direction, EQUAL_GAP))) {
+						point.shift(direction.back(), EQUAL_GAP);
+						return new Anchor(this, point, direction);
 					}
-					if((limitDistance -= EQUAL_GAP) <= 0) { //arrive at a neighbor corner point
-						linkableCorners[gridPoint.direction.left45().getID()] = neighborPoint;
-						linkableCorners[gridPoint.direction.right45().getID()] = null;	
+					if(!point.checkDirection_int(neighborPoint, direction)) { //arrive at the neighbor corner point
+						linkableCorners[direction.left45().getID()] = neighborPoint;
+						linkableCorners[direction.right45().getID()] = null;	
 						return null;
 					}
 				}
@@ -102,135 +100,43 @@ public abstract class CornerNavigation {
 	protected class Anchor extends Point.IntPoint{
 		private static final long serialVersionUID = 3823523254019408178L;
 		final Direction4 ANCHOR_DIRECTION;
-		final Corner SOURCE;
+		final Corner SRC_CORNER;
 		protected Anchor(Corner source, Point point, Direction4 directionID) {
 			super(point);
 			ANCHOR_DIRECTION = directionID;
-			SOURCE = source;
+			SRC_CORNER = source;
 		}
-		protected final Corner searchAnchorOrConerCWASD(int x, int y, Direction4 direction) {
-			final Corner found = searchNearstPointCWASD(corners, x, y, direction);
-			final Anchor foundAnchor = searchNearstPointCWASD(anchors, x, y, direction);
-			return Direction4.getOutermost_int(direction.back(), foundAnchor, found) == foundAnchor ? foundAnchor.SOURCE : found;
+		protected final Corner searchAnchorOrConerCWASD(Point basePoint, Direction4 direction) {
+			final Corner foundCorner = Direction4.getVertHorzClosest_int(basePoint, corners, direction);
+			final Anchor foundAnchor = Direction4.getVertHorzClosest_int(basePoint, anchors, direction);
+			return Direction4.getOutermost_int(direction, foundCorner, foundAnchor) != foundCorner ? foundCorner : foundAnchor.SRC_CORNER;
 		}
 		protected void explore0() {
-			switch(ANCHOR_DIRECTION) {
-			case W:
-				SOURCE.linkableCorners[WA.getID()] = explore1(x, y, A);
-				SOURCE.linkableCorners[WD.getID()] = explore1(x, y, D);
-				break;
-			case S:
-				SOURCE.linkableCorners[SA.getID()] = explore1(x, y, A);
-				SOURCE.linkableCorners[SD.getID()] = explore1(x, y, D);
-				break;
-			case A:
-				SOURCE.linkableCorners[AW.getID()] = explore1(x, y, W);
-				SOURCE.linkableCorners[AS.getID()] = explore1(x, y, S);
-				break;
-			case D:
-				SOURCE.linkableCorners[DW.getID()] = explore1(x, y, W);
-				SOURCE.linkableCorners[DS.getID()] = explore1(x, y, S);
-				break;
-			}
+			SRC_CORNER.linkableCorners[ANCHOR_DIRECTION.left45().getID()] = explore1(this, ANCHOR_DIRECTION.left());
+			SRC_CORNER.linkableCorners[ANCHOR_DIRECTION.right45().getID()] = explore1(this, ANCHOR_DIRECTION.right());
 		}
-		protected Corner explore1(int x, int y, Direction4 direction) {
-			if(direction == W) {
-				int nowy = y - EQUAL_GAP;
-				if(hasWall(x, nowy)) { //hit wall at first step -> stop searching
-					return null;
-				}
-				Corner wNeighbor = searchAnchorOrConerCWASD(x, y, W);
-				do {
-					if(nowy < wNeighbor.intY()) //arrive
-						return wNeighbor;
-					nowy -= EQUAL_GAP;
-				}while(!hasWall(x, nowy));
-				nowy += EQUAL_GAP;
-				return hasWall(x + EQUAL_GAP, nowy) ? explore1(x, nowy, A) : explore1(x, nowy, D);
-			} else if(direction == S) {
-				int nowy = y + EQUAL_GAP;
-				if(hasWall(x, nowy)) { //hit wall at first step -> stop searching
-					return null;
-				}
-				Corner sNeighbor = searchAnchorOrConerCWASD(x, y, S);
-				do {
-					if(nowy > sNeighbor.intY()) //arrive
-						return sNeighbor;
-					nowy += EQUAL_GAP;
-				}while(!hasWall(x, nowy));
-				nowy -= EQUAL_GAP;
-				return hasWall(x + EQUAL_GAP, nowy) ? explore1(x, nowy, A) : explore1(x, nowy, D);
-			} else if(direction == A) {
-				int nowx = x - EQUAL_GAP;
-				if(hasWall(nowx, y)) { //hit wall at first step -> stop searching
-					return null;
-				}
-				Corner aNeighbor = searchAnchorOrConerCWASD(x, y, A);
-				do {
-					if(nowx < aNeighbor.intX()) //arrive
-						return aNeighbor;
-					nowx -= EQUAL_GAP;
-				}while(!hasWall(nowx, y));
-				nowx += EQUAL_GAP;
-				return hasWall(nowx, y + EQUAL_GAP) ? explore1(nowx, y, W) : explore1(nowx, y, S);
-			}else { //D
-				int nowx = x + EQUAL_GAP;
-				if(hasWall(nowx, y)) { //hit wall at first step -> stop searching
-					return null;
-				}
-				Corner dNeighbor = searchAnchorOrConerCWASD(x, y, D);
-				do {
-					if(nowx > dNeighbor.intX()) //arrive
-						return dNeighbor;
-					nowx += EQUAL_GAP;
-				}while(!hasWall(nowx, y));
-				nowx -= EQUAL_GAP;
-				return hasWall(nowx, y + EQUAL_GAP) ? explore1(nowx, y, W) : explore1(nowx, y, S);
-			}
+		protected Corner explore1(Point basePoint, Direction4 direction) {
+			final Point point = new Point.IntPoint(basePoint);
+			point.shift(direction, EQUAL_GAP);
+			if(hasWall(point)) //hit wall at first step -> stop searching
+				return null;
+			Corner neighbor = searchAnchorOrConerCWASD(basePoint, direction);
+			do {
+				if(!point.checkDirection_int(neighbor, direction)) //arrive
+					return neighbor;
+				point.shift(direction, EQUAL_GAP);
+			}while(!hasWall(point));
+			//hit a wall
+			point.shift(direction.back(), EQUAL_GAP);
+			//check blocked direction (No way both of them are opened)
+			final boolean RIGHT_BLOCKED = hasWall(point.shift(direction.right(), EQUAL_GAP));
+			point.shift(direction.left(), EQUAL_GAP);
+			return explore1(point, RIGHT_BLOCKED ? direction.left() : direction.right());
 		}
 	}
-	
 	
 	protected LinkedList<Corner> corners = new LinkedList<Corner>();
 	protected LinkedList<Anchor> anchors = new LinkedList<Anchor>();
-	
-	protected final <T extends Point>T searchNearstPointCWASD(LinkedList<T> points,int x, int y, Direction4 direction) {
-		T found = null;
-		switch(direction) {
-		case W:
-		case S:
-			for(T ver : points) {
-				if(ver.intX() == x) {
-					if(direction == W) {
-						if(ver.intY() < y && (found == null || found.intY() < ver.intY()))
-							found = ver;
-					}else {
-						if(y < ver.intY() && (found == null || ver.intY() < found.intY()))
-							found = ver;
-					}
-				}
-			}
-			break;
-		case A:
-		case D:
-			for(T ver : points) {
-				if(ver.intY() == y) {
-					if(direction == A) {
-						if(ver.intX() < x && (found == null || found.intX() < ver.intX()))
-							found = ver;
-					}else {
-						if(x < ver.intX() && (found == null || ver.intX() < found.intX()))
-							found = ver;
-					}
-				}
-			}
-			break;
-		default:
-			System.out.println("searchNearstPointCWASD received illegal directionID:" + direction);
-			break;
-		}
-		return found;
-	}
 	
 	public CornerNavigation(int equalGap) {
 		EQUAL_GAP = equalGap;

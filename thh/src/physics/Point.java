@@ -69,7 +69,7 @@ public abstract class Point implements Serializable{
 		setY(doubleY() + y);
 	}
 	///////////////shift
-	public void shift(Direction4 direction, int distance) {
+	public Point shift(Direction4 direction, int distance) {
 		switch(direction) {
 		case W:
 			addY(-distance);
@@ -84,6 +84,7 @@ public abstract class Point implements Serializable{
 			addX(distance);
 			break;
 		}
+		return this;
 	}
 	
 	///////////////
@@ -239,13 +240,13 @@ public abstract class Point implements Serializable{
 		return hasPoint == null ? false : isVisible(hasPoint.getPoint());
 	}
 	///////////////checkVertical&checkHorizontal
-	public boolean checkVert_int(Point point) {
+	public boolean isVert_int(Point point) {
 		return point == null ? false : intX() == point.intX();
 	}
 	public boolean checkVert_double(Point point) {
 		return point == null ? false : doubleX() == point.doubleX();
 	}
-	public boolean checkHorz_int(Point point) {
+	public boolean isHorz_int(Point point) {
 		return point == null ? false : intY() == point.intY();
 	}
 	public boolean checkHorz_double(Point point) {
