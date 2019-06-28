@@ -227,7 +227,11 @@ public abstract class Point implements Serializable{
 	}
 	///////////////inStage
 	public boolean inStage() {
-		return GHQ.inStage(intX(), intY());
+		return GHQ.inStage(this);
+	}
+	///////////////isBlocked
+	public boolean isBlocked() {
+		return GHQ.hitStructure_Dot(this);
 	}
 	///////////////isVisible
 	public boolean isVisible(double x,double y) {
@@ -243,13 +247,13 @@ public abstract class Point implements Serializable{
 	public boolean isVert_int(Point point) {
 		return point == null ? false : intX() == point.intX();
 	}
-	public boolean checkVert_double(Point point) {
+	public boolean isVert_double(Point point) {
 		return point == null ? false : doubleX() == point.doubleX();
 	}
 	public boolean isHorz_int(Point point) {
 		return point == null ? false : intY() == point.intY();
 	}
-	public boolean checkHorz_double(Point point) {
+	public boolean isHorz_double(Point point) {
 		return point == null ? false : doubleY() == point.doubleY();
 	}
 	///////////////checkDirection
@@ -284,6 +288,13 @@ public abstract class Point implements Serializable{
 		default:
 			return false;
 		}
+	}
+	///////////////isFront
+	public boolean isFront_int(Point point, Direction4 direction) {
+		return (direction.isVert() ? isVert_int(point) : isHorz_int(point)) && checkDirection_int(point, direction);
+	}
+	public boolean isFront_double(Point point, Direction4 direction) {
+		return (direction.isVert() ? isVert_double(point) : isHorz_double(point)) && checkDirection_double(point, direction);
 	}
 	///////////////approach&approachIfNoObstacles
 	public void approach(double dstX, double dstY, double speed) {
@@ -429,7 +440,7 @@ public abstract class Point implements Serializable{
 		}
 		@Override
 		public void setY(int y){
-			setX((double)y);
+			setY((double)y);
 		}
 		@Override
 		public void setX(double x){

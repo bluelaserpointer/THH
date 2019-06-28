@@ -22,7 +22,7 @@ public class Dynam extends Point.DoublePoint{
 		@Override
 		public void set(double angle) {
 			super.set(angle);
-			final double SPEED = getSpeed();
+			final double SPEED = speed();
 			xSpd = SPEED*cos();
 			ySpd = SPEED*sin();
 		}
@@ -159,13 +159,13 @@ public class Dynam extends Point.DoublePoint{
 	public boolean isStop() {
 		return xSpd == 0.0 && ySpd == 0.0;
 	}
-	public double getXSpeed() {
+	public double xSpeed() {
 		return xSpd;
 	}
-	public double getYSpeed() {
+	public double ySpeed() {
 		return ySpd;
 	}
-	public double getSpeed() {
+	public double speed() {
 		if(xSpd == 0.0) {
 			if(ySpd == 0.0)
 				return 0.0;
@@ -195,7 +195,7 @@ public class Dynam extends Point.DoublePoint{
 		moveAngle.set(xSpd += xSpeed, ySpd += ySpeed);
 	}
 	public void addSpeed(double accel) {
-		final double SPEED = getSpeed();
+		final double SPEED = speed();
 		if(SPEED != 0) {
 			final double RATE = (SPEED + accel)/SPEED;
 			xSpd *= RATE;
@@ -206,7 +206,7 @@ public class Dynam extends Point.DoublePoint{
 		}
 	}
 	public void addSpeed(double accel, boolean brakeMode) {
-		final double SPEED = getSpeed(),NEW_SPEED = SPEED + accel;
+		final double SPEED = speed(),NEW_SPEED = SPEED + accel;
 		if(accel < 0 && brakeMode && NEW_SPEED <= 0)
 				xSpd = ySpd = 0;
 		else {
@@ -268,7 +268,7 @@ public class Dynam extends Point.DoublePoint{
 	public double move(double lengthCap) {
 		if(xSpd == 0 && ySpd == 0)
 			return 0;
-		final double SPEED = getSpeed();
+		final double SPEED = speed();
 		if(SPEED <= lengthCap) {
 			x += xSpd;
 			y += ySpd;

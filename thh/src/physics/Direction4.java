@@ -144,15 +144,8 @@ public enum Direction4 {
 			return null;
 		T assumePoint = null;
 		for(T point : points) {
-			if(point == null)
-				continue;
-			if(point.isVert_int(basePoint)) { //vertical - W or S
-				if(direction.isVert() && basePoint.checkDirection_int(point, direction) && (assumePoint == null || point.checkDirection_int(assumePoint, direction)))
-					assumePoint = point;
-			}else if(point.isHorz_int(basePoint)) { //horizontal - A or D
-				if(direction.isHorz() && basePoint.checkDirection_int(point, direction) && (assumePoint == null || point.checkDirection_int(assumePoint, direction)))
-					assumePoint = point;
-			}
+			if(point != null && basePoint.isFront_int(point, direction) && (assumePoint == null || point.checkDirection_int(assumePoint, direction)))
+				assumePoint = point;
 		}
 		return assumePoint;
 	}

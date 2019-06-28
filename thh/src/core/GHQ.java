@@ -34,6 +34,7 @@ import input.MouseListenerEx;
 import item.ItemData;
 import physics.Dynam;
 import physics.HasDynam;
+import physics.Point;
 import structure.Structure;
 import stage.StageEngine;
 import unit.Unit;
@@ -598,7 +599,17 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return true;
 	}
-	public static final boolean hitStructure_Rect(int x,int y,int w,int h){
+	public static final boolean hitStructure_Dot(int x, int y){
+		for(Structure structure : structures) {
+			if(structure.contains(x, y))
+				return true;
+		}
+		return false;
+	}
+	public static final boolean hitStructure_Dot(Point point){
+		return hitStructure_Dot(point.intX(), point.intY());
+	}
+	public static final boolean hitStructure_Rect(int x, int y, int w, int h){
 		for(Structure structure : structures) {
 			if(structure.contains(x, y, w, h))
 				return true;
@@ -641,8 +652,11 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final boolean hitObstacle_DSTXY(HitInteractable object, int dstX, int dstY) {
 		return hitStructure_DSTXY(object, dstX, dstY) || !inStage(dstX, dstY);
 	}
-	public static final boolean inStage(int x,int y) {
-		return engine.inStage(x,y);
+	public static final boolean inStage(int x, int y) {
+		return engine.inStage(x, y);
+	}
+	public static final boolean inStage(Point point) {
+		return inStage(point.intX(), point.intY());
 	}
 	//information-GUI
 	public static final int getScreenW(){

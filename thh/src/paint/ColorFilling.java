@@ -20,6 +20,11 @@ public class ColorFilling implements RectPaint{
 	public ColorFilling(Color color) {
 		COLOR = color;
 	}
+	public static void rectPaint(Color color, int x, int y, int w, int h) {
+		final Graphics2D G2 = GHQ.getGraphics2D();
+		G2.setColor(color);
+		G2.fillRect(x, y, w, h);
+	}
 	@Override
 	public void rectPaint(int x, int y, int w, int h) {
 		final Graphics2D G2 = GHQ.getGraphics2D();

@@ -10,7 +10,7 @@ public class Angle implements Serializable{
 	
 	//initialization
 	public Angle() {
-		this.angle = GHQ.NONE;
+		this.angle = 0.0;
 	}
 	public Angle(double angle) {
 		this.angle = angle;

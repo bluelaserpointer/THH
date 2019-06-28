@@ -8,24 +8,15 @@ import effect.Effect;
 import paint.ColorLine;
 
 public class DebugEffect extends Effect{
-	public static int lifeSpan = 100;
-	public static Color color = Color.RED;
-	public static Stroke stroke = GHQ.stroke1;
-	public static Effect setLine(int x1, int y1, int x2, int y2) {
+	public static int lifeSpan = GHQ.MAX;
+	public static Effect setLine(Color color, Stroke stroke, int x1, int y1, int x2, int y2) {
 		final DebugEffect effect = new DebugEffect();
 		effect.dynam.setXY(x1, y1);
-		effect.paintScript = new ColorLine(color, stroke) {
-			private static final long serialVersionUID = -179338272273721936L;
-			
-			private final int lifeSpan = DebugEffect.lifeSpan;
-			private final int INITIAL_FRAME = GHQ.getNowFrame();
-			@Override
-			public void linePaint(int x1, int y1, int x2, int y2) {
-				GHQ.setImageAlpha((float)(1.0 - (double)GHQ.getPassedFrame(INITIAL_FRAME)/lifeSpan));
-				super.linePaint(x1, y1, x2, y2);
-			}
-		}.convertToDotPaint(x2, y2);
-		return effect;
+		effect.paintScript = new ColorLine(color, stroke).convertToDotPaint(x2, y2);
+		return GHQ.addEffect(effect);
+	}
+	public static Effect setLine(Color color, int x1, int y1, int x2, int y2) {
+		return setLine(color, GHQ.stroke1, x1, y1, x2, y2);
 	}
 	/*public static Effect makeLine(HasCoordinate source, int dx, int dy) {
 		if(source == null)
@@ -33,4 +24,6 @@ public class DebugEffect extends Effect{
 		final Coordinate COORDINATE = source.getCoordinate();
 		return makeLine(COORDINATE.getX(), COORDINATE.getY(), dx, dy);
 	}*/
+	//set x1: 150,y1: 50,x2: 150,y2: 10
+	//paint x1: 50,y1: 0,x2: 150,y2: 10
 }

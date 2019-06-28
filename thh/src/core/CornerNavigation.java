@@ -1,15 +1,19 @@
 package core;
 
 import static physics.Direction4.*;
+
+import java.awt.Color;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import effect.debugEffect.DebugEffect;
+import paint.ColorFilling;
 import physics.Direction4;
 import physics.Point;
 
-public abstract class CornerNavigation {
+public class CornerNavigation {
 	
 	protected final int EQUAL_GAP;
 	
@@ -19,29 +23,6 @@ public abstract class CornerNavigation {
 		Route makedRoute;
 		protected Corner(int x, int y) {
 			super(x, y);
-		}
-		protected final Corner[] searchCorner4direction(int x, int y) {
-			final Corner[] founds = new Corner[4];
-			for(Corner ver : corners) {
-				if(ver.x == x) {
-					if(ver.y < y) {
-						if(founds[0] == null || founds[0].y < ver.y)
-							founds[0] = ver;
-					}else {
-						if(founds[1] == null || ver.y < founds[1].y)
-							founds[1] = ver;
-					}
-				}else if(ver.y == y) {
-					if(ver.x < x) {
-						if(founds[2] == null || founds[2].x < ver.x)
-							founds[2] = ver;
-					}else {
-						if(founds[3] == null || ver.x < founds[3].x)
-							founds[3] = ver;
-					}
-				}
-			}
-			return founds;
 		}
 		protected void addAnchorIfNotNull(Anchor anchor) {
 			if(anchor != null)
@@ -59,12 +40,12 @@ public abstract class CornerNavigation {
 		}
 		protected Anchor[] explore0(Anchor settedAnchors[]) {
 			//find 4 neighbor Corner
-			Corner neighbors[] = searchCorner4direction(x, y);
+			Point neighbors[] = Direction4.getVertHorzClosest_int(this, corners, W, D, S, A);
 			//check 4 neighbor Corner are reachable
-			settedAnchors[Direction4.W_ID] = explore1(Direction4.W, neighbors[Direction4.W_ID]);
-			settedAnchors[Direction4.D_ID] = explore1(Direction4.D, neighbors[Direction4.D_ID]);
-			settedAnchors[Direction4.S_ID] = explore1(Direction4.S, neighbors[Direction4.S_ID]);
-			settedAnchors[Direction4.A_ID] = explore1(Direction4.A, neighbors[Direction4.A_ID]);
+			settedAnchors[Direction4.W_ID] = explore1(Direction4.W, (Corner)neighbors[Direction4.W_ID]);
+			settedAnchors[Direction4.D_ID] = explore1(Direction4.D, (Corner)neighbors[Direction4.D_ID]);
+			settedAnchors[Direction4.S_ID] = explore1(Direction4.S, (Corner)neighbors[Direction4.S_ID]);
+			settedAnchors[Direction4.A_ID] = explore1(Direction4.A, (Corner)neighbors[Direction4.A_ID]);
 			//
 			return settedAnchors;
 		}
@@ -76,51 +57,60 @@ public abstract class CornerNavigation {
 				return null;
 			}else {
 				while(true) {
+					if(neighborPoint != null && !point.checkDirection_int(neighborPoint, direction)) { //arrive at the neighbor corner point
+						linkableCorners[direction.left45().getID()] = neighborPoint;
+						linkableCorners[direction.right45().getID()] = null;
+						DebugEffect.setLine(Color.BLUE, GHQ.stroke3, intX(), intY(), neighborPoint.intX(), neighborPoint.intY());
+						return null;
+					}
 					if(hasWall(point.shift(direction, EQUAL_GAP))) {
 						point.shift(direction.back(), EQUAL_GAP);
 						return new Anchor(this, point, direction);
 					}
-					if(!point.checkDirection_int(neighborPoint, direction)) { //arrive at the neighbor corner point
-						linkableCorners[direction.left45().getID()] = neighborPoint;
-						linkableCorners[direction.right45().getID()] = null;	
-						return null;
-					}
 				}
 			}
-		}
-		protected int getAvaliableLinkAmount() {
-			int amount = 0;
-			for(Corner ver : linkableCorners) {
-				if(ver != null)
-					amount++;
-			}
-			return amount;
 		}
 	}
 	protected class Anchor extends Point.IntPoint{
 		private static final long serialVersionUID = 3823523254019408178L;
 		final Direction4 ANCHOR_DIRECTION;
-		final Corner SRC_CORNER;
-		protected Anchor(Corner source, Point point, Direction4 directionID) {
+		final Corner NEST_CORNER;
+		protected Anchor(Corner nestCorner, Point point, Direction4 directionID) {
 			super(point);
 			ANCHOR_DIRECTION = directionID;
-			SRC_CORNER = source;
+			NEST_CORNER = nestCorner;
 		}
-		protected final Corner searchAnchorOrConerCWASD(Point basePoint, Direction4 direction) {
+		protected final Corner searchAnchorOrConer(Point basePoint, Direction4 direction) {
 			final Corner foundCorner = Direction4.getVertHorzClosest_int(basePoint, corners, direction);
 			final Anchor foundAnchor = Direction4.getVertHorzClosest_int(basePoint, anchors, direction);
-			return Direction4.getOutermost_int(direction, foundCorner, foundAnchor) != foundCorner ? foundCorner : foundAnchor.SRC_CORNER;
+			if(Direction4.getOutermost_int(direction.back(), foundCorner, foundAnchor) == foundCorner)
+				return  foundCorner;
+			else
+				return  foundAnchor == null ? null : foundAnchor.NEST_CORNER;
 		}
 		protected void explore0() {
-			SRC_CORNER.linkableCorners[ANCHOR_DIRECTION.left45().getID()] = explore1(this, ANCHOR_DIRECTION.left());
-			SRC_CORNER.linkableCorners[ANCHOR_DIRECTION.right45().getID()] = explore1(this, ANCHOR_DIRECTION.right());
+			NEST_CORNER.linkableCorners[ANCHOR_DIRECTION.left45().getID()] = explore1(this, ANCHOR_DIRECTION.left());
+			NEST_CORNER.linkableCorners[ANCHOR_DIRECTION.right45().getID()] = explore1(this, ANCHOR_DIRECTION.right());
+			
+			Corner corner = NEST_CORNER.linkableCorners[ANCHOR_DIRECTION.left45().getID()];
+			if(corner != null) {
+				DebugEffect.setLine(Color.CYAN, NEST_CORNER.intX(), NEST_CORNER.intY(), intX(), intY());
+				DebugEffect.setLine(Color.CYAN, intX(), intY(), corner.intX(), corner.intY());
+				DebugEffect.setLine(Color.WHITE, NEST_CORNER.intX(), NEST_CORNER.intY(), corner.intX(), corner.intY());
+			}
+			corner = NEST_CORNER.linkableCorners[ANCHOR_DIRECTION.right45().getID()];
+			if(corner != null) {
+				DebugEffect.setLine(Color.CYAN, NEST_CORNER.intX(), NEST_CORNER.intY(), intX(), intY());
+				DebugEffect.setLine(Color.CYAN, intX(), intY(), corner.intX(), corner.intY());
+				DebugEffect.setLine(Color.WHITE, NEST_CORNER.intX(), NEST_CORNER.intY(), corner.intX(), corner.intY());
+			}
 		}
 		protected Corner explore1(Point basePoint, Direction4 direction) {
 			final Point point = new Point.IntPoint(basePoint);
 			point.shift(direction, EQUAL_GAP);
 			if(hasWall(point)) //hit wall at first step -> stop searching
 				return null;
-			Corner neighbor = searchAnchorOrConerCWASD(basePoint, direction);
+			Corner neighbor = searchAnchorOrConer(basePoint, direction);
 			do {
 				if(!point.checkDirection_int(neighbor, direction)) //arrive
 					return neighbor;
@@ -149,17 +139,21 @@ public abstract class CornerNavigation {
 	}
 	public void defaultCornerCollect() {
 		final int X_LIMIT = GHQ.getEngine().getStageW(), Y_LIMIT = GHQ.getEngine().getStageH();
-		boolean state = false;
-		for(int xi = EQUAL_GAP/2;xi < X_LIMIT;xi += EQUAL_GAP) {
-			for(int yi = EQUAL_GAP/2;yi < Y_LIMIT;yi += EQUAL_GAP) {
-				final boolean nowState = hasWall(xi, yi);
-				if(xi > EQUAL_GAP/2 && yi > EQUAL_GAP/2 && state != nowState) {
-					if(!hasWall(xi - EQUAL_GAP, yi - EQUAL_GAP) && !hasWall(xi - EQUAL_GAP, yi))
-						addCornerPoint(xi - EQUAL_GAP, state ? yi : yi - EQUAL_GAP);
-					if(!hasWall(xi + EQUAL_GAP, yi - EQUAL_GAP) && !hasWall(xi + EQUAL_GAP, yi))
-						addCornerPoint(xi + EQUAL_GAP, state ? yi : yi - EQUAL_GAP);
+		boolean oldBlockState = false;
+		final Point point = new Point.IntPoint(EQUAL_GAP/2, EQUAL_GAP/2);
+		for(;point.intX() < X_LIMIT;point.shift(D, EQUAL_GAP)) {
+			point.setY(EQUAL_GAP/2);
+			oldBlockState = hasWall(point);
+			while(point.intY() < Y_LIMIT) {
+				point.shift(S, EQUAL_GAP);
+				final boolean nowBlockState = hasWall(point);
+				if(oldBlockState != nowBlockState) {
+					if(!hasWall(point.intX() - EQUAL_GAP, point.intY() - EQUAL_GAP) && !hasWall(point.intX() - EQUAL_GAP, point.intY()))
+						addCornerPoint(point.intX() - EQUAL_GAP, nowBlockState ? point.intY() - EQUAL_GAP : point.intY());
+					if(!hasWall(point.intX() + EQUAL_GAP, point.intY() - EQUAL_GAP) && !hasWall(point.intX() + EQUAL_GAP, point.intY()))
+						addCornerPoint(point.intX() + EQUAL_GAP, nowBlockState ? point.intY() - EQUAL_GAP : point.intY());
 				}
-				state = nowState;
+				oldBlockState = nowBlockState;
 			}
 		}
 	}
@@ -171,7 +165,13 @@ public abstract class CornerNavigation {
 			ver.explore0();
 		}
 	}
-	public void reset() {
+	public void debugPreview() {
+		for(Corner ver : corners)
+			ColorFilling.rectPaint(Color.BLUE, ver.intX() - 5, ver.intY() - 5, 10, 10);
+		for(Anchor ver : anchors)
+			ColorFilling.rectPaint(Color.CYAN, ver.intX() - 5, ver.intY() - 5, 10, 10);
+	}
+	public void reset() { 
 		corners.clear();
 		anchors.clear();
 	}
@@ -248,9 +248,13 @@ public abstract class CornerNavigation {
 	}
 	
 	//extend
-	public abstract boolean hasWall(int x, int y);
+	public boolean hasWall(int x, int y) {
+		return GHQ.hitStructure_Dot(x, y) || !GHQ.inStage(x, y);
+	}
 	public final boolean hasWall(Point point) {
 		return hasWall(point.intX(), point.intY());
 	}
-	public abstract boolean hasWall(int x1, int y1, int x2, int y2);
+	public boolean hasWall(int x1, int y1, int w, int h) {
+		return GHQ.hitStructure_Rect(x1, y1, w, h) || !GHQ.inStage(x1, y1);
+	}
 }
