@@ -12,30 +12,30 @@ public enum Direction4 {
 	public boolean isHorz() {
 		return this == A || this == D;
 	}
-	public Direction8 left45() {
+	public DirectionS8 left30() {
 		switch(this) {
 		case W:
-			return Direction8.WA;
+			return DirectionS8.WWA;
 		case D:
-			return Direction8.DW;
+			return DirectionS8.DDW;
 		case S:
-			return Direction8.SD;
+			return DirectionS8.SSD;
 		case A:
-			return Direction8.AS;
+			return DirectionS8.AAS;
 		default:
 			return null;
 		}
 	}
-	public Direction8 right45() {
+	public DirectionS8 right30() {
 		switch(this) {
 		case W:
-			return Direction8.WD;
+			return DirectionS8.WWD;
 		case D:
-			return Direction8.DS;
+			return DirectionS8.DDS;
 		case S:
-			return Direction8.SA;
+			return DirectionS8.SSA;
 		case A:
-			return Direction8.AW;
+			return DirectionS8.AAW;
 		default:
 			return null;
 		}

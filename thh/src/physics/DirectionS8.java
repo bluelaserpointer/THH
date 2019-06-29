@@ -1,25 +1,25 @@
 package physics;
 
-public enum Direction8 {
-	WD, WA, DW, DS, SD, SA, AS, AW;
+public enum DirectionS8 {
+	WWD, WWA, DDW, DDS, SSD, SSA, AAS, AAW;
 	
 	public int getID() {
 		switch(this) {
-		case WD:
+		case WWD:
 			return 0;
-		case WA:
+		case WWA:
 			return 1;
-		case DW:
+		case DDW:
 			return 2;
-		case DS:
+		case DDS:
 			return 3;
-		case SD:
+		case SSD:
 			return 4;
-		case SA:
+		case SSA:
 			return 5;
-		case AS:
+		case AAS:
 			return 6;
-		case AW:
+		case AAW:
 			return 7;
 		default:
 			return -1;

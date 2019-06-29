@@ -3,42 +3,75 @@ package core;
 import static physics.Direction4.*;
 
 import java.awt.Color;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.awt.Graphics2D;
+import java.util.Stack;
 
 import effect.debugEffect.DebugEffect;
 import paint.ColorFilling;
 import physics.Direction4;
+import physics.HasPoint;
 import physics.Point;
 
 public class CornerNavigation {
 	
 	protected final int EQUAL_GAP;
 	
+	protected static class EdgeNode{
+		final Corner CORNER1,CORNER2;
+		final double DISTANCE;
+		private EdgeNode(Corner corner1, Corner corner2) {
+			CORNER1 = corner1;
+			CORNER2 = corner2;
+			DISTANCE = CORNER1.distance(CORNER2);
+		}
+		boolean contains(Corner corner) {
+			return CORNER1 == corner || CORNER2 == corner;
+		}
+		Corner getAnother(Corner corner) {
+			if(corner == CORNER1)
+				return CORNER2;
+			if(corner == CORNER2)
+				return CORNER1;
+			System.out.println("EdgeNode.another bug.");
+			return null;
+		}
+		public static void connect(Corner srcCorner, Corner dstCorner) {
+			if(srcCorner.getLinkTo(dstCorner) != null)
+				return;
+			final EdgeNode LINK = new EdgeNode(srcCorner, dstCorner);
+			dstCorner.link.add(LINK);
+			srcCorner.link.add(LINK);
+		}
+	}
 	protected class Corner extends Point.IntPoint{
 		private static final long serialVersionUID = 2079598768300719520L;
-		final Corner[] linkableCorners = new Corner[8];
-		Route makedRoute;
-		protected Corner(int x, int y) {
+		final MyLinkedList<EdgeNode> link = new MyLinkedList<EdgeNode>();
+		EdgeNode prevLinkMark = null;
+		double distanceMark = GHQ.MAX;
+		Corner(int x, int y) {
 			super(x, y);
 		}
-		protected void addAnchorIfNotNull(Anchor anchor) {
-			if(anchor != null)
-				anchors.add(anchor);
+		Corner getPrevCornerMark() {
+			return prevLinkMark == null ? null : prevLinkMark.getAnother(this);
 		}
-		protected void explore0() {
-			//find 4 neighbor Corner
+		EdgeNode getLinkTo(Corner dstCorner) {
+			for(EdgeNode existingEdge : link) {
+				if(existingEdge.contains(dstCorner)) //duplicated destination
+					return existingEdge;
+			}
+			return null;
+		}
+		void explore0() {
+			//find 4 neighbor Corners
 			Point neighbors[] = Direction4.getVertHorzClosest_int(this, corners, W, D, S, A);
-			//check 4 neighbor Corner are reachable
-			addAnchorIfNotNull(explore1(Direction4.W, (Corner)neighbors[Direction4.W_ID]));
-			addAnchorIfNotNull(explore1(Direction4.D, (Corner)neighbors[Direction4.D_ID]));
-			addAnchorIfNotNull(explore1(Direction4.S, (Corner)neighbors[Direction4.S_ID]));
-			addAnchorIfNotNull(explore1(Direction4.A, (Corner)neighbors[Direction4.A_ID]));
+			//check 4 neighbor Corners are reachable
+			anchors.addIfNotNull(explore1(Direction4.W, (Corner)neighbors[Direction4.W_ID]));
+			anchors.addIfNotNull(explore1(Direction4.D, (Corner)neighbors[Direction4.D_ID]));
+			anchors.addIfNotNull(explore1(Direction4.S, (Corner)neighbors[Direction4.S_ID]));
+			anchors.addIfNotNull(explore1(Direction4.A, (Corner)neighbors[Direction4.A_ID]));
 			//
 		}
-		protected Anchor[] explore0(Anchor settedAnchors[]) {
+		Anchor[] explore0(Anchor settedAnchors[]) {
 			//find 4 neighbor Corner
 			Point neighbors[] = Direction4.getVertHorzClosest_int(this, corners, W, D, S, A);
 			//check 4 neighbor Corner are reachable
@@ -49,17 +82,14 @@ public class CornerNavigation {
 			//
 			return settedAnchors;
 		}
-		protected Anchor explore1(Direction4 direction, Corner neighborPoint) {
+		Anchor explore1(Direction4 direction, Corner neighborPoint) {
 			Point point = new Point.IntPoint(this);
 			if(hasWall(point.shift(direction, EQUAL_GAP))) { //has wall in first step
-				linkableCorners[direction.left45().getID()] = null;
-				linkableCorners[direction.right45().getID()] = null;
 				return null;
 			}else {
 				while(true) {
 					if(neighborPoint != null && !point.checkDirection_int(neighborPoint, direction)) { //arrive at the neighbor corner point
-						linkableCorners[direction.left45().getID()] = neighborPoint;
-						linkableCorners[direction.right45().getID()] = null;
+						EdgeNode.connect(this, neighborPoint);
 						DebugEffect.setLine(Color.BLUE, GHQ.stroke3, intX(), intY(), neighborPoint.intX(), neighborPoint.intY());
 						return null;
 					}
@@ -89,17 +119,18 @@ public class CornerNavigation {
 				return  foundAnchor == null ? null : foundAnchor.NEST_CORNER;
 		}
 		protected void explore0() {
-			NEST_CORNER.linkableCorners[ANCHOR_DIRECTION.left45().getID()] = explore1(this, ANCHOR_DIRECTION.left());
-			NEST_CORNER.linkableCorners[ANCHOR_DIRECTION.right45().getID()] = explore1(this, ANCHOR_DIRECTION.right());
 			
-			Corner corner = NEST_CORNER.linkableCorners[ANCHOR_DIRECTION.left45().getID()];
+			Corner corner = explore1(this, ANCHOR_DIRECTION.left());
 			if(corner != null) {
+				EdgeNode.connect(NEST_CORNER, corner);
 				DebugEffect.setLine(Color.CYAN, NEST_CORNER.intX(), NEST_CORNER.intY(), intX(), intY());
 				DebugEffect.setLine(Color.CYAN, intX(), intY(), corner.intX(), corner.intY());
 				DebugEffect.setLine(Color.WHITE, NEST_CORNER.intX(), NEST_CORNER.intY(), corner.intX(), corner.intY());
 			}
-			corner = NEST_CORNER.linkableCorners[ANCHOR_DIRECTION.right45().getID()];
+			
+			corner = explore1(this, ANCHOR_DIRECTION.right());
 			if(corner != null) {
+				EdgeNode.connect(NEST_CORNER, corner);
 				DebugEffect.setLine(Color.CYAN, NEST_CORNER.intX(), NEST_CORNER.intY(), intX(), intY());
 				DebugEffect.setLine(Color.CYAN, intX(), intY(), corner.intX(), corner.intY());
 				DebugEffect.setLine(Color.WHITE, NEST_CORNER.intX(), NEST_CORNER.intY(), corner.intX(), corner.intY());
@@ -107,13 +138,21 @@ public class CornerNavigation {
 		}
 		protected Corner explore1(Point basePoint, Direction4 direction) {
 			final Point point = new Point.IntPoint(basePoint);
+			if(basePoint.equals(4950,50))
+				System.out.println("marking0");
 			point.shift(direction, EQUAL_GAP);
-			if(hasWall(point)) //hit wall at first step -> stop searching
+			if(hasWall(point)) { //hit wall at first step -> stop searching
+				if(basePoint.equals(4950,50))
+					System.out.println("marking1");
 				return null;
+			}
 			Corner neighbor = searchAnchorOrConer(basePoint, direction);
 			do {
-				if(!point.checkDirection_int(neighbor, direction)) //arrive
+				if(!point.checkDirection_int(neighbor, direction)) { //arrive
+					if(basePoint.equals(4950,50))
+						System.out.println("marking2");
 					return neighbor;
+				}
 				point.shift(direction, EQUAL_GAP);
 			}while(!hasWall(point));
 			//hit a wall
@@ -125,8 +164,8 @@ public class CornerNavigation {
 		}
 	}
 	
-	protected LinkedList<Corner> corners = new LinkedList<Corner>();
-	protected LinkedList<Anchor> anchors = new LinkedList<Anchor>();
+	protected MyLinkedList<Corner> corners = new MyLinkedList<Corner>();
+	protected MyLinkedList<Anchor> anchors = new MyLinkedList<Anchor>();
 	
 	public CornerNavigation(int equalGap) {
 		EQUAL_GAP = equalGap;
@@ -135,6 +174,10 @@ public class CornerNavigation {
 		EQUAL_GAP = 1;
 	}
 	public void addCornerPoint(int x, int y) {
+		for(Corner corner : corners) {
+			if(corner.equals(x, y))
+				return;
+		}
 		corners.add(new Corner(x, y));
 	}
 	public void defaultCornerCollect() {
@@ -166,36 +209,25 @@ public class CornerNavigation {
 		}
 	}
 	public void debugPreview() {
-		for(Corner ver : corners)
+		final Graphics2D G2 = GHQ.getGraphics2D();
+		for(Corner ver : corners) {
 			ColorFilling.rectPaint(Color.BLUE, ver.intX() - 5, ver.intY() - 5, 10, 10);
-		for(Anchor ver : anchors)
+			G2.setColor(Color.ORANGE);
+			G2.drawString(String.valueOf((int)ver.distanceMark), ver.intX() - 15, ver.intY() - 15);
+			G2.setStroke(GHQ.stroke3);
+			G2.drawLine(ver.intX(), ver.intY(), ver.getPrevCornerMark().intX(), ver.getPrevCornerMark().intY());
+		}
+		for(Anchor ver : anchors) {
 			ColorFilling.rectPaint(Color.CYAN, ver.intX() - 5, ver.intY() - 5, 10, 10);
+		}
 	}
 	public void reset() { 
 		corners.clear();
 		anchors.clear();
 	}
-	class Route {
-		final Queue<Corner> routeQueue = new ArrayDeque<Corner>();
-		Corner nowCorner;
-		double distance;
-		public Route(Corner startCorner) {
-			routeQueue.add(nowCorner = startCorner);
-			distance = 0;
-		}
-		boolean isLonger(Route targetRoute) {
-			return distance > targetRoute.distance;
-		}
-		boolean atSamePoint(Corner corner) {
-			return nowCorner == corner;
-		}
-		void to(Corner corner) {
-			routeQueue.add(corner);
-			distance += nowCorner.distanceSq(corner);
-			nowCorner = corner;
-		}
-	}
 	protected Corner makeTemporaryCorner(int x, int y) {
+		x += -(x%EQUAL_GAP) + EQUAL_GAP/2;
+		y += -(y%EQUAL_GAP) + EQUAL_GAP/2;
 		Corner myCorner = new Corner(x, y);
 		final Anchor myAnchor[] = new Anchor[4];
 		myCorner.explore0(myAnchor);
@@ -205,46 +237,71 @@ public class CornerNavigation {
 		}
 		return myCorner;
 	}
-	public Queue<Point> getRoot(int x1, int y1, int x2, int y2) {
-		final Queue<Point> result = new ArrayDeque<Point>();
-		//find all route start point
-		final Corner startCorner = makeTemporaryCorner(x1, y1);
-		final ArrayList<Route> activeRoutes = new ArrayList<Route>();
-		for(Corner linkableCorner : startCorner.linkableCorners) {
-			if(linkableCorner != null)
-				activeRoutes.add(new Route(linkableCorner));
+	protected void removeCorner(Corner corner) {
+		for(EdgeNode link : corner.link) {
+			link.getAnother(corner).link.remove(link);
 		}
-		//find all goal corner point
-		final Corner goalCorner = makeTemporaryCorner(x2, y2);
-		final ArrayList<Corner> goalCorners = new ArrayList<Corner>();
-		for(Corner linkableCorner : goalCorner.linkableCorners) {
-			if(linkableCorner != null)
-				goalCorners.add(linkableCorner);
+		corners.remove(corner);
+	}
+	Corner startCorner, goalCorner;
+	public void setGoalPoint(int x, int y) {
+		if(goalCorner != null)
+			removeCorner(goalCorner);
+		goalCorner = makeTemporaryCorner(x, y);
+	}
+	public void setGoalPoint(Point point) {
+		setGoalPoint(point.intX(), point.intY());
+	}
+	public void setGoalPoint(HasPoint hasPoint) {
+		setGoalPoint(hasPoint.getPoint());
+	}
+	public Stack<Point> getRoot(int startX, int startY) {
+		if(goalCorner == null) {
+			System.out.println("CornerNavigation.getRoot: goalCorner is null.");
+			return null;
 		}
+		//init
+		for(Corner corner : corners) {
+			corner.prevLinkMark = null;
+			corner.distanceMark = GHQ.MAX;
+		}
+		
 		//find closest route
-		Route reachedRoute = null;
-		while(activeRoutes.size() > 0) {
-			for(Route ver1_route : activeRoutes) {
-				if(ver1_route == reachedRoute)
-					continue;
-				branchCheck: for(Corner ver_linkableCorner : ver1_route.nowCorner.linkableCorners) {
-					if(ver_linkableCorner == null)
-						continue;
-					//check if there is a route duplicated in this Corner.
-					for(Route ver2_route : activeRoutes) {
-						if(ver1_route != ver2_route && ver2_route.atSamePoint(ver_linkableCorner)) {
-							activeRoutes.remove(ver1_route.isLonger(ver2_route) ? ver1_route : ver2_route);
-							continue branchCheck;
-						}
-					}
-					//extends routes
-					ver1_route.to(ver_linkableCorner);
+		(startCorner = makeTemporaryCorner(startX, startY)).distanceMark = 0.0;
+		for(EdgeNode link : startCorner.link)
+			expand(0.0, startCorner, link);
+		removeCorner(startCorner);
+		//return the result
+		if(goalCorner.prevLinkMark == null)
+			return null;
+		final Stack<Point> result = new Stack<Point>();
+		for(Corner nowCorner = goalCorner;nowCorner != startCorner;nowCorner = nowCorner.getPrevCornerMark())
+			result.push(nowCorner);
+		return result;
+	}
+	public Stack<Point> getRoot(Point startPoint) {
+		return getRoot(startPoint.intX(), startPoint.intY());
+	}
+	public Stack<Point> getRoot(HasPoint startHasPoint) {
+		return getRoot(startHasPoint.getPoint());
+	}
+	public void expand(double nowDistance, Corner nowCorner, EdgeNode nextLink) {
+		final Corner NEXT_CORNER = nextLink.getAnother(nowCorner);
+		nowDistance += nextLink.DISTANCE;
+		//check route duplication
+		if(nowDistance < NEXT_CORNER.distanceMark) {
+			//overwrite next corner's prevMark
+		 	NEXT_CORNER.prevLinkMark = nextLink;
+		 	NEXT_CORNER.distanceMark = nowDistance;
+			if(NEXT_CORNER != goalCorner){
+				for(EdgeNode link : NEXT_CORNER.link) {
+					if(link != nextLink)
+						expand(nowDistance, NEXT_CORNER, link);
 				}
+			 	//END LOOP
 			}
 		}
-		//return the result
-		return result;
-		
+	 	//END LOOP
 	}
 	
 	//extend

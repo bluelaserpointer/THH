@@ -91,6 +91,13 @@ public abstract class Point implements Serializable{
 	//information
 	///////////////
 	
+	///////////////toString
+	public String toString_int() {
+		return intX() + ", " + intY();
+	}
+	public String toString_double() {
+		return doubleX() + ", " + doubleY();
+	}
 	///////////////angleTo
 	public double angleTo(int x,int y) {
 		return atan2(intDY(y), intDX(x));
@@ -242,6 +249,19 @@ public abstract class Point implements Serializable{
 	}
 	public boolean isVisible(HasPoint hasPoint) {
 		return hasPoint == null ? false : isVisible(hasPoint.getPoint());
+	}
+	///////////////equals
+	public boolean equals(int x, int y) {
+		return intX() == x && intY() == y;
+	}
+	public boolean equals(double x, double y) {
+		return doubleX() == x && doubleY() == y;
+	}
+	public boolean equals_int(Point point) {
+		return equals(point.intX(), point.intY());
+	}
+	public boolean equals_double(Point point) {
+		return equals(point.doubleX(), point.doubleY());
 	}
 	///////////////checkVertical&checkHorizontal
 	public boolean isVert_int(Point point) {
