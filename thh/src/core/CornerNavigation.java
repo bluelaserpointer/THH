@@ -4,13 +4,14 @@ import static physics.Direction4.*;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.util.Stack;
+import java.util.LinkedList;
 
 import effect.debugEffect.DebugEffect;
 import paint.ColorFilling;
 import physics.Direction4;
 import physics.HasPoint;
 import physics.Point;
+import physics.Route;
 
 public class CornerNavigation {
 	
@@ -247,43 +248,21 @@ public class CornerNavigation {
 	public void setGoalPoint(int x, int y) {
 		if(goalCorner != null)
 			removeCorner(goalCorner);
-		goalCorner = makeTemporaryCorner(x, y);
+		(goalCorner = makeTemporaryCorner(x, y)).distanceMark = 0.0;
+		//init
+		for(Corner corner : corners) {
+			corner.prevLinkMark = null;
+			corner.distanceMark = GHQ.MAX;
+		}
+		//find closest route
+		for(EdgeNode link : goalCorner.link)
+			expand(0.0, goalCorner, link);
 	}
 	public void setGoalPoint(Point point) {
 		setGoalPoint(point.intX(), point.intY());
 	}
 	public void setGoalPoint(HasPoint hasPoint) {
 		setGoalPoint(hasPoint.getPoint());
-	}
-	public Stack<Point> getRoot(int startX, int startY) {
-		if(goalCorner == null) {
-			System.out.println("CornerNavigation.getRoot: goalCorner is null.");
-			return null;
-		}
-		//init
-		for(Corner corner : corners) {
-			corner.prevLinkMark = null;
-			corner.distanceMark = GHQ.MAX;
-		}
-		
-		//find closest route
-		(startCorner = makeTemporaryCorner(startX, startY)).distanceMark = 0.0;
-		for(EdgeNode link : startCorner.link)
-			expand(0.0, startCorner, link);
-		removeCorner(startCorner);
-		//return the result
-		if(goalCorner.prevLinkMark == null)
-			return null;
-		final Stack<Point> result = new Stack<Point>();
-		for(Corner nowCorner = goalCorner;nowCorner != startCorner;nowCorner = nowCorner.getPrevCornerMark())
-			result.push(nowCorner);
-		return result;
-	}
-	public Stack<Point> getRoot(Point startPoint) {
-		return getRoot(startPoint.intX(), startPoint.intY());
-	}
-	public Stack<Point> getRoot(HasPoint startHasPoint) {
-		return getRoot(startHasPoint.getPoint());
 	}
 	public void expand(double nowDistance, Corner nowCorner, EdgeNode nextLink) {
 		final Corner NEXT_CORNER = nextLink.getAnother(nowCorner);
@@ -293,15 +272,42 @@ public class CornerNavigation {
 			//overwrite next corner's prevMark
 		 	NEXT_CORNER.prevLinkMark = nextLink;
 		 	NEXT_CORNER.distanceMark = nowDistance;
-			if(NEXT_CORNER != goalCorner){
-				for(EdgeNode link : NEXT_CORNER.link) {
-					if(link != nextLink)
-						expand(nowDistance, NEXT_CORNER, link);
-				}
-			 	//END LOOP
+			for(EdgeNode link : NEXT_CORNER.link) {
+				if(link != nextLink)
+					expand(nowDistance, NEXT_CORNER, link);
 			}
 		}
-	 	//END LOOP
+	}
+	public Route getRoot(int startX, int startY) {
+		if(goalCorner == null) {
+			System.out.println("CornerNavigation.getRoot: goalCorner is null.");
+			return null;
+		}
+		//find closest root
+		startCorner = makeTemporaryCorner(startX, startY);
+		Corner assumeCorner = null;
+		double distance = GHQ.MAX;
+		for(EdgeNode link : startCorner.link) {
+			final Corner CORNER = link.getAnother(startCorner);
+			if(CORNER.distanceMark < distance) {
+				distance = CORNER.distanceMark;
+				assumeCorner = CORNER;
+			}
+		}
+		removeCorner(startCorner);
+		//return the result
+		if(assumeCorner == null)
+			return null;
+		final LinkedList<Point> result = new LinkedList<Point>();
+		for(Corner nowCorner = assumeCorner;nowCorner != null;nowCorner = nowCorner.getPrevCornerMark())
+			result.push(nowCorner);
+		return new Route(result);
+	}
+	public Route getRoot(Point startPoint) {
+		return getRoot(startPoint.intX(), startPoint.intY());
+	}
+	public Route getRoot(HasPoint startHasPoint) {
+		return getRoot(startHasPoint.getPoint());
 	}
 	
 	//extend
