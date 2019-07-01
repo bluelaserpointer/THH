@@ -1,14 +1,9 @@
 package thhunit;
 
 import core.GHQ;
-import item.ItemData;
-import storage.Storage;
 
 public abstract class THH_BasicPlayer extends THH_BasicUnit{
 	private static final long serialVersionUID = -8336591617807677807L;
-	public THH_BasicPlayer(int charaSize, int initialGroup, Storage<ItemData> itemStorageKind) {
-		super(charaSize, initialGroup, itemStorageKind);
-	}
 	public THH_BasicPlayer(int charaSize, int initialGroup) {
 		super(charaSize, initialGroup);
 	}

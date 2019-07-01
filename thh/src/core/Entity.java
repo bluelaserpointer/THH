@@ -21,7 +21,7 @@ public abstract class Entity implements HasDynam{
 	public final Dynam getDynam() {
 		return dynam;
 	}
-	public Dynam def_dynam() {
+	protected Dynam def_dynam() {
 		return new Dynam();
 	}
 }

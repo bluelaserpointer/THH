@@ -11,7 +11,6 @@ import geom.HitShape;
 import gui.MessageSource;
 import physics.Angle;
 import physics.HasAngleDynam;
-import physics.Point;
 import core.HitInteractable;
 
 /**
@@ -117,8 +116,7 @@ public abstract class Unit extends Entity implements MessageSource, HitInteracta
 	@Override
 	public Rectangle2D getBoundingBox() {
 		final int DEFAULT_SIZE = 80;
-		final Point COD = getPoint();
-		return new Rectangle2D.Double(COD.intX() - DEFAULT_SIZE/2,COD.intY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
+		return new Rectangle2D.Double(dynam.intX() - DEFAULT_SIZE/2,dynam.intY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
 	}
 	@Override
 	public Angle getAngle() {
@@ -128,6 +126,7 @@ public abstract class Unit extends Entity implements MessageSource, HitInteracta
 	public boolean isHit(HitInteractable object) {
 		return isAlive() && !isFriend(object) && hitshape.intersects(getPoint(), object, object.getPoint());
 	}
+	@Override
 	public HitShape getHitShape() {
 		return hitshape;
 	}

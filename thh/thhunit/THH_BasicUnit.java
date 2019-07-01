@@ -48,15 +48,13 @@ public abstract class THH_BasicUnit extends Unit {
 	public final StatusWithDefaultValue status = new StatusWithDefaultValue(PARAMETER_AMOUNT);
 	
 	//inventory
-	public final ItemStorage inventory;
+	public final ItemStorage inventory = def_inventory();
+	protected ItemStorage def_inventory() {
+		return new ItemStorage(new Storage<ItemData>());
+	}
 	
 	public THH_BasicUnit(int charaSize, int initialGroup) {
 		super(new Square(charaSize), initialGroup);
-		inventory = new ItemStorage(new Storage<ItemData>());
-	}
-	public THH_BasicUnit(int charaSize, int initialGroup, Storage<ItemData> itemStorageKind) {
-		super(new Square(charaSize), initialGroup);
-		inventory = new ItemStorage(itemStorageKind);
 	}
 	
 	@Override
