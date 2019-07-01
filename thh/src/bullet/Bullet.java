@@ -12,6 +12,7 @@ import geom.Square;
 import paint.DotPaint;
 import paint.HasDotPaint;
 import physics.DstCntDynam;
+import physics.Dynam;
 import physics.HasAnglePoint;
 import unit.Unit;
 import weapon.Weapon;
@@ -47,7 +48,7 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint, Dele
 	public DotPaint
 		paintScript;
 	public Bullet(Weapon originWeapon, HasAnglePoint shooter, Standpoint standpoint) {
-		super(new DstCntDynam(shooter), GHQ.getNowFrame());
+		dynam.setXYAngle(shooter);
 		UNIQUE_ID = ++nowMaxUniqueID;
 		ORIGIN_WEAPON = originWeapon;
 		SHOOTER = shooter;
@@ -63,7 +64,7 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint, Dele
 		paintScript = DotPaint.BLANK_SCRIPT;
 	}
 	public Bullet(Bullet bullet) {
-		super(new DstCntDynam(bullet.dynam), GHQ.getNowFrame());
+		dynam.setAll(bullet);
 		UNIQUE_ID = ++nowMaxUniqueID;
 		ORIGIN_WEAPON = bullet.ORIGIN_WEAPON;
 		SHOOTER = bullet.SHOOTER;
@@ -306,5 +307,9 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint, Dele
 	@Override
 	public final boolean isDeleted() {
 		return isDeleted;
+	}
+	@Override
+	public Dynam def_dynam() {
+		return new DstCntDynam();
 	}
 }

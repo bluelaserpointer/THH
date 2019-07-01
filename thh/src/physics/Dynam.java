@@ -21,58 +21,54 @@ public class Dynam extends Point.DoublePoint{
 		private static final long serialVersionUID = 6971378942148992685L;
 		@Override
 		public void set(double angle) {
-			super.set(angle);
-			final double SPEED = speed();
-			xSpd = SPEED*cos();
-			ySpd = SPEED*sin();
+			if(angle != super.angle) {
+				final double SPEED = speed();
+				if(SPEED != 0.0) {
+					xSpd = SPEED*cos();
+					ySpd = SPEED*sin();
+				}
+			}
+			super.angle = angle;
 		}
 		@Override
-		public void spin(double angle) {
-			this.set(this.angle + angle);
+		public void set(Angle sample) {
+			super.angle = sample.angle();
 		}
 	};
 	public Dynam() {}
 	public Dynam(Dynam dynam) {
-		x = dynam.x;
-		y = dynam.y;
-		xSpd = dynam.xSpd;
-		ySpd = dynam.ySpd;
-		moveAngle.set(dynam.moveAngle);
+		setAll(dynam);
 	}
 	public Dynam(double x,double y) {
-		this.x = x;
-		this.y = y;
+		setXY(x, y);
 	}
 	public Dynam(double x,double y,double moveAngle) {
-		this.x = x;
-		this.y = y;
-		this.moveAngle.set(moveAngle);
+		setXY(x, y);
+		setMoveAngle(moveAngle);
 	}
 	public Dynam(double x,double y,double xSpd,double ySpd) {
-		this.x = x;
-		this.y = y;
-		this.xSpd = xSpd;
-		this.ySpd = ySpd;
-		moveAngle.set(xSpd, ySpd);
+		setXY(x, y);
+		setSpeed(xSpd, ySpd);
 	}
 	public Dynam(HasAnglePoint sample) {
-		x = sample.getPoint().doubleX();
-		y = sample.getPoint().doubleY();
-		moveAngle.set(sample.getAngle());
+		setXYAngle(sample);
 	}
 	public void clear() {
-		x = y = xSpd = ySpd;
+		x = y = xSpd = ySpd = 0;
 		moveAngle.clear();
+	}
+	public void setAll(Dynam sample) {
+		setXY(sample);
+		xSpd = sample.xSpd;
+		ySpd = sample.ySpd;
+		moveAngle.set(sample.moveAngle);
 	}
 	public void setAll(HasDynam hasSample) {
 		setAll(hasSample.getDynam());
 	}
-	public void setAll(Dynam sample) {
-		x = sample.x;
-		y = sample.y;
-		xSpd = sample.xSpd;
-		ySpd = sample.ySpd;
-		moveAngle.set(sample.moveAngle);
+	public void setXYAngle(HasAnglePoint sample) {
+		setXY(sample);
+		setMoveAngle(sample);
 	}
 	public Dynam clone() {
 		return new Dynam(this);

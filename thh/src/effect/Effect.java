@@ -8,6 +8,7 @@ import core.GHQ;
 import paint.DotPaint;
 import paint.HasDotPaint;
 import physics.DstCntDynam;
+import physics.Dynam;
 import physics.HasDynam;
 
 /**
@@ -32,7 +33,6 @@ public class Effect extends Entity implements HasDotPaint, Deletable{
 		paintScript;
 	
 	public Effect() {
-		super(new DstCntDynam(), GHQ.getNowFrame());
 		SHOOTER = HasDynam.NULL_DYNAM_SOURCE;
 		UNIQUE_ID = ++nowMaxUniqueID;
 		name = GHQ.NOT_NAMED;
@@ -42,7 +42,7 @@ public class Effect extends Entity implements HasDotPaint, Deletable{
 		paintScript = DotPaint.BLANK_SCRIPT;
 	}
 	public Effect(HasDynam source) {
-		super(new DstCntDynam(source.getDynam()), GHQ.getNowFrame());
+		dynam.setAll(source.getDynam());
 		SHOOTER = source;
 		UNIQUE_ID = ++nowMaxUniqueID;
 		name = GHQ.NOT_NAMED;
@@ -52,7 +52,7 @@ public class Effect extends Entity implements HasDotPaint, Deletable{
 		paintScript = DotPaint.BLANK_SCRIPT;
 	}
 	public Effect(Effect effect) {
-		super(new DstCntDynam(effect.dynam), GHQ.getNowFrame());
+		dynam.setAll(effect.dynam);
 		SHOOTER = effect.SHOOTER;
 		UNIQUE_ID = ++nowMaxUniqueID;
 		name = effect.name;
@@ -198,5 +198,9 @@ public class Effect extends Entity implements HasDotPaint, Deletable{
 	@Override
 	public final boolean isDeleted() {
 		return isDeleted;
+	}
+	@Override
+	public Dynam def_dynam() {
+		return new DstCntDynam();
 	}
 }

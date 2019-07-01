@@ -20,13 +20,16 @@ public class Angle implements Serializable{
 		this.angle = angle;
 	}
 	public void set(Angle sample) {
-		this.angle = sample.angle;
+		set(sample.angle);
+	}
+	public void set(HasAngle sample) {
+		set(sample.getAngle());
 	}
 	public void set(double dx, double dy) {
-		angle = Math.atan2(dy, dx);
+		set(Math.atan2(dy, dx));
 	}
 	public void spin(double angle) {
-		this.angle += angle;
+		this.set(this.angle + angle);
 	}
 	public double spinTo_ConstSpd(double targetAngle, double angularSpeed) {
 		if(angularSpeed <= 0)

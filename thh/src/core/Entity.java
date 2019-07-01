@@ -5,22 +5,12 @@ import physics.HasDynam;
 
 public abstract class Entity implements HasDynam{
 	public final int INITIAL_FRAME;
-	public final Dynam dynam;
+	public final Dynam dynam = def_dynam();
 	
 	public Entity() {
-		dynam = new Dynam();
-		INITIAL_FRAME = GHQ.getNowFrame();
-	}
-	public Entity(Dynam dynam) {
-		this.dynam = dynam;
 		INITIAL_FRAME = GHQ.getNowFrame();
 	}
 	public Entity(int nowFrame) {
-		dynam = new Dynam();
-		INITIAL_FRAME = nowFrame;
-	}
-	public Entity(Dynam dynam, int nowFrame) {
-		this.dynam = dynam;
 		INITIAL_FRAME = nowFrame;
 	}
 	
@@ -30,5 +20,8 @@ public abstract class Entity implements HasDynam{
 	@Override
 	public final Dynam getDynam() {
 		return dynam;
+	}
+	public Dynam def_dynam() {
+		return new Dynam();
 	}
 }

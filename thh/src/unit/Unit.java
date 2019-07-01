@@ -10,7 +10,6 @@ import core.Standpoint;
 import geom.HitShape;
 import gui.MessageSource;
 import physics.Angle;
-import physics.Dynam;
 import physics.HasAngleDynam;
 import physics.Point;
 import core.HitInteractable;
@@ -37,11 +36,6 @@ public abstract class Unit extends Entity implements MessageSource, HitInteracta
 	/////////////
 	//Initialization
 	/////////////
-	public Unit(Dynam dynam, HitShape hitshape, int initialGroup) {
-		super(dynam);
-		this.hitshape = (hitshape != null ? hitshape : HitShape.NULL_HITSHAPE);
-		standpoint = new Standpoint(initialGroup);
-	}
 	public Unit(HitShape hitshape, int initialGroup) {
 		this.hitshape = (hitshape != null ? hitshape : HitShape.NULL_HITSHAPE);
 		standpoint = new Standpoint(initialGroup);
@@ -93,11 +87,10 @@ public abstract class Unit extends Entity implements MessageSource, HitInteracta
 	//control
 	/////////////
 	public void moveRel(int dx,int dy) {
-		final Dynam DYNAM = getDynam();
-		DYNAM.approach(DYNAM.doubleX() + dx,DYNAM.doubleY() + dy, 10);
+		dynam.approach(dynam.doubleX() + dx,dynam.doubleY() + dy, 10);
 	}
 	public void moveTo(int x,int y) {
-		getDynam().approach(x, y, 10);
+		dynam.approach(x, y, 10);
 	}
 	public void teleportRel(int dx,int dy) {
 		getPoint().addXY(dx, dy);

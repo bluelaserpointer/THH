@@ -18,10 +18,10 @@ public abstract class THH_BulletLibrary extends Bullet{
 		/////////////////
 		//Marisa's bullet
 		/////////////////
-		MillkyWay.paint = new ImageFrame("thhimage/MillkyWay.png");
-		NarrowSpark.paint = new ImageFrame("thhimage/NarrowSpark_2.png");
-		ReuseBomb.paint = new ImageFrame("thhimage/ReuseBomb.png");
-		MagicMissile.paint = new ImageFrame("thhimage/MagicMissile.png");
+		MillkyWay.paint = ImageFrame.createNew("thhimage/MillkyWay.png");
+		NarrowSpark.paint = ImageFrame.createNew("thhimage/NarrowSpark_2.png");
+		ReuseBomb.paint = ImageFrame.createNew("thhimage/ReuseBomb.png");
+		MagicMissile.paint = ImageFrame.createNew("thhimage/MagicMissile.png");
 		
 		/////////////////
 		//Reimu's bullet
