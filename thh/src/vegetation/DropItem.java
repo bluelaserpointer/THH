@@ -29,7 +29,7 @@ public class DropItem extends Vegetation{
 	}
 	public ItemData pickup() {
 		final ItemData tmpITEM = ITEM;
-		GHQ.deleteVegetation(this);
+		claimDelete();
 		return tmpITEM;
 	}
 }

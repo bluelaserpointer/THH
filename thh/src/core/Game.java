@@ -1,19 +1,15 @@
-package stage;
+package core;
 
 import java.awt.Graphics2D;
-import core.GHQ;
+
+import stage.StageSaveData;
 
 /**
  * A important class which is a frame of game main system.
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class StageEngine{
-	protected final static int
-		//system
-		NONE = GHQ.NONE,
-		MAX = GHQ.MAX,
-		MIN = GHQ.MIN;
+public abstract class Game{
 	
 	public abstract String getVersion();
 	
@@ -54,4 +50,6 @@ public abstract class StageEngine{
 	 * @return maximum height
 	 */
 	public abstract int getStageH();
+	
+	//tool
 }

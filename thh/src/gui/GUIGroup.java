@@ -1,13 +1,13 @@
 package gui;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 import core.GHQ;
 import paint.RectPaint;
 
 public class GUIGroup extends GUIParts{
 
-	protected final ArrayList<GUIParts> parts = new ArrayList<GUIParts>();
+	protected final LinkedList<GUIParts> parts = new LinkedList<GUIParts>();
 	public GUIGroup(String group, RectPaint paintScript, int x, int y, int w, int h) {
 		super(group, paintScript, x, y, w, h, true);
 	}

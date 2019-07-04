@@ -2,8 +2,6 @@ package action;
 
 import java.util.ArrayList;
 
-import core.GHQ;
-
 import static java.lang.Math.*;
 
 public class ActionInfo {
@@ -63,17 +61,5 @@ public class ActionInfo {
 	}
 	public static final void addSpeedPlan_RA(int frame,double radius,double angle) {
 		addPlan(frame,SPEED,radius*cos(angle),radius*sin(angle));
-	}
-	public static final int[] getFrameArray() {
-		return GHQ.deboxingIntArray(frame);
-	}
-	public static final int[] getMeaningArray() {
-		return GHQ.deboxingIntArray(meaning);
-	}
-	public static final double[] getXArray() {
-		return GHQ.deboxingDoubleArray(x);
-	}
-	public static final double[] getYArray() {
-		return GHQ.deboxingDoubleArray(y);
 	}
 }

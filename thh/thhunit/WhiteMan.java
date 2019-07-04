@@ -2,7 +2,6 @@ package thhunit;
 
 import core.GHQ;
 import paint.ImageFrame;
-import physics.Dynam;
 import physics.HasDynam;
 import status.StatusWithDefaultValue;
 import unit.Unit;
@@ -27,18 +26,17 @@ public class WhiteMan extends THH_BasicEnemy{
 		bulletPaint[0] = new ImageFrame("thhimage/LightBallA.png");
 	}
 	@Override
-	public void extendIdle() {
-		final Unit blackManAdress = GHQ.getUnit("BlackMan");
+	public void idle() {
+		super.idle();
+		final Unit blackManAdress = GHQ.getUnitList().forName("BlackMan");
 		if(blackManAdress == null)
 			return;
-		final Dynam THE_DYNAM = blackManAdress.getDynam();
-		charaDstX = THE_DYNAM.doubleX();
-		charaDstY = THE_DYNAM.doubleY();
+		dstPoint.setXY(blackManAdress);
 		final StatusWithDefaultValue THE_STATUS = ((THH_BasicUnit)blackManAdress).status;
-		if(THE_STATUS.isBigger0(HP) && THE_STATUS.isSmaller(HP,10000) && dynam.inRange(charaDstX, charaDstY, 200)){
+		if(THE_STATUS.isBigger0(HP) && THE_STATUS.isSmaller(HP,10000) && dynam.inRange(dstPoint, 200)){
 			THE_STATUS.add(HP, 100);
 		}
-		dynam.approachIfNoObstacles(this, charaDstX, charaDstY, charaSpeed);
+		dynam.approachIfNoObstacles(this, dstPoint, charaSpeed);
 	}
 	@Override
 	public void setBullet(int kind,HasDynam source) {}

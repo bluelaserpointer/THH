@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.io.File;
 
 import core.GHQ;
+import core.Game;
 import gui.DefaultStageEditor;
 import gui.MessageSource;
 import input.DoubleNumKeyListener;
@@ -15,7 +16,6 @@ import input.MouseListenerEx;
 import input.SingleKeyListener;
 import input.SingleNumKeyListener;
 import paint.ImageFrame;
-import stage.StageEngine;
 import stage.StageSaveData;
 import structure.Structure;
 import thhunit.*;
@@ -23,7 +23,7 @@ import unit.Unit;
 import thhunit.WhiteMan;
 import vegetation.Vegetation;
 
-public class Engine_THH1 extends StageEngine implements MessageSource{
+public class Engine_THH1 extends Game implements MessageSource{
 	private static THH_BasicUnit[] friends;
 	private static final Stage_THH1[] stages = new Stage_THH1[1];
 	private int nowStage;
@@ -155,7 +155,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 	}
 	@Override
 	public final StageSaveData getStageSaveData() {
-		return new Stage_THH1(GHQ.getUnits(),GHQ.getStructures(),GHQ.getVegetations());
+		return new Stage_THH1(GHQ.getUnitList(),GHQ.getStructureList(),GHQ.getVegetationList());
 	}
 	//idle
 	private static int gameFrame;
@@ -164,35 +164,28 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 		gameFrame++;
 		//stagePaint
 		//background
-		g2.setColor(new Color(112,173,71));
-		g2.fillRect(0,0,stageW,stageH);
-		//vegetation
-		for(Vegetation ver : GHQ.getVegetationList())
-			ver.paint();
-		//landscape
-		for(Structure ver : GHQ.getStructureList())
-			ver.paint();
-		////////////////
+		g2.setColor(new Color(112, 173, 71));
+		g2.fillRect(0, 0, stageW, stageH);
+		//center point
 		GHQ.drawImageGHQ_center(magicCircleIID, formationCenterX, formationCenterY, (double)GHQ.getNowFrame()/35.0);
 		g2.setColor(Color.RED);
 		g2.fillOval(formationCenterX - 2, formationCenterY - 2, 5, 5);
 		////////////////
 		final int MOUSE_X = GHQ.getMouseX(),MOUSE_Y = GHQ.getMouseY();
-		if(stopEventKind == NONE) {
+		if(stopEventKind == GHQ.NONE) {
 			//gravity
 			if(doGravity) {
-				//<editting>
+				//<editing>
 			}
 			//others
 			switch(nowStage) {
 			case 0:
 				for(int i = 0;i < friends.length;i++)
-					friends[i].teleportTo(formationCenterX + formationsX[i], formationCenterY + formationsY[i]);
+					friends[i].dstPoint.setXY(friends[i].dynam.setXY(formationCenterX + formationsX[i], formationCenterY + formationsY[i]));
 				//enemy
 				for(Unit enemy : GHQ.getUnitList()) {
 					if(!enemy.isAlive())
 						continue;
-					enemy.idle();
 					if(enemy.getName() == "FairyA") {
 						final int FRAME = gameFrame % 240;
 						if(FRAME < 100)
@@ -214,7 +207,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 						//formationCenterX += (double)DX/10.0;formationCenterY += (double)DY/10.0;
 					//}
 					for(int i = 0;i < friends.length;i++)
-						friends[i].teleportTo(formationCenterX + formationsX[i], formationCenterY + formationsY[i]);
+						friends[i].dynam.setXY(formationCenterX + formationsX[i], formationCenterY + formationsY[i]);
 				}
 				//shot
 				for(THH_BasicUnit chara : friends)
@@ -222,7 +215,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 				//spell
 				{
 					int spellUser;
-					while((spellUser = d_numKeyL.pullHasEventKeyNum()) != NONE) {
+					while((spellUser = d_numKeyL.pullHasEventKeyNum()) != GHQ.NONE) {
 						spellUser -= 1;
 						if(spellUser < friends.length)
 							friends[spellUser].spellOrder = true;
@@ -230,9 +223,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 				}
 				break;
 			}
-		}else if(stopEventKind == GHQ.STOP)
-			GHQ.defaultCharaIdle(GHQ.getUnitList());
-		GHQ.defaultEntityIdle();
+		}
 		//focus
 		g2.setColor(new Color(200,120,10,100));
 		g2.setStroke(GHQ.stroke3);
@@ -249,7 +240,7 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 				chara.iconPaint.rectPaint(pos++*90 + 10, GHQ.getScreenH() - 40, 80, 30);
 			GHQ.translateForGUI(false);
 		}
-		if(stopEventKind == NONE || editor.isEnabled()) { //scroll
+		if(stopEventKind == GHQ.NONE || editor.isEnabled()) { //scroll
 			//scroll by keys
 			if(s_keyL.hasEvent(VK_W)) {
 				formationCenterY -= F_MOVE_SPD;
@@ -275,6 +266,8 @@ public class Engine_THH1 extends StageEngine implements MessageSource{
 				GHQ.viewApproach_rate(10);
 			}
 		}
+		//idle
+		GHQ.defaultGHQObjectsIdle();
 	}
 	
 	//control

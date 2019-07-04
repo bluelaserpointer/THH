@@ -1,13 +1,12 @@
 package thhunit;
 
-import action.Action;
-import action.ActionInfo;
 import core.GHQ;
 import geom.Square;
 import item.ItemData;
 import paint.DotPaint;
 import paint.RectPaint;
 import physics.HasDynam;
+import physics.Point;
 import status.StatusWithDefaultValue;
 import storage.ItemStorage;
 import storage.Storage;
@@ -16,7 +15,8 @@ import weapon.Weapon;
 
 public abstract class THH_BasicUnit extends Unit {
 	private static final long serialVersionUID = 6736932836274080528L;
-	public double charaDstX, charaDstY, charaSpeed = 30;
+	public Point.IntPoint dstPoint = new Point.IntPoint();
+	public double charaSpeed = 30;
 	public boolean charaOnLand;
 
 	// Weapon
@@ -66,7 +66,7 @@ public abstract class THH_BasicUnit extends Unit {
 		resetOrder();
 		status.reset();
 		dynam.clear();
-		dynam.setXY(charaDstX = x, charaDstY = y);
+		dstPoint.setXY(dynam.setXY(x, y));
 		charaOnLand = false;
 		slot_spell = 0;
 		for(Weapon ver : weapon) {
@@ -83,7 +83,8 @@ public abstract class THH_BasicUnit extends Unit {
 		spellOrder = dodgeOrder = false;
 	}
 	@Override
-	public void baseIdle() {
+	public void idle() {
+		super.idle();
 		////////////
 		//weapon
 		////////////
@@ -101,70 +102,18 @@ public abstract class THH_BasicUnit extends Unit {
 	public boolean attackOrder, dodgeOrder, spellOrder;
 	@Override
 	public void paint(boolean doAnimation) {
-		final int X = dynam.intX(),Y = dynam.intY();
-		charaPaint.dotPaint(X, Y);
-		GHQ.paintHPArc(X, Y, 20,status.get(HP), status.getDefault(HP));
+		charaPaint.dotPaint(dynam);
+		GHQ.paintHPArc(dynam, 20,status.get(HP), status.getDefault(HP));
 	}
 	protected final void paintMode_magicCircle(DotPaint paintScript) {
-		final int X = dynam.intX(),Y = dynam.intY();
-		paintScript.dotPaint_turn(X, Y, (double)GHQ.getNowFrame()/35.0);
-		charaPaint.dotPaint(X, Y);
+		paintScript.dotPaint_turn(dynam, (double)GHQ.getNowFrame()/35.0);
+		charaPaint.dotPaint(dynam);
 	}
 	
 	// control
-	// move
-	@Override
-	public void moveRel(int x,int y) {
-		charaDstX += x;
-		charaDstY += y;
-	}
-	@Override
-	public void moveTo(int x,int y) {
-		charaDstX = x;
-		charaDstY = y;
-	}
-	@Override
-	public void teleportRel(int x,int y) {
-		dynam.addXY(x, y);
-		charaDstX += x;
-		charaDstY += y;
-	}
-	@Override
-	public void teleportTo(int x,int y) {
-		dynam.setXY(charaDstX = x, charaDstY = y);
-	}
-	private Action actionPlan;
-	private int initialFrame;
-	protected void doActionPlan() {
-		int countedFrame = 0;
-		for(int i = 0;i < actionPlan.frame.length;i++) {
-			final int FRAME = actionPlan.frame[i];
-			if((countedFrame += FRAME) == initialFrame) { //reach planned timing
-				final double X = actionPlan.x[i],
-					Y = actionPlan.y[i];
-				switch(actionPlan.meaning[i]) {
-				case ActionInfo.DST:
-					charaDstX = X;
-					charaDstY = Y;
-					break;
-				case ActionInfo.MOVE:
-					charaDstX = dynam.doubleX() + X;
-					charaDstY = dynam.doubleY() + Y;
-					break;
-				case ActionInfo.ATTACK:
-					setBullet(weaponSlot[slot_weapon],this);
-					break;
-				case ActionInfo.SPEED:
-					dynam.addXY(X,Y);
-					break;
-				}
-			}
-			
-		}
-	}
 	// HP
 	protected final void dodge(double targetX, double targetY) {
-		dynam.addSpeed_DA(40, dynam.angleTo(targetX,targetY));
+		dynam.addSpeed_DA(40, dynam.angleTo(targetX, targetY));
 		charaOnLand = false;
 	}
 
@@ -190,5 +139,5 @@ public abstract class THH_BasicUnit extends Unit {
 	public boolean useWeapon(int kind) {
 		return weapon[kind].trigger(this);
 	}
-	public abstract void setBullet(int kind,HasDynam source);
+	public abstract void setBullet(int kind, HasDynam source);
 }

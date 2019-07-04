@@ -1,7 +1,10 @@
-package core;
+package config;
 
 import java.io.*;
 import java.util.*;
+
+import core.ErrorCounter;
+import core.GHQ;
 
 public class Config implements Serializable{
 
@@ -436,7 +439,7 @@ public class Config implements Serializable{
 	
 	//共用
 	public static final int parseInt2(String str,int defaultValue) {
-		str = GHQ.trim2(str);
+		str = ConfigLoader.trim2(str);
 		if(str == null || str.isEmpty()){
 			return defaultValue;
 		}
@@ -455,7 +458,7 @@ public class Config implements Serializable{
 		}
 	}
 	public static final double parseDouble2(String str,double defaultValue) {
-		str = GHQ.trim2(str);
+		str = ConfigLoader.trim2(str);
 		if(str == null || str.isEmpty()){
 			return defaultValue;
 		}
@@ -474,7 +477,7 @@ public class Config implements Serializable{
 		}
 	}
 	public static final boolean parseBoolean2(String str,boolean defaultValue) {
-		str = GHQ.trim2(str);
+		str = ConfigLoader.trim2(str);
 		if(str == null || str.isEmpty()){
 			return defaultValue;
 		}

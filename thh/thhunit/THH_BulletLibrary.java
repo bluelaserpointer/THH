@@ -158,9 +158,9 @@ public abstract class THH_BulletLibrary extends Bullet{
 			return new NarrowSpark((Unit)SHOOTER);
 		}
 		@Override
-		public boolean idle() {
+		public void idle() {
 			if(defaultDeleteCheck())
-				return false;
+				return;
 			while(dynam.inStage()) {
 				paint();
 				if(!dynamIdle())
@@ -168,7 +168,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 			}
 			dynam.setXY(SHOOTER);
 			dynam.setMoveAngle(SHOOTER.getAngle().angle());
-			return true;
+			return;
 		}
 		@Override
 		public void hitObject() {
@@ -195,12 +195,10 @@ public abstract class THH_BulletLibrary extends Bullet{
 			return new ReuseBomb((Unit)SHOOTER);
 		}
 		@Override
-		public boolean idle() {
-			if(!super.idle())
-				return false;
+		public void idle() {
+			super.idle();
 			if(Math.random() < 0.2)
 				GHQ.addEffect(new THH_EffectLibrary.LightningEF(this));
-			return true;
 		}
 	}
 	/////////////////
@@ -223,13 +221,11 @@ public abstract class THH_BulletLibrary extends Bullet{
 			return new MagicMissile((Unit)SHOOTER);
 		}
 		@Override
-		public boolean idle() {
-			if(!super.idle())
-				return false;
+		public void idle() {
+			super.idle();
 			for(int i = 0;i < 2;i++)
 				GHQ.addEffect(new THH_EffectLibrary.MissileTraceA_EF(this, true));
 			GHQ.addEffect(new THH_EffectLibrary.MissileTraceB_EF(this));
-			return true;
 		}
 		@Override
 		public void hitObject() {

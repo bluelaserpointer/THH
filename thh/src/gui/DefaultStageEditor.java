@@ -6,9 +6,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Collection;
 
 import core.GHQ;
+import core.GHQObject;
+import core.GHQObjectList;
 import core.HasBoundingBox;
 import input.SingleKeyListener;
 import paint.ColorFilling;
@@ -16,8 +18,6 @@ import paint.ColorFraming;
 import paint.ImageFrame;
 import paint.RectPaint;
 import physics.Dynam;
-import structure.Structure;
-import structure.StructureScript;
 import structure.Terrain;
 import structure.Tile;
 import unit.DummyUnit;
@@ -30,38 +30,9 @@ import vegetation.Vegetation;
  * @since alpha1.0
  */
 public class DefaultStageEditor extends GUIGroup{
-	private static ArrayList<StructureScript<Tile>> tileScripts = new ArrayList<StructureScript<Tile>>();
-	private static ArrayList<StructureScript<Terrain>> terrainScripts = new ArrayList<StructureScript<Terrain>>();
-	//private static ArrayList<StructureScript<Terrain>> unitScripts = new ArrayList<StructureScript<Terrain>>();
+	private final GHQObjectList<Tile> tileScripts = new GHQObjectList<Tile>();
+	private final GHQObjectList<Terrain> terrainScripts = new GHQObjectList<Terrain>();
 	
-	static {
-		//tileScripts
-		tileScripts.add(new StructureScript<Tile>() {
-			private static final long serialVersionUID = -1082801436030177586L;
-			@Override
-			public String getName() {
-				return "WHITE_WALL";
-			}
-			@Override
-			public void paint(Tile tile,boolean doAnimation) {
-				tile.fill(Color.WHITE);
-				tile.draw(Color.LIGHT_GRAY, GHQ.stroke3);
-			}
-		});
-		//terrainScripts
-		terrainScripts.add(new StructureScript<Terrain>() {
-			private static final long serialVersionUID = -1082801436030177586L;
-			@Override
-			public String getName() {
-				return "WHITE_WALL";
-			}
-			@Override
-			public void paint(Terrain terrain,boolean doAnimation) {
-				terrain.fill(Color.WHITE);
-				terrain.draw(Color.LIGHT_GRAY, GHQ.stroke3);
-			}
-		});
-	}
 	//input
 	private static final int inputKeys[] = 
 	{
@@ -74,7 +45,6 @@ public class DefaultStageEditor extends GUIGroup{
 	};
 	private static final SingleKeyListener keyListener = new SingleKeyListener(inputKeys);
 	private static int nowSlot = 0,slot_max = 1;
-	//private static final int arrowIID = GHQ.loadImage("gui_editor/arrow.png");
 	
 	private static int placeX,placeY;
 	
@@ -108,11 +78,11 @@ public class DefaultStageEditor extends GUIGroup{
 					//guide
 					switch(CB_placeKind.getSelection()) {
 					case POINTING:
-						mouseOveredObject = GHQ.getMouseOverUnit();
+						mouseOveredObject = GHQ.getUnitList().forMouseOver();
 						if(mouseOveredObject == null)
-							mouseOveredObject = GHQ.getMouseOverVegetation();
+							mouseOveredObject = GHQ.getVegetationList().forMouseOver();
 						if(mouseOveredObject == null)
-							mouseOveredObject = GHQ.getMouseOverStructure();
+							mouseOveredObject = GHQ.getStructureList().forMouseOver();
 						if(mouseOveredObject != null && mouseOveredObject != selectObject) {
 							final Rectangle2D RECT = mouseOveredObject.getBoundingBox();
 							G2.setColor(Color.WHITE);
@@ -134,37 +104,21 @@ public class DefaultStageEditor extends GUIGroup{
 							}
 							//delete
 							if(!configLabel.activated && keyListener.pullEvent(VK_DELETE)) {
-								if(selectObject instanceof Unit)
-									GHQ.deleteUnit((Unit)selectObject);
-								else if(selectObject instanceof Structure)
-									GHQ.deleteStructure((Structure)selectObject);
-								else if(selectObject instanceof Vegetation)
-									GHQ.deleteVegetation((Vegetation)selectObject);
+								if(selectObject instanceof GHQObject) {
+									((GHQObject)selectObject).forceDelete();
+								}else
+									System.out.println("detected undeletable object.");
 								selectObject = null;
 								break;
 							}
-							//script install / name change
-							scriptInstall:{
-								if(selectObject instanceof Tile) {
-									for(StructureScript<Tile> script : tileScripts) {
-										if(configLabel.textEquals(script.getName())) {
-											((Tile)selectObject).setScript(script);
-											break scriptInstall;
-										}
-									}
-									((Tile)selectObject).setScript(new StructureScript<Tile>());
-								}else if(selectObject instanceof Terrain) {
-									for(StructureScript<Terrain> script : terrainScripts) {
-										if(configLabel.textEquals(script.getName())) {
-											((Terrain)selectObject).setScript(script);
-											break scriptInstall;
-										}
-									}
-									((Terrain)selectObject).setScript(new StructureScript<Terrain>());
-								}else if(selectObject instanceof Unit) {
-									((Unit)selectObject).originalName = configLabel.getText();
-								}
-							}
+							/*//script install / name change
+							if(selectObject instanceof Tile) {
+								selectObject = tileScripts.forName(configLabel.getText());
+							}else if(selectObject instanceof Terrain) {
+								selectObject = terrainScripts.forName(configLabel.getText());
+							}else if(selectObject instanceof Unit) {
+								((Unit)selectObject).originalName = configLabel.getText();
+							}*/
 							//draw selection guide
 							final Rectangle2D RECT = selectObject.getBoundingBox();
 							RECT.setRect(RECT.getX(),RECT.getY(),RECT.getWidth() + 4,RECT.getHeight() + 4);
@@ -193,10 +147,10 @@ public class DefaultStageEditor extends GUIGroup{
 					keyListener.enable();
 					final String labelText;
 					if(selectObject instanceof Tile) {
-						labelText = ((Tile)selectObject).script.getName();
+						labelText = ((Tile)selectObject).getName();
 						configLabel.setTitle("script:");
 					}else if(selectObject instanceof Terrain) {
-						labelText = ((Terrain)selectObject).script.getName();
+						labelText = ((Terrain)selectObject).getName();
 						configLabel.setTitle("script:");
 					}else if(selectObject instanceof Unit) {
 						labelText = ((Unit)selectObject).originalName;
@@ -219,7 +173,7 @@ public class DefaultStageEditor extends GUIGroup{
 						break;
 					case TILES:
 						if(Tile.blueprint_hasOriginPoint())
-							GHQ.addStructure(Tile.blueprint_addEndPointAndFlush(placeX, placeY));
+							GHQ.addStructure(Tile.blueprint_addEndPointAndFlush(GHQ.getMouseX(), GHQ.getMouseY()));
 						else
 							Tile.blueprint_addOriginPoint(placeX, placeY);
 						break;
@@ -273,10 +227,7 @@ public class DefaultStageEditor extends GUIGroup{
 			G2.drawOval(SX*N - S/2, SY*N - S/2, S, S);
 			placeX = SX*N;
 			placeY = SY*N;
-		}/*else {
-			placeX = GHQ.getMouseX();
-			placeY = GHQ.getMouseY();
-		}*/
+		}
 		//originalName display
 		G2.setColor(Color.GRAY);
 		G2.setFont(GHQ.basicFont.deriveFont(20.0f));
@@ -291,11 +242,11 @@ public class DefaultStageEditor extends GUIGroup{
 	}
 	
 	//control
-	public static void addTileScript(StructureScript<Tile> script) {
-		tileScripts.add(script);
+	public void addTileScript(Collection<Tile> script) {
+		tileScripts.addAll(script);
 	}
-	public static void addTerrainScript(StructureScript<Terrain> script) {
-		terrainScripts.add(script);
+	public void addTerrainScript(Collection<Terrain> script) {
+		terrainScripts.addAll(script);
 	}
 	@Override
 	public void enable() {

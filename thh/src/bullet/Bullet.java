@@ -2,7 +2,6 @@ package bullet;
 
 import static java.lang.Math.PI;
 
-import core.Deletable;
 import core.Entity;
 import core.GHQ;
 import core.HitInteractable;
@@ -22,17 +21,11 @@ import weapon.Weapon;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Bullet extends Entity implements HitInteractable, HasDotPaint, Deletable{
-	public final int UNIQUE_ID;
-	public static int nowMaxUniqueID = -1;
-	
-	private int idleExecuted = 0;
-
+public class Bullet extends Entity implements HitInteractable, HasDotPaint{
 	public final Weapon ORIGIN_WEAPON;
 	public final HasAnglePoint SHOOTER; //an information source of user
 	public final Standpoint STANDPOINT;
 	public HitShape hitShape;
-	private boolean isDeleted;
 	
 	public String name;
 	public int
@@ -49,7 +42,6 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint, Dele
 		paintScript;
 	public Bullet(Weapon originWeapon, HasAnglePoint shooter, Standpoint standpoint) {
 		dynam.setXYAngle(shooter);
-		UNIQUE_ID = ++nowMaxUniqueID;
 		ORIGIN_WEAPON = originWeapon;
 		SHOOTER = shooter;
 		name = GHQ.NOT_NAMED;
@@ -65,7 +57,6 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint, Dele
 	}
 	public Bullet(Bullet bullet) {
 		dynam.setAll(bullet);
-		UNIQUE_ID = ++nowMaxUniqueID;
 		ORIGIN_WEAPON = bullet.ORIGIN_WEAPON;
 		SHOOTER = bullet.SHOOTER;
 		name = bullet.name;
@@ -81,16 +72,12 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint, Dele
 	}
 	
 	@Override
-	public boolean idle() {
-		return defaultIdle();
-	}
-	public final boolean defaultIdle() {
+	public void idle() {
 		if(defaultDeleteCheck())
-			return false;
+			return;
 		if(!dynamIdle())
-			return false;
+			return;
 		paint();
-		return true;
 	}
 	public final boolean defaultDeleteCheck() {
 		if(checkIsOutofLifeSpan())
@@ -117,15 +104,15 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint, Dele
 		return !dynam.inStage();
 	}
 	public boolean outOfLifeSpan() {
-		delete();
+		claimDelete();
 		return true;
 	}
 	public boolean outOfRange() {
-		delete();
+		claimDelete();
 		return true;
 	}
 	public boolean outOfStage() {
-		delete();
+		claimDelete();
 		return true;
 	}
 	public final boolean dynamIdle() {
@@ -160,10 +147,10 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint, Dele
 		dynam.addSpeed(accel,true);
 		return true;
 	}
-	public void paint() {
+	@Override
+	public void paint(boolean doAnimation) {
 		defaultPaint();
 	}
-	@Override
 	public final void defaultPaint() {
 		paintScript.dotPaint_turn(dynam, dynam.moveAngle());
 	}
@@ -199,17 +186,10 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint, Dele
 		return false;
 	}
 	public boolean outOfPenetration() {
-		GHQ.deleteBullet(this);
+		claimDelete();
 		return true;
 	}
 	public void hitObject() {
-	}
-	public void beforeDelete() {
-		isDeleted = true;
-	}
-	@Override
-	public final void delete() {
-		GHQ.deleteBullet(this);
 	}
 	
 	//////////////
@@ -283,9 +263,6 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint, Dele
 	public int getPassedFrame() {
 		return GHQ.getPassedFrame(INITIAL_FRAME);
 	}
-	public final int getIdleCount() {
-		return idleExecuted;
-	}
 	public final int getPenetration() {
 		return penetration;
 	}
@@ -305,11 +282,11 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint, Dele
 		return paintScript;
 	}
 	@Override
-	public final boolean isDeleted() {
-		return isDeleted;
-	}
-	@Override
 	public Dynam def_dynam() {
 		return new DstCntDynam();
+	}
+	@Override
+	public String getName() {
+		return "[Bullet]" + name;
 	}
 }

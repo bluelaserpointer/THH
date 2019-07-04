@@ -27,30 +27,6 @@ public class DummyUnit extends Unit{
 	}
 
 	@Override
-	public void moveRel(int dx, int dy) {
-		
-		
-	}
-
-	@Override
-	public void moveTo(int x, int y) {
-		
-		
-	}
-
-	@Override
-	public void teleportRel(int dx, int dy) {
-		
-		
-	}
-
-	@Override
-	public void teleportTo(int x, int y) {
-		
-		
-	}
-
-	@Override
 	public int damage_amount(int damage) {
 		
 		return 0;
@@ -60,5 +36,10 @@ public class DummyUnit extends Unit{
 	public boolean isAlive() {
 		
 		return true;
+	}
+	
+	@Override
+	public String getName() {
+		return "DummyUnit";
 	}
 }

@@ -3,8 +3,7 @@ package structure;
 import java.awt.geom.Line2D;
 import java.io.Serializable;
 
-import core.Deletable;
-import core.GHQ;
+import core.GHQObject;
 import core.HasBoundingBox;
 import core.HasStandpoint;
 import core.Standpoint;
@@ -16,47 +15,10 @@ import physics.HasDynam;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Structure implements Serializable, HasBoundingBox, HasStandpoint, Deletable{
+public abstract class Structure extends GHQObject implements Serializable, HasBoundingBox, HasStandpoint{
 	private static final long serialVersionUID = -641218813005671688L;
-	public final int UNIQUE_ID;
-	public static int nowMaxUniqueID = -1;
-	protected final int
-		NONE = GHQ.NONE;
 	
-	public final Standpoint standpoint = Standpoint.NULL_STANDPOINT;
-	private boolean isDeleted;
-	
-	//init
-	public Structure(int initialStandpoint) {
-		//standpoint = new Standpoint(initialStandpoint);
-		UNIQUE_ID = ++nowMaxUniqueID;
-	}
-	public Structure() {
-		//standpoint = Standpoint.NULL_STANDPOINT;
-		UNIQUE_ID = ++nowMaxUniqueID;
-	}
-	
-	//main role
-	public boolean defaultIdle() {
-		return true;
-	}
-	public abstract void defaultPaint();
-	public void activeCons() {};
-	public void passiveCons() {};
-	public void dynam() {};
-	public abstract void paint(boolean doAnimation);
-	public final void paint() {
-		paint(true);
-	}
-	
-	//control
-	public void beforeDelete() {
-		isDeleted = true;
-	}
-	@Override
-	public void delete() {
-		GHQ.deleteStructure(this);
-	}
+	public Standpoint standpoint = Standpoint.NULL_STANDPOINT;
 	
 	//information
 	public abstract boolean contains(int x,int y,int w,int h);
@@ -82,9 +44,4 @@ public abstract class Structure implements Serializable, HasBoundingBox, HasStan
 	public boolean isFriend(HasStandpoint target) {
 		return Standpoint.NULL_STANDPOINT.isFriend(target.getStandpoint());
 	}
-	@Override
-	public final boolean isDeleted() {
-		return isDeleted;
-	}
-	
 }

@@ -30,7 +30,8 @@ public class Fairy extends THH_BasicEnemy{
 		weapon[0] = EnemyWeaponLibrary.getWeaponController(EnemyWeaponLibrary.lightBall_S);
 	}
 	@Override
-	public void extendIdle() {
+	public void idle() {
+		super.idle();
 		final Unit targetEnemy = GHQ.getNearstVisibleEnemy(this);
 		if(targetEnemy != null && weapon[0].trigger(this))
 			EnemyWeaponLibrary.inputBulletInfo(this,EnemyWeaponLibrary.lightBall_ROUND,bulletPaint[0],targetEnemy);

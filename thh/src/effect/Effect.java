@@ -2,7 +2,6 @@ package effect;
 
 import static java.lang.Math.PI;
 
-import core.Deletable;
 import core.Entity;
 import core.GHQ;
 import paint.DotPaint;
@@ -16,12 +15,11 @@ import physics.HasDynam;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Effect extends Entity implements HasDotPaint, Deletable{
+public class Effect extends Entity implements HasDotPaint{
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;
 
 	public final HasDynam SHOOTER;
-	private boolean isDeleted = false;
 	public String
 		name;
 	public int
@@ -63,29 +61,25 @@ public class Effect extends Entity implements HasDotPaint, Deletable{
 	}
 
 	@Override
-	public boolean idle() {
-		return defaultIdle();
-	}
-	public final boolean defaultIdle() {
+	public void idle() {
 		//LifeSpan & Range
 		if(isOutOfLifeSpan() && outOfLifeSpanProcess())
-			return false;
+			return;
 		if(isOutOfRange() && outOfRangeProcess())
-			return false;
+			return;
 		//OutOfStage
 		if(isOutOfRange() && outOfStageProcess())
-			return false;
+			return;
 		//Speed & Acceleration
 		dynam.move();
 		dynam.addSpeed(accel,true);
 		//Paint
 		paint();
-		return true;
-	}
-	public void paint() {
-		defaultPaint();
 	}
 	@Override
+	public void paint(boolean doAnimation) {
+		defaultPaint();
+	}
 	public final void defaultPaint() {
 		paintScript.dotPaint_turn(dynam, dynam.moveAngle());
 	}
@@ -101,23 +95,16 @@ public class Effect extends Entity implements HasDotPaint, Deletable{
 		return !dynam.inStage();
 	}
 	public boolean outOfLifeSpanProcess() {
-		delete();
+		claimDelete();
 		return true;
 	}
 	public boolean outOfRangeProcess() {
-		delete();
+		claimDelete();
 		return true;
 	}
 	public boolean outOfStageProcess() {
-		delete();
+		claimDelete();
 		return true;
-	}
-	public void beforeDelete() {
-		isDeleted = true;
-	}
-	@Override
-	public final void delete() {
-		GHQ.deleteEffect(this);
 	}
 	
 	//tool
@@ -196,11 +183,11 @@ public class Effect extends Entity implements HasDotPaint, Deletable{
 		return paintScript;
 	}
 	@Override
-	public final boolean isDeleted() {
-		return isDeleted;
-	}
-	@Override
 	public Dynam def_dynam() {
 		return new DstCntDynam();
+	}
+	@Override
+	public String getName() {
+		return "[Effect]" + name;
 	}
 }

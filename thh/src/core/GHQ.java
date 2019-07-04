@@ -14,6 +14,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.event.*;
 import java.awt.image.*;
 import java.awt.geom.*;
@@ -24,6 +25,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 import bullet.Bullet;
+import config.ConfigLoader;
 import effect.Effect;
 import engine.Engine_THH1;
 import gui.GUIParts;
@@ -34,9 +36,9 @@ import input.MouseListenerEx;
 import item.ItemData;
 import physics.Dynam;
 import physics.HasDynam;
+import physics.HasPoint;
 import physics.Point;
 import structure.Structure;
-import stage.StageEngine;
 import unit.Unit;
 import vegetation.DropItem;
 import vegetation.Vegetation;
@@ -47,7 +49,7 @@ import vegetation.Vegetation;
  * @version alpha1.0
  */
 
-public final class GHQ extends JPanel implements MouseListener,MouseMotionListener,MouseWheelListener,KeyListener,Runnable{
+public final class GHQ extends JPanel implements MouseListener,MouseMotionListener,MouseWheelListener,KeyListener, Runnable{
 	private static final long serialVersionUID = 123412351L;
 
 	/**
@@ -92,37 +94,29 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	//stopEvent
 	private static int stopEventKind = NONE;
 	public static final int STOP = 0;
-	public static boolean messageStop,spellStop;
+	public static boolean messageStop, spellStop;
 	
 	//screen
-	private final int defaultScreenW = 1000,defaultScreenH = 600;
-	private static int screenW = 1000,screenH = 600;
-	private static double viewX,viewY,viewDstX,viewDstY;
+	private final int defaultScreenW = 1000, defaultScreenH = 600;
+	private static int screenW = 1000, screenH = 600;
+	private static double viewX, viewY, viewDstX, viewDstY;
 	
 	//frame
 	private static int systemFrame;
 	private static int gameFrame;
 	
 	//stage
-	private static StageEngine engine;
+	private static Game engine;
 
-	//unit data
-	private static final ArrayListEx<Unit> units = new ArrayListEx<Unit>();
-	
-	//bullet data
-	private static final ArrayListEx<Bullet> bullets = new ArrayListEx<Bullet>();
-	
-	//effect data
-	private static final ArrayListEx<Effect> effects = new ArrayListEx<Effect>();
-	
-	//structure data
-	private static final ArrayListEx<Structure> structures = new ArrayListEx<Structure>();
-	
-	//vegetation data
-	private static final ArrayList<Vegetation> vegetations = new ArrayList<Vegetation>();
+	//stage object data
+	private static final GHQObjectList<Unit> units = new GHQObjectList<Unit>();
+	private static final GHQObjectList<Bullet> bullets = new GHQObjectList<Bullet>();
+	private static final GHQObjectList<Effect> effects = new GHQObjectList<Effect>();
+	private static final GHQObjectList<Structure> structures = new GHQObjectList<Structure>();
+	private static final GHQObjectList<Vegetation> vegetations = new GHQObjectList<Vegetation>();
 	
 	//GUI data
-	private static final ArrayList<GUIParts> guiParts = new ArrayList<GUIParts>();
+	private static final LinkedList<GUIParts> guiParts = new LinkedList<GUIParts>();
 	
 	//event data
 	private static final ArrayDeque<String> messageStr = new ArrayDeque<String>();
@@ -139,12 +133,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private static int arraySound_maxID = -1;
 	
 	//Initialize methods/////////////
-	public static StageEngine loadEngine(String fileURL) {
-		StageEngine result = null;
+	public static Game loadEngine(String fileURL) {
+		Game result = null;
 		try{
 			final Object obj = Class.forName(fileURL).newInstance(); //インスタンスを生成
-			if(obj instanceof StageEngine)
-				result =  (StageEngine)obj; //インスタンスを保存
+			if(obj instanceof Game)
+				result =  (Game)obj; //インスタンスを保存
 		}catch(ClassNotFoundException | InstantiationException | IllegalAccessException e){
 			System.out.println(e);
 			result = new Engine_THH1();
@@ -153,22 +147,30 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	private boolean loadComplete;
-	private final JFrame myFrame;
 	private final MediaTracker tracker;
-	public GHQ(StageEngine engine){
+	public GHQ(Game engine){
+		final long loadTime = System.currentTimeMillis();
 		GHQ.engine = engine;
 		hq = this;
-		final long loadTime = System.currentTimeMillis();
 		//window setup
-		myFrame = new JFrame(engine.getTitleName());
+		final JFrame myFrame = new JFrame(engine.getTitleName());
 		myFrame.add(this,BorderLayout.CENTER);
-		myFrame.addWindowListener(new MyWindowAdapter());
+		myFrame.addWindowListener(new WindowAdapter(){
+			@Override
+			public void windowClosing(WindowEvent e){
+				System.exit(0);
+			}
+			@Override
+			public void windowDeactivated(WindowEvent e){
+				freezeScreen = true;
+			}
+		});
 		addMouseMotionListener(this);
 		addMouseListener(this);
 		addMouseWheelListener(this);
 		myFrame.addKeyListener(this);
 		myFrame.setBackground(Color.BLACK);
-		myFrame.setBounds(120,80,1006,628);
+		myFrame.setBounds(120, 80, 1006, 628);
 		myFrame.setResizable(false);
 		myFrame.setVisible(true);
 		myFrame.setFocusTraversalKeysEnabled(false);
@@ -184,7 +186,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}catch(InterruptedException | NullPointerException e){}
 		//font
 		basicFont = createFont("font/upcibi.ttf").deriveFont(25.0f);
-		commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN,15.0f);
+		commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN, 15.0f);
 		System.out.println("loadTimeReslut: " + (System.currentTimeMillis() - loadTime));
 		new Thread(this).start();
 		loadComplete = true;
@@ -210,275 +212,193 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		//}
 	}
 	
-	private final BufferedImage offImage = new BufferedImage(defaultScreenW,defaultScreenH,BufferedImage.TYPE_INT_ARGB_PRE); //ダブルバッファキャンバス
-	private Graphics2D g2;
-	public static Font basicFont,commentFont;
-	public static final BasicStroke stroke1 = new BasicStroke(1f),stroke3 = new BasicStroke(3f),stroke5 = new BasicStroke(5f);
-	private static final Color HPWarningColor = new Color(255,120,120),debugTextColor = new Color(200,200,200,160);
+	private final BufferedImage offImage = new BufferedImage(defaultScreenW, defaultScreenH, BufferedImage.TYPE_INT_ARGB_PRE); //ダブルバッファキャンバス
+	private static Graphics2D g2;
+	public static Font basicFont, commentFont;
+	public static final BasicStroke stroke1 = new BasicStroke(1f), stroke3 = new BasicStroke(3f), stroke5 = new BasicStroke(5f);
+	private static final Color HPWarningColor = new Color(255,120,120), debugTextColor = new Color(200, 200, 200);
 	public static final DecimalFormat DF00_00 = new DecimalFormat("00.00");
-	private final Rectangle2D screenRect = new Rectangle2D.Double(0,0,defaultScreenW,defaultScreenH);
+	private final Rectangle2D screenRect = new Rectangle2D.Double(0, 0, defaultScreenW, defaultScreenH);
 	
 	public void paintComponent(Graphics g){
-		final long LOAD_TIME_PAINTCOMPONENT = System.currentTimeMillis();
-		final int MOUSE_X = GHQ.mouseX,MOUSE_Y = GHQ.mouseY;
+		final long LOAD_TIME_PAINT_COMPONENT = System.currentTimeMillis();
 		super.paintComponent(g);
 		if(g2 == null){
 			g2 = offImage.createGraphics();
-			g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
-			g2.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,RenderingHints.VALUE_COLOR_RENDER_SPEED);
-			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-			g2.setRenderingHint(RenderingHints.KEY_RENDERING,RenderingHints.VALUE_RENDER_SPEED);
+			g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
+			g2.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
+			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+			g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 		}
 		if(!loadComplete)
 			return;
 		g2.setColor(Color.WHITE);
 		g2.fill(screenRect);
-		final double TRANSLATE_X_double = viewX,TRANSLATE_Y_double = viewY;
-		final int TRANSLATE_X = (int)TRANSLATE_X_double,TRANSLATE_Y = (int)TRANSLATE_Y_double;
-		g2.translate(TRANSLATE_X_double, TRANSLATE_Y_double);
+		final int TRANSLATE_X = (int)viewX,TRANSLATE_Y = (int)viewY;
+		g2.translate(TRANSLATE_X, TRANSLATE_Y);
 		////////////////////////////////////////////////////////////////////////
-		//stageIdle
-		engine.idle(g2,stopEventKind);
+		//gameIdle
+		engine.idle(g2, stopEventKind);
 		////////////////////////////////////////////////////////////////////////
 		//GUIIdle
-		g2.translate(-TRANSLATE_X_double, -TRANSLATE_Y_double);
-		g2.setFont(basicFont);
-		g2.setStroke(stroke5);
-		{
-			//gui parts////////////////////
-			for(GUIParts parts : guiParts)
-				parts.defaultIdle();
-			//message system///////////////
-			if(messageStop) {
-				if(messageStr.size() > 0) {
-					if(messageIterator > messageStr.getFirst().length() - 1){
-						if(key_enter) { //next message order
-							messageStr.remove();
-							final int EVENT = messageEvent.remove();
-							if(EVENT != NONE)
-								messageSource.remove().eventNotice(EVENT);
-							messageIterator = 0;
-							key_enter = false;
-						}
-					}else if(key_enter) {
-						messageIterator = messageStr.getFirst().length();
+		g2.translate(-TRANSLATE_X, -TRANSLATE_Y);
+		//gui parts////////////////////
+		for(GUIParts parts : guiParts)
+			parts.defaultIdle();
+		//message system///////////////
+		if(messageStop) {
+			if(messageStr.size() > 0) {
+				if(messageIterator > messageStr.getFirst().length() - 1){
+					if(key_enter) { //next message order
+						messageStr.remove();
+						final int EVENT = messageEvent.remove();
+						if(EVENT != NONE)
+							messageSource.remove().eventNotice(EVENT);
+						messageIterator = 0;
 						key_enter = false;
-					}else if(systemFrame % 2 == 0) //reading
-						messageIterator++;
-					//show message
-					if(messageStr.size() > 0) {
-						g2.setFont(basicFont);
-						g2.setStroke(stroke5);
-						g2.setColor(Color.CYAN);
-						g2.drawString(messageStr.getFirst().substring(0, messageIterator), 150, 450);
 					}
-				}else { //finished reading
-					stopEventKind = NONE;
-					messageStop = false;
-					messageIterator = 0;
-					messageStr.clear();
-					messageSource.clear();
-					messageEvent.clear();
-				}
-			}
-			//debug ////////////////////////
-			if(debugMode){
-				//grid
-				g2.setColor(debugTextColor);
-				g2.setFont(basicFont);
-				g2.setStroke(stroke1);
-				for(int i = 100;i < defaultScreenW;i += 100)
-					g2.drawLine(i,0,i,defaultScreenH);
-				for(int i = 100;i < defaultScreenH;i += 100)
-					g2.drawLine(0,i,defaultScreenW,i);
-				//Origin
-				g2.setColor(debugTextColor);
-				g2.setStroke(stroke1);
-				g2.drawOval(TRANSLATE_X - 35, TRANSLATE_Y - 35, 70, 70);
-				g2.drawOval(TRANSLATE_X - 25, TRANSLATE_Y - 25, 50, 50);
-				g2.drawOval(TRANSLATE_X - 15, TRANSLATE_Y - 15, 30, 30);
-				//stageEdge
-				g2.setStroke(stroke3);
-				final int STAGE_W = engine.getStageW(),STAGE_H = engine.getStageH();
-				{ //LXRX lines
-					final int LX = TRANSLATE_X,RX = TRANSLATE_X + STAGE_W;
-					for(int i = 0;i < 50;i++) {
-						final int Y = TRANSLATE_Y + STAGE_H*i/50;
-						g2.drawLine(LX - 20, Y - 20,LX + 20, Y + 20);
-						g2.drawLine(RX - 20, Y - 20,RX + 20, Y + 20);
-					}
-				}
-				{ //LYRY lines
-					final int LY = TRANSLATE_Y,RY = TRANSLATE_Y + STAGE_H;
-					for(int i = 0;i < 50;i++) {
-						final int X = TRANSLATE_X + STAGE_W*i/50;
-						g2.drawLine(X - 20, LY - 20, X + 20, LY + 20);
-						g2.drawLine(X - 20, RY - 20, X + 20, RY + 20);
-					}
-				}
-				//entityInfo
-				g2.drawString("Unit:" + units.size() + " EF:" + effects.size() + " B:" + bullets.size(),30,100);
-				g2.drawString("LoadTime(ms):" + loadTime_total,30,120);
-				//g2.drawString("EM:" + loadTime_enemy + " ET:" + loadTime_entity + " G:" + loadTime_gimmick + " EF:" + loadTime_effect + " B:" + loadTime_bullet + " I:" + loadTime_item + " W: " + loadTime_weapon + " Other: " + loadTime_other,30,140);
-				g2.drawString("GameTime(ms):" + gameFrame,30,160);
-				//mouseInfo
-				g2.setColor(debugTextColor);
-				g2.setStroke(stroke5);
-				g2.drawString((int)MOUSE_X + "," + (int)MOUSE_Y,MOUSE_X + 20,MOUSE_Y + 20);
-				g2.setStroke(stroke1);
-				g2.drawLine(MOUSE_X - 15, MOUSE_Y, MOUSE_X + 15, MOUSE_Y);
-				g2.drawLine(MOUSE_X, MOUSE_Y - 15, MOUSE_X, MOUSE_Y + 15);
-				g2.setStroke(stroke5);
-				g2.drawString("(" + (MOUSE_X - (int)viewX) + "," + (MOUSE_Y - (int)viewY) + ")",MOUSE_X + 20,MOUSE_Y + 40);
-				//unitInfo
-				for(Unit unit : units) {
-					final int RECT_X = unit.getDynam().intX() + (int)viewX,RECT_Y = unit.getDynam().intY() + (int)viewY;
-					g2.setStroke(stroke1);
-					g2.drawRect(RECT_X - 50, RECT_Y - 50, 100,100);
-					g2.drawLine(RECT_X + 50, RECT_Y - 50, RECT_X + 60, RECT_Y - 60);
+				}else if(key_enter) {
+					messageIterator = messageStr.getFirst().length();
+					key_enter = false;
+				}else if(systemFrame % 2 == 0) //reading
+					messageIterator++;
+				//show message
+				if(messageStr.size() > 0) {
+					g2.setFont(basicFont);
 					g2.setStroke(stroke5);
-					g2.drawString(unit.getName(), RECT_X + 62, RECT_Y - 68);
+					g2.setColor(Color.CYAN);
+					g2.drawString(messageStr.getFirst().substring(0, messageIterator), 150, 450);
 				}
+			}else { //finished reading
+				stopEventKind = NONE;
+				messageStop = false;
+				messageIterator = 0;
+				messageStr.clear();
+				messageSource.clear();
+				messageEvent.clear();
 			}
 		}
-		g.drawImage(offImage,0,0,screenW,screenH,this);
-		loadTime_total = System.currentTimeMillis() - LOAD_TIME_PAINTCOMPONENT;
+		//debug ////////////////////////
+		if(debugMode){
+			//grid
+			g2.setColor(debugTextColor);
+			g2.setFont(basicFont);
+			g2.setStroke(stroke1);
+			for(int i = 100;i < defaultScreenW;i += 100)
+				g2.drawLine(i, 0, i, defaultScreenH);
+			for(int i = 100;i < defaultScreenH;i += 100)
+				g2.drawLine(0, i, defaultScreenW, i);
+			//Origin
+			g2.setColor(debugTextColor);
+			g2.setStroke(stroke1);
+			g2.drawOval(TRANSLATE_X - 35, TRANSLATE_Y - 35, 70, 70);
+			g2.drawOval(TRANSLATE_X - 25, TRANSLATE_Y - 25, 50, 50);
+			g2.drawOval(TRANSLATE_X - 15, TRANSLATE_Y - 15, 30, 30);
+			//stageEdge
+			g2.setStroke(stroke3);
+			final int STAGE_W = engine.getStageW(), STAGE_H = engine.getStageH();
+			{ //LXRX lines
+				final int LX = TRANSLATE_X, RX = TRANSLATE_X + STAGE_W;
+				for(int i = 0;i < 50;i++) {
+					final int Y = TRANSLATE_Y + STAGE_H*i/50;
+					g2.drawLine(LX - 20, Y - 20, LX + 20, Y + 20);
+					g2.drawLine(RX - 20, Y - 20, RX + 20, Y + 20);
+				}
+			}
+			{ //LYRY lines
+				final int LY = TRANSLATE_Y, RY = TRANSLATE_Y + STAGE_H;
+				for(int i = 0;i < 50;i++) {
+					final int X = TRANSLATE_X + STAGE_W*i/50;
+					g2.drawLine(X - 20, LY - 20, X + 20, LY + 20);
+					g2.drawLine(X - 20, RY - 20, X + 20, RY + 20);
+				}
+			}
+			//entityInfo
+			g2.drawString("Unit:" + units.size() + " EF:" + effects.size() + " B:" + bullets.size(), 30, 100);
+			g2.drawString("LoadTime(ms):" + loadTime_total, 30, 120);
+			//g2.drawString("EM:" + loadTime_enemy + " ET:" + loadTime_entity + " G:" + loadTime_gimmick + " EF:" + loadTime_effect + " B:" + loadTime_bullet + " I:" + loadTime_item + " W: " + loadTime_weapon + " Other: " + loadTime_other,30,140);
+			g2.drawString("GameTime(ms):" + gameFrame, 30, 160);
+			//mouseInfo
+			g2.setColor(debugTextColor);
+			g2.setStroke(stroke5);
+			final int MOUSE_X = GHQ.mouseX, MOUSE_Y = GHQ.mouseY;
+			g2.drawString((int)MOUSE_X + "," + (int)MOUSE_Y, MOUSE_X + 20, MOUSE_Y + 20);
+			g2.setStroke(stroke1);
+			g2.drawLine(MOUSE_X - 15, MOUSE_Y, MOUSE_X + 15, MOUSE_Y);
+			g2.drawLine(MOUSE_X, MOUSE_Y - 15, MOUSE_X, MOUSE_Y + 15);
+			g2.setStroke(stroke5);
+			g2.drawString("(" + (MOUSE_X - (int)viewX) + "," + (MOUSE_Y - (int)viewY) + ")", MOUSE_X + 20, MOUSE_Y + 40);
+			//unitInfo
+			for(Unit unit : units) {
+				final int RECT_X = unit.getDynam().intX() + (int)viewX, RECT_Y = unit.getDynam().intY() + (int)viewY;
+				g2.setStroke(stroke1);
+				g2.drawRect(RECT_X - 50, RECT_Y - 50, 100, 100);
+				g2.drawLine(RECT_X + 50, RECT_Y - 50, RECT_X + 60, RECT_Y - 60);
+				g2.setStroke(stroke5);
+				g2.drawString(unit.getName(), RECT_X + 62, RECT_Y - 68);
+			}
+		}
+		g.drawImage(offImage, 0, 0, screenW, screenH, this);
+		loadTime_total = System.currentTimeMillis() - LOAD_TIME_PAINT_COMPONENT;
 	}
 	/**
 	 * A class helps {@link Bullet} or other objects to detect touching enemies.
 	 * @param bullet
 	 * @return
 	 */
-	public static final Unit[] getHitUnits(HitInteractable object) {
-		return getHitUnits(getUnits_standpoint(object,false),object);
-	}
-	public static final Unit[] getHitUnits(Unit[] units,HitInteractable object) {
-		final Unit[] result = new Unit[units.length];
-		int searched = 0;
+	public static final ArrayList<Unit> getHitUnits(ArrayList<Unit> units,HitInteractable object) {
+		final ArrayList<Unit> result = new ArrayList<Unit>();
 		for(Unit unit : units) {
 			if(unit.isHit(object))
-				result[searched++] = unit;
+				result.add(unit);
 		}
-		return Arrays.copyOf(result, searched);
+		return result;
 	}
-	//idle-character
-	public static final void defaultCharaIdle(Unit[] units) {
-		if(stopEventKind == NONE) {
-			for(Unit unit : units)
-				unit.idle();
-		}else {
-			for(Unit unit : units)
-				unit.paint(false);
-		}
-		removeDeadUnits();
+	/**
+	 * A class helps {@link Bullet} or other objects to detect touching enemies.
+	 * @param bullet
+	 * @return
+	 */
+	public static final ArrayList<Unit> getHitUnits(HitInteractable object) {
+		return getHitUnits(getUnits_standpoint(object, false), object);
 	}
-	public static final void defaultCharaIdle(ArrayList<Unit> units) {
-		if(stopEventKind == NONE) {
-			for(Unit unit : units)
-				unit.idle();
-		}else {
-			for(Unit unit : units)
-				unit.paint(false);
-		}
-		removeDeadUnits();
+	//idle
+	public static final void defaultGHQObjectsIdle() {
+		units.defaultTraverse();
+		bullets.defaultTraverse();
+		effects.defaultTraverse();
+		structures.defaultTraverse();
+		vegetations.defaultTraverse();
 	}
-	public static final int removeDeadUnits() {
-		int deleted = 0;
-		units.setIterator(-1);
-		while(units.hasNext()) {
-			final Unit UNIT = units.next();
-			if(!UNIT.isAlive()) {
-				units.removeCurrent();
-				deleted++;
-			}
+	public static final void defaultGHQObjectsIdle(GHQObjectType type) {
+		switch(type) {
+		case UNIT: units.defaultTraverse(); break;
+		case BULLET: bullets.defaultTraverse(); break;
+		case EFFECT: effects.defaultTraverse(); break;
+		case STRUCTURE: structures.defaultTraverse(); break;
+		case VEGETATION: vegetations.defaultTraverse(); break;
 		}
-		return deleted;
-	}
-	//idle-entity
-	public static final void defaultEntityIdle() {
-		bullets.setIterator(-1);
-		effects.setIterator(-1);
-		switch(stopEventKind) {
-		case STOP:
-			while(bullets.hasNext()) {
-				final Bullet bullet = bullets.next();
-				bullet.paint();
-			}
-			while(effects.hasNext()) {
-				final Effect effect = effects.next();
-				effect.paint();
-			}
-			break;
-		default:
-			while(bullets.hasNext()) {
-				final Bullet bullet = bullets.next();
-				bullet.idle();
-			}
-			while(effects.hasNext()) {
-				final Effect effect = effects.next();
-				effect.idle();
-			}
-		}
-	}
-	//information-get-mouseOver
-	public static final Unit getMouseOverUnit() {
-		for(Unit unit : units) {
-			if(unit.isMouseOveredBoundingBox())
-				return unit;
-		}
-		return null;
-	}
-	public static final Structure getMouseOverStructure() {
-		for(Structure structure : structures) {
-			if(structure.isMouseOveredBoundingBox())
-				return structure;
-		}
-		return null;
-	}
-	public static final Vegetation getMouseOverVegetation() {
-		for(Vegetation vegetation : vegetations) {
-			if(vegetation.isMouseOveredBoundingBox())
-				return vegetation;
-		}
-		return null;
 	}
 	//information-units
-	public static final Unit getUnit(String name) {
-		for(Unit unit : units) {
-			if(unit.getName() == name)
-				return unit;
-		}
-		return null;
-	}
-	public static final ArrayListEx<Unit> getUnitList() {
+	public static final GHQObjectList<Unit> getUnitList() {
 		return units;
 	}
-	public static final Unit getUnit(int index) {
-		return units.get(index);
-	}
-	public static final Unit[] getUnits() {
-		final Unit[] unitArray = new Unit[units.size()];
-		for(int i = 0;i < unitArray.length;i++)
-			unitArray[i] = units.get(i);
-		return unitArray;
-	}
-	public static final Unit[] getUnits_standpoint(HasStandpoint source,boolean white) {
-		final Unit[] unitArray = new Unit[units.size()];
-		int founded = 0;
+	public static final ArrayList<Unit> getUnits_standpoint(HasStandpoint source, boolean white) {
+		final ArrayList<Unit> unitArray = new ArrayList<Unit>();
 		for(Unit unit : units) {
 			if(white == source.isFriend(unit))
-				unitArray[founded++] = unit;
+				unitArray.add(unit);
 		}
-		return Arrays.copyOf(unitArray, founded);
+		return unitArray;
 	}
-	public static final Unit[] getUnits_standPoint(HasStandpoint source) {
-		return getUnits_standpoint(source,true);
+	public static final ArrayList<Unit> getUnits_standPoint(HasStandpoint source) {
+		return getUnits_standpoint(source, true);
 	}
-	public static final Unit getNearstEnemy(HasStandpoint source,int x,int y) {
+	public static final Unit getNearstEnemy(HasStandpoint source, int x, int y) {
 		double nearstDistanceSq = NONE;
 		Unit nearstUnit = null;
-		for(Unit enemy : getUnits_standpoint(source,false)) {
-			if(!enemy.isAlive())
+		for(Unit enemy : getUnits_standpoint(source, false)) {
+			if(!enemy.isAlive() || enemy.isFriend(source))
 				continue;
 			final double DISTANCE_SQ = enemy.getDynam().distanceSq(x, y);
 			if(nearstUnit == null || DISTANCE_SQ < nearstDistanceSq) {
@@ -491,7 +411,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final ArrayList<Unit> getVisibleEnemies(Unit unit) {
 		final ArrayList<Unit> visibleEnemies = new ArrayList<Unit>();
-		for(Unit enemy : getUnits_standpoint(unit,false)) {
+		for(Unit enemy : getUnits_standpoint(unit, false)) {
 			if(!enemy.isAlive())
 				continue;
 			if(enemy.getDynam().isVisible(unit))
@@ -503,7 +423,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		final Dynam DYNAM = unit.getDynam();
 		Unit nearstVisibleEnemy = null;
 		double nearstDistanceSq = MAX;
-		for(Unit enemy : getUnits_standpoint(unit,false)) {
+		for(Unit enemy : getUnits_standpoint(unit, false)) {
 			if(!enemy.isAlive() || !DYNAM.isVisible(enemy))
 				continue;
 			if(nearstDistanceSq == MAX) {
@@ -523,7 +443,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		final Dynam DYNAM = bullet.getDynam();
 		Unit nearstVisibleEnemy = null;
 		double nearstDistanceSq = MAX;
-		for(Unit enemy : getUnits_standpoint(bullet,false)) {
+		for(Unit enemy : getUnits_standpoint(bullet, false)) {
 			if(!enemy.isAlive() || !DYNAM.isVisible(enemy))
 				continue;
 			if(nearstDistanceSq == MAX) {
@@ -539,19 +459,16 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		return nearstVisibleEnemy;
 	}
-	public static final int getUnitAmount() {
-		return units.size();
+	public static final GHQObjectList<Bullet> getBulletList(){
+		return bullets;
+	}
+	public static final GHQObjectList<Effect> getEffectList(){
+		return effects;
 	}
 	
 	//information-vegetation
-	public static ArrayList<Vegetation> getVegetationList(){
+	public static final GHQObjectList<Vegetation> getVegetationList(){
 		return vegetations;
-	}
-	public static final Vegetation[] getVegetations() {
-		final Vegetation[] vegetationArray = new Vegetation[vegetations.size()];
-		for(int i = 0;i < vegetationArray.length;i++)
-			vegetationArray[i] = vegetations.get(i);
-		return vegetationArray;
 	}
 	public static final DropItem getCoveredDropItem(HasDynam di, int distance) {
 		for(Vegetation vegetation : vegetations) {
@@ -570,27 +487,11 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return null;
 	}
 	//information-stage
-	public static final StageEngine getEngine() {
+	public static final Game getEngine() {
 		return engine;
 	}
-	public static ArrayListEx<Structure> getStructureList(){
+	public static GHQObjectList<Structure> getStructureList(){
 		return structures;
-	}
-	public static final Structure[] getStructures() {
-		final Structure[] structureArray = new Structure[structures.size()];
-		for(int i = 0;i < structureArray.length;i++)
-			structureArray[i] = structures.get(i);
-		return structureArray;
-	}
-
-	public static Structure[] getStructures(HasStandpoint source,boolean white){
-		Structure result[] = new Structure[structures.size()];
-		int searched = 0;
-		for(Structure structure : structures) {
-			if(white == structure.isFriend(source))
-				result[searched++] = structure;
-		}
-		return Arrays.copyOf(result, searched);
 	}
 	public static final boolean checkLoS(Line2D line) {
 		for(Structure structure : structures) {
@@ -608,6 +509,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final boolean hitStructure_Dot(Point point){
 		return hitStructure_Dot(point.intX(), point.intY());
+	}
+	public static final boolean hitStructure_Dot(HasPoint hasPoint){
+		return hitStructure_Dot(hasPoint.getPoint());
 	}
 	public static final boolean hitStructure_Rect(int x, int y, int w, int h){
 		for(Structure structure : structures) {
@@ -666,7 +570,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return screenH;
 	}
 	//information-paint
-	public static final boolean inScreen(int x,int y) {
+	public static final boolean inScreen(int x, int y) {
 		return abs(viewX - x) < screenW && abs(viewY - y) < screenH;
 	}
 	//information-resource
@@ -685,24 +589,24 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 
 	//control
 	//control-viewPoint
-	public static void viewMove(int dx,int dy) {
+	public static void viewMove(int dx, int dy) {
 		viewX -= dx;viewY -= dy;
 		viewDstX -= dx;viewDstY -= dy;
 	}
-	public static void viewTo(int x,int y) {
+	public static void viewTo(int x, int y) {
 		viewDstX = viewX = -x + screenW/2;
 		viewDstY = viewY = -y + screenH/2;
 	}
-	public static void pureViewMove(int dx,int dy) {
+	public static void pureViewMove(int dx, int dy) {
 		viewX -= dx;viewY -= dy;
 	}
-	public static void pureViewTo(int x,int y) {
+	public static void pureViewTo(int x, int y) {
 		viewX = x;viewY = y;
 	}
-	public static void viewTargetTo(int x,int y) {
+	public static void viewTargetTo(int x, int y) {
 		viewDstX = -x + screenW/2;viewDstY =  -y + screenH/2;
 	}
-	public static void viewTargetMove(int x,int y) {
+	public static void viewTargetMove(int x, int y) {
 		viewDstX -= x;viewDstY -= y;
 	}
 	public static void viewApproach_speed(int speed) {
@@ -735,41 +639,25 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	//control-add
 
 	//control-delete
-	public static final void deleteBullet(Bullet bullet) {
-		bullet.beforeDelete();
-		bullets.remove(bullet);
-	}
-	public static final void deleteEffect(Effect effect) {
-		effect.beforeDelete();
-		effects.remove(effect);
-	}
-	public static final boolean deleteUnit(Unit unit) {
-		unit.beforeDelete();
-		return units.remove(unit);
-	}
-	public static final boolean deleteStructure(Structure structure) {
-		return structures.remove(structure);
-	}
-	public static final void deleteVegetation(Vegetation vegetation) {
-		vegetations.remove(vegetation);
-	}
-	public static final void paintHPArc(int x,int y,int radius,int hp,int maxHP) {
-		final Graphics2D G2 = hq.g2;
-		G2.setStroke(stroke3);
+	public static final void paintHPArc(int x, int y, int radius, int hp, int maxHP) {
+		g2.setStroke(stroke3);
 		if((double)hp/(double)maxHP > 0.75)
-			G2.setColor(Color.CYAN);
+			g2.setColor(Color.CYAN);
 		else if((double)hp/(double)maxHP > 0.50)
-			G2.setColor(Color.GREEN);
+			g2.setColor(Color.GREEN);
 		else if((double)hp/(double)maxHP > 0.25)
-			G2.setColor(Color.YELLOW);
+			g2.setColor(Color.YELLOW);
 		else if((double)hp/(double)maxHP > 0.10 || gameFrame % 4 < 2)
-			G2.setColor(Color.RED);
+			g2.setColor(Color.RED);
 		else
-			G2.setColor(HPWarningColor);
-		G2.drawString(String.valueOf(hp),x + (int)(radius*1.1) + (hp >= 10 ? 0 : 6),y + (int)(radius*1.1));
-		G2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-		G2.drawArc(x - radius,y - radius,radius*2,radius*2,90,(int)((double)hp/(double)maxHP*360));
-		G2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
+			g2.setColor(HPWarningColor);
+		g2.drawString(String.valueOf(hp), x + (int)(radius*1.1) + (hp >= 10 ? 0 : 6), y + (int)(radius*1.1));
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.drawArc(x - radius, y - radius, radius*2, radius*2, 90, (int)((double)hp/(double)maxHP*360));
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+	}
+	public static final void paintHPArc(Point point, int radius, int hp, int maxHP) {
+		paintHPArc(point.intX(), point.intY(), radius, hp, maxHP);
 	}
 	//control-GUI
 	public static final void enableGUIs(String group) {
@@ -790,25 +678,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				parts.flit();
 		}
 	}
-	public static final void EnableCertainGUIs(String group) {
+	public static final void enableCertainGUIs(String group) {
 		for(GUIParts parts : guiParts) {
 			if(parts.GROUP == group)
 				parts.enable();
 			else
 				parts.disable();
 		}
-	}
-	//information-collision
-	public static final boolean squreCollisionII(int x1,int y1,int size1,int x2,int y2,int size2) {
-		final int halfSize = (size1 + size2)/2;
-		return abs(x1 - x2) < halfSize && abs(y1 - y2) < halfSize;
-	}
-	public static final boolean rectangleCollision(int x1,int y1,int w1,int h1,int x2,int y2,int w2,int h2) {
-		return abs(x1 - x2) < (w1 + w2)/2 && abs(y1 - y2) < (h1 + h2)/2;
-	}
-	public static final boolean circleCollision(int x1,int y1,int size1,int x2,int y2,int size2) {
-		final double DX = x1 - x1,DY = y1 - y2,RANGE = size1 + size2;
-		return DX*DX + DY*DY <= RANGE*RANGE;
 	}
 	
 	//input
@@ -837,7 +713,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		if(e.getButton() == MouseEvent.BUTTON1)
 			guiPartsClickCheck(guiParts);
 	}
-	public static final void guiPartsClickCheck(ArrayList<GUIParts> guiParts) {
+	public static final void guiPartsClickCheck(Collection<GUIParts> guiParts) {
 		boolean alreadyClicked = false;
 		for(GUIParts parts : guiParts) {
 			if(parts.isEnabled()) {
@@ -870,7 +746,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		if(e.getButton() == MouseEvent.BUTTON1)
 			guiPartsReleaseCheck(guiParts);
 	}
-	public static final void guiPartsReleaseCheck(ArrayList<GUIParts> guiParts) {
+	public static final void guiPartsReleaseCheck(Collection<GUIParts> guiParts) {
 		boolean alreadyClicked = false;
 		for(GUIParts parts : guiParts) {
 			if(parts.isEnabled()) {
@@ -886,11 +762,11 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public void mouseClicked(MouseEvent e){
 	}
 	public void mouseMoved(MouseEvent e){
-		final int x = e.getX(),y = e.getY();
+		final int x = e.getX(), y = e.getY();
 		mouseX = x;mouseY = y;
 		guiPartsMouseOverCheck(guiParts);
 	}
-	public static final void guiPartsMouseOverCheck(ArrayList<GUIParts> guiParts) {
+	public static final void guiPartsMouseOverCheck(Collection<GUIParts> guiParts) {
 		boolean alreadyOvered = false;
 		for(GUIParts parts : guiParts) {
 			if(parts.isEnabled()) {
@@ -904,7 +780,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 	}
 	public void mouseDragged(MouseEvent e){
-		final int x = e.getX(),y = e.getY();
+		final int x = e.getX(), y = e.getY();
 		mouseX = x;mouseY = y;
 	}
 	public static final int getMouseX(){
@@ -919,7 +795,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final int getMouseScreenY(){
 		return mouseY;
 	}
-	public static final boolean isMouseInArea_Stage(int x,int y,int w,int h) {
+	public static final boolean isMouseInArea_Stage(int x, int y, int w, int h) {
 		return abs(x - mouseX + viewX) < w/2 && abs(y - mouseY + viewY) < h/2;
 	}
 	/**
@@ -930,12 +806,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @param h
 	 * @return true - in / false - out
 	 */
-	public static final boolean isMouseInArea_Screen(int luX,int luY,int w,int h) {
+	public static final boolean isMouseInArea_Screen(int luX, int luY, int w, int h) {
 		return luX < mouseX && mouseX < luX + w && luY < mouseY && mouseY < luY + h;
 	}
-	public final boolean isMouseOnImage(int imgID,int x,int y) {
+	public final boolean isMouseOnImage(int imgID, int x, int y) {
 		final Image img = arrayImage[imgID];
-		return isMouseInArea_Stage(x,y,img.getWidth(null),img.getHeight(null));
+		return isMouseInArea_Stage(x, y,img.getWidth(null),img.getHeight(null));
 	}
 	//キー情報
 	public static boolean key_1,key_2,key_3,key_4;
@@ -1044,15 +920,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				ktl.typed(e.getKeyChar());
 		}
 	}
-	private final class MyWindowAdapter extends WindowAdapter{
-		public void windowClosing(WindowEvent e){
-			System.exit(0);
-		}
-		public void windowDeactivated(WindowEvent e){
-			//if(mainEvent == BATTLE)
-				//mainEvent = BATTLE_PAUSE;
-		}
-	}
 	
 	//control
 	/**
@@ -1107,12 +974,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		if(!units.contains(unit))
 			units.add(unit);
 		return unit;
-	}
-	public static final <T extends Unit>T replaceUnit(Unit targetUnit,T newUnit){
-		newUnit.getDynam().setAll(targetUnit.getDynam());
-		deleteUnit(targetUnit);
-		addUnit(newUnit);
-		return newUnit;
 	}
 	/**
 	 * Add a {@link Structure} to current stage.
@@ -1194,7 +1055,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @return if expired
 	 * @since 1.0
 	 */
-	public static final boolean isExpired_frame(int initialFrame,int limitFrame) {
+	public static final boolean isExpired_frame(int initialFrame, int limitFrame) {
 		return initialFrame == NONE || (gameFrame - initialFrame) >= limitFrame;
 	}
 	/**
@@ -1242,14 +1103,14 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	//event
-	public static final void addMessage(MessageSource source,String message) {
+	public static final void addMessage(MessageSource source, String message) {
 		stopEventKind = STOP;
 		messageStop = true;
 		messageSource.add(source);
 		messageStr.add(message);
 		messageEvent.add(GHQ.NONE);
 	}
-	public static final void addMessage(MessageSource source,int event,String message) {
+	public static final void addMessage(MessageSource source, int event, String message) {
 		stopEventKind = STOP;
 		messageStop = true;
 		messageSource.add(source);
@@ -1261,7 +1122,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	final private void resetStage(){
 		bullets.clear();
 		effects.clear();
-		Bullet.nowMaxUniqueID = Effect.nowMaxUniqueID = -1;
 		messageSource.clear();
 		messageStr.clear();
 		messageEvent.clear();
@@ -1335,8 +1195,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 	};
 	public static final void loadImageFolder(File folder) {
-		final File[] fileList = folder.listFiles(PICTURE_FINDER);
-		for(File imageFile : fileList) {
+		for(File imageFile : folder.listFiles(PICTURE_FINDER)) {
 			try {
 				loadImage(imageFile.toURI().toURL());
 			} catch (MalformedURLException e) {
@@ -1386,9 +1245,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 	}
 	
-	public final Unit[] loadAllUnit(URL url) {
+	public final ArrayList<Unit> loadAllUnit(URL url) {
 		final FilenameFilter classFilter = new FilenameFilter(){
-			public boolean accept(File dir,String name){
+			public boolean accept(File dir, String name){
 				return name.endsWith(".class");
 			}
 		};
@@ -1400,10 +1259,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		if(unitFolder == null){
 			System.out.println("Pass does not exist.");
-			return new Unit[0];
+			return new ArrayList<Unit>();
 		}
-		int classAmount = 0;
-		final Unit[] unitClass = new Unit[64];
+		final ArrayList<Unit> unitClass = new ArrayList<Unit>();
 		for(String unitName : unitFolder.list(classFilter)){
 			try{
 				final Object obj = Class.forName("unit." + unitName.substring(0,unitName.length() - 6)).newInstance();
@@ -1411,7 +1269,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 					final Unit cls = (Unit)obj;
 					cls.loadImageData();
 					cls.loadSoundData();
-					unitClass[classAmount++] = cls;
+					unitClass.add(cls);
 				}
 			}catch(InstantiationException e) {
 				System.out.println("ignored abstract class: " + unitName);
@@ -1419,7 +1277,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				System.out.println(e);
 			}
 		}
-		return Arrays.copyOf(unitClass,classAmount);
+		return unitClass;
 	}
 	
 	//PaintTool
@@ -1431,9 +1289,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 */
 	public static final void translateForGUI(boolean forGUI) {
 		if(forGUI)
-			hq.g2.translate(-viewX,-viewY);
+			g2.translate(-viewX,-viewY);
 		else
-			hq.g2.translate(viewX,viewY);
+			g2.translate(viewX,viewY);
 	}
 	/**
 	 * Call {@link Graphics2D#setClip(int, int, int, int)} directly.
@@ -1443,15 +1301,15 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @param height
 	 * @since alpha1.0
 	 */
-	public static final void setClip(int x,int y,int width,int height) {
-		hq.g2.setClip(x, y, width, height);
+	public static final void setClip(int x, int y, int width, int height) {
+		g2.setClip(x, y, width, height);
 	}
 	/**
 	 * Reset AlphaComposite value.
 	 * @since alpha1.0
 	 */
 	public static final void setImageAlpha() {
-		hq.g2.setComposite(AlphaComposite.SrcOver);
+		g2.setComposite(AlphaComposite.SrcOver);
 	}
 	/**
 	 * Set AlphaComposite's transparent value.
@@ -1459,7 +1317,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @since alpha1.0
 	 */
 	public static final void setImageAlpha(float alpha) {
-		hq.g2.setComposite(AlphaComposite.SrcOver.derive(alpha));
+		g2.setComposite(AlphaComposite.SrcOver.derive(alpha));
 	}
 	//Paint
 	/**
@@ -1471,8 +1329,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @param h 
 	* @since alpha1.0
 	*/
-	public static final void drawImageGHQ(Image img,int x,int y,int w,int h){
-		hq.g2.drawImage(img,x,y,w,h,hq);
+	public static final void drawImageGHQ(Image img, int x, int y, int w, int h){
+		g2.drawImage(img, x, y, w, h, hq);
 	}
 	/**
 	* Draw an image by imageID.
@@ -1483,17 +1341,17 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @param h 
 	* @since alpha1.0
 	*/
-	public static final void drawImageGHQ(int imgID,int x,int y,int w,int h){
-		drawImageGHQ(arrayImage[imgID],x,y,w,h);
+	public static final void drawImageGHQ(int imgID, int x, int y, int w, int h){
+		drawImageGHQ(arrayImage[imgID], x, y, w, h);
 	}
-	public static final void drawImageGHQ(int imgID,int x,int y,int w,int h,double angle) {
+	public static final void drawImageGHQ(int imgID, int x, int y, int w, int h, double angle) {
 		if(angle != 0.0) {
-			final double OX = x + w/2,OY = y + h/2;
-			hq.g2.rotate(angle, OX, OY);
-			hq.g2.drawImage(arrayImage[imgID],x,y,w,h,hq);
-			hq.g2.rotate(-angle, OX, OY);
+			final double OX = x + w/2, OY = y + h/2;
+			g2.rotate(angle, OX, OY);
+			g2.drawImage(arrayImage[imgID], x, y, w, h, hq);
+			g2.rotate(-angle, OX, OY);
 		}else
-			hq.g2.drawImage(arrayImage[imgID],x,y,w,h,hq);
+			g2.drawImage(arrayImage[imgID], x, y, w, h, hq);
 	}
 	/**
 	* Draw an image.
@@ -1503,16 +1361,15 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @param angle 
 	* @since alpha1.0
 	*/
-	public static final void drawImageGHQ_center(Image img,int x,int y,double angle){
+	public static final void drawImageGHQ_center(Image img, int x, int y, double angle){
 		if(img == null)
 			return;
-		final Graphics2D G2 = hq.g2;
 		if(angle != 0.0) {
-			G2.rotate(angle,x,y);
-			G2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,hq);
-			G2.rotate(-angle,x,y);
+			g2.rotate(angle, x, y);
+			g2.drawImage(img, x - img.getWidth(null)/2, y - img.getHeight(null)/2, hq);
+			g2.rotate(-angle, x, y);
 		}else
-			G2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,hq);
+			g2.drawImage(img, x - img.getWidth(null)/2, y - img.getHeight(null)/2, hq);
 	}
 	/**
 	* Draw an image by imageID.
@@ -1522,8 +1379,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @param angle 
 	* @since alpha1.0
 	*/
-	public static final void drawImageGHQ_center(int imgID,int x,int y,double angle) {
-		drawImageGHQ_center(arrayImage[imgID],x,y,angle);
+	public static final void drawImageGHQ_center(int imgID, int x, int y, double angle) {
+		drawImageGHQ_center(arrayImage[imgID], x, y, angle);
 	}
 	/**
 	* Draw an image.
@@ -1532,8 +1389,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @param y 
 	* @since alpha1.0
 	*/
-	public static final void drawImageGHQ_center(Image img,int x,int y){
-		hq.g2.drawImage(img,x - img.getWidth(null)/2,y - img.getHeight(null)/2,hq);
+	public static final void drawImageGHQ_center(Image img, int x, int y){
+		g2.drawImage(img, x - img.getWidth(null)/2, y - img.getHeight(null)/2, hq);
 	}
 	/**
 	* Draw an image by imageID.
@@ -1542,8 +1399,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @param y 
 	* @since alpha1.0
 	*/
-	public static final void drawImageGHQ_center(int imgID,int x,int y){
-		drawImageGHQ_center(arrayImage[imgID],x,y);
+	public static final void drawImageGHQ_center(int imgID, int x, int y){
+		drawImageGHQ_center(arrayImage[imgID], x, y);
 	}
 	/**
 	* Draw an image by imageID.
@@ -1554,8 +1411,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @param h 
 	* @since alpha1.0
 	*/
-	public static final void drawImageGHQ_center(int imgID,int x,int y,int w,int h){
-		hq.g2.drawImage(arrayImage[imgID],x - w/2,y - h/2,w,h,hq);
+	public static final void drawImageGHQ_center(int imgID, int x, int y, int w, int h){
+		g2.drawImage(arrayImage[imgID], x - w/2, y - h/2, w, h, hq);
 	}
 	/**
 	 * Draw an image by imageID.
@@ -1567,20 +1424,37 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @param angle
 	* @since alpha1.0
 	 */
-	public static final void drawImageGHQ_center(int imgID,int x,int y,int w,int h,double angle){
+	public static final void drawImageGHQ_center(int imgID, int x, int y, int w, int h, double angle){
 		if(angle != 0.0) {
-			hq.g2.rotate(angle, x, y);
-			hq.g2.drawImage(arrayImage[imgID],x - w/2,y - h/2,w,h,hq);
-			hq.g2.rotate(-angle, x, y);
+			g2.rotate(angle, x, y);
+			g2.drawImage(arrayImage[imgID], x - w/2, y - h/2, w, h, hq);
+			g2.rotate(-angle, x, y);
 		}else
-			hq.g2.drawImage(arrayImage[imgID],x - w/2,y - h/2,w,h,hq);
+			g2.drawImage(arrayImage[imgID], x - w/2, y - h/2, w, h, hq);
 	}
 	/**
 	 * Return Graphics2D instance.
 	 * @return
 	 */
 	public static final Graphics2D getGraphics2D() {
-		return hq.g2;
+		return g2;
+	}
+	/**
+	 * Return Graphics2D instance, and set color.
+	 * @return
+	 */
+	public static final Graphics2D getGraphics2D(Color color) {
+		g2.setColor(color);
+		return g2;
+	}
+	/**
+	 * Return Graphics2D instance, and set color and stroke.
+	 * @return
+	 */
+	public static final Graphics2D getGraphics2D(Color color, Stroke stroke) {
+		g2.setColor(color);
+		g2.setStroke(stroke);
+		return g2;
 	}
 	
 	//Sound
@@ -1590,7 +1464,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public final void stopSound(int soundID) {
 		arraySound[soundID].stop();
 	}
-	public final void loopSound(int soundID,int loops) {
+	public final void loopSound(int soundID, int loops) {
 		arraySound[soundID].loop(loops);
 	}
 	
@@ -1602,69 +1476,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		else if(radian <= -PI)
 			radian += PI*2;
 		return radian;
-	}
-	public static final int[] deboxingIntArray(ArrayList<Integer> arrayList) {
-		final int SIZE = arrayList.size();
-		final int[] result = new int[SIZE];
-		for(int i = 0;i < SIZE;i++)
-			result[i] = arrayList.get(i);
-		return result;
-	}
-	public static final double[] deboxingDoubleArray(ArrayList<Double> arrayList) {
-		final int SIZE = arrayList.size();
-		final double[] result = new double[SIZE];
-		for(int i = 0;i < SIZE;i++)
-			result[i] = arrayList.get(i);
-		return result;
-	}
-	public static String buildStringArray(Object...objects) {
-		final StringBuilder SB = new StringBuilder();
-		for(int i = 0;;) {
-			SB.append(objects[i]);
-			if(++i < objects.length)
-				SB.append(',');
-			else
-				break;
-		}
-		return SB.toString();
-	}
-	public static final String trim2(String str){
-		if(str == null || str.length() == 0)
-			return "";
-		for(int i = 0;;i++){
-			if(i >= str.length())
-				return "";
-			final char c = str.charAt(i);
-			if(c == ' ' || c == '　')
-				continue;
-			else{
-				str = str.substring(i);
-				break;
-			}
-		}
-		for(int i = str.length() - 1;i >= 0;i--){
-			final char c = str.charAt(i);
-			if(c == ' ' || c == '　')
-				continue;
-			else
-				return str.substring(0,i + 1);
-		}
-		return str;
-	}
-	/**
-	* Original version of String.split that prevent throwing NullPointerException.
-	* @param str
-	* @param token 
-	* @return string array
-	* @since alpha1.0
-	*/
-	public static final String[] split2(String str,String token){
-		if(!isActualString(str))
-			return new String[0];
-		final String[] strs = str.split(token);
-		for(int i = 0;i < strs.length;i++)
-			strs[i] = trim2(strs[i]);
-		return strs;
 	}
 	/**
 	* Check if the string is null or equals "NONE"
@@ -1715,19 +1526,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		else
 			return true;
 	}
-	/**
-	* Execute {@link Math#toRadians(double)} only if the value doesen't have special meaning.
-	* @param degress
-	* @since alpha1.0
-	*/
-	public static final double toRadians2(double degress){
-		if(isActualNumber(degress))
-			return degress*PI/180;
-		else
-			return degress;
-	}
-	
-	public static final int random2(int value1,int value2) {
+	public static final int random2(int value1, int value2) {
 		if(value1 == value2)
 			return value1;
 		else if(value1 > value2)
@@ -1735,14 +1534,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		else
 			return new Random().nextInt(abs(value2 - value1)) + value1;
 	}
-	public static final int random2(int value) {
-		if(value == 0)
-			return 0;
-		if(value < 0)
-			value *= -1;
-		return new Random().nextInt(value*2) - value;
-	}
-	public static final double random2(double value1,double value2) {
+	public static final double random2(double value1, double value2) {
 		if(value1 == value2)
 			return value1;
 		else if(value1 > value2)
@@ -1771,12 +1563,11 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @return The time passed while this window is shown.
 	* @since alpha1.0
 	*/
-	public static final long warningBox(String message,String title){
+	public static final long warningBox(String message, String title){
 		long openTime = System.currentTimeMillis();
-		JOptionPane.showMessageDialog(null,message,title,JOptionPane.WARNING_MESSAGE);
+		JOptionPane.showMessageDialog(null, message, title, JOptionPane.WARNING_MESSAGE);
 		return System.currentTimeMillis() - openTime;
 	}
-
 	public static final void saveData(SaveData save,File file) {
 		try{ //データの書き込み
 			if(!file.exists())

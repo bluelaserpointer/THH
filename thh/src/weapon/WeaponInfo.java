@@ -2,7 +2,8 @@ package weapon;
 
 import java.io.BufferedWriter;
 
-import core.Config;
+import config.Config;
+import config.ConfigLoader;
 import core.GHQ;
 
 public class WeaponInfo {
@@ -30,7 +31,7 @@ public class WeaponInfo {
 		autoReload = true;
 	}
 	public static final boolean readConfig(String str) {
-		final String[] _str = GHQ.split2(str, "=");
+		final String[] _str = ConfigLoader.split2(str, "=");
 		if(_str.length == 2)
 			return readConfig(_str[0],_str[1]);
 		else

@@ -85,7 +85,7 @@ public abstract class THH_EffectLibrary extends Effect{
 			return new MissileTraceA_EF(SHOOTER, false);
 		}
 		@Override
-		public final void paint() {
+		public final void paint(boolean doAnimation) {
 			fadingPaint();
 		}
 	}
@@ -106,7 +106,7 @@ public abstract class THH_EffectLibrary extends Effect{
 			return new MissileTraceB_EF(SHOOTER);
 		}
 		@Override
-		public final void paint() {
+		public final void paint(boolean doAnimation) {
 			fadingPaint();
 		}
 	}
@@ -132,7 +132,7 @@ public abstract class THH_EffectLibrary extends Effect{
 			return new MissileHitEF(SHOOTER, false);
 		}
 		@Override
-		public final void paint() {
+		public final void paint(boolean doAnimation) {
 			fadingPaint();
 		}
 	}
@@ -159,7 +159,7 @@ public abstract class THH_EffectLibrary extends Effect{
 			return new FudaHitEF(SHOOTER, false);
 		}
 		@Override
-		public final void paint() {
+		public final void paint(boolean doAnimation) {
 			fadingPaint();
 		}
 	}

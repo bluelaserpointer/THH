@@ -14,8 +14,6 @@ import core.GHQ;
 
 public class Terrain extends Structure{
 	private static final long serialVersionUID = 7167638140442836310L;
-	public static final StructureScript<Terrain> DEFAULT_SCRIPT = new StructureScript<Terrain>();
-	public StructureScript<Terrain> script = DEFAULT_SCRIPT;
 	protected Polygon polygon;
 	private int px[],py[];
 	public static ArrayList<Integer> bppx = new ArrayList<Integer>(),bppy = new ArrayList<Integer>();
@@ -41,21 +39,11 @@ public class Terrain extends Structure{
 		}
 	}
 
-	public void setScript(StructureScript<Terrain> script) {
-		this.script = script;
-	}
-	public void setScriptIfBlank(StructureScript<Terrain> script) {
-		if(this.script != DEFAULT_SCRIPT)
-			this.script = script;
-	}
 	//role
 	@Override
-	public final void defaultPaint() {
-		fill(Color.GRAY);
-	}
-	@Override
 	public void paint(boolean doAnimation) {
-		script.paint(this,doAnimation);
+		fill(Color.WHITE);
+		draw(Color.LIGHT_GRAY, GHQ.stroke3);
 	}
 	public void fill(Color color) {
 		final Graphics2D G2 = GHQ.getGraphics2D();
@@ -104,6 +92,12 @@ public class Terrain extends Structure{
 	@Override
 	public Rectangle2D getBoundingBox() {
 		return polygon.getBounds2D();
+	}
+	
+	//information
+	@Override
+	public String getName() {
+		return "DefaultTerrain";
 	}
 	
 	//create-with-blueprint

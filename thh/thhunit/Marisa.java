@@ -70,7 +70,8 @@ public class Marisa extends THH_BasicPlayer{
 		slot_spell = 0;
 	}
 	@Override
-	public final void extendIdle() {
+	public void idle() {
+		super.idle();
 		dynam.setMoveAngle(dynam.angleToMouse());
 	}
 	@Override

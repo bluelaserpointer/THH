@@ -1,6 +1,6 @@
 package engine;
 
-import java.util.Arrays;
+import java.util.LinkedList;
 
 import stage.StageSaveData;
 import structure.Structure;
@@ -11,13 +11,13 @@ public class Stage_THH1 extends StageSaveData{
 	
 	private static final long serialVersionUID = -7046067326609502254L;
 
-	public final Unit[] UNITS;
-	public final Structure[] STRUCTURES;
-	public final Vegetation[] VEGETATIONS;
+	public final LinkedList<Unit> UNITS;
+	public final LinkedList<Structure> STRUCTURES;
+	public final LinkedList<Vegetation> VEGETATIONS;
 
-	public Stage_THH1(Unit[] units,Structure[] structures,Vegetation[] vegetations) {
-		this.UNITS = Arrays.copyOf(units, units.length);
-		this.STRUCTURES = Arrays.copyOf(structures, structures.length);
-		this.VEGETATIONS = Arrays.copyOf(vegetations, structures.length);
+	public Stage_THH1(LinkedList<Unit> units, LinkedList<Structure> structures, LinkedList<Vegetation> vegetations) {
+		this.UNITS = units;
+		this.STRUCTURES = structures;
+		this.VEGETATIONS = vegetations;
 	}
 }

@@ -40,12 +40,25 @@ public abstract class Point implements Serializable{
 	public abstract void setY(double y);
 	public abstract void setX(Point p);
 	public abstract void setY(Point p);
-	public abstract void setXY(int x, int y);
-	public abstract void setXY(double x, double y);
-	public abstract void setXY(Point p);
-	public void setXY(HasPoint hasPoint){
+	public Point setXY(int x, int y) {
+		setX(x);
+		setY(y);
+		return this;
+	}
+	public Point setXY(double x, double y) {
+		setX(x);
+		setY(y);
+		return this;
+	}
+	public Point setXY(Point p) {
+		setX(p);
+		setY(p);
+		return this;
+	}
+	public Point setXY(HasPoint hasPoint){
 		if(hasPoint != null)
 			setXY(hasPoint.getPoint());
+		return this;
 	}
 	///////////////addX&Y&XY
 	public void addX(int x) {
@@ -334,8 +347,8 @@ public abstract class Point implements Serializable{
 		if(target != null)
 			approach(target.getPoint(), speed);
 	}
-	public void approachIfNoObstacles(HitInteractable source, double dstX,double dstY,double speed) {
-		final double DX = dstX - doubleX(),DY = dstY - doubleY();
+	public void approachIfNoObstacles(HitInteractable source, double dstX, double dstY, double speed) {
+		final double DX = dstX - doubleX(), DY = dstY - doubleY();
 		final double DISTANCE = sqrt(DX*DX + DY*DY);
 		if(DISTANCE > speed) {
 			final double RATE = speed/DISTANCE;
@@ -344,6 +357,9 @@ public abstract class Point implements Serializable{
 		}
 		if(!GHQ.hitObstacle_DSTXY(source, (int)dstX, (int)dstY))
 			setXY(dstX, dstY);
+	}
+	public void approachIfNoObstacles(HitInteractable source, Point dstPoint, double speed) {
+		approachIfNoObstacles(source, dstPoint.doubleX(), dstPoint.doubleY(), speed);
 	}
 	//////////////////////////////classes
 
@@ -400,21 +416,6 @@ public abstract class Point implements Serializable{
 		}
 		@Override
 		public void setY(Point p){
-			setY(p.doubleY());
-		}
-		@Override
-		public void setXY(int x, int y){
-			setX(x);
-			setY(y);
-		}
-		@Override
-		public void setXY(double x, double y){
-			setX(x);
-			setY(y);
-		}
-		@Override
-		public void setXY(Point p){
-			setX(p.doubleX());
 			setY(p.doubleY());
 		}
 		@Override
@@ -476,21 +477,6 @@ public abstract class Point implements Serializable{
 		}
 		@Override
 		public void setY(Point p){
-			setY(p.doubleY());
-		}
-		@Override
-		public void setXY(int x, int y){
-			setX(x);
-			setY(y);
-		}
-		@Override
-		public void setXY(double x, double y){
-			setX(x);
-			setY(y);
-		}
-		@Override
-		public void setXY(Point p){
-			setX(p.doubleX());
 			setY(p.doubleY());
 		}
 		@Override
