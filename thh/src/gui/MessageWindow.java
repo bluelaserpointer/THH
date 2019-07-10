@@ -1,7 +1,7 @@
 package gui;
 
 import paint.PaintScript;
-import paint.RectPaint;
+import paint.rect.RectPaint;
 
 public abstract class MessageWindow extends GUIParts{
 	public MessageWindow(String group,RectPaint paintScript,int x,int y,int w,int h) {

@@ -1,8 +1,8 @@
 package gui;
 
 import core.GHQ;
-import paint.HasDotPaint;
-import paint.RectPaint;
+import paint.dot.HasDotPaint;
+import paint.rect.RectPaint;
 import storage.Storage;
 import storage.TableStorage;
 
@@ -103,6 +103,10 @@ public class TableStorageViewer<T extends HasDotPaint> extends GUIParts{
 	 * @return Object of the hovered cell
 	 */
 	public T getMouseHoveredElement() {
-		return storage.get(getMouseHoveredID());
+		final int ID = getMouseHoveredID();
+		if(0 <= ID && ID < storage.size())
+			return storage.get(ID);
+		else
+			return null;
 	}
 }

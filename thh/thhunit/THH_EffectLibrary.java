@@ -5,26 +5,11 @@ import static java.lang.Math.random;
 
 import core.GHQ;
 import effect.Effect;
-import paint.DotPaint;
 import paint.ImageFrame;
+import paint.dot.DotPaint;
 import physics.HasDynam;
 
 public abstract class THH_EffectLibrary extends Effect{
-	public static void loadResource() {
-		/////////////////
-		//Marisa's effect
-		/////////////////
-		SparkHitEF.paint = new ImageFrame("thhimage/NarrowSpark_HitEffect.png");
-		LightningEF.paint = new ImageFrame("thhimage/ReuseBomb_Effect.png");
-		MissileTraceA_EF.paint = new ImageFrame("thhimage/StarEffect2.png");
-		MissileTraceB_EF.paint = new ImageFrame("thhimage/MagicMissile.png");
-		MissileHitEF.paint = new ImageFrame("thhimage/MissileHitEffect.png");
-		
-		/////////////////
-		//Reimu's effect
-		/////////////////
-		FudaHitEF.paint = new ImageFrame("thhimage/FudaHitEffect.png");
-	}
 	public THH_EffectLibrary(HasDynam source) {
 		super(source);
 	}
@@ -32,7 +17,7 @@ public abstract class THH_EffectLibrary extends Effect{
 	//Marisa - 1
 	/////////////////
 	public static class SparkHitEF extends THH_EffectLibrary{
-		static DotPaint paint;
+		private static final DotPaint paint = new ImageFrame("thhimage/NarrowSpark_HitEffect.png");
 		public SparkHitEF(HasDynam source) {
 			super(source);
 			name = "SparkHitEF";
@@ -49,7 +34,7 @@ public abstract class THH_EffectLibrary extends Effect{
 	//Marisa - 2
 	/////////////////
 	public static class LightningEF extends THH_EffectLibrary{
-		static DotPaint paint;
+		static final DotPaint paint = new ImageFrame("thhimage/ReuseBomb_Effect.png");
 		
 		public LightningEF(HasDynam source) {
 			super(source);
@@ -66,7 +51,7 @@ public abstract class THH_EffectLibrary extends Effect{
 	//Marisa - 3
 	/////////////////
 	public static class MissileTraceA_EF extends THH_EffectLibrary{
-		static DotPaint paint;
+		static final DotPaint paint = new ImageFrame("thhimage/StarEffect2.png");
 
 		public MissileTraceA_EF(HasDynam source, boolean appendClones) {
 			super(source);
@@ -77,7 +62,7 @@ public abstract class THH_EffectLibrary extends Effect{
 			dynam.fastParaAdd_DASpd(10,2*PI*random(),GHQ.random2(0,12));
 			if(appendClones) {
 				for(int i = 0;i < 3;i++) {
-					GHQ.addEffect(new MissileTraceA_EF(source, false));
+					GHQ.stage().addEffect(new MissileTraceA_EF(source, false));
 				}
 			}
 		}
@@ -93,7 +78,7 @@ public abstract class THH_EffectLibrary extends Effect{
 	//Marisa - 4
 	/////////////////
 	public static class MissileTraceB_EF extends THH_EffectLibrary{
-		static DotPaint paint;
+		static final DotPaint paint = new ImageFrame("thhimage/MagicMissile.png");
 		
 		public MissileTraceB_EF(HasDynam source) {
 			super(source);
@@ -114,7 +99,7 @@ public abstract class THH_EffectLibrary extends Effect{
 	//Marisa - 5
 	/////////////////
 	public static class MissileHitEF extends THH_EffectLibrary{
-		static DotPaint paint;
+		static final DotPaint paint = new ImageFrame("thhimage/MissileHitEffect.png");
 		
 		public MissileHitEF(HasDynam source, boolean makeClones) {
 			super(source);
@@ -125,7 +110,7 @@ public abstract class THH_EffectLibrary extends Effect{
 			accel = -0.1;
 			if(makeClones) {
 				for(int i = 0;i < 30;i++)
-					GHQ.addEffect(new MissileHitEF(source, false));
+					GHQ.stage().addEffect(new MissileHitEF(source, false));
 			}
 		}
 		public MissileHitEF getOriginal(){
@@ -140,7 +125,7 @@ public abstract class THH_EffectLibrary extends Effect{
 	//Reimu - 1
 	/////////////////
 	public static class FudaHitEF extends THH_EffectLibrary{
-		static DotPaint paint;
+		static final DotPaint paint = new ImageFrame("thhimage/FudaHitEffect.png");
 		
 		public FudaHitEF(HasDynam source, boolean makeClones) {
 			super(source);
@@ -152,7 +137,7 @@ public abstract class THH_EffectLibrary extends Effect{
 			dynam.fastParaAdd_DASpd(10,2*PI*random(),GHQ.random2(0,22));
 			if(makeClones) {
 				for(int i = 0;i < 15;i++)
-					GHQ.addEffect(new FudaHitEF(source, false));
+					GHQ.stage().addEffect(new FudaHitEF(source, false));
 			}
 		}
 		public FudaHitEF getOriginal(){

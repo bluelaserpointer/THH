@@ -11,13 +11,16 @@ import java.util.Collection;
 import core.GHQ;
 import core.GHQObject;
 import core.GHQObjectList;
-import core.HasBoundingBox;
-import input.SingleKeyListener;
+import gui.grouped.ArrangedButtons;
+import gui.grouped.GUIGroup;
+import input.key.SingleKeyListener;
+import math.CellArranger;
 import paint.ColorFilling;
 import paint.ColorFraming;
 import paint.ImageFrame;
-import paint.RectPaint;
+import paint.rect.RectPaint;
 import physics.Dynam;
+import physics.HasBoundingBox;
 import structure.Terrain;
 import structure.Tile;
 import unit.DummyUnit;
@@ -46,7 +49,8 @@ public class DefaultStageEditor extends GUIGroup{
 	private static final SingleKeyListener keyListener = new SingleKeyListener(inputKeys);
 	private static int nowSlot = 0,slot_max = 1;
 	
-	private static int placeX,placeY;
+	private static int placeKind;
+	private static int placeX, placeY;
 	
 	private static final int
 		POINTING = -1,
@@ -61,14 +65,12 @@ public class DefaultStageEditor extends GUIGroup{
 		EDIT_MENU_GROUP;
 	//GUI
 	private static TitledLabel configLabel;
-	private static CombinedButtons CB_placeKind;
 	//init
 	public DefaultStageEditor(String group,File stageFile) {
-		super(group, RectPaint.BLANK_SCRIPT, 0, 0, GHQ.getScreenW(), GHQ.getScreenH());
+		super(group, RectPaint.BLANK_SCRIPT, 0, 0, GHQ.screenW(), GHQ.screenH());
 		EDIT_MENU_GROUP = group + ">EDIT_MENU_GROUP>";
-		final int SCREEN_W = GHQ.getScreenW(),SCREEN_H = GHQ.getScreenH();
-		GHQ.addListenerEx(keyListener);
-		super.addParts(new BasicButton(EDIT_MENU_GROUP,new ColorFraming(Color.WHITE,GHQ.stroke3),150,0,SCREEN_W - 150,SCREEN_H) {
+		final int SCREEN_W = GHQ.screenW(),SCREEN_H = GHQ.screenH();
+		super.addLast(new BasicButton(EDIT_MENU_GROUP,new ColorFraming(Color.WHITE,GHQ.stroke3),150,0,SCREEN_W - 150,SCREEN_H) {
 			@Override
 			public void idle() {
 				super.idle();
@@ -76,15 +78,15 @@ public class DefaultStageEditor extends GUIGroup{
 					final Graphics2D G2 = GHQ.getGraphics2D();
 					GHQ.translateForGUI(false);
 					//guide
-					switch(CB_placeKind.getSelection()) {
+					switch(placeKind) {
 					case POINTING:
-						mouseOveredObject = GHQ.getUnitList().forMouseOver();
+						mouseOveredObject = GHQ.stage().units.forMouseOver();
 						if(mouseOveredObject == null)
-							mouseOveredObject = GHQ.getVegetationList().forMouseOver();
+							mouseOveredObject = GHQ.stage().vegetations.forMouseOver();
 						if(mouseOveredObject == null)
-							mouseOveredObject = GHQ.getStructureList().forMouseOver();
+							mouseOveredObject = GHQ.stage().structures.forMouseOver();
 						if(mouseOveredObject != null && mouseOveredObject != selectObject) {
-							final Rectangle2D RECT = mouseOveredObject.getBoundingBox();
+							final Rectangle2D RECT = mouseOveredObject.boundingBox();
 							G2.setColor(Color.WHITE);
 							G2.setStroke(GHQ.stroke5);
 							G2.draw(RECT);
@@ -120,7 +122,7 @@ public class DefaultStageEditor extends GUIGroup{
 								((Unit)selectObject).originalName = configLabel.getText();
 							}*/
 							//draw selection guide
-							final Rectangle2D RECT = selectObject.getBoundingBox();
+							final Rectangle2D RECT = selectObject.boundingBox();
 							RECT.setRect(RECT.getX(),RECT.getY(),RECT.getWidth() + 4,RECT.getHeight() + 4);
 							G2.setColor(Color.WHITE);
 							G2.setStroke(GHQ.stroke5);
@@ -142,7 +144,7 @@ public class DefaultStageEditor extends GUIGroup{
 			}
 			@Override
 			public void clicked() {
-				if(CB_placeKind.isDefaultSelection()) { //not selected any placeKind = object select
+				if(placeKind == POINTING) {
 					selectObject = mouseOveredObject;
 					keyListener.enable();
 					final String labelText;
@@ -164,24 +166,24 @@ public class DefaultStageEditor extends GUIGroup{
 				}else { //object deselect
 					selectObject = null;
 					keyListener.disable();
-					switch(CB_placeKind.getSelection()) {
+					switch(placeKind) {
 					case TERRAIN:
 						if(Terrain.blueprint_isOriginPoint(placeX, placeY))
-							GHQ.addStructure(Terrain.blueprint_flush());
+							GHQ.stage().addStructure(Terrain.blueprint_flush());
 						else
 							Terrain.blueprint_addPoint(placeX, placeY);
 						break;
 					case TILES:
 						if(Tile.blueprint_hasOriginPoint())
-							GHQ.addStructure(Tile.blueprint_addEndPointAndFlush(GHQ.getMouseX(), GHQ.getMouseY()));
+							GHQ.stage().addStructure(Tile.blueprint_addEndPointAndFlush(GHQ.getMouseX(), GHQ.getMouseY()));
 						else
 							Tile.blueprint_addOriginPoint(placeX, placeY);
 						break;
 					case UNIT:
-						GHQ.addUnit(new DummyUnit(new Dynam(placeX, placeY)));
+						GHQ.stage().addUnit(new DummyUnit(new Dynam(placeX, placeY)));
 						break;
 					case VEGETATION:
-						GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/gui_editor/Vegetation.png"), placeX, placeY));
+						GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/gui_editor/Vegetation.png"), placeX, placeY));
 						break;
 					case ITEM:
 						break;
@@ -189,12 +191,25 @@ public class DefaultStageEditor extends GUIGroup{
 				}
 			}
 		});
-		super.addParts(CB_placeKind = new CombinedButtons(EDIT_MENU_GROUP + "CombinedButtons", POINTING, 25, 155, 85, 85));
-		CB_placeKind.addButton(TILES, new ImageFrame("thhimage/gui_editor/Tiles.png"),25,155,40,40);
-		CB_placeKind.addButton(TERRAIN, new ImageFrame("thhimage/gui_editor/FreeShape.png"),70,155,40,40);
-		CB_placeKind.addButton(UNIT, new ImageFrame("thhimage/gui_editor/Unit.png"),25,200,40,40);
-		CB_placeKind.addButton(VEGETATION, new ImageFrame("thhimage/gui_editor/Vegetation.png"),70,200,40,40);
-		super.addParts(new BasicButton("SAVE_BUTTON", new ImageFrame("thhimage/gui_editor/Save.png"),25,500,85,40) {
+		super.addLast(new ArrangedButtons<Integer>(EDIT_MENU_GROUP + "SelectionButtons", null, 25, 155
+				, new CellArranger(10, 80, 80, 2, 2)) {
+			@Override
+			protected void clicked(Integer buttonValue) {
+				if(placeKind != buttonValue)
+					placeKind = buttonValue;
+				else
+					placeKind = POINTING;
+			}
+			@Override
+			public void marginClicked() {
+				placeKind = POINTING;
+			}
+		})
+		.appendButton(TILES, new ImageFrame("thhimage/gui_editor/Tiles.png"), 0, 0)
+		.appendButton(TERRAIN, new ImageFrame("thhimage/gui_editor/FreeShape.png"), 0, 1)
+		.appendButton(UNIT, new ImageFrame("thhimage/gui_editor/Unit.png"), 1, 0)
+		.appendButton(VEGETATION, new ImageFrame("thhimage/gui_editor/Vegetation.png"), 1, 1);
+		super.addLast(new BasicButton("SAVE_BUTTON", new ImageFrame("thhimage/gui_editor/Save.png"),25,500,85,40) {
 			@Override
 			public void clicked() {
 				System.out.println("saving...");
@@ -202,10 +217,10 @@ public class DefaultStageEditor extends GUIGroup{
 				System.out.println("complete!");
 			}
 		});
-		super.addParts(configLabel = new TitledLabel(EDIT_MENU_GROUP + "CONFIG_LABEL",new ColorFilling(Color.WHITE),25,300,120,25){
+		super.addLast(configLabel = new TitledLabel(EDIT_MENU_GROUP + "CONFIG_LABEL",new ColorFilling(Color.WHITE),25,300,120,25){
 			
 		});
-		super.addParts(new InputOptionList(configLabel)).addWord("WHITE_WALL", "ABCD", "ABNK");
+		super.addLast(new InputOptionList(configLabel)).addWord("WHITE_WALL", "ABCD", "ABNK");
 	}
 	//role
 	@Override
@@ -231,8 +246,8 @@ public class DefaultStageEditor extends GUIGroup{
 		//originalName display
 		G2.setColor(Color.GRAY);
 		G2.setFont(GHQ.basicFont.deriveFont(20.0f));
-		for(Unit unit : GHQ.getUnitList())
-			G2.drawString(unit.originalName, unit.getDynam().intX(), unit.getDynam().intY());
+		for(Unit unit : GHQ.stage().units)
+			G2.drawString(unit.originalName, unit.dynam().intX(), unit.dynam().intY());
 		G2.setFont(GHQ.basicFont);
 
 		GHQ.translateForGUI(true);

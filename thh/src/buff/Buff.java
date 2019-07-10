@@ -11,7 +11,7 @@ public abstract class Buff implements Serializable{
 	protected StatusWithDefaultValue targetStatus;
 	
 	public Buff() {
-		INITIAL_FRAME = GHQ.getNowFrame();
+		INITIAL_FRAME = GHQ.nowFrame();
 	}
 	public Buff(int initialFrame) {
 		INITIAL_FRAME = initialFrame;
@@ -32,7 +32,7 @@ public abstract class Buff implements Serializable{
 			}
 			@Override
 			public void idle() {
-				if(GHQ.getNowFrame() - INITIAL_FRAME % spanFrame == 0)
+				if(GHQ.nowFrame() - INITIAL_FRAME % spanFrame == 0)
 					targetStatus.add(affectKind, affectAmount);
 			}
 		};

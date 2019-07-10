@@ -20,15 +20,15 @@ public class GHQObject {
 	}
 	public void forceDelete() {
 		if(this instanceof Unit)
-			GHQ.getUnitList().forceRemove((Unit)this);
+			GHQ.stage().units.forceRemove((Unit)this);
 		else if(this instanceof Bullet)
-			GHQ.getBulletList().forceRemove((Bullet)this);
+			GHQ.stage().bullets.forceRemove((Bullet)this);
 		else if(this instanceof Effect)
-			GHQ.getEffectList().forceRemove((Effect)this);
+			GHQ.stage().effects.forceRemove((Effect)this);
 		else if(this instanceof Structure)
-			GHQ.getStructureList().forceRemove((Structure)this);
+			GHQ.stage().structures.forceRemove((Structure)this);
 		else if(this instanceof Vegetation)
-			GHQ.getVegetationList().forceRemove((Vegetation)this);
+			GHQ.stage().vegetations.forceRemove((Vegetation)this);
 	}
 	public final boolean hasDeleteClaim() {
 		return isDeleted;

@@ -24,24 +24,17 @@ import java.net.*;
 import java.text.DecimalFormat;
 import java.util.*;
 
-import bullet.Bullet;
 import config.ConfigLoader;
-import effect.Effect;
 import engine.Engine_THH1;
 import gui.GUIParts;
 import gui.MessageSource;
-import input.KeyListenerEx;
-import input.KeyTypeListener;
-import input.MouseListenerEx;
-import item.ItemData;
-import physics.Dynam;
-import physics.HasDynam;
-import physics.HasPoint;
+import gui.grouped.GUIGroup;
+import input.key.KeyListenerEx;
+import input.keyType.KeyTypeListener;
+import input.mouse.MouseListenerEx;
 import physics.Point;
-import structure.Structure;
+import sound.SoundClip;
 import unit.Unit;
-import vegetation.DropItem;
-import vegetation.Vegetation;
 
 /**
  * The core class for engine "THH"
@@ -109,11 +102,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private static Game engine;
 
 	//stage object data
-	private static final GHQObjectList<Unit> units = new GHQObjectList<Unit>();
-	private static final GHQObjectList<Bullet> bullets = new GHQObjectList<Bullet>();
-	private static final GHQObjectList<Effect> effects = new GHQObjectList<Effect>();
-	private static final GHQObjectList<Structure> structures = new GHQObjectList<Structure>();
-	private static final GHQObjectList<Vegetation> vegetations = new GHQObjectList<Vegetation>();
+	private static GHQStage nowStage;
 	
 	//GUI data
 	private static final LinkedList<GUIParts> guiParts = new LinkedList<GUIParts>();
@@ -146,7 +135,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return result;
 	}
 	
-	private boolean loadComplete;
+	private static boolean loadComplete;
 	private final MediaTracker tracker;
 	public GHQ(Game engine){
 		final long loadTime = System.currentTimeMillis();
@@ -159,6 +148,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			@Override
 			public void windowClosing(WindowEvent e){
 				System.exit(0);
+			}
+			@Override
+			public void windowActivated(WindowEvent e){
+				freezeScreen = false;
 			}
 			@Override
 			public void windowDeactivated(WindowEvent e){
@@ -178,9 +171,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		tracker = new MediaTracker(this);
 		//setup
 		resetStage();
-		//image & sound length fit
-		arrayImage = Arrays.copyOf(arrayImage, arrayImage_maxID + 1);
-		arraySound = Arrays.copyOf(arraySound, arrayImage_maxID + 1);
 		try{
 			tracker.waitForAll();
 		}catch(InterruptedException | NullPointerException e){}
@@ -189,7 +179,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN, 15.0f);
 		System.out.println("loadTimeReslut: " + (System.currentTimeMillis() - loadTime));
 		new Thread(this).start();
-		loadComplete = true;
 	}
 
 	//mainLoop///////////////
@@ -214,7 +203,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	private final BufferedImage offImage = new BufferedImage(defaultScreenW, defaultScreenH, BufferedImage.TYPE_INT_ARGB_PRE); //ダブルバッファキャンバス
 	private static Graphics2D g2;
-	public static Font basicFont, commentFont;
+	public static Font initialFont, basicFont, commentFont;
 	public static final BasicStroke stroke1 = new BasicStroke(1f), stroke3 = new BasicStroke(3f), stroke5 = new BasicStroke(5f);
 	private static final Color HPWarningColor = new Color(255,120,120), debugTextColor = new Color(200, 200, 200);
 	public static final DecimalFormat DF00_00 = new DecimalFormat("00.00");
@@ -229,13 +218,17 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			g2.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
 			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 			g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-		}
-		if(!loadComplete)
+			initialFont = g2.getFont();
+			loadComplete = true;
+			for(LoadRequester ver : loadRequesters)
+				ver.loadResource();
 			return;
+		}
 		g2.setColor(Color.WHITE);
 		g2.fill(screenRect);
 		final int TRANSLATE_X = (int)viewX,TRANSLATE_Y = (int)viewY;
 		g2.translate(TRANSLATE_X, TRANSLATE_Y);
+		g2.setFont(initialFont);
 		////////////////////////////////////////////////////////////////////////
 		//gameIdle
 		engine.idle(g2, stopEventKind);
@@ -243,8 +236,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		//GUIIdle
 		g2.translate(-TRANSLATE_X, -TRANSLATE_Y);
 		//gui parts////////////////////
-		for(GUIParts parts : guiParts)
-			parts.defaultIdle();
+		for(GUIParts parts : guiParts) {
+			parts.idleIfEnabled();
+		}
 		//message system///////////////
 		if(messageStop) {
 			if(messageStr.size() > 0) {
@@ -296,7 +290,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			g2.drawOval(TRANSLATE_X - 15, TRANSLATE_Y - 15, 30, 30);
 			//stageEdge
 			g2.setStroke(stroke3);
-			final int STAGE_W = engine.getStageW(), STAGE_H = engine.getStageH();
+			final int STAGE_W = nowStage.WIDTH, STAGE_H = nowStage.HEIGHT;
 			{ //LXRX lines
 				final int LX = TRANSLATE_X, RX = TRANSLATE_X + STAGE_W;
 				for(int i = 0;i < 50;i++) {
@@ -314,9 +308,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				}
 			}
 			//entityInfo
-			g2.drawString("Unit:" + units.size() + " EF:" + effects.size() + " B:" + bullets.size(), 30, 100);
+			g2.drawString(nowStage.entityAmountInfo(), 30, 100);
 			g2.drawString("LoadTime(ms):" + loadTime_total, 30, 120);
-			//g2.drawString("EM:" + loadTime_enemy + " ET:" + loadTime_entity + " G:" + loadTime_gimmick + " EF:" + loadTime_effect + " B:" + loadTime_bullet + " I:" + loadTime_item + " W: " + loadTime_weapon + " Other: " + loadTime_other,30,140);
 			g2.drawString("GameTime(ms):" + gameFrame, 30, 160);
 			//mouseInfo
 			g2.setColor(debugTextColor);
@@ -329,244 +322,38 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			g2.setStroke(stroke5);
 			g2.drawString("(" + (MOUSE_X - (int)viewX) + "," + (MOUSE_Y - (int)viewY) + ")", MOUSE_X + 20, MOUSE_Y + 40);
 			//unitInfo
-			for(Unit unit : units) {
-				final int RECT_X = unit.getDynam().intX() + (int)viewX, RECT_Y = unit.getDynam().intY() + (int)viewY;
+			nowStage.unitDebugPaint(g2);
+			//ruler
+			if(mouseDebugMode) {
+				g2.setColor(Color.RED);
 				g2.setStroke(stroke1);
-				g2.drawRect(RECT_X - 50, RECT_Y - 50, 100, 100);
-				g2.drawLine(RECT_X + 50, RECT_Y - 50, RECT_X + 60, RECT_Y - 60);
-				g2.setStroke(stroke5);
-				g2.drawString(unit.getName(), RECT_X + 62, RECT_Y - 68);
+				g2.drawString((int)mouseDebugX1 + "," + (int)mouseDebugY1, mouseDebugX1 + 20, mouseDebugY1 + 20);
+				if(mouseDebugX2 == GHQ.NONE) {
+					g2.drawLine(mouseDebugX1, mouseDebugY1, mouseX, mouseY);
+				}else {
+					g2.drawLine(mouseDebugX1, mouseDebugY1, mouseDebugX2, mouseDebugY2);
+					g2.drawString((int)mouseDebugX2 + "," + (int)mouseDebugY2, mouseDebugX2 + 20, mouseDebugY2 + 20);
+					final int DX = mouseDebugX2 - mouseDebugX1, DY = mouseDebugY2 - mouseDebugY1;
+					g2.drawString(DX + "," + DY, mouseDebugX1 + DX/2 + 20, mouseDebugY1 + DY/2 + 20);
+				}
 			}
 		}
 		g.drawImage(offImage, 0, 0, screenW, screenH, this);
 		loadTime_total = System.currentTimeMillis() - LOAD_TIME_PAINT_COMPONENT;
 	}
-	/**
-	 * A class helps {@link Bullet} or other objects to detect touching enemies.
-	 * @param bullet
-	 * @return
-	 */
-	public static final ArrayList<Unit> getHitUnits(ArrayList<Unit> units,HitInteractable object) {
-		final ArrayList<Unit> result = new ArrayList<Unit>();
-		for(Unit unit : units) {
-			if(unit.isHit(object))
-				result.add(unit);
-		}
-		return result;
-	}
-	/**
-	 * A class helps {@link Bullet} or other objects to detect touching enemies.
-	 * @param bullet
-	 * @return
-	 */
-	public static final ArrayList<Unit> getHitUnits(HitInteractable object) {
-		return getHitUnits(getUnits_standpoint(object, false), object);
-	}
-	//idle
-	public static final void defaultGHQObjectsIdle() {
-		units.defaultTraverse();
-		bullets.defaultTraverse();
-		effects.defaultTraverse();
-		structures.defaultTraverse();
-		vegetations.defaultTraverse();
-	}
-	public static final void defaultGHQObjectsIdle(GHQObjectType type) {
-		switch(type) {
-		case UNIT: units.defaultTraverse(); break;
-		case BULLET: bullets.defaultTraverse(); break;
-		case EFFECT: effects.defaultTraverse(); break;
-		case STRUCTURE: structures.defaultTraverse(); break;
-		case VEGETATION: vegetations.defaultTraverse(); break;
-		}
-	}
-	//information-units
-	public static final GHQObjectList<Unit> getUnitList() {
-		return units;
-	}
-	public static final ArrayList<Unit> getUnits_standpoint(HasStandpoint source, boolean white) {
-		final ArrayList<Unit> unitArray = new ArrayList<Unit>();
-		for(Unit unit : units) {
-			if(white == source.isFriend(unit))
-				unitArray.add(unit);
-		}
-		return unitArray;
-	}
-	public static final ArrayList<Unit> getUnits_standPoint(HasStandpoint source) {
-		return getUnits_standpoint(source, true);
-	}
-	public static final Unit getNearstEnemy(HasStandpoint source, int x, int y) {
-		double nearstDistanceSq = NONE;
-		Unit nearstUnit = null;
-		for(Unit enemy : getUnits_standpoint(source, false)) {
-			if(!enemy.isAlive() || enemy.isFriend(source))
-				continue;
-			final double DISTANCE_SQ = enemy.getDynam().distanceSq(x, y);
-			if(nearstUnit == null || DISTANCE_SQ < nearstDistanceSq) {
-				nearstDistanceSq = DISTANCE_SQ;
-				nearstUnit = enemy;
-			}
-		}
-		return nearstUnit;
-		
-	}
-	public static final ArrayList<Unit> getVisibleEnemies(Unit unit) {
-		final ArrayList<Unit> visibleEnemies = new ArrayList<Unit>();
-		for(Unit enemy : getUnits_standpoint(unit, false)) {
-			if(!enemy.isAlive())
-				continue;
-			if(enemy.getDynam().isVisible(unit))
-				visibleEnemies.add(enemy);
-		}
-		return visibleEnemies;
-	}
-	public static final Unit getNearstVisibleEnemy(Unit unit) {
-		final Dynam DYNAM = unit.getDynam();
-		Unit nearstVisibleEnemy = null;
-		double nearstDistanceSq = MAX;
-		for(Unit enemy : getUnits_standpoint(unit, false)) {
-			if(!enemy.isAlive() || !DYNAM.isVisible(enemy))
-				continue;
-			if(nearstDistanceSq == MAX) {
-				nearstVisibleEnemy = enemy;
-				nearstDistanceSq = DYNAM.distanceSq(enemy);
-			}else {
-				final double DISTANCE = DYNAM.distanceSq(enemy);
-				if(nearstDistanceSq > DISTANCE) {
-					nearstVisibleEnemy = enemy;
-					nearstDistanceSq = DISTANCE;
-				}
-			}
-		}
-		return nearstVisibleEnemy;
-	}
-	public static final Unit getNearstVisibleEnemy(Bullet bullet) {
-		final Dynam DYNAM = bullet.getDynam();
-		Unit nearstVisibleEnemy = null;
-		double nearstDistanceSq = MAX;
-		for(Unit enemy : getUnits_standpoint(bullet, false)) {
-			if(!enemy.isAlive() || !DYNAM.isVisible(enemy))
-				continue;
-			if(nearstDistanceSq == MAX) {
-				nearstVisibleEnemy = enemy;
-				nearstDistanceSq = DYNAM.distanceSq(enemy);
-			}else {
-				final double DISTANCE = DYNAM.distanceSq(enemy);
-				if(nearstDistanceSq > DISTANCE) {
-					nearstVisibleEnemy = enemy;
-					nearstDistanceSq = DISTANCE;
-				}
-			}
-		}
-		return nearstVisibleEnemy;
-	}
-	public static final GHQObjectList<Bullet> getBulletList(){
-		return bullets;
-	}
-	public static final GHQObjectList<Effect> getEffectList(){
-		return effects;
-	}
 	
-	//information-vegetation
-	public static final GHQObjectList<Vegetation> getVegetationList(){
-		return vegetations;
-	}
-	public static final DropItem getCoveredDropItem(HasDynam di, int distance) {
-		for(Vegetation vegetation : vegetations) {
-			if(vegetation instanceof DropItem && ((DropItem)vegetation).isCovered(di, distance)) {
-				return (DropItem)vegetation;
-			}
-		}
-		return null;
-	}
-	public static final ItemData getCoveredDropItem_pickup(HasDynam di, int distance) {
-		for(Vegetation vegetation : vegetations) {
-			if(vegetation instanceof DropItem && ((DropItem)vegetation).isCovered(di, distance)) {
-				return ((DropItem)vegetation).pickup();
-			}
-		}
-		return null;
-	}
 	//information-stage
+	public static final GHQStage stage() {
+		return nowStage;
+	}
 	public static final Game getEngine() {
 		return engine;
 	}
-	public static GHQObjectList<Structure> getStructureList(){
-		return structures;
-	}
-	public static final boolean checkLoS(Line2D line) {
-		for(Structure structure : structures) {
-			if(structure.intersectsLine(line))
-				return false;
-		}
-		return true;
-	}
-	public static final boolean hitStructure_Dot(int x, int y){
-		for(Structure structure : structures) {
-			if(structure.contains(x, y))
-				return true;
-		}
-		return false;
-	}
-	public static final boolean hitStructure_Dot(Point point){
-		return hitStructure_Dot(point.intX(), point.intY());
-	}
-	public static final boolean hitStructure_Dot(HasPoint hasPoint){
-		return hitStructure_Dot(hasPoint.getPoint());
-	}
-	public static final boolean hitStructure_Rect(int x, int y, int w, int h){
-		for(Structure structure : structures) {
-			if(structure.contains(x, y, w, h))
-				return true;
-		}
-		return false;
-	}
-	public static final boolean hitStructure(HitInteractable object){
-		for(Structure structure : structures) {
-			if(structure.getStandpoint() == null)
-				System.out.println("bug.");
-			if(!object.isFriend(structure) && structure.contains(object.getPoint().intX(), object.getPoint().intY(), object.getHitShape().getWidth(), object.getHitShape().getHeight()))
-				return true;
-		}
-		return false;
-	}
-	public static final boolean hitObstacle(HitInteractable object) {
-		return hitStructure(object) || !object.getPoint().inStage();
-	}
-	public static final boolean hitStructure_DXDY(HitInteractable object, int dx, int dy){
-		for(Structure structure : structures) {
-			if(structure.getStandpoint() == null)
-				System.out.println("bug.");
-			if(!object.isFriend(structure) && structure.contains(object.getPoint().intX() + dx, object.getPoint().intY() + dy, object.getHitShape().getWidth(), object.getHitShape().getHeight()))
-				return true;
-		}
-		return false;
-	}
-	public static final boolean hitObstacle_DXDY(HitInteractable object, int dx, int dy) {
-		return hitStructure_DXDY(object, dx, dy) || !inStage(object.getPoint().intX() + dx, object.getPoint().intY() + dy);
-	}
-	public static final boolean hitStructure_DSTXY(HitInteractable object, int dstX, int dstY){
-		for(Structure structure : structures) {
-			if(structure.getStandpoint() == null)
-				System.out.println("bug.");
-			if(!object.isFriend(structure) && structure.contains(dstX, dstY, object.getHitShape().getWidth(), object.getHitShape().getHeight()))
-				return true;
-		}
-		return false;
-	}
-	public static final boolean hitObstacle_DSTXY(HitInteractable object, int dstX, int dstY) {
-		return hitStructure_DSTXY(object, dstX, dstY) || !inStage(dstX, dstY);
-	}
-	public static final boolean inStage(int x, int y) {
-		return engine.inStage(x, y);
-	}
-	public static final boolean inStage(Point point) {
-		return inStage(point.intX(), point.intY());
-	}
 	//information-GUI
-	public static final int getScreenW(){
+	public static final int screenW(){
 		return screenW;
 	}
-	public static final int getScreenH(){
+	public static final int screenH(){
 		return screenH;
 	}
 	//information-paint
@@ -662,38 +449,55 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	//control-GUI
 	public static final void enableGUIs(String group) {
 		for(GUIParts parts : guiParts) {
-			if(parts.GROUP == group)
+			if(parts.NAME == group)
 				parts.enable();
 		}
 	}
 	public static final void disableGUIs(String group) {
 		for(GUIParts parts : guiParts) {
-			if(parts.GROUP == group)
+			if(parts.NAME == group)
 				parts.disable();
 		}
 	}
 	public static final void flitGUIs(String group) {
 		for(GUIParts parts : guiParts) {
-			if(parts.GROUP == group)
+			if(parts.NAME == group)
 				parts.flit();
 		}
 	}
 	public static final void enableCertainGUIs(String group) {
 		for(GUIParts parts : guiParts) {
-			if(parts.GROUP == group)
+			if(parts.NAME == group)
 				parts.enable();
 			else
+				parts.disable();
+		}
+	}
+	public static final void enableCertainGUI(GUIGroup group) {
+		for(GUIParts parts : guiParts) {
+			if(parts == group)
+				parts.enable();
+			else if(!group.contains(parts))
 				parts.disable();
 		}
 	}
 	
 	//input
 	private static int mouseX,mouseY;
+	private static boolean mouseDebugMode;
+	private static int mouseDebugX1, mouseDebugY1;
+	private static int mouseDebugX2, mouseDebugY2;
 	public void mouseWheelMoved(MouseWheelEvent e){}
 	public void mouseEntered(MouseEvent e){}
 	public void mouseExited(MouseEvent e){}
 	public void mousePressed(MouseEvent e){
 		//MouseListenerExs event
+		if(e.getButton() == MouseEvent.BUTTON2) {
+			mouseDebugMode = true;
+			mouseDebugX2 = GHQ.NONE;
+			mouseDebugX1 = mouseX;
+			mouseDebugY1 = mouseY;
+		}
 		for(MouseListenerEx mle : mouseListeners) {
 			if(!mle.isEnabled())
 				continue;
@@ -713,20 +517,27 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		if(e.getButton() == MouseEvent.BUTTON1)
 			guiPartsClickCheck(guiParts);
 	}
-	public static final void guiPartsClickCheck(Collection<GUIParts> guiParts) {
-		boolean alreadyClicked = false;
+	public static final boolean guiPartsClickCheck(Collection<GUIParts> guiParts) {
+		boolean clickAbsorbed = false, clicked = false;
 		for(GUIParts parts : guiParts) {
 			if(parts.isEnabled()) {
-				if(alreadyClicked || !parts.isMouseEntered()) {
+				if(clickAbsorbed || !parts.isMouseEntered()) {
 					parts.outsideClicked();
 				}else {
 					parts.clicked();
-					alreadyClicked = parts.absorbsClickEvent();
+					clicked = true;
+					clickAbsorbed = parts.absorbsClickEvent();
 				}
 			}
 		}
+		return clicked;
 	}
 	public void mouseReleased(MouseEvent e){
+		if(e.getButton() == MouseEvent.BUTTON2) {
+			mouseDebugX2 = mouseX;
+			mouseDebugY2 = mouseY;
+			System.out.println("RULER: " + (mouseDebugX2 - mouseDebugX1) + ", " + (mouseDebugY2 - mouseDebugY1));
+		}
 		for(MouseListenerEx mle : mouseListeners) {
 			if(!mle.isEnabled())
 				continue;
@@ -788,6 +599,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final int getMouseY(){
 		return mouseY - (int)viewY;
+	}
+	public static final Point getMousePoint() {
+		return new Point.IntPoint(getMouseX(), getMouseY());
 	}
 	public static final int getMouseScreenX(){
 		return mouseX;
@@ -865,6 +679,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			break;
 		case VK_F3:
 			debugMode = !debugMode;
+			if(!debugMode)
+				mouseDebugMode = false;
 			break;
 		case VK_F5:
 			freezeScreen = !freezeScreen;
@@ -942,60 +758,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//generation
 	/**
-	 * Add an {@link Bullet} to current stage.
-	 * Parameters of the bullet refers to {@link BulletInfo} settings.
-	 * @param bullet
-	 * @return created Bullet
-	 * @since alpha1.0
-	 */
-	public static final <T extends Bullet>T addBullet(T bullet){
-		if(!bullets.contains(bullet))
-			bullets.add(bullet);
-		return bullet;
-	}
-	/**
-	 * Add an {@link Effect} to current stage.
-	 * Parameters of the effect refers to {@link EffectInfo} settings.
-	 * @param effect
-	 * @return created Effect
-	 * @since alpha1.0
-	 */
-	public static final <T extends Effect>T addEffect(T effect){
-		if(!effects.contains(effect))
-			effects.add(effect);
-		return effect;
-	}
-	/**
-	 * Add an {@link Unit} to current stage.
-	 * @param unit
-	 * @return added unit
-	 */
-	public static final <T extends Unit>T addUnit(T unit) {
-		if(!units.contains(unit))
-			units.add(unit);
-		return unit;
-	}
-	/**
-	 * Add a {@link Structure} to current stage.
-	 * @param structure
-	 * @return added structure
-	 */
-	public static final <T extends Structure>T addStructure(T structure) {
-		if(!structures.contains(structure))
-			structures.add(structure);
-		return structure;
-	}
-	/**
-	 * Add a {@link Vegetation} to current stage.
-	 * @param vegetation
-	 * @return added vegetation
-	 */
-	public static final <T extends Vegetation>T addVegetation(T vegetation){
-		if(!vegetations.contains(vegetation))
-			vegetations.add(vegetation);
-		return vegetation;
-	}
-	/**
 	 * Add a {@link GUIParts}.(Doesn't enable it automatically.)
 	 * @param GUIParts
 	 * @return added GUIParts
@@ -1038,7 +800,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @return now gameFrame
 	 * @since 1.0
 	 */
-	public static final int getNowFrame() {
+	public static final int nowFrame() {
 		return gameFrame;
 	}
 	/**
@@ -1120,20 +882,27 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//stage test area
 	final private void resetStage(){
-		bullets.clear();
-		effects.clear();
+		if(nowStage != null)
+			nowStage.clear();
 		messageSource.clear();
 		messageStr.clear();
 		messageEvent.clear();
 		ErrorCounter.clear();
 		gameFrame = 0;
 		System.gc();
-		System.out.println("add units to the game");
+		System.out.println("stage reset done");
+		nowStage = engine.loadStage();
 		engine.loadResource();
-		engine.openStage();
 	}
 	
 	//ResourceLoad
+	private static final LinkedList<LoadRequester> loadRequesters = new LinkedList<LoadRequester>();
+	public static final void addLoadRequester(LoadRequester loadRequire) {
+		if(loadComplete)
+			loadRequire.loadResource();
+		else
+			loadRequesters.add(loadRequire);
+	}
 	/**
 	* Load the image file.
 	* @param url
@@ -1304,6 +1073,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final void setClip(int x, int y, int width, int height) {
 		g2.setClip(x, y, width, height);
 	}
+	public static final void rotate(Point point, double angle) {
+		g2.rotate(angle, point.intX(), point.intY());
+	}
 	/**
 	 * Reset AlphaComposite value.
 	 * @since alpha1.0
@@ -1431,6 +1203,34 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			g2.rotate(-angle, x, y);
 		}else
 			g2.drawImage(arrayImage[imgID], x - w/2, y - h/2, w, h, hq);
+	}
+	public static final void drawStringGHQ(String string, int x, int y, Font tmpFont) {
+		final Font FONT = g2.getFont();
+		g2.setFont(tmpFont);
+		g2.drawString(string, x, y);
+		g2.setFont(FONT);
+	}
+	public static final void drawStringGHQ(String string, int x, int y, float fontSize) {
+		drawStringGHQ(string, x, y, g2.getFont().deriveFont(fontSize));
+	}
+	public static final void drawStringGHQ(String string, int x, int y, int fontStyle, float fontSize) {
+		drawStringGHQ(string, x, y, g2.getFont().deriveFont(fontStyle, fontSize));
+	}
+	public static final void drawStringGHQ(String string, int x, int y) {
+		g2.drawString(string, x, y);
+	}
+	public static final void drawStringGHQ(String string, int x, int y, int lineH, int lineWordAmount) {
+		int nowIndex = 0;
+		while(!string.isEmpty()) {
+			if(nowIndex + lineWordAmount < string.length())
+				g2.drawString(string.substring(nowIndex, nowIndex + lineWordAmount), x, y);
+			else {
+				g2.drawString(string.substring(nowIndex), x, y);
+				break;
+			}
+			nowIndex += lineWordAmount;
+			y += lineH;
+		}
 	}
 	/**
 	 * Return Graphics2D instance.

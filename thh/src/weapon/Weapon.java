@@ -3,8 +3,8 @@ package weapon;
 import java.io.Serializable;
 
 import core.GHQ;
-import core.Standpoint;
 import physics.HasAnglePoint;
+import physics.Standpoint;
 import unit.Unit;
 
 /**
@@ -21,12 +21,12 @@ public class Weapon implements Serializable{
 	}
 	public final String
 		NAME;
-	protected final int
-		COOL_TIME, //
-		COOL_SPEED, //
-		RELOAD_TIME, //
-		RELOAD_SPEED, //
-		MAGAZINE_SIZE; //
+	public int
+		coolTime, //
+		coolSpeed, //
+		reloadTime, //
+		reloadSpeed, //
+		magazineSize; //
 	protected int
 		coolProgress, //
 		reloadProgress, //
@@ -36,24 +36,24 @@ public class Weapon implements Serializable{
 		autoReload;
 	public Weapon() {
 		NAME = WeaponInfo.name;
-		COOL_TIME = WeaponInfo.coolTime;
-		COOL_SPEED = WeaponInfo.coolSpeed;
-		RELOAD_TIME = WeaponInfo.reloadTime;
-		RELOAD_SPEED = WeaponInfo.reloadSpeed;
-		MAGAZINE_SIZE = WeaponInfo.magazineSize;
-		if(MAGAZINE_SIZE == GHQ.MAX)
+		coolTime = WeaponInfo.coolTime;
+		coolSpeed = WeaponInfo.coolSpeed;
+		reloadTime = WeaponInfo.reloadTime;
+		reloadSpeed = WeaponInfo.reloadSpeed;
+		magazineSize = WeaponInfo.magazineSize;
+		if(magazineSize == GHQ.MAX)
 			magazine = GHQ.MAX;
 		magazineConsumptionSpeed = WeaponInfo.magazineConsumptionSpeed;
-		coolProgress = COOL_TIME;
+		coolProgress = coolTime;
 		autoReload = WeaponInfo.autoReload;
 	}
 	/**
 	 * End current cool and reload process and unload the magazine.
 	 */
 	public void reset() {
-		coolProgress = COOL_TIME;
-		reloadProgress = RELOAD_TIME;
-		if(MAGAZINE_SIZE != GHQ.MAX)
+		coolProgress = coolTime;
+		reloadProgress = reloadTime;
+		if(magazineSize != GHQ.MAX)
 			magazine = 0;
 	}
 	///////////////////
@@ -66,7 +66,7 @@ public class Weapon implements Serializable{
 	public void idle() {
 		if(isReloadFinished()) {
 			if(!isCoolFinished()) { //cooling process is on going
-				if((coolProgress += COOL_SPEED) >= COOL_TIME)
+				if((coolProgress += coolSpeed) >= coolTime)
 					coolEnd();
 			}
 			//both of the cool and reloading is finished -> check magazine amount and reload.
@@ -74,7 +74,7 @@ public class Weapon implements Serializable{
 				startReload();
 			}
 		}else { //reloading process is on going
-			if((reloadProgress += RELOAD_SPEED) >= RELOAD_TIME)
+			if((reloadProgress += reloadSpeed) >= reloadTime)
 				reloadEnd();
 		}
 	}
@@ -107,7 +107,7 @@ public class Weapon implements Serializable{
 		return false;
 	}
 	public final boolean trigger(Unit shooter) {
-		return trigger(shooter, shooter.getStandpoint());
+		return trigger(shooter, shooter.standpoint());
 	}
 	/**
 	 * Set bullets.
@@ -146,7 +146,7 @@ public class Weapon implements Serializable{
 	 * Finish current cool process.
 	 */
 	public void coolEnd() {
-		coolProgress = COOL_TIME;
+		coolProgress = coolTime;
 	}
 	/**
 	 * Judge if the cool process is on going.<br>
@@ -154,7 +154,7 @@ public class Weapon implements Serializable{
 	 * @return true - finished cooling / false - not finished
 	 */
 	public final boolean isCoolFinished() {
-		return coolProgress >= COOL_TIME;
+		return coolProgress >= coolTime;
 	}
 	public final int getCoolProgress() {
 		return coolProgress;
@@ -177,11 +177,11 @@ public class Weapon implements Serializable{
 		final int AMMO_LEFT = getLeftAmmo();
 		if(AMMO_LEFT <= 0)
 			return 0;
-		final int REQUIRED_AMMO = MAGAZINE_SIZE - magazine;
+		final int REQUIRED_AMMO = magazineSize - magazine;
 		if(REQUIRED_AMMO == 0) //already full
 			return 0;
 		coolEnd();
-		if(RELOAD_TIME == 0) //no reload time
+		if(reloadTime == 0) //no reload time
 			reloadEnd();
 		else
 			reloadProgress = 0;
@@ -198,7 +198,7 @@ public class Weapon implements Serializable{
 	 */
 	public void reloadBoost(int value) {
 		if(!isReloadFinished()) {
-			reloadProgress += RELOAD_SPEED;
+			reloadProgress += reloadSpeed;
 			if(isReloadFinished())
 				reloadEnd();
 		}
@@ -208,7 +208,7 @@ public class Weapon implements Serializable{
 	 * @return feed amount
 	 */
 	public int reloadEnd() {
-		reloadProgress = RELOAD_TIME;
+		reloadProgress = reloadTime;
 		final int FEED_AMOUNT = Math.min(getMagazineEmptySpace(), getLeftAmmo());
 		magazine += FEED_AMOUNT;
 		consumeAmmo(FEED_AMOUNT);
@@ -222,8 +222,8 @@ public class Weapon implements Serializable{
 	 * @return feed amount (still not feed in)
 	 */
 	public int reloadCancel() {
-		reloadProgress = RELOAD_TIME;
-		return MAGAZINE_SIZE - magazine;
+		reloadProgress = reloadTime;
+		return magazineSize - magazine;
 	}
 	/**
 	 * Unload and return the amount of unfired bullets in the magazine.
@@ -255,7 +255,7 @@ public class Weapon implements Serializable{
 	 * @return true - finished reloading / false - not finished
 	 */
 	public boolean isReloadFinished() {
-		return reloadProgress >= RELOAD_TIME;
+		return reloadProgress >= reloadTime;
 	}
 	public final int getReloadProgress() {
 		return reloadProgress;
@@ -288,12 +288,12 @@ public class Weapon implements Serializable{
 	 * @return amount of fired magazine in current cartridge
 	 */
 	public final int getMagazineEmptySpace() {
-		return magazine != GHQ.MAX ? MAGAZINE_SIZE - magazine : GHQ.MAX;
+		return magazine != GHQ.MAX ? magazineSize - magazine : GHQ.MAX;
 	}
 	public final int getMagazineComsumptionSpeed() {
 		return magazineConsumptionSpeed;
 	}
 	public final double getMagazineEmptySpacePercentage() {
-		return (double)magazine/(double)MAGAZINE_SIZE;
+		return (double)magazine/(double)magazineSize;
 	}
 }

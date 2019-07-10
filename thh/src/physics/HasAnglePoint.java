@@ -1,6 +1,6 @@
 package physics;
 
 public interface HasAnglePoint extends HasPoint, HasAngle{
-	public abstract Point getPoint();
-	public abstract Angle getAngle();
+	public abstract Point point();
+	public abstract Angle angle();
 }

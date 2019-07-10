@@ -34,7 +34,7 @@ public class BlackMan extends THH_BasicEnemy{
 	@Override
 	public void idle() {
 		super.idle();
-		final Unit targetEnemy = GHQ.getNearstVisibleEnemy(this);
+		final Unit targetEnemy = GHQ.stage().getNearstVisibleEnemy(this);
 		if(targetEnemy != null) {
 			final double ANGLE = dynam.angleTo(dstPoint.setXY(targetEnemy));
 			dynam.setMoveAngle(ANGLE);

@@ -2,17 +2,17 @@ package bullet;
 
 import static java.lang.Math.PI;
 
-import core.Entity;
 import core.GHQ;
-import core.HitInteractable;
-import core.Standpoint;
-import geom.HitShape;
-import geom.Square;
-import paint.DotPaint;
-import paint.HasDotPaint;
+import hitShape.HitShape;
+import hitShape.Square;
+import paint.dot.DotPaint;
+import paint.dot.HasDotPaint;
 import physics.DstCntDynam;
 import physics.Dynam;
+import physics.Entity;
 import physics.HasAnglePoint;
+import physics.HitInteractable;
+import physics.Standpoint;
 import unit.Unit;
 import weapon.Weapon;
 
@@ -135,7 +135,7 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint{
 			////////////
 			//entity collision
 			////////////
-			for(Unit unit : GHQ.getHitUnits(GHQ.getUnits_standpoint(this, false),this)) {
+			for(Unit unit : GHQ.stage().getHitUnits(GHQ.stage().getUnits_standpoint(this, false),this)) {
 				if(hitUnitDeleteCheck(unit))
 					return false;
 			}
@@ -156,7 +156,7 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint{
 	}
 	//extends
 	public boolean judgeLandscapeCollision() {
-		return GHQ.hitStructure(this);
+		return GHQ.stage().structures.intersected(this);
 	}
 	public boolean hitLandScapeDeleteCheck() {
 		hitObject();
@@ -204,7 +204,7 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint{
 		return BULLET;
 	}
 	public final Bullet addCloneToGHQ() {
-		return GHQ.addBullet(getClone());
+		return GHQ.stage().addBullet(getClone());
 	}
 	public void split_xMirror(double dx,double dy) {
 		this.dynam.addXY_allowsMoveAngle(-dx/2,dy);
@@ -270,11 +270,11 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint{
 		return reflection;
 	}
 	@Override
-	public final Standpoint getStandpoint() {
+	public final Standpoint standpoint() {
 		return STANDPOINT;
 	}
 	@Override
-	public final HitShape getHitShape() {
+	public final HitShape hitShape() {
 		return hitShape;
 	}
 	@Override

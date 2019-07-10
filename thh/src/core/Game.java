@@ -2,6 +2,7 @@ package core;
 
 import java.awt.Graphics2D;
 
+import gui.GUIPartsSwitcher;
 import stage.StageSaveData;
 
 /**
@@ -11,45 +12,27 @@ import stage.StageSaveData;
  */
 public abstract class Game{
 	
-	public abstract String getVersion();
+	protected final GUIPartsSwitcher mainScreen;
 	
-	//initialization
-	public String getTitleName(){
-		return GHQ.NOT_NAMED;
+	public Game(GUIPartsSwitcher screen) {
+		mainScreen = screen;
 	}
-	public abstract void loadResource();
-	public abstract void openStage();
+	public Game() {
+		mainScreen = null;
+	}
+	
+	public void loadResource() {}
+	public abstract GHQStage loadStage();
 	public abstract StageSaveData getStageSaveData();
 	
 	//idle
 	public abstract void idle(Graphics2D g2,int stopEventKind);
 	
-	//control
-	public abstract void resetStage();
-	
 	//information
-	/**
-	 * Return how many times the idle method of this class is called.
-	 * @return Times the idle class called.
-	 */
-	public abstract int getEngineGameFrame();
-	/**
-	 * Judge if a coordinate were in permitted area.
-	 * @return true - in stage / false - in outside of stage
-	 */
-	public boolean inStage(int x,int y) {
-		return 0 < x && x <= getStageW() && 0 < y && y <= getStageH();
+	public String getTitleName(){
+		return GHQ.NOT_NAMED;
 	}
-	/**
-	 * Return the maximum width of the stage.
-	 * @return maximum width
-	 */
-	public abstract int getStageW();
-	/**
-	 * Return the maximum height of the stage.
-	 * @return maximum height
-	 */
-	public abstract int getStageH();
-	
-	//tool
+	public String getVersion(){
+		return GHQ.NOT_NAMED;
+	}
 }

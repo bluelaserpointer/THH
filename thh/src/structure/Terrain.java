@@ -2,59 +2,29 @@ package structure;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
-import java.awt.Stroke;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import core.ErrorCounter;
 import core.GHQ;
+import hitShape.HitShape;
+import hitShape.MyPolygon;
 
 public class Terrain extends Structure{
 	private static final long serialVersionUID = 7167638140442836310L;
-	protected Polygon polygon;
-	private int px[],py[];
-	public static ArrayList<Integer> bppx = new ArrayList<Integer>(),bppy = new ArrayList<Integer>();
+	protected MyPolygon hitShape;
+	public static ArrayList<Integer> bppx = new ArrayList<Integer>(), bppy = new ArrayList<Integer>();
 	
 	public Terrain() {
-		polygon = new Polygon();
+		hitShape = new MyPolygon();
 	}
-	public Terrain(Polygon polygon) {
-		this.polygon = polygon;
-	}
-	public Terrain(int[] pointX,int[] pointY) {
-		if(pointX.length < pointY.length) {
-			ErrorCounter.put("Terrain's constructer called Illegally: pointX.length = " + pointX.length + ", pointY.length = " + pointY.length);
-			polygon = new Polygon(pointX,pointY,pointX.length);
-			px = pointX;py = Arrays.copyOf(pointY, pointX.length);
-		}else if(pointX.length > pointY.length){
-			ErrorCounter.put("Terrain's constructer called Illegally: pointX.length = " + pointX.length + ", pointY.length = " + pointY.length);
-			polygon = new Polygon(pointX,pointY,pointY.length);
-			px = Arrays.copyOf(pointX, pointY.length);py = pointY;
-		}else {
-			polygon = new Polygon(pointX,pointY,pointX.length);
-			px = pointX;py = pointY;
-		}
+	public Terrain(MyPolygon polygon) {
+		hitShape = polygon;
 	}
 
 	//role
 	@Override
 	public void paint(boolean doAnimation) {
-		fill(Color.WHITE);
-		draw(Color.LIGHT_GRAY, GHQ.stroke3);
-	}
-	public void fill(Color color) {
-		final Graphics2D G2 = GHQ.getGraphics2D();
-		G2.setColor(color);
-		G2.fill(polygon);
-	}
-	public void draw(Color color,Stroke stroke) {
-		final Graphics2D G2 = GHQ.getGraphics2D();
-		G2.setColor(color);
-		G2.setStroke(stroke);
-		G2.draw(polygon);
+		hitShape.fill(point, Color.WHITE);
+		hitShape.draw(point, Color.LIGHT_GRAY, GHQ.stroke3);
 	}
 	public static final void makeGuiding(Graphics2D g2) {
 		if(bppx.size() == 0)
@@ -69,29 +39,6 @@ public class Terrain extends Structure{
 		g2.setStroke(GHQ.stroke3);
 		for(int i = 0;i < bppx.size();i++)
 			g2.drawRect(bppx.get(i) - 4, bppy.get(i) - 4, 8, 8);
-	}
-	//information
-	@Override
-	public boolean contains(int x,int y,int w,int h) {
-		return polygon.intersects(x, y, w, h);
-	}
-	@Override
-	public boolean contains(int x,int y) {
-		return polygon.contains(x, y);
-	}
-	@Override
-	public boolean intersectsLine(Line2D line) {
-		for(int i = 0;i < px.length - 1;i++) {
-			if(line.intersectsLine(px[i], py[i], px[i + 1], py[i + 1]))
-				return true;
-		}
-		if(line.intersectsLine(px[px.length - 1], py[px.length - 1], px[0], py[0]))
-			return true;
-		return false;
-	}
-	@Override
-	public Rectangle2D getBoundingBox() {
-		return polygon.getBounds2D();
 	}
 	
 	//information
@@ -113,13 +60,19 @@ public class Terrain extends Structure{
 		bppy.clear();
 	}
 	public static Terrain blueprint_flush() {
-		final int[] rx = new int[bppx.size()],ry = new int[rx.length];
+		final int[] rx = new int[bppx.size()], ry = new int[rx.length];
 		for(int i = 0;i < rx.length;i++) {
 			rx[i] = bppx.get(i);
 			ry[i] = bppy.get(i);
 		}
 		bppx.clear();
 		bppy.clear();
-		return new Terrain(rx,ry);
+		return new Terrain(new MyPolygon(rx, ry));
+	}
+	
+	//information
+	@Override
+	public HitShape hitShape() {
+		return hitShape;
 	}
 }

@@ -2,12 +2,12 @@ package effect;
 
 import static java.lang.Math.PI;
 
-import core.Entity;
 import core.GHQ;
-import paint.DotPaint;
-import paint.HasDotPaint;
+import paint.dot.DotPaint;
+import paint.dot.HasDotPaint;
 import physics.DstCntDynam;
 import physics.Dynam;
+import physics.Entity;
 import physics.HasDynam;
 
 /**
@@ -40,7 +40,7 @@ public class Effect extends Entity implements HasDotPaint{
 		paintScript = DotPaint.BLANK_SCRIPT;
 	}
 	public Effect(HasDynam source) {
-		dynam.setAll(source.getDynam());
+		dynam.setAll(source.dynam());
 		SHOOTER = source;
 		UNIQUE_ID = ++nowMaxUniqueID;
 		name = GHQ.NOT_NAMED;
@@ -139,7 +139,7 @@ public class Effect extends Entity implements HasDotPaint{
 		return EFFECT;
 	}
 	public final Effect addCloneToGHQ() {
-		return GHQ.addEffect(getClone());
+		return GHQ.stage().addEffect(getClone());
 	}
 	public void split_xMirror(double dx,double dy) {
 		this.dynam.addXY_allowsMoveAngle(-dx/2,dy);

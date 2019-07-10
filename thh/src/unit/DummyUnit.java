@@ -1,7 +1,7 @@
 package unit;
 
 import core.GHQ;
-import geom.HitShape;
+import hitShape.Rectangle;
 import physics.Dynam;
 
 public class DummyUnit extends Unit{
@@ -9,7 +9,7 @@ public class DummyUnit extends Unit{
 
 	private int dummyIID;
 	public DummyUnit(Dynam dynam) {
-		super(HitShape.NULL_HITSHAPE, GHQ.NONE);
+		super(new Rectangle(0,0), GHQ.NONE);
 		dummyIID = GHQ.loadImage("thhimage/gui_editor/Unit.png");
 	}
 	@Override
@@ -17,7 +17,7 @@ public class DummyUnit extends Unit{
 	}
 	@Override
 	public void paint(boolean doAnimation) {
-		GHQ.drawImageGHQ_center(dummyIID, getDynam().intX(), getDynam().intY());
+		GHQ.drawImageGHQ_center(dummyIID, dynam().intX(), dynam().intY());
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 
 import core.GHQ;
+import paint.rect.RectPaint;
 
 /**
  * A minor PaintScript subclass which draw a rectangle's border line with specified color.

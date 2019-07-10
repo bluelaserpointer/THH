@@ -4,11 +4,11 @@ import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
 import core.GHQObject;
-import core.HasBoundingBox;
-import paint.HasDotPaint;
+import paint.dot.DotPaint;
+import paint.dot.HasDotPaint;
+import physics.HasBoundingBox;
 import physics.HasPoint;
 import physics.Point;
-import paint.DotPaint;
 
 /**
  * A primal class for managing vegetation object.
@@ -46,11 +46,11 @@ public class Vegetation extends GHQObject implements Serializable, HasPoint, Has
 	
 	//information
 	@Override
-	public Point getPoint() {
+	public Point point() {
 		return point;
 	}
 	@Override
-	public Rectangle2D getBoundingBox() {
+	public Rectangle2D boundingBox() {
 		final int W = paintScript.getDefaultW(), H = paintScript.getDefaultH();
 		return new Rectangle2D.Double(point.intX() - W/2, point.intY() - H/2, W, H);
 	}

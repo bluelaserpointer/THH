@@ -4,40 +4,15 @@ import static java.lang.Math.PI;
 
 import bullet.Bullet;
 import core.GHQ;
-import core.Standpoint;
-import geom.Circle;
-import paint.DotPaint;
+import hitShape.Circle;
 import paint.ImageFrame;
+import paint.dot.DotPaint;
 import physics.HasAnglePoint;
+import physics.Standpoint;
 import unit.Unit;
 import weapon.Weapon;
 
 public abstract class THH_BulletLibrary extends Bullet{
-
-	public static void loadResource() {
-		/////////////////
-		//Marisa's bullet
-		/////////////////
-		MillkyWay.paint = ImageFrame.createNew("thhimage/MillkyWay.png");
-		NarrowSpark.paint = ImageFrame.createNew("thhimage/NarrowSpark_2.png");
-		ReuseBomb.paint = ImageFrame.createNew("thhimage/ReuseBomb.png");
-		MagicMissile.paint = ImageFrame.createNew("thhimage/MagicMissile.png");
-		
-		/////////////////
-		//Reimu's bullet
-		/////////////////
-		FudaKouhaku.paint = ImageFrame.createNew("thhimage/KouhakuNoFuda.png");
-		FudaShiroKuro.paint = ImageFrame.createNew("thhimage/ShirokuroNoFuda.png");
-		FudaSouhaku.paint = ImageFrame.createNew("thhimage/SouhakuNoFuda.png");
-
-		/////////////////
-		//Enemy's bullet
-		/////////////////
-		LightBall.paint = ImageFrame.createNew("thhimage/LightBallA.png");
-		HealShotgun.paint = ImageFrame.createNew("thhimage/DarkNiddle2.png");
-		BlackSlashBurst.paint = ImageFrame.createNew("thhimage/DarkNiddle.png");
-	}
-	
 	public THH_BulletLibrary(Weapon sourceWeapon, HasAnglePoint shooter, Standpoint standpoint) {
 		super(sourceWeapon, shooter, standpoint);
 	}
@@ -59,7 +34,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Reimu - 1
 	/////////////////
 	public static class FudaKouhaku extends THH_BulletLibrary{
-		private static DotPaint paint;
+		private static final DotPaint paint = ImageFrame.createNew("thhimage/KouhakuNoFuda.png");
 		public FudaKouhaku(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "FudaKouhaku";
@@ -75,14 +50,14 @@ public abstract class THH_BulletLibrary extends Bullet{
 		}
 		@Override
 		public final void hitObject() {
-			GHQ.addEffect(new THH_EffectLibrary.FudaHitEF(this, true));
+			GHQ.stage().addEffect(new THH_EffectLibrary.FudaHitEF(this, true));
 		}
 	}
 	/////////////////
 	//Reimu - 2
 	/////////////////
 	public static class FudaShiroKuro extends THH_BulletLibrary{
-		private static DotPaint paint;
+		private static final DotPaint paint = ImageFrame.createNew("thhimage/ShirokuroNoFuda.png");
 		public FudaShiroKuro(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "FudaShiroKuro";
@@ -101,7 +76,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Reimu - 3
 	/////////////////
 	public static class FudaSouhaku extends THH_BulletLibrary{
-		private static DotPaint paint;
+		private static final DotPaint paint = ImageFrame.createNew("thhimage/SouhakuNoFuda.png");
 		public FudaSouhaku(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "FudaSouhaku";
@@ -122,7 +97,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Marisa - 1
 	/////////////////
 	public static class MillkyWay extends THH_BulletLibrary{
-		private static DotPaint paint;
+		private static final DotPaint paint = ImageFrame.createNew("thhimage/MillkyWay.png");
 		public MillkyWay(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "MillkyWay";
@@ -141,7 +116,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Marisa - 2
 	/////////////////
 	public static class NarrowSpark extends THH_BulletLibrary{
-		private static DotPaint paint;
+		private static final DotPaint paint = ImageFrame.createNew("thhimage/NarrowSpark_2.png");
 		public NarrowSpark(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "NarrowSpark";
@@ -167,19 +142,19 @@ public abstract class THH_BulletLibrary extends Bullet{
 					break;
 			}
 			dynam.setXY(SHOOTER);
-			dynam.setMoveAngle(SHOOTER.getAngle().angle());
+			dynam.setMoveAngle(SHOOTER.angle().angle());
 			return;
 		}
 		@Override
 		public void hitObject() {
-			GHQ.addEffect(new THH_EffectLibrary.SparkHitEF(this));
+			GHQ.stage().addEffect(new THH_EffectLibrary.SparkHitEF(this));
 		}
 	}
 	/////////////////
 	//Marisa - 3
 	/////////////////
 	public static class ReuseBomb extends THH_BulletLibrary{
-		private static DotPaint paint;
+		private static final DotPaint paint = ImageFrame.createNew("thhimage/ReuseBomb.png");
 		public ReuseBomb(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "ReuseBomb";
@@ -198,14 +173,14 @@ public abstract class THH_BulletLibrary extends Bullet{
 		public void idle() {
 			super.idle();
 			if(Math.random() < 0.2)
-				GHQ.addEffect(new THH_EffectLibrary.LightningEF(this));
+				GHQ.stage().addEffect(new THH_EffectLibrary.LightningEF(this));
 		}
 	}
 	/////////////////
 	//Marisa - 4
 	/////////////////
 	public static class MagicMissile extends THH_BulletLibrary{
-		private static DotPaint paint;
+		private static final DotPaint paint = ImageFrame.createNew("thhimage/MagicMissile.png");
 		public MagicMissile(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "MAGIC_MISSILE";
@@ -224,19 +199,19 @@ public abstract class THH_BulletLibrary extends Bullet{
 		public void idle() {
 			super.idle();
 			for(int i = 0;i < 2;i++)
-				GHQ.addEffect(new THH_EffectLibrary.MissileTraceA_EF(this, true));
-			GHQ.addEffect(new THH_EffectLibrary.MissileTraceB_EF(this));
+				GHQ.stage().addEffect(new THH_EffectLibrary.MissileTraceA_EF(this, true));
+			GHQ.stage().addEffect(new THH_EffectLibrary.MissileTraceB_EF(this));
 		}
 		@Override
 		public void hitObject() {
-			GHQ.addEffect(new THH_EffectLibrary.MissileHitEF(this, true));
+			GHQ.stage().addEffect(new THH_EffectLibrary.MissileHitEF(this, true));
 		}
 	}
 	/////////////////
 	//Enemy - 1
 	/////////////////
 	public static class LightBall extends THH_BulletLibrary{
-		private static DotPaint paint;
+		private static final DotPaint paint = ImageFrame.createNew("thhimage/LightBallA.png");
 		public LightBall(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "LightBall";
@@ -254,7 +229,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Enemy - 2
 	/////////////////
 	public static class HealShotgun extends THH_BulletLibrary{
-		private static DotPaint paint;
+		private static final DotPaint paint = ImageFrame.createNew("thhimage/DarkNiddle2.png");
 		public HealShotgun(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "HealShotgun";
@@ -273,7 +248,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Enemy - 2
 	/////////////////
 	public static class BlackSlashBurst extends THH_BulletLibrary{
-		private static DotPaint paint;
+		private static final DotPaint paint = ImageFrame.createNew("thhimage/DarkNiddle.png");
 		public BlackSlashBurst(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "BlackSlashBurst";

@@ -8,13 +8,14 @@ import java.awt.Graphics2D;
 import java.io.File;
 
 import core.GHQ;
+import core.GHQStage;
 import core.Game;
 import gui.DefaultStageEditor;
 import gui.MessageSource;
-import input.DoubleNumKeyListener;
-import input.MouseListenerEx;
-import input.SingleKeyListener;
-import input.SingleNumKeyListener;
+import input.key.DoubleNumKeyListener;
+import input.key.SingleKeyListener;
+import input.key.SingleNumKeyListener;
+import input.mouse.MouseListenerEx;
 import paint.ImageFrame;
 import stage.StageSaveData;
 import structure.Structure;
@@ -27,13 +28,12 @@ public class Engine_THH1 extends Game implements MessageSource{
 	private static THH_BasicUnit[] friends;
 	private static final Stage_THH1[] stages = new Stage_THH1[1];
 	private int nowStage;
-	private int stageW,stageH;
 	
 	public static final int FRIEND = 0,ENEMY = 100;
 	final int F_MOVE_SPD = 6;
 	
-	int formationsX[],formationsY[];
-	int formationCenterX,formationCenterY;
+	int formationsX[], formationsY[];
+	int formationCenterX, formationCenterY;
 
 	public String getVersion() {
 		return "alpha1.0.0";
@@ -76,7 +76,10 @@ public class Engine_THH1 extends Game implements MessageSource{
 	public static void main(String args[]){
 		new GHQ(new Engine_THH1());
 	}
-	
+	@Override
+	public final GHQStage loadStage() {
+		return new GHQStage(5000, 5000);
+	}
 	@Override
 	public final void loadResource() {
 		/////////////////////////////////
@@ -96,15 +99,10 @@ public class Engine_THH1 extends Game implements MessageSource{
 		GHQ.addListenerEx(s_numKeyL);
 		GHQ.addListenerEx(d_numKeyL);
 		/////////////////////////////////
-		//bullets && effects
-		/////////////////////////////////
-		THH_BulletLibrary.loadResource();
-		THH_EffectLibrary.loadResource();
-		/////////////////////////////////
 		//units
 		/////////////////////////////////
 		//formation
-		formationCenterX = GHQ.getScreenW()/2;formationCenterY = GHQ.getScreenH() - 100;
+		formationCenterX = GHQ.screenW()/2;formationCenterY = GHQ.screenH() - 100;
 		formationsX = new int[2];
 		formationsY = new int[2];
 		formationsX[0] = -15;formationsY[0] = 0;
@@ -116,35 +114,32 @@ public class Engine_THH1 extends Game implements MessageSource{
 		friends[1] = Unit.initialSpawn(new Reimu(FRIEND),formationCenterX + formationsX[1],formationCenterY + formationsY[1]);
 		friends[1].status.set(HP, 4000);
 		for(Unit friend : friends)
-			GHQ.addUnit(friend);
+			GHQ.stage().addUnit(friend);
 		//action
 		//ActionInfo.clear();
 		//ActionInfo.addDstPlan(1000, GHQ.getScreenW() - 200, GHQ.getScreenH() + 100);
 		//ActionInfo.addDstPlan(1000, GHQ.getScreenW() + 200, GHQ.getScreenH() + 100);
 		//final Action moveLeftToRight200 = new Action(this);
 		//enemy
-		GHQ.addUnit(Unit.initialSpawn(new Fairy(ENEMY),300, 100)).status.setDefault(HP, 2500);
-		GHQ.addUnit(Unit.initialSpawn(new Fairy(ENEMY),700, 20)).status.setDefault(HP, 2500);
-		GHQ.addUnit(Unit.initialSpawn(new Fairy(ENEMY),1200, 300)).status.setDefault(HP, 2500);
-		GHQ.addUnit(Unit.initialSpawn(new Fairy(ENEMY),1800, 700)).status.setDefault(HP, 2500);
-		GHQ.addUnit(Unit.initialSpawn(new WhiteMan(ENEMY),400, GHQ.random2(100, 150))).status.setDefault(HP, 50000);
-		GHQ.addUnit(Unit.initialSpawn(new BlackMan(ENEMY),200, GHQ.random2(100, 150))).status.setDefault(HP, 10000);
+		GHQ.stage().addUnit(Unit.initialSpawn(new Fairy(ENEMY),300, 100)).status.setDefault(HP, 2500);
+		GHQ.stage().addUnit(Unit.initialSpawn(new Fairy(ENEMY),700, 20)).status.setDefault(HP, 2500);
+		GHQ.stage().addUnit(Unit.initialSpawn(new Fairy(ENEMY),1200, 300)).status.setDefault(HP, 2500);
+		GHQ.stage().addUnit(Unit.initialSpawn(new Fairy(ENEMY),1800, 700)).status.setDefault(HP, 2500);
+		GHQ.stage().addUnit(Unit.initialSpawn(new WhiteMan(ENEMY),400, GHQ.random2(100, 150))).status.setDefault(HP, 50000);
+		GHQ.stage().addUnit(Unit.initialSpawn(new BlackMan(ENEMY),200, GHQ.random2(100, 150))).status.setDefault(HP, 10000);
 		//vegetation
-		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf.png"),1172,886));
-		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_flower.png"),1200,800));
-		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf2.png"),1800,350));
-		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_stone.png"),1160,870));
-		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf3.png"),1102,830));
-		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf3.png"),1122,815));
-		GHQ.addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf3.png"),822,886));
-		stageW = stageH = 5000;
-	}
-	@Override
-	public final void openStage() {
+		GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf.png"),1172,886));
+		GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/veg_flower.png"),1200,800));
+		GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf2.png"),1800,350));
+		GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/veg_stone.png"),1160,870));
+		GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf3.png"),1102,830));
+		GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf3.png"),1122,815));
+		GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf3.png"),822,886));
+
 		stages[0] = (Stage_THH1)GHQ.loadData(new File("stage/saveData1.txt"));
 		if(stages[0] != null) {
 			for(Structure structure : stages[0].STRUCTURES) {
-				GHQ.addStructure(structure);
+				GHQ.stage().addStructure(structure);
 			}
 		}
 		GHQ.addMessage(this,"This is a prototype stage.");
@@ -155,19 +150,20 @@ public class Engine_THH1 extends Game implements MessageSource{
 	}
 	@Override
 	public final StageSaveData getStageSaveData() {
-		return new Stage_THH1(GHQ.getUnitList(),GHQ.getStructureList(),GHQ.getVegetationList());
+		return new Stage_THH1(GHQ.stage().units,GHQ.stage().structures,GHQ.stage().vegetations);
 	}
 	//idle
 	private static int gameFrame;
 	@Override
 	public final void idle(Graphics2D g2,int stopEventKind) {
+		if(friends == null)
+			return;
 		gameFrame++;
 		//stagePaint
 		//background
-		g2.setColor(new Color(112, 173, 71));
-		g2.fillRect(0, 0, stageW, stageH);
+		GHQ.stage().fill(new Color(112, 173, 71));
 		//center point
-		GHQ.drawImageGHQ_center(magicCircleIID, formationCenterX, formationCenterY, (double)GHQ.getNowFrame()/35.0);
+		GHQ.drawImageGHQ_center(magicCircleIID, formationCenterX, formationCenterY, (double)GHQ.nowFrame()/35.0);
 		g2.setColor(Color.RED);
 		g2.fillOval(formationCenterX - 2, formationCenterY - 2, 5, 5);
 		////////////////
@@ -183,19 +179,19 @@ public class Engine_THH1 extends Game implements MessageSource{
 				for(int i = 0;i < friends.length;i++)
 					friends[i].dstPoint.setXY(friends[i].dynam.setXY(formationCenterX + formationsX[i], formationCenterY + formationsY[i]));
 				//enemy
-				for(Unit enemy : GHQ.getUnitList()) {
+				for(Unit enemy : GHQ.stage().units) {
 					if(!enemy.isAlive())
 						continue;
 					if(enemy.getName() == "FairyA") {
 						final int FRAME = gameFrame % 240;
 						if(FRAME < 100)
-							enemy.getDynam().setSpeed(-5, 0);
+							enemy.dynam().setSpeed(-5, 0);
 						else if(FRAME < 120)
-							enemy.getDynam().setSpeed(0, 0);
+							enemy.dynam().setSpeed(0, 0);
 						else if(FRAME < 220)
-							enemy.getDynam().setSpeed(5, 0);
+							enemy.dynam().setSpeed(5, 0);
 						else
-							enemy.getDynam().setSpeed(0, 0);
+							enemy.dynam().setSpeed(0, 0);
 					}
 				}
 				//leap
@@ -237,7 +233,7 @@ public class Engine_THH1 extends Game implements MessageSource{
 			GHQ.translateForGUI(true);
 			int pos = 1;
 			for(THH_BasicUnit chara : friends) 
-				chara.iconPaint.rectPaint(pos++*90 + 10, GHQ.getScreenH() - 40, 80, 30);
+				chara.iconPaint.rectPaint(pos++*90 + 10, GHQ.screenH() - 40, 80, 30);
 			GHQ.translateForGUI(false);
 		}
 		if(stopEventKind == GHQ.NONE || editor.isEnabled()) { //scroll
@@ -267,31 +263,9 @@ public class Engine_THH1 extends Game implements MessageSource{
 			}
 		}
 		//idle
-		GHQ.defaultGHQObjectsIdle();
+		GHQ.stage().idle();
 	}
 	
-	//control
-	@Override
-	public final void resetStage() {
-		
-	}
-	//information
-	@Override
-	public final int getEngineGameFrame() {
-		return gameFrame;
-	}
-	@Override
-	public final boolean inStage(int x,int y) {
-		return 0 < x && x <= stageW && 0 < y && y <= stageH;
-	}
-	@Override
-	public final int getStageW() {
-		return stageW;
-	}
-	@Override
-	public final int getStageH() {
-		return stageH;
-	}
 	private boolean doScrollView = true;
 	private boolean doGravity = false;
 }

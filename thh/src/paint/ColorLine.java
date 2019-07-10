@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 
 import core.GHQ;
+import paint.line.LinePaint;
 
 public class ColorLine implements LinePaint{
 	private static final long serialVersionUID = -4572501536482586169L;

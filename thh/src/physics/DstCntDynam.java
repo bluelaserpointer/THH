@@ -3,7 +3,6 @@ package physics;
 import static java.lang.Math.sqrt;
 
 import core.GHQ;
-import core.HitInteractable;
 
 /**
  * A subclass of {@link Dynam} which is able to count its physical distance.<br>
@@ -57,7 +56,7 @@ public class DstCntDynam extends Dynam{
 	}
 	@Override
 	public void moveIfNoObstacles(HitInteractable source) {
-		if(xSpd == 0 && ySpd == 0 || GHQ.hitObstacle_DXDY(source, (int)xSpd, (int)ySpd))
+		if(xSpd == 0 && ySpd == 0 || GHQ.stage().hitObstacle(source, cloneAt((int)xSpd, (int)ySpd)))
 			return;
 		x += xSpd;
 		y += ySpd;
@@ -87,7 +86,7 @@ public class DstCntDynam extends Dynam{
 			dstX = x + DX*RATE;
 			dstY = y + DY*RATE;
 		}
-		if(!GHQ.hitObstacle_DSTXY(source, (int)dstX, (int)dstY)) {
+		if(!GHQ.stage().hitObstacle(source, cloneAt((int)dstX, (int)dstY))) {
 			x = dstX;
 			y = dstY;
 			movedDistance += DISTANCE < speed ? DISTANCE : speed;

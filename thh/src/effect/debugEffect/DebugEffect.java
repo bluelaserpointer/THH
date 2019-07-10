@@ -14,7 +14,7 @@ public class DebugEffect extends Effect{
 		final DebugEffect effect = new DebugEffect();
 		effect.dynam.setXY(x1, y1);
 		effect.paintScript = new ColorLine(color, stroke).convertToDotPaint(x2, y2);
-		return GHQ.addEffect(effect);
+		return GHQ.stage().addEffect(effect);
 	}
 	public static Effect setLine(Color color, Stroke stroke, Point p1, Point p2) {
 		return setLine(color, stroke, p1.intX(), p1.intY(), p2.intX(), p2.intY());

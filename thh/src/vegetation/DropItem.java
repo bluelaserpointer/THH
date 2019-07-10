@@ -2,7 +2,7 @@ package vegetation;
 
 import core.GHQ;
 import item.ItemData;
-import paint.DotPaint;
+import paint.dot.DotPaint;
 import physics.Dynam;
 import physics.HasDynam;
 
@@ -23,7 +23,7 @@ public class DropItem extends Vegetation{
 		HITBOX_H = h;
 	}
 	public boolean isCovered(HasDynam di, int distance) {
-		final Dynam DYNAM = di.getDynam();
+		final Dynam DYNAM = di.dynam();
 		return DYNAM.intAbsDX(point) < ((HITBOX_W != GHQ.NONE ? HITBOX_W : paintScript.getDefaultW()) + distance)/2
 				&& DYNAM.intAbsDY(point) < ((HITBOX_H != GHQ.NONE ? HITBOX_H : paintScript.getDefaultH()) + distance)/2;
 	}

@@ -8,7 +8,9 @@ import java.awt.geom.Rectangle2D;
 import java.util.BitSet;
 
 import core.GHQ;
-import paint.RectPaint;
+import hitShape.HitShape;
+import paint.rect.RectPaint;
+import physics.Point;
 
 public class Tile extends Structure{
 	private static final long serialVersionUID = -1364728656700080343L;
@@ -39,76 +41,91 @@ public class Tile extends Structure{
 		aliveTiles = new BitSet(X_TILES*Y_TILES);
 		aliveTiles.set(0, aliveTiles.size());
 	}
-	@Override
-	public boolean contains(int x, int y, int w, int h) {
-		x -= ORIGIN_X;
-		y -= ORIGIN_Y;
-		if(x < 0 || X_TILES*TILE_SIZE < x || y < 0 || Y_TILES*TILE_SIZE < y)
-			return false;
-		final int x1 = x/TILE_SIZE,x2 = (x + w)/TILE_SIZE;
-		final int y1 = y/TILE_SIZE,y2 = (y + w)/TILE_SIZE;
-		for(int xi = x1;xi <= x2;xi++) {
-			for(int yi = y1;yi <= y2;yi++) {
-				if(aliveTiles.get(xi + yi*X_TILES))
-					return true;
-			}
+	private final HitShape hitShape = new HitShape() {
+		private static final long serialVersionUID = -8708171125934571442L;
+		@Override
+		public boolean intersects(Point p1, HitShape shape, Point p2) {
+			return intersectsDot(0, 0, p2.intX(), p2.intY());
 		}
-		return false;
-	}
-	@Override
-	public boolean contains(int x, int y) {
-		x -= ORIGIN_X;
-		y -= ORIGIN_Y;
-		return 0 < x && x < X_TILES*TILE_SIZE && 0 < y && y < Y_TILES*TILE_SIZE && aliveTiles.get(x/TILE_SIZE + y/TILE_SIZE*X_TILES);
-	}
-	@Override
-	public boolean intersectsLine(Line2D line) {
-		if(!line.intersects(ORIGIN_X, ORIGIN_Y, X_TILES*TILE_SIZE, Y_TILES*TILE_SIZE))
-			return false;
-		for(int xi = 0;xi < X_TILES;xi++) {
-			for(int yi = 0;yi < Y_TILES;yi++) {
-				if(aliveTiles.get(xi + yi*X_TILES)){
-					if(line.intersects(ORIGIN_X + xi*TILE_SIZE, ORIGIN_Y + yi*TILE_SIZE, TILE_SIZE, TILE_SIZE))
-						return true;
+		@Override
+		public boolean intersectsDot(int myX, int myY, int x, int y) {
+			x -= ORIGIN_X;
+			y -= ORIGIN_Y;
+			return 0 < x && x < X_TILES*TILE_SIZE && 0 < y && y < Y_TILES*TILE_SIZE && aliveTiles.get(x/TILE_SIZE + y/TILE_SIZE*X_TILES);
+		}
+		@Override
+		public boolean intersectsLine(int myX, int myY, int x1, int y1, int x2, int y2) {
+			final Line2D line = new Line2D.Double(x1, y1, x2, y2);
+			if(!line.intersects(ORIGIN_X, ORIGIN_Y, X_TILES*TILE_SIZE, Y_TILES*TILE_SIZE))
+				return false;
+			for(int xi = 0;xi < X_TILES;xi++) {
+				for(int yi = 0;yi < Y_TILES;yi++) {
+					if(aliveTiles.get(xi + yi*X_TILES)){
+						if(line.intersects(ORIGIN_X + xi*TILE_SIZE, ORIGIN_Y + yi*TILE_SIZE, TILE_SIZE, TILE_SIZE))
+							return true;
+					}
 				}
 			}
+			return false;
 		}
-		return false;
-	}
+		@Override
+		public void fill(Point point, Color color) {
+			final Graphics2D G2 = GHQ.getGraphics2D();
+			final int TX = point.intX(), TY = point.intY();
+			G2.translate(TX, TY);
+			for(int xi = 0;xi < X_TILES;xi++) {
+				for(int yi = 0;yi < Y_TILES;yi++) {
+					if(aliveTiles.get(xi + yi*X_TILES)){
+						final int PX = ORIGIN_X + xi*TILE_SIZE, PY = ORIGIN_Y + yi*TILE_SIZE;
+						G2.setColor(color);
+						G2.fillRect(PX, PY, TILE_SIZE, TILE_SIZE);
+					}
+				}
+			}
+			G2.translate(-TX, -TY);
+		}
+		@Override
+		public void draw(Point point, Color color, Stroke stroke) {
+			final Graphics2D G2 = GHQ.getGraphics2D();
+			final int TX = point.intX(), TY = point.intY();
+			G2.translate(TX, TY);
+			for(int xi = 0;xi < X_TILES;xi++) {
+				for(int yi = 0;yi < Y_TILES;yi++) {
+					if(aliveTiles.get(xi + yi*X_TILES)){
+						final int PX = ORIGIN_X + xi*TILE_SIZE, PY = ORIGIN_Y + yi*TILE_SIZE;
+						G2.setColor(color);
+						G2.setStroke(stroke);
+						G2.fillRect(PX, PY, TILE_SIZE, TILE_SIZE);
+					}
+				}
+			}
+			G2.translate(-TX, -TY);
+		}
+		@Override
+		public HitShape clone() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+		public int width() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		@Override
+		public int height() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+	};
 	@Override
-	public Rectangle2D getBoundingBox() {
+	public Rectangle2D boundingBox() {
 		return new Rectangle2D.Double(ORIGIN_X, ORIGIN_Y, X_TILES*TILE_SIZE, Y_TILES*TILE_SIZE);
 	}
 	//role
 	@Override
 	public void paint(boolean doAnimation) {
-		fill(Color.WHITE);
-		draw(Color.LIGHT_GRAY, GHQ.stroke3);
-	}
-	public void fill(Color color) {
-		final Graphics2D G2 = GHQ.getGraphics2D();
-		for(int xi = 0;xi < X_TILES;xi++) {
-			for(int yi = 0;yi < Y_TILES;yi++) {
-				if(aliveTiles.get(xi + yi*X_TILES)){
-					final int PX = ORIGIN_X + xi*TILE_SIZE, PY = ORIGIN_Y + yi*TILE_SIZE;
-					G2.setColor(color);
-					G2.fillRect(PX, PY, TILE_SIZE, TILE_SIZE);
-				}
-			}
-		}
-	}
-	public void draw(Color color, Stroke stroke) {
-		final Graphics2D G2 = GHQ.getGraphics2D();
-		for(int xi = 0;xi < X_TILES;xi++) {
-			for(int yi = 0;yi < Y_TILES;yi++) {
-				if(aliveTiles.get(xi + yi*X_TILES)){
-					final int PX = ORIGIN_X + xi*TILE_SIZE, PY = ORIGIN_Y + yi*TILE_SIZE;
-					G2.setColor(color);
-					G2.setStroke(stroke);
-					G2.fillRect(PX, PY, TILE_SIZE, TILE_SIZE);
-				}
-			}
-		}
+		hitShape.fill(point, Color.WHITE);
+		hitShape.draw(point, Color.LIGHT_GRAY, GHQ.stroke3);
 	}
 	public void putPaint(RectPaint paintScript) {
 		for(int xi = 0;xi < X_TILES;xi++) {
@@ -161,5 +178,9 @@ public class Tile extends Structure{
 			g2.setStroke(GHQ.stroke3);
 			g2.drawLine(bp_ox, bp_oy, MOUSE_X, MOUSE_Y);
 		}
+	}
+	@Override
+	public HitShape hitShape() {
+		return hitShape;
 	}
 }

@@ -3,6 +3,11 @@ package core;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import physics.HasBoundingBox;
+import physics.HasPoint;
+import physics.HitInteractable;
+import physics.Point;
+
 public class GHQObjectList<T extends GHQObject> extends LinkedList<T>{
 	private static final long serialVersionUID = 1774337313239922412L;
 	
@@ -44,5 +49,57 @@ public class GHQObjectList<T extends GHQObject> extends LinkedList<T>{
 			}
 		}
 		return null;
+	}
+	public T forIntersects(HitInteractable object){
+		for(T element : this) {
+			if(element instanceof HitInteractable && ((HitInteractable)element).intersects(object))
+				return element;
+		}
+		return null;
+	}
+	public T forIntersects(HitInteractable object, Point newPoint){
+		for(T element : this) {
+			if(element instanceof HitInteractable && object.intersects(((HitInteractable)element), newPoint))
+				return element;
+		}
+		return null;
+	}
+	public T forIntersectsDot(int x, int y) {
+		for(T element : this) {
+			if(element instanceof HitInteractable && ((HitInteractable)element).intersectsDot(x, y))
+				return element;
+		}
+		return null;
+	}
+	public T forIntersectsLine(int x1, int y1, int x2, int y2) {
+		for(T element : this) {
+			if(element instanceof HitInteractable && ((HitInteractable)element).intersectsLine(x1, y1, x2, y2))
+				return element;
+		}
+		return null;
+	}
+	public boolean intersected(HitInteractable object) {
+		return forIntersects(object) != null;
+	}
+	public boolean intersected(HitInteractable object, Point newPoint) {
+		return forIntersects(object, newPoint) != null;
+	}
+	public boolean intersected_dot(int x, int y) {
+		return forIntersectsDot(x, y) != null;
+	}
+	public boolean intersected_dot(Point point) {
+		return intersected_dot(point.intX(), point.intY());
+	}
+	public boolean intersected_dot(HasPoint hasPoint) {
+		return intersected_dot(hasPoint.point());
+	}
+	public boolean intersected_line(int x1, int y1, int x2, int y2) {
+		return forIntersectsLine(x1, y1, x2, y2) != null;
+	}
+	public boolean intersected_line(Point p1, Point p2) {
+		return intersected_line(p1.intX(), p1.intY(), p2.intX(), p2.intY());
+	}
+	public boolean intersected_line(HasPoint p1, HasPoint p2) {
+		return intersected_line(p1.point(), p2.point());
 	}
 }

@@ -1,8 +1,8 @@
 package thhunit;
 
 import core.GHQ;
-import paint.DotPaint;
 import paint.ImageFrame;
+import paint.dot.DotPaint;
 import physics.HasDynam;
 import thhunit.EnemyWeaponLibrary;
 import unit.Unit;
@@ -32,7 +32,7 @@ public class Fairy extends THH_BasicEnemy{
 	@Override
 	public void idle() {
 		super.idle();
-		final Unit targetEnemy = GHQ.getNearstVisibleEnemy(this);
+		final Unit targetEnemy = GHQ.stage().getNearstVisibleEnemy(this);
 		if(targetEnemy != null && weapon[0].trigger(this))
 			EnemyWeaponLibrary.inputBulletInfo(this,EnemyWeaponLibrary.lightBall_ROUND,bulletPaint[0],targetEnemy);
 	}

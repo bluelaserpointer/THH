@@ -28,7 +28,7 @@ public class WhiteMan extends THH_BasicEnemy{
 	@Override
 	public void idle() {
 		super.idle();
-		final Unit blackManAdress = GHQ.getUnitList().forName("BlackMan");
+		final Unit blackManAdress = GHQ.stage().units.forName("BlackMan");
 		if(blackManAdress == null)
 			return;
 		dstPoint.setXY(blackManAdress);

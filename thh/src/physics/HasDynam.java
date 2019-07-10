@@ -10,11 +10,11 @@ public interface HasDynam extends HasPoint{
 	public static final HasDynam NULL_DYNAM_SOURCE = new HasDynam() {
 		private final Dynam nullDynam = new Dynam();
 		@Override
-		public Dynam getDynam() {
+		public Dynam dynam() {
 			return nullDynam;
 		}
 		@Override
-		public Point getPoint() {
+		public Point point() {
 			return nullDynam;
 		}
 	};
@@ -23,8 +23,8 @@ public interface HasDynam extends HasPoint{
 	 * Return the Dynam instance of this object.
 	 * @return {@link Dynam}
 	 */
-	public abstract Dynam getDynam();
-	public default Point getPoint() {
-		return getDynam();
+	public abstract Dynam dynam();
+	public default Point point() {
+		return dynam();
 	}
 }

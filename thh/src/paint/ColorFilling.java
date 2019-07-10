@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import core.GHQ;
+import paint.rect.RectPaint;
 
 /**
  * A minor PaintScript subclass which fill a rectangle with specified color.

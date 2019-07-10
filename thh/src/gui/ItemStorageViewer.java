@@ -5,8 +5,8 @@ import java.awt.Graphics2D;
 
 import core.GHQ;
 import item.ItemData;
-import paint.HasDotPaint;
-import paint.RectPaint;
+import paint.dot.HasDotPaint;
+import paint.rect.RectPaint;
 import storage.TableStorage;
 
 /**

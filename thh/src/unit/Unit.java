@@ -3,15 +3,16 @@ package unit;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
-import core.Entity;
 import core.GHQ;
-import core.Standpoint;
-import geom.HitShape;
 import gui.MessageSource;
+import hitShape.HitShape;
+import hitShape.Rectangle;
 import physics.Angle;
+import physics.Entity;
 import physics.HasAngleDynam;
+import physics.HitInteractable;
 import physics.Point;
-import core.HitInteractable;
+import physics.Standpoint;
 
 /**
  * A primal class for managing unit.
@@ -31,7 +32,7 @@ public abstract class Unit extends Entity implements MessageSource, HitInteracta
 	//Initialization
 	/////////////
 	public Unit(HitShape hitshape, int initialGroup) {
-		this.hitshape = (hitshape != null ? hitshape : HitShape.NULL_HITSHAPE);
+		this.hitshape = (hitshape != null ? hitshape : new Rectangle(0, 0));
 		standpoint = new Standpoint(initialGroup);
 	}
 	public static final <T extends Unit>T initialSpawn(T unit, int spawnX,int spawnY) {
@@ -72,24 +73,24 @@ public abstract class Unit extends Entity implements MessageSource, HitInteracta
 		return "[Unit]" + GHQ.NOT_NAMED;
 	}
 	@Override
-	public final Standpoint getStandpoint() {
+	public final Standpoint standpoint() {
 		return standpoint;
 	}
 	@Override
-	public Rectangle2D getBoundingBox() {
+	public Rectangle2D boundingBox() {
 		final int DEFAULT_SIZE = 80;
 		return new Rectangle2D.Double(dynam.intX() - DEFAULT_SIZE/2,dynam.intY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
 	}
 	@Override
-	public Angle getAngle() {
+	public Angle angle() {
 		return baseAngle;
 	}
 	@Override
-	public boolean isHit(HitInteractable object) {
-		return isAlive() && !isFriend(object) && hitshape.intersects(getPoint(), object, object.getPoint());
+	public boolean intersects(HitInteractable object) {
+		return isAlive() && !isFriend(object) && hitshape.intersects(point(), object, object.point());
 	}
 	@Override
-	public HitShape getHitShape() {
+	public HitShape hitShape() {
 		return hitshape;
 	}
 	public abstract boolean isAlive();

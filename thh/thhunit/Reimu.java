@@ -72,14 +72,14 @@ public class Reimu extends THH_BasicPlayer{
 	public final void setBullet(int kind,HasDynam user) {
 		switch(kind){
 		case FUDA_KOUHAKU:
-			GHQ.addBullet(new THH_BulletLibrary.FudaKouhaku(this)).split_xMirror(6, 2);
-			GHQ.addBullet(new THH_BulletLibrary.FudaKouhaku(this)).split_xMirror(6, 7);
+			GHQ.stage().addBullet(new THH_BulletLibrary.FudaKouhaku(this)).split_xMirror(6, 2);
+			GHQ.stage().addBullet(new THH_BulletLibrary.FudaKouhaku(this)).split_xMirror(6, 7);
 			break;
 		case FUDA_SHIROKURO:
-			GHQ.addBullet(new THH_BulletLibrary.FudaShiroKuro(this)).split_NWay(10,PI/18,3,40);
+			GHQ.stage().addBullet(new THH_BulletLibrary.FudaShiroKuro(this)).split_NWay(10,PI/18,3,40);
 			break;
 		case FUDA_SOUHAKU:
-			GHQ.addBullet(new THH_BulletLibrary.FudaSouhaku(this)).split_NWay(25,PI/10,8,40);
+			GHQ.stage().addBullet(new THH_BulletLibrary.FudaSouhaku(this)).split_NWay(25,PI/10,8,40);
 			break;
 		}
 	}

@@ -182,7 +182,7 @@ public class CornerNavigation {
 		corners.add(new Corner(x, y));
 	}
 	public void defaultCornerCollect() {
-		final int X_LIMIT = GHQ.getEngine().getStageW(), Y_LIMIT = GHQ.getEngine().getStageH();
+		final int X_LIMIT = GHQ.stage().WIDTH, Y_LIMIT = GHQ.stage().HEIGHT;
 		boolean oldBlockState = false;
 		final Point point = new Point.IntPoint(EQUAL_GAP/2, EQUAL_GAP/2);
 		for(;point.intX() < X_LIMIT;point.shift(D, EQUAL_GAP)) {
@@ -262,7 +262,7 @@ public class CornerNavigation {
 		setGoalPoint(point.intX(), point.intY());
 	}
 	public void setGoalPoint(HasPoint hasPoint) {
-		setGoalPoint(hasPoint.getPoint());
+		setGoalPoint(hasPoint.point());
 	}
 	public void expand(double nowDistance, Corner nowCorner, EdgeNode nextLink) {
 		final Corner NEXT_CORNER = nextLink.getAnother(nowCorner);
@@ -307,17 +307,14 @@ public class CornerNavigation {
 		return getRoot(startPoint.intX(), startPoint.intY());
 	}
 	public Route getRoot(HasPoint startHasPoint) {
-		return getRoot(startHasPoint.getPoint());
+		return getRoot(startHasPoint.point());
 	}
 	
 	//extend
 	public boolean hasWall(int x, int y) {
-		return GHQ.hitStructure_Dot(x, y) || !GHQ.inStage(x, y);
+		return new Point.IntPoint(x, y).isBlocked();
 	}
 	public final boolean hasWall(Point point) {
 		return hasWall(point.intX(), point.intY());
-	}
-	public boolean hasWall(int x1, int y1, int w, int h) {
-		return GHQ.hitStructure_Rect(x1, y1, w, h) || !GHQ.inStage(x1, y1);
 	}
 }

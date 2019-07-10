@@ -3,11 +3,9 @@ package physics;
 import static java.lang.Math.atan2;
 import static java.lang.Math.sqrt;
 
-import java.awt.geom.Line2D;
 import java.io.Serializable;
 
 import core.GHQ;
-import core.HitInteractable;
 
 /**
  * A major class for managing object coordinate.
@@ -57,29 +55,35 @@ public abstract class Point implements Serializable{
 	}
 	public Point setXY(HasPoint hasPoint){
 		if(hasPoint != null)
-			setXY(hasPoint.getPoint());
+			setXY(hasPoint.point());
 		return this;
 	}
 	///////////////addX&Y&XY
-	public void addX(int x) {
+	public Point addX(int x) {
 		setX(intX() + x);
+		return this;
 	}
-	public void addY(int y) {
+	public Point addY(int y) {
 		setY(intY() + y);
+		return this;
 	}
-	public void addX(double x) {
+	public Point addX(double x) {
 		setX(doubleX() + x);
+		return this;
 	}
-	public void addY(double y) {
+	public Point addY(double y) {
 		setY(doubleY() + y);
+		return this;
 	}
-	public void addXY(int x, int y) {
+	public Point addXY(int x, int y) {
 		setX(intX() + x);
 		setY(intY() + y);
+		return this;
 	}
-	public void addXY(double x, double y) {
+	public Point addXY(double x, double y) {
 		setX(doubleX() + x);
 		setY(doubleY() + y);
+		return this;
 	}
 	///////////////shift
 	public Point shift(Direction4 direction, int distance) {
@@ -98,6 +102,13 @@ public abstract class Point implements Serializable{
 			break;
 		}
 		return this;
+	}
+	///////////////clone
+	public Point cloneAt(int dx, int dy) {
+		return clone().addXY(dx, dy);
+	}
+	public Point cloneAt(double dx, double dy) {
+		return clone().addXY(dx, dy);
 	}
 	
 	///////////////
@@ -122,7 +133,7 @@ public abstract class Point implements Serializable{
 		return atan2(doubleDY(point), doubleDX(point));
 	}
 	public double angleTo(HasPoint hasPoint) {
-		return hasPoint == null ? GHQ.NONE : angleTo(hasPoint.getPoint());
+		return hasPoint == null ? GHQ.NONE : angleTo(hasPoint.point());
 	}
 	///////////////angleToMouse
 	public double angleToMouse() {
@@ -215,7 +226,7 @@ public abstract class Point implements Serializable{
 		return DX*DX + DY*DY;
 	}
 	public final double distanceSq(HasPoint hasPoint) {
-		return hasPoint == null ? GHQ.MAX : distanceSq(hasPoint.getPoint());
+		return hasPoint == null ? GHQ.MAX : distanceSq(hasPoint.point());
 	}
 	public final double distance(double x, double y) {
 		return Math.sqrt(distanceSq(x, y));
@@ -224,7 +235,7 @@ public abstract class Point implements Serializable{
 		return Math.sqrt(distanceSq(point));
 	}
 	public final double distance(HasPoint hasPoint) {
-		return hasPoint == null ? GHQ.MAX : Math.sqrt(distanceSq(hasPoint.getPoint()));
+		return hasPoint == null ? GHQ.MAX : Math.sqrt(distanceSq(hasPoint.point()));
 	}
 	///////////////inRange&inRangeSq
 	public final boolean inRangeSq(double x, double y, double distanceSq) {
@@ -234,7 +245,7 @@ public abstract class Point implements Serializable{
 		return distanceSq(point) < distanceSq;
 	}
 	public final boolean inRangeSq(HasPoint hasPoint, double distanceSq) {
-		return hasPoint == null ? false : inRangeSq(hasPoint.getPoint(), distanceSq);
+		return hasPoint == null ? false : inRangeSq(hasPoint.point(), distanceSq);
 	}
 	public final boolean inRange(double x, double y, double distance) {
 		return inRangeSq(x, y, distance*distance);
@@ -243,25 +254,25 @@ public abstract class Point implements Serializable{
 		return inRangeSq(point, distance*distance);
 	}
 	public final boolean inRange(HasPoint hasPoint, double distance) {
-		return hasPoint == null ? false : inRangeSq(hasPoint.getPoint(), distance*distance);
+		return hasPoint == null ? false : inRangeSq(hasPoint.point(), distance*distance);
 	}
 	///////////////inStage
 	public boolean inStage() {
-		return GHQ.inStage(this);
+		return GHQ.stage().inStage(this);
 	}
 	///////////////isBlocked
 	public boolean isBlocked() {
-		return GHQ.hitStructure_Dot(this);
+		return !GHQ.stage().inStage(this) || GHQ.stage().structures.intersected_dot(this);
 	}
 	///////////////isVisible
-	public boolean isVisible(double x,double y) {
-		return GHQ.checkLoS(new Line2D.Double(doubleX(), doubleY(), x, y));
+	public boolean isVisible(int x,int y) {
+		return GHQ.stage().checkLoS(intX(), intY(), x, y);
 	}
 	public boolean isVisible(Point point) {
-		return isVisible(point.doubleX(), point.doubleY());
+		return isVisible(point.intX(), point.intY());
 	}
 	public boolean isVisible(HasPoint hasPoint) {
-		return hasPoint == null ? false : isVisible(hasPoint.getPoint());
+		return hasPoint == null ? false : isVisible(hasPoint.point());
 	}
 	///////////////equals
 	public boolean equals(int x, int y) {
@@ -345,7 +356,7 @@ public abstract class Point implements Serializable{
 	}
 	public void approach(HasPoint target, double speed) {
 		if(target != null)
-			approach(target.getPoint(), speed);
+			approach(target.point(), speed);
 	}
 	public void approachIfNoObstacles(HitInteractable source, double dstX, double dstY, double speed) {
 		final double DX = dstX - doubleX(), DY = dstY - doubleY();
@@ -355,7 +366,7 @@ public abstract class Point implements Serializable{
 			dstX = doubleX() + DX*RATE;
 			dstY = doubleY() + DY*RATE;
 		}
-		if(!GHQ.hitObstacle_DSTXY(source, (int)dstX, (int)dstY))
+		if(!GHQ.stage().hitObstacle(source, cloneAt((int)dstX, (int)dstY)))
 			setXY(dstX, dstY);
 	}
 	public void approachIfNoObstacles(HitInteractable source, Point dstPoint, double speed) {

@@ -3,7 +3,7 @@ package thhunit;
 import static java.lang.Math.*;
 
 import core.GHQ;
-import paint.DotPaint;
+import paint.dot.DotPaint;
 import unit.Unit;
 import weapon.Weapon;
 import weapon.WeaponInfo;
@@ -40,17 +40,17 @@ public class EnemyWeaponLibrary{
 	public static void inputBulletInfo(Unit user,int bulletKind,DotPaint paintScript,Unit targetChara) {
 		switch(bulletKind) {
 		case lightBall_S:
-			GHQ.addBullet(new THH_BulletLibrary.LightBall(user));
+			GHQ.stage().addBullet(new THH_BulletLibrary.LightBall(user));
 			break;
 		case lightBall_ROUND:
-			GHQ.addBullet(new THH_BulletLibrary.LightBall(user)).split_Burst(5, 10, 12.0);
+			GHQ.stage().addBullet(new THH_BulletLibrary.LightBall(user)).split_Burst(5, 10, 12.0);
 			break;
 		case HEAL_SHOTGUN:
-			GHQ.addBullet(new THH_BulletLibrary.HealShotgun(user)).split_Burst(10, 16, 15.0);
+			GHQ.stage().addBullet(new THH_BulletLibrary.HealShotgun(user)).split_Burst(10, 16, 15.0);
 			break;
 		case BLACK_SLASH_BURST:
 			final double DEG10 = PI/18;
-			GHQ.addBullet(new THH_BulletLibrary.BlackSlashBurst(user)).split_NWay(10,new double[] {-DEG10, 0.0, +DEG10},20);
+			GHQ.stage().addBullet(new THH_BulletLibrary.BlackSlashBurst(user)).split_NWay(10,new double[] {-DEG10, 0.0, +DEG10},20);
 			break;
 		}
 	}

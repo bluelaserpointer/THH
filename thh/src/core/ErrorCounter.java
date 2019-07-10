@@ -17,7 +17,7 @@ public class ErrorCounter {
 	public static final void put(String str) {
 		count++;
 		msg.add(str);
-		frame.add(GHQ.getNowFrame());
+		frame.add(GHQ.nowFrame());
 	}
 	public static final void putWithPrint(String str) {
 		System.out.println(str);

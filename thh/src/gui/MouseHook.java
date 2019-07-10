@@ -1,8 +1,8 @@
 package gui;
 
 import core.GHQ;
-import paint.HasDotPaint;
-import paint.RectPaint;
+import paint.dot.HasDotPaint;
+import paint.rect.RectPaint;
 
 /**
  * A subclass of {@link GUIParts} for managing mouse drag&drop actions.

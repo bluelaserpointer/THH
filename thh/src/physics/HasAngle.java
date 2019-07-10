@@ -1,5 +1,5 @@
 package physics;
 
 public interface HasAngle {
-	public abstract Angle getAngle();
+	public abstract Angle angle();
 }

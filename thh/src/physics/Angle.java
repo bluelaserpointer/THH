@@ -23,7 +23,7 @@ public class Angle implements Serializable{
 		set(sample.angle);
 	}
 	public void set(HasAngle sample) {
-		set(sample.getAngle());
+		set(sample.angle());
 	}
 	public void set(double dx, double dy) {
 		set(Math.atan2(dy, dx));

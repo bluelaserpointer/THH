@@ -1,10 +1,10 @@
 package thhunit;
 
 import core.GHQ;
-import geom.Square;
+import hitShape.Square;
 import item.ItemData;
-import paint.DotPaint;
-import paint.RectPaint;
+import paint.dot.DotPaint;
+import paint.rect.RectPaint;
 import physics.HasDynam;
 import physics.Point;
 import status.StatusWithDefaultValue;
@@ -106,7 +106,7 @@ public abstract class THH_BasicUnit extends Unit {
 		GHQ.paintHPArc(dynam, 20,status.get(HP), status.getDefault(HP));
 	}
 	protected final void paintMode_magicCircle(DotPaint paintScript) {
-		paintScript.dotPaint_turn(dynam, (double)GHQ.getNowFrame()/35.0);
+		paintScript.dotPaint_turn(dynam, (double)GHQ.nowFrame()/35.0);
 		charaPaint.dotPaint(dynam);
 	}
 	

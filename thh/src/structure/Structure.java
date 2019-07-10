@@ -1,47 +1,36 @@
 package structure;
 
-import java.awt.geom.Line2D;
 import java.io.Serializable;
 
 import core.GHQObject;
-import core.HasBoundingBox;
-import core.HasStandpoint;
-import core.Standpoint;
-import physics.Dynam;
-import physics.HasDynam;
+import physics.HasStandpoint;
+import physics.HitInteractable;
+import physics.Point;
+import physics.Standpoint;
 
 /**
  * A primal class for managing structure.
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Structure extends GHQObject implements Serializable, HasBoundingBox, HasStandpoint{
+public abstract class Structure extends GHQObject implements Serializable, HitInteractable{
 	private static final long serialVersionUID = -641218813005671688L;
 	
-	public Standpoint standpoint = Standpoint.NULL_STANDPOINT;
+	protected final Point point = new Point.IntPoint();
+	
+	protected Standpoint standpoint = Standpoint.NULL_STANDPOINT;
 	
 	//information
-	public abstract boolean contains(int x,int y,int w,int h);
-	public abstract boolean contains(int x,int y);
-	public boolean hit(HasStandpoint source,int x,int y,int w,int h) {
-		return isFriend(source) && contains(x,y,w,h);
-	}
-	public abstract boolean intersectsLine(Line2D line);
-	public final boolean intersectsLine(double x1,double y1,double x2,double y2) {
-		return intersectsLine(new Line2D.Double(x1,y1,x2,y2));
-	}
-	public final boolean intersectsLine(Dynam dynam1,Dynam dynam2) {
-		return intersectsLine(dynam1.doubleX(),dynam1.doubleY(),dynam2.doubleX(),dynam2.doubleY());
-	}
-	public final boolean intersectsLine(HasDynam object1,HasDynam object2) {
-		return object1 == null || object2 == null ? false : intersectsLine(object1.getDynam(), object2.getDynam());
-	}
 	@Override
-	public final Standpoint getStandpoint() {
+	public final Standpoint standpoint() {
 		return Standpoint.NULL_STANDPOINT;
 	}
 	@Override
+	public final Point point() {
+		return point;
+	}
+	@Override
 	public boolean isFriend(HasStandpoint target) {
-		return Standpoint.NULL_STANDPOINT.isFriend(target.getStandpoint());
+		return Standpoint.NULL_STANDPOINT.isFriend(target.standpoint());
 	}
 }

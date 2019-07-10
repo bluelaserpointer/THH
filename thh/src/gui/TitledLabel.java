@@ -4,8 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import core.GHQ;
-import input.KeyTypeListener;
-import paint.RectPaint;
+import input.keyType.KeyTypeListener;
+import paint.rect.RectPaint;
 
 public class TitledLabel extends GUIParts{
 	private final KeyTypeListener typeListener;
@@ -87,7 +87,7 @@ public class TitledLabel extends GUIParts{
 		typeListener.clear();
 	}
 	public String getGroup() {
-		return GROUP;
+		return NAME;
 	}
 
 }

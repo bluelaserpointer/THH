@@ -3,8 +3,8 @@ package item;
 import java.io.Serializable;
 
 import core.GHQ;
-import paint.DotPaint;
-import paint.HasDotPaint;
+import paint.dot.DotPaint;
+import paint.dot.HasDotPaint;
 import storage.Storage;
 import vegetation.DropItem;
 
