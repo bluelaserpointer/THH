@@ -1,41 +1,28 @@
 package math;
 
-public class CellArranger {
-	final int MARGIN;
+public abstract class CellArranger {
+
 	public int generalW, generalH;
-	public int cellXAmount, cellYAmount;
-	
 	public static class Cell {
 		public final int X, Y, W, H;
-		private Cell(int x, int y, int w, int h) {
+		protected Cell(int x, int y, int w, int h) {
 			X = x;
 			Y = y;
 			W = w;
 			H = h;
 		}
 	}
-	
-	public CellArranger(int margin, int generalW, int generalH, int cellXAmount, int cellYAmount) {
-		MARGIN = margin;
-		this.generalW = generalW;
-		this.generalH = generalH;
-		this.cellXAmount = cellXAmount;
-		this.cellYAmount = cellYAmount;
-	}
-	
-	public int cellW() {
-		return generalW / cellXAmount;
-	}
-	public int cellH() {
-		return generalH / cellYAmount;
-	}
+	public abstract int cellW();
+	public abstract int cellH();
+	public abstract int marginW();
+	public abstract int marginH();
 	public Cell getBasicCell(int xPos, int yPos) {
 		final int CELL_W = cellW(), CELL_H = cellH();
-		return new Cell(xPos*CELL_W + MARGIN, yPos*CELL_H + MARGIN, CELL_W - MARGIN*2, CELL_H - MARGIN*2);
+		return new Cell(xPos*CELL_W + marginW(), yPos*CELL_H + marginH(), CELL_W - marginW()*2, CELL_H - marginH()*2);
 	}
 	public Cell getBigCell(int xPos, int yPos, int wCells, int hCells) {
 		final int CELL_W = cellW(), CELL_H = cellH();
-		return new Cell(xPos*CELL_W + MARGIN, yPos*CELL_H + MARGIN, CELL_W*wCells - MARGIN*2, CELL_H*hCells - MARGIN*2);
+		return new Cell(xPos*CELL_W + marginW(), yPos*CELL_H + marginH(), CELL_W*wCells - marginW()*2, CELL_H*hCells - marginH()*2);
 	}
 	public Cell getFreeCell(int x, int y, int w, int h) {
 		return new Cell(x, y, w, h);

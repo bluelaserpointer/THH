@@ -14,7 +14,7 @@ import core.GHQObjectList;
 import gui.grouped.ArrangedButtons;
 import gui.grouped.GUIGroup;
 import input.key.SingleKeyListener;
-import math.CellArranger;
+import math.SquareCellArranger;
 import paint.ColorFilling;
 import paint.ColorFraming;
 import paint.ImageFrame;
@@ -192,7 +192,7 @@ public class DefaultStageEditor extends GUIGroup{
 			}
 		});
 		super.addLast(new ArrangedButtons<Integer>(EDIT_MENU_GROUP + "SelectionButtons", null, 25, 155
-				, new CellArranger(10, 80, 80, 2, 2)) {
+				, new SquareCellArranger(1, 80, 80, 2, 2)) {
 			@Override
 			protected void clicked(Integer buttonValue) {
 				if(placeKind != buttonValue)

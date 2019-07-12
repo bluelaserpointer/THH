@@ -40,6 +40,14 @@ public interface LinePaint extends PaintScript{
 				final double DX = END_X - x, DY = END_Y - y;
 				linePaint(x, y, x + (int)(DX*rate), y + (int)(DY*rate));
 			}
+			@Override
+			public int width() {
+				return 0;
+			}
+			@Override
+			public int height() {
+				return 0;
+			}
 		};
 	}
 	public default DotPaint convertToDotPaint(HasPoint endCoordinateSource) {
@@ -75,6 +83,14 @@ public interface LinePaint extends PaintScript{
 				final Point COORDINATE = SOURCE.point();
 				final double DX = COORDINATE.doubleDX(x), DY = COORDINATE.doubleDY(y);
 				linePaint(x, y, x + (int)(DX*rate), y + (int)(DY*rate));
+			}
+			@Override
+			public int width() {
+				return 0;
+			}
+			@Override
+			public int height() {
+				return 0;
 			}
 		};
 	}

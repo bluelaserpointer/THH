@@ -1073,8 +1073,17 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final void setClip(int x, int y, int width, int height) {
 		g2.setClip(x, y, width, height);
 	}
-	public static final void rotate(Point point, double angle) {
-		g2.rotate(angle, point.intX(), point.intY());
+	public static final void scale(double sx, double sy) {
+		g2.scale(sx, sy);
+	}
+	public static final void scale(double s) {
+		g2.scale(s, s);
+	}
+	public static final void rotate(double angle, int x, int y) {
+		g2.rotate(angle, x, y);
+	}
+	public static final void rotate(double angle, Point point) {
+		rotate(angle, point.intX(), point.intY());
 	}
 	/**
 	 * Reset AlphaComposite value.

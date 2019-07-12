@@ -1,7 +1,7 @@
 package paint.dot;
 
 import java.awt.Graphics2D;
-import java.util.ArrayList;
+import java.util.Collection;
 
 import core.GHQ;
 import paint.PaintScript;
@@ -20,30 +20,14 @@ public interface DotPaint extends PaintScript{
 		@Override
 		public void dotPaint(int x, int y) {}
 		@Override
-		public void dotPaint_capSize(int x, int y, int maxSize) {}
+		public int width() {
+			return 0;
+		}
 		@Override
-		public void dotPaint_rate(int x, int y, double rate) {}
+		public int height() {
+			return 0;
+		}
 	};
-	
-	//tool
-	public static int getMaxSize(ArrayList<DotPaint> scripts) {
-		int biggestSize = 0;
-		for(DotPaint ver : scripts) {
-			final int BIGGER_SIZE = Math.max(ver.getDefaultW(), ver.getDefaultH());
-			if(biggestSize < BIGGER_SIZE)
-				biggestSize = BIGGER_SIZE;
-		}
-		return biggestSize;
-	}
-	public static int getMaxSize(DotPaint[] scripts) {
-		int biggestSize = 0;
-		for(DotPaint ver : scripts) {
-			final int BIGGER_SIZE = Math.max(ver.getDefaultW(), ver.getDefaultH());
-			if(biggestSize < BIGGER_SIZE)
-				biggestSize = BIGGER_SIZE;
-		}
-		return biggestSize;
-	}
 	
 	//main role
 	/**
@@ -62,7 +46,13 @@ public interface DotPaint extends PaintScript{
 	public default void dotPaint(Point coordinate) {
 		dotPaint(coordinate.intX(), coordinate.intY());
 	}
-	public abstract void dotPaint_capSize(int x, int y, int maxSize);
+	public default void dotPaint_capSize(int x, int y, int maxSize) {
+		final int SIZE_BIG = sizeOfBigger();
+		if(SIZE_BIG > maxSize) {
+			dotPaint_rate(x, y, (double)maxSize/SIZE_BIG);
+		}else
+			dotPaint(x, y);
+	}
 	public default void dotPaint_capSize(Point point, int maxSize) {
 		dotPaint_capSize(point.intX(), point.intY(), maxSize);
 	}
@@ -72,7 +62,13 @@ public interface DotPaint extends PaintScript{
 	 * @param y
 	 * @param rate
 	 */
-	public abstract void dotPaint_rate(int x, int y, double rate);
+	public default void dotPaint_rate(int x, int y, double rate) {
+		GHQ.getGraphics2D().translate(x, y);
+		GHQ.scale(rate);
+		dotPaint(0, 0);
+		GHQ.scale(1.0/rate);
+		GHQ.getGraphics2D().translate(-x, -y);
+	}
 	public default void dotPaint_rate(Point point, int maxSize) {
 		dotPaint_rate(point.intX(), point.intY(), maxSize);
 	}
@@ -83,10 +79,9 @@ public interface DotPaint extends PaintScript{
 	 * @param angle
 	 */
 	public default void dotPaint_turn(int x, int y, double angle) {
-		final Graphics2D G2 = GHQ.getGraphics2D();
-		G2.rotate(angle, x, y);
-		dotPaint(x,y);
-		G2.rotate(-angle, x, y);
+		GHQ.rotate(angle, x, y);
+		dotPaint(x, y);
+		GHQ.rotate(-angle, x, y);
 	}
 	public default void dotPaint_turn(Point point, double angle) {
 		dotPaint_turn(point.intX(), point.intY(), angle);
@@ -112,5 +107,32 @@ public interface DotPaint extends PaintScript{
 	}
 	public default void dotPaint_turnAndCapSize(HasAnglePoint anglePoint, int maxSize) {
 		dotPaint_turnAndCapSize(anglePoint.point(), anglePoint.angle().angle(), maxSize);
+	}
+	
+	//information
+	public default int sizeOfBigger() {
+		return Math.max(width(), height());
+	}
+	public abstract int width();
+	public abstract int height();
+	
+	//tool
+	public static int getMaxSize(Collection<DotPaint> scripts) {
+		int biggestSize = 0;
+		for(DotPaint ver : scripts) {
+			final int BIGGER_SIZE = ver.sizeOfBigger();
+			if(biggestSize < BIGGER_SIZE)
+				biggestSize = BIGGER_SIZE;
+		}
+		return biggestSize;
+	}
+	public static int getMaxSize(DotPaint[] scripts) {
+		int biggestSize = 0;
+		for(DotPaint ver : scripts) {
+			final int BIGGER_SIZE = ver.sizeOfBigger();
+			if(biggestSize < BIGGER_SIZE)
+				biggestSize = BIGGER_SIZE;
+		}
+		return biggestSize;
 	}
 }

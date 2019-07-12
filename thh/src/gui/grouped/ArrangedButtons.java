@@ -2,6 +2,7 @@ package gui.grouped;
 
 import gui.BasicButton;
 import math.CellArranger;
+import math.SquareCellArranger;
 import paint.rect.RectPaint;
 
 public abstract class ArrangedButtons<T> extends GUIGroup{
@@ -27,7 +28,7 @@ public abstract class ArrangedButtons<T> extends GUIGroup{
 	public BasicButton addButton(T buttonValue, RectPaint buttonPaint, int xPos, int yPos) {
 		return addButton(buttonValue, buttonPaint, arranger.getBasicCell(xPos, yPos));
 	}
-	public ArrangedButtons<T> appendButton(T buttonValue, RectPaint buttonPaint, CellArranger.Cell cell) {
+	public ArrangedButtons<T> appendButton(T buttonValue, RectPaint buttonPaint, SquareCellArranger.Cell cell) {
 		addButton(buttonValue, buttonPaint, cell);
 		return this;
 	}

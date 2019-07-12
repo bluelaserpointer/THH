@@ -4,55 +4,62 @@ import java.util.ArrayList;
 
 public class DotPaintStacker implements DotPaint{
 	private static final long serialVersionUID = -832458123024960846L;
-	private final ArrayList<DotPaint> scripts = new ArrayList<DotPaint>();
+	private final ArrayList<DotPaint> SCRIPTS = new ArrayList<DotPaint>();
 	private final DotPaint[] LAYER_PAINTS;
+	private final int BIGGEST_SIZE, BIGGEST_W, BIGGEST_H;
 	
 	//init
 	public DotPaintStacker(DotPaint...layerPaints) {
 		LAYER_PAINTS = layerPaints;
+		BIGGEST_SIZE = DotPaint.getMaxSize(SCRIPTS);
+		int wBiggest = 0, hBiggest = 0;
+		for(DotPaint ver : SCRIPTS) {
+			final int W = ver.width(), H = ver.height();
+			if(wBiggest < W)
+				wBiggest = W;
+			if(hBiggest < H)
+				hBiggest = H;
+		}
+		BIGGEST_W = wBiggest;
+		BIGGEST_H = hBiggest;
 	}
 	//main role
 	@Override
 	public void dotPaint(int x, int y) {
-		for(DotPaint script : scripts)
+		for(DotPaint script : SCRIPTS)
 			script.dotPaint(x, y);
-	}
-	@Override
-	public void dotPaint_capSize(int x, int y, int maxSize) {
-		final int BIGGEST_SIZE = DotPaint.getMaxSize(scripts);
-		if(BIGGEST_SIZE > maxSize) {
-			final double RATE = maxSize/BIGGEST_SIZE;
-			for(DotPaint ver : scripts)
-				ver.dotPaint_rate(x, y, RATE);
-		}else {
-			for(DotPaint ver : scripts)
-				ver.dotPaint(x, y);
-		}
-	}
-	@Override
-	public void dotPaint_rate(int x, int y, double rate) {
-		for(DotPaint ver : scripts)
-			ver.dotPaint_rate(x, y, rate);
 	}
 	
 	//control
 	public <T extends DotPaint>T addScript(T dotPaint){
-		scripts.add(dotPaint);
+		SCRIPTS.add(dotPaint);
 		return dotPaint;
 	}
 	public boolean removeScript(DotPaint dotPaint){
-		return scripts.remove(dotPaint);
+		return SCRIPTS.remove(dotPaint);
 	}
 	public void clear() {
-		scripts.clear();
+		SCRIPTS.clear();
 	}
 	
 	//information
 	public int getScriptsAmount() {
-		return scripts.size();
+		return SCRIPTS.size();
 	}
 	public int getLayerAmount() {
 		return LAYER_PAINTS.length;
+	}
+	@Override
+	public int sizeOfBigger() {
+		return BIGGEST_SIZE;
+	}
+	@Override
+	public int width() {
+		return BIGGEST_W;
+	}
+	@Override
+	public int height() {
+		return BIGGEST_H;
 	}
 
 }

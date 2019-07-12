@@ -51,7 +51,7 @@ public class Vegetation extends GHQObject implements Serializable, HasPoint, Has
 	}
 	@Override
 	public Rectangle2D boundingBox() {
-		final int W = paintScript.getDefaultW(), H = paintScript.getDefaultH();
+		final int W = paintScript.width(), H = paintScript.height();
 		return new Rectangle2D.Double(point.intX() - W/2, point.intY() - H/2, W, H);
 	}
 	@Override

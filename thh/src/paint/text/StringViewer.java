@@ -33,7 +33,6 @@ public class StringViewer implements DotPaint{
 		G2.drawString(WORDS, x, y);
 		G2.setFont(PREV_FONT);
 	}
-
 	@Override
 	public void dotPaint_capSize(int x, int y, int maxSize) {
 		dotPaint(x, y);
@@ -43,5 +42,12 @@ public class StringViewer implements DotPaint{
 	public void dotPaint_rate(int x, int y, double rate) {
 		dotPaint(x, y);
 	}
-
+	@Override
+	public int width() {
+		return 0;
+	}
+	@Override
+	public int height() {
+		return 0;
+	}
 }
