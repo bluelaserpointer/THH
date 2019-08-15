@@ -5,11 +5,11 @@ import java.awt.geom.Rectangle2D;
 import hitShape.HasHitShape;
 import hitShape.HitShape;
 
-public interface HitInteractable extends HasPoint, HasHitShape, HasStandpoint, HasBoundingBox{
+public interface HitInteractable extends HasHitShape, HasStandpoint{
 	public static final HitInteractable NULL_HIT_INTERACTABLE = new HitInteractable() {
 		@Override
 		public Point point() {
-			return null;
+			return Point.NULL_POINT;
 		}
 		@Override
 		public HitShape hitShape() {
@@ -19,18 +19,26 @@ public interface HitInteractable extends HasPoint, HasHitShape, HasStandpoint, H
 		public Standpoint standpoint() {
 			return null;
 		}
+		@Override
+		public int width() {
+			return 0;
+		}
+		@Override
+		public int height() {
+			return 0;
+		}
 	};
 	public default boolean intersects(HitInteractable target) {
-		return !isFriend(target) && hitShape().intersects(point(), target, target.point());
+		return !isFriend(target) && hitShape().intersects(target);
 	}
-	public default boolean intersects(HitInteractable target, Point newPoint) {
-		return !isFriend(target) && hitShape().intersects(newPoint, target, target.point());
+	public default boolean intersects_atNewPoint(double dx, double dy, HitInteractable target) {
+		return !isFriend(target) && hitShape().intersects_atNewPoint(dx, dy, target);
 	}
 	public default boolean intersectsDot(int x, int y) {
-		return hitShape().intersectsDot(point().intX(), point().intY(), x, y);
+		return hitShape().intersectsDot(x, y);
 	}
 	public default boolean intersectsLine(int x1, int y1, int x2, int y2) {
-		return hitShape().intersectsLine(point().intX(), point().intY(), x1, y1, x2, y2);
+		return hitShape().intersectsLine(x1, y1, x2, y2);
 	}
 	public default boolean intersectsLine(Point p1, Point p2) {
 		return intersectsLine(p1.intX(), p1.intY(), p2.intX(), p2.intY());

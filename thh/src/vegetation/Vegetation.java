@@ -1,13 +1,11 @@
 package vegetation;
 
-import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
 import core.GHQObject;
 import paint.dot.DotPaint;
 import paint.dot.HasDotPaint;
 import physics.HasBoundingBox;
-import physics.HasPoint;
 import physics.Point;
 
 /**
@@ -15,7 +13,7 @@ import physics.Point;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Vegetation extends GHQObject implements Serializable, HasPoint, HasBoundingBox, HasDotPaint{
+public class Vegetation extends GHQObject implements Serializable, HasBoundingBox, HasDotPaint{
 	private static final long serialVersionUID = -5536970507937704287L;
 	
 	protected final DotPaint paintScript;
@@ -50,12 +48,15 @@ public class Vegetation extends GHQObject implements Serializable, HasPoint, Has
 		return point;
 	}
 	@Override
-	public Rectangle2D boundingBox() {
-		final int W = paintScript.width(), H = paintScript.height();
-		return new Rectangle2D.Double(point.intX() - W/2, point.intY() - H/2, W, H);
+	public int width() {
+		return paintScript.width();
 	}
 	@Override
-	public final DotPaint getPaintScript() {
+	public int height() {
+		return paintScript.height();
+	}
+	@Override
+	public final DotPaint getDotPaint() {
 		return paintScript;
 	}
 }

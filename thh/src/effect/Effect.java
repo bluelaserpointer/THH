@@ -3,23 +3,26 @@ package effect;
 import static java.lang.Math.PI;
 
 import core.GHQ;
+import hitShape.HitShape;
 import paint.dot.DotPaint;
 import paint.dot.HasDotPaint;
 import physics.DstCntDynam;
 import physics.Dynam;
 import physics.Entity;
 import physics.HasDynam;
+import physics.Standpoint;
 
 /**
  * A primal class for managing effect.
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Effect extends Entity implements HasDotPaint{
+public class Effect extends Entity implements HasDynam, HasDotPaint{
 	public final int UNIQUE_ID;
 	public static int nowMaxUniqueID = -1;
 
 	public final HasDynam SHOOTER;
+	protected final DstCntDynam dynam = new DstCntDynam();
 	public String
 		name;
 	public int
@@ -31,6 +34,7 @@ public class Effect extends Entity implements HasDotPaint{
 		paintScript;
 	
 	public Effect() {
+		super(HitShape.NULL_HITSHAPE, Standpoint.NULL_STANDPOINT);
 		SHOOTER = HasDynam.NULL_DYNAM_SOURCE;
 		UNIQUE_ID = ++nowMaxUniqueID;
 		name = GHQ.NOT_NAMED;
@@ -40,6 +44,7 @@ public class Effect extends Entity implements HasDotPaint{
 		paintScript = DotPaint.BLANK_SCRIPT;
 	}
 	public Effect(HasDynam source) {
+		super(HitShape.NULL_HITSHAPE, Standpoint.NULL_STANDPOINT);
 		dynam.setAll(source.dynam());
 		SHOOTER = source;
 		UNIQUE_ID = ++nowMaxUniqueID;
@@ -50,6 +55,7 @@ public class Effect extends Entity implements HasDotPaint{
 		paintScript = DotPaint.BLANK_SCRIPT;
 	}
 	public Effect(Effect effect) {
+		super(HitShape.NULL_HITSHAPE, Standpoint.NULL_STANDPOINT);
 		dynam.setAll(effect.dynam);
 		SHOOTER = effect.SHOOTER;
 		UNIQUE_ID = ++nowMaxUniqueID;
@@ -86,10 +92,10 @@ public class Effect extends Entity implements HasDotPaint{
 	
 	//extends
 	public boolean isOutOfLifeSpan() {
-		return limitFrame <= GHQ.getPassedFrame(super.INITIAL_FRAME);
+		return limitFrame <= GHQ.passedFrame(super.INITIAL_FRAME);
 	}
 	public boolean isOutOfRange() {
-		return limitRange <= ((DstCntDynam)dynam).getMovedDistance();
+		return limitRange <= dynam.getMovedDistance();
 	}
 	public boolean isOutOfStage() {
 		return !dynam.inStage();
@@ -112,12 +118,12 @@ public class Effect extends Entity implements HasDotPaint{
 	//paint
 	//////////////
 	public final void fadingPaint() {
-		GHQ.setImageAlpha((float)(1.0 - (double)GHQ.getPassedFrame(INITIAL_FRAME)/limitFrame));
+		GHQ.setImageAlpha((float)(1.0 - (double)GHQ.passedFrame(INITIAL_FRAME)/limitFrame));
 		defaultPaint();
 		GHQ.setImageAlpha();
 	}
 	public final void fadingPaint(int delay) {
-		final int PASSED_FRAME = GHQ.getPassedFrame(INITIAL_FRAME);
+		final int PASSED_FRAME = GHQ.passedFrame(INITIAL_FRAME);
 		if(PASSED_FRAME < delay)
 			defaultPaint();
 		else {
@@ -176,18 +182,22 @@ public class Effect extends Entity implements HasDotPaint{
 	//information
 	//////////////
 	public int getPassedFrame() {
-		return GHQ.getPassedFrame(INITIAL_FRAME);
+		return GHQ.passedFrame(INITIAL_FRAME);
 	}
 	@Override
-	public final DotPaint getPaintScript() {
+	public final DotPaint getDotPaint() {
 		return paintScript;
-	}
-	@Override
-	public Dynam def_dynam() {
-		return new DstCntDynam();
 	}
 	@Override
 	public String getName() {
 		return "[Effect]" + name;
+	}
+	@Override
+	public Dynam point() {
+		return dynam;
+	}
+	@Override
+	public Dynam dynam() {
+		return dynam;
 	}
 }

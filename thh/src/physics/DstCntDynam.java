@@ -56,7 +56,7 @@ public class DstCntDynam extends Dynam{
 	}
 	@Override
 	public void moveIfNoObstacles(HitInteractable source) {
-		if(xSpd == 0 && ySpd == 0 || GHQ.stage().hitObstacle(source, cloneAt((int)xSpd, (int)ySpd)))
+		if(xSpd == 0 && ySpd == 0 || GHQ.stage().hitObstacle_atNewPoint(source, (int)xSpd, (int)ySpd))
 			return;
 		x += xSpd;
 		y += ySpd;
@@ -86,7 +86,7 @@ public class DstCntDynam extends Dynam{
 			dstX = x + DX*RATE;
 			dstY = y + DY*RATE;
 		}
-		if(!GHQ.stage().hitObstacle(source, cloneAt((int)dstX, (int)dstY))) {
+		if(!GHQ.stage().hitObstacle_atNewPoint(source, (int)dstX, (int)dstY)) {
 			x = dstX;
 			y = dstY;
 			movedDistance += DISTANCE < speed ? DISTANCE : speed;

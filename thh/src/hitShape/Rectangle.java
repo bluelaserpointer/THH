@@ -3,7 +3,6 @@ package hitShape;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
-import java.awt.geom.Rectangle2D;
 
 import core.GHQ;
 import physics.Point;
@@ -11,27 +10,33 @@ import physics.Point;
 public class Rectangle extends HitShape{
 	private static final long serialVersionUID = 3869237032416439346L;
 	public final int WIDTH,HEIGHT;
-	public Rectangle(int w,int h) {
+	public Rectangle(Point point, int w, int h) {
+		super(point);
 		WIDTH = w;
 		HEIGHT = h;
 	}
 	@Override
-	public boolean intersects(Point coordinate1, HitShape shape, Point coordinate2) {
+	public boolean intersects(HitShape shape) {
 		if(shape instanceof Rectangle) {
-			return coordinate1.inRangeXY(coordinate2, (WIDTH + ((Rectangle)shape).WIDTH)/2, (HEIGHT + ((Rectangle)shape).HEIGHT)/2);
+			return point().inRangeXY(shape.point(), (WIDTH + ((Rectangle)shape).WIDTH)/2, (HEIGHT + ((Rectangle)shape).HEIGHT)/2);
 		}else if(shape instanceof Square) {
 			final int SIDE = ((Square)shape).SIDE;
-			return coordinate1.inRangeXY(coordinate2, (WIDTH + SIDE)/2, (HEIGHT + SIDE)/2);
+			return point().inRangeXY(shape.point(), (WIDTH + SIDE)/2, (HEIGHT + SIDE)/2);
+		}else if(shape instanceof Circle) {
+			final int RADIUS = ((Circle)shape).RADIUS;
+			return point().inRangeXY(shape.point(), RADIUS + WIDTH/2, RADIUS + HEIGHT/2);
+		}else {
+			System.out.println("unhandled type: " + this.getClass().getName() + " against " + shape.getClass().getName());
 		}
 		return false;
 	}
 	@Override
-	public boolean intersectsDot(int myX, int myY, int x, int y) {
-		return Math.abs(myX - x) < WIDTH/2 && Math.abs(myY - y) < HEIGHT/2;
+	public boolean intersectsDot(int x, int y) {
+		return myPoint.intAbsDX(x) < WIDTH/2 && myPoint.intAbsDX(y) < HEIGHT/2;
 	}
 	@Override
-	public boolean intersectsLine(int myX, int myY, int x1, int y1, int x2, int y2) {
-		return new Rectangle2D.Double(myX - WIDTH/2, myY - HEIGHT/2, myX + WIDTH/2, myY + HEIGHT/2).intersectsLine(x1, y1, x2, y2);
+	public boolean intersectsLine(int x1, int y1, int x2, int y2) {
+		return myPoint.getRectangle2D(WIDTH, HEIGHT).intersectsLine(x1, y1, x2, y2);
 	}
 	@Override
 	public void fill(Point point, Color color) {
@@ -55,8 +60,8 @@ public class Rectangle extends HitShape{
 	
 	//tool
 	@Override
-	public HitShape clone() {
-		return new Rectangle(WIDTH, HEIGHT);
+	public HitShape clone(Point newPoint) {
+		return new Rectangle(newPoint, WIDTH, HEIGHT);
 	}
 	
 	//information

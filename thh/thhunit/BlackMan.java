@@ -23,12 +23,9 @@ public class BlackMan extends THH_BasicEnemy{
 	@Override
 	public final void loadImageData(){
 		super.loadImageData();
-		charaPaint = new ImageFrame("thhimage/BlackBall.png");
-		bulletPaint[0] = new ImageFrame("thhimage/DarkNiddle.png");
-		bulletPaint[1] = new ImageFrame("thhimage/DodgeMarker.png");
-	}
-	@Override
-	public final void battleStarted() {
+		charaPaint = ImageFrame.create("thhimage/BlackBall.png");
+		bulletPaint[0] = ImageFrame.create("thhimage/DarkNiddle.png");
+		bulletPaint[1] = ImageFrame.create("thhimage/DodgeMarker.png");
 		weapon[0] = EnemyWeaponLibrary.getWeaponController(EnemyWeaponLibrary.lightBall_S);
 	}
 	@Override

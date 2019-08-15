@@ -12,10 +12,12 @@ public class SingleKeyListener extends KeyListenerEx{
 	}
 	@Override
 	public void pressEvent_index(int index) {
-		super.hasKeyEvents.set(index);
+		if(!super.pressingKeyEvents.get(index))
+			super.hasKeyEvents.set(index);
 	}
 	@Override
 	public void releaseEvent_index(int index) {
 		super.hasKeyEvents.clear(index);
+		super.pressingKeyEvents.clear(index);
 	}
 }

@@ -11,7 +11,8 @@ import physics.DstCntDynam;
 import physics.Dynam;
 import physics.Entity;
 import physics.HasAnglePoint;
-import physics.HitInteractable;
+import physics.HasDynam;
+import physics.Point;
 import physics.Standpoint;
 import unit.Unit;
 import weapon.Weapon;
@@ -21,11 +22,10 @@ import weapon.Weapon;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Bullet extends Entity implements HitInteractable, HasDotPaint{
+public class Bullet extends Entity implements HasDynam, HasDotPaint{
 	public final Weapon ORIGIN_WEAPON;
 	public final HasAnglePoint SHOOTER; //an information source of user
-	public final Standpoint STANDPOINT;
-	public HitShape hitShape;
+	protected final DstCntDynam dynam;
 	
 	public String name;
 	public int
@@ -41,36 +41,35 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint{
 	public DotPaint
 		paintScript;
 	public Bullet(Weapon originWeapon, HasAnglePoint shooter, Standpoint standpoint) {
+		super(new Square(new DstCntDynam(), 10), standpoint);
+		dynam = (DstCntDynam)super.hitShape.point();
 		dynam.setXYAngle(shooter);
 		ORIGIN_WEAPON = originWeapon;
 		SHOOTER = shooter;
 		name = GHQ.NOT_NAMED;
-		hitShape = new Square(10);
 		damage = 0;
 		limitFrame = GHQ.MAX;
 		limitRange = GHQ.MAX;
-		this.STANDPOINT = standpoint;
 		penetration = 1;
 		reflection = 0;
 		accel = 0.0;
 		paintScript = DotPaint.BLANK_SCRIPT;
 	}
 	public Bullet(Bullet bullet) {
+		super(bullet.hitShape.clone(new DstCntDynam(bullet.dynam())), bullet.standpoint());
+		dynam = (DstCntDynam)super.hitShape.point();
 		dynam.setAll(bullet);
 		ORIGIN_WEAPON = bullet.ORIGIN_WEAPON;
 		SHOOTER = bullet.SHOOTER;
 		name = bullet.name;
-		hitShape = bullet.hitShape.clone();
 		damage = 0;
 		limitFrame = bullet.limitFrame;
 		limitRange = bullet.limitRange;
-		STANDPOINT = new Standpoint(bullet.STANDPOINT.get());
 		penetration = bullet.penetration;
 		reflection = bullet.reflection;
 		accel = bullet.accel;
 		paintScript = bullet.paintScript;
 	}
-	
 	@Override
 	public void idle() {
 		if(defaultDeleteCheck())
@@ -92,13 +91,13 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint{
 		return checkIsOutofLifeSpan(limitFrame);
 	}
 	public boolean checkIsOutofLifeSpan(int lifeSpan) {
-		return lifeSpan <= GHQ.getPassedFrame(super.INITIAL_FRAME);
+		return lifeSpan <= GHQ.passedFrame(super.INITIAL_FRAME);
 	}
 	public boolean checkIsOutOfRange(){
 		return checkIsOutOfRange(limitRange);
 	}
 	public boolean checkIsOutOfRange(int range) {
-		return range <= ((DstCntDynam)dynam).getMovedDistance();
+		return range <= dynam.getMovedDistance();
 	}
 	public boolean isOutOfStage() {
 		return !dynam.inStage();
@@ -261,7 +260,7 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint{
 	//information
 	//////////////
 	public int getPassedFrame() {
-		return GHQ.getPassedFrame(INITIAL_FRAME);
+		return GHQ.passedFrame(INITIAL_FRAME);
 	}
 	public final int getPenetration() {
 		return penetration;
@@ -270,23 +269,23 @@ public class Bullet extends Entity implements HitInteractable, HasDotPaint{
 		return reflection;
 	}
 	@Override
-	public final Standpoint standpoint() {
-		return STANDPOINT;
-	}
-	@Override
 	public final HitShape hitShape() {
 		return hitShape;
 	}
 	@Override
-	public final DotPaint getPaintScript() {
+	public final DotPaint getDotPaint() {
 		return paintScript;
-	}
-	@Override
-	public Dynam def_dynam() {
-		return new DstCntDynam();
 	}
 	@Override
 	public String getName() {
 		return "[Bullet]" + name;
+	}
+	@Override
+	public Dynam dynam() {
+		return dynam;
+	}
+	@Override
+	public Point point() {
+		return dynam;
 	}
 }

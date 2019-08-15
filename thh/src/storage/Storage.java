@@ -34,7 +34,7 @@ public class Storage<T> extends ArrayList<T>{
 		super.add(element);
 		return true;
 	}
-	public final int addMany(T element,int amount) {
+	public final int addMany(T element, int amount) {
 		final int prevAmount = amount;
 		while(amount-- > 0 && add(element));
 		return amount - prevAmount;

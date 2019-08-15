@@ -14,13 +14,9 @@ import unit.Unit;
  */
 public class Weapon implements Serializable{
 	private static final long serialVersionUID = -2165271452612401269L;
-	public static final Weapon NULL_WEAPON;
-	static {
-		WeaponInfo.clear();
-		NULL_WEAPON = new Weapon();
-	}
-	public final String
-		NAME;
+	public static final Weapon NULL_WEAPON = new Weapon();
+	public String
+		name;
 	public int
 		coolTime, //
 		coolSpeed, //
@@ -35,17 +31,16 @@ public class Weapon implements Serializable{
 	protected boolean
 		autoReload;
 	public Weapon() {
-		NAME = WeaponInfo.name;
-		coolTime = WeaponInfo.coolTime;
-		coolSpeed = WeaponInfo.coolSpeed;
-		reloadTime = WeaponInfo.reloadTime;
-		reloadSpeed = WeaponInfo.reloadSpeed;
-		magazineSize = WeaponInfo.magazineSize;
-		if(magazineSize == GHQ.MAX)
-			magazine = GHQ.MAX;
-		magazineConsumptionSpeed = WeaponInfo.magazineConsumptionSpeed;
+		name = "<Not named>";
+		coolTime = 0;
+		coolSpeed = 1;
+		reloadTime = 0;
+		reloadSpeed = 1;
+		magazineSize = GHQ.MAX;
+		magazineConsumptionSpeed = 1;
+		autoReload = true;
+		
 		coolProgress = coolTime;
-		autoReload = WeaponInfo.autoReload;
 	}
 	/**
 	 * End current cool and reload process and unload the magazine.
@@ -288,7 +283,7 @@ public class Weapon implements Serializable{
 	 * @return amount of fired magazine in current cartridge
 	 */
 	public final int getMagazineEmptySpace() {
-		return magazine != GHQ.MAX ? magazineSize - magazine : GHQ.MAX;
+		return magazineSize != GHQ.MAX ? magazineSize - magazine : GHQ.MAX;
 	}
 	public final int getMagazineComsumptionSpeed() {
 		return magazineConsumptionSpeed;

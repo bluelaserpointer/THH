@@ -16,16 +16,16 @@ public class SerialImageFrameAlpha extends SerialImageFrame{
 	}
 	
 	private float decideAlpha() {
-		if(GHQ.getPassedFrame(startFrame) >= IMAGE_IF.length*SPAN)
+		if(GHQ.passedFrame(startFrame) >= IMAGE_IF.length*SPAN)
 			return 1.0f;
 		else
-			return (float)(GHQ.getPassedFrame(startFrame)%SPAN)/SPAN;
+			return (float)(GHQ.passedFrame(startFrame)%SPAN)/SPAN;
 	}
 	private int decideImageID() {
-		if(GHQ.getPassedFrame(startFrame) >= IMAGE_IF.length*SPAN)
+		if(GHQ.passedFrame(startFrame) >= IMAGE_IF.length*SPAN)
 			return IMAGE_IF.length - 1;
 		else {
-			return GHQ.getPassedFrame(startFrame) / SPAN;
+			return GHQ.passedFrame(startFrame) / SPAN;
 		}
 	}
 	@Override

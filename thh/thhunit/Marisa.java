@@ -4,7 +4,6 @@ import core.GHQ;
 import paint.ImageFrame;
 import physics.HasDynam;
 import weapon.Weapon;
-import weapon.WeaponInfo;
 
 public class Marisa extends THH_BasicPlayer{
 	private static final long serialVersionUID = -1533719907505962673L;
@@ -28,17 +27,9 @@ public class Marisa extends THH_BasicPlayer{
 	@Override
 	public final void loadImageData(){
 		super.loadImageData();
-		charaPaint = new ImageFrame("thhimage/Marisa.png");
-		iconPaint = new ImageFrame("thhimage/MarisaIcon.png");
-	}
-	
-	@Override
-	public final void loadSoundData(){
-	}
-	
-	//Initialization
-	@Override
-	public final void battleStarted(){
+		charaPaint = ImageFrame.create("thhimage/Marisa.png");
+		iconPaint = ImageFrame.create("thhimage/MarisaIcon.png");
+
 		//test area
 		//weaponSlot[0] = REUSE_BOMB;
 		weaponSlot[0] = MAGIC_MISSILE;
@@ -46,26 +37,22 @@ public class Marisa extends THH_BasicPlayer{
 		spellSlot[1] = REUSE_BOMB;
 		////weaponLoad
 		//MILLKY_WAY
-		WeaponInfo.clear();
-		WeaponInfo.name = "MILLKY_WAY";
-		WeaponInfo.coolTime = 10;
 		weapon[MILLKY_WAY] = new Weapon();
+		weapon[MILLKY_WAY].name = "MILLKY_WAY";
+		weapon[MILLKY_WAY].coolTime = 10;
 		//NARROW_SPARK
-		WeaponInfo.clear();
-		WeaponInfo.name = "NARROW_SPARK";
-		WeaponInfo.coolTime = 150;
-		WeaponInfo.magazineSize = 1;
 		weapon[NARROW_SPARK] = new Weapon();
+		weapon[NARROW_SPARK].name = "NARROW_SPARK";
+		weapon[NARROW_SPARK].coolTime = 150;
+		weapon[NARROW_SPARK].magazineSize = 1;
 		//REUSE_BOMB
-		WeaponInfo.clear();
-		WeaponInfo.name = "REUSE_BOMB";
-		WeaponInfo.coolTime = 10;
 		weapon[REUSE_BOMB] = new Weapon();
+		weapon[REUSE_BOMB].name = "REUSE_BOMB";
+		weapon[REUSE_BOMB].coolTime = 10;
 		//MAGIC_MISSILE
-		WeaponInfo.clear();
-		WeaponInfo.name = "MAGIC_MISSILE";
-		WeaponInfo.coolTime = 25;
 		weapon[MAGIC_MISSILE] = new Weapon();
+		weapon[MAGIC_MISSILE].name = "MAGIC_MISSILE";
+		weapon[MAGIC_MISSILE].coolTime = 25;
 		/////////////////////
 		slot_spell = 0;
 	}

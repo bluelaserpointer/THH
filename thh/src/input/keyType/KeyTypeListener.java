@@ -71,10 +71,8 @@ public abstract class KeyTypeListener {
 	}
 	public final void enable() {
 		isEnabled = true;
-		copyListener.enable();
 	}
 	public final void disable() {
 		isEnabled = false;
-		copyListener.disable();
 	}
 }

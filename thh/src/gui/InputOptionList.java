@@ -14,13 +14,15 @@ public class InputOptionList extends GUIParts{
 	private int hoveredPosition = GHQ.NONE;
 	private String hoveredString = "";
 	private final ArrayList<String> optionList = new ArrayList<String>();
-	public InputOptionList(TitledLabel label,int listViewMaxLength) {
-		super(label.getGroup() + ">InputOptionList", null, label.x, label.y + label.h, label.w, label.h, true);
+	public InputOptionList(TitledLabel label, int listViewMaxLength) {
+		super.setName(label.getGroup() + ">InputOptionList");
+		super.setBounds(label.x, label.y + label.h, label.w, label.h);
 		this.label = label;
 		this.listViewMaxLength = listViewMaxLength;
 	}
 	public InputOptionList(TitledLabel label) {
-		super(label.getGroup() + ">InputOptionList", null, label.x, label.y + label.h, label.w, label.h, true);
+		super.setName(label.getGroup() + ">InputOptionList");
+		super.setBounds(label.x, label.y + label.h, label.w, label.h);
 		this.label = label;
 		this.listViewMaxLength = GHQ.MAX;
 	}
@@ -80,7 +82,7 @@ public class InputOptionList extends GUIParts{
 	}
 	@Override
 	public void mouseOvered() {
-		hoveredPosition = (GHQ.getMouseScreenY() - y)/h;
+		hoveredPosition = (GHQ.mouseScreenY() - y)/h;
 	}
 	@Override
 	public void outsideMouseOvered() {

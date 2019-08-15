@@ -1,32 +1,44 @@
 package engine;
 
 import static java.awt.event.KeyEvent.*;
-import static thhunit.THH_BasicUnit.*;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import core.GHQ;
 import core.GHQStage;
 import core.Game;
 import gui.DefaultStageEditor;
+import gui.GUIPartsSwitcher;
 import gui.MessageSource;
+import hitShape.MyPolygon;
 import input.key.DoubleNumKeyListener;
 import input.key.SingleKeyListener;
 import input.key.SingleNumKeyListener;
 import input.mouse.MouseListenerEx;
+import loading.MyDataSaver;
 import paint.ImageFrame;
-import stage.StageSaveData;
+import paint.dot.DotPaint;
+import physics.Point;
 import structure.Structure;
+import structure.Terrain;
+import structure.Tile;
 import thhunit.*;
 import unit.Unit;
 import thhunit.WhiteMan;
 import vegetation.Vegetation;
 
 public class Engine_THH1 extends Game implements MessageSource{
+	static {
+		GHQ.setScreenSize(1000, 600);
+	}
+	
 	private static THH_BasicUnit[] friends;
-	private static final Stage_THH1[] stages = new Stage_THH1[1];
+	private static final GHQStage[] stages = new GHQStage[1];
 	private int nowStage;
 	
 	public static final int FRIEND = 0,ENEMY = 100;
@@ -38,6 +50,109 @@ public class Engine_THH1 extends Game implements MessageSource{
 	public String getVersion() {
 		return "alpha1.0.0";
 	}
+	//saveData
+	private static final MyDataSaver stageDataSaver = new MyDataSaver() {
+		@Override
+		public void output(ObjectOutputStream oos) throws IOException {
+			//version
+			oos.writeInt(0);
+			//enemy
+			oos.writeInt(GHQ.stage().units.size());
+			for(Unit unit : GHQ.stage().units) {
+				oos.writeObject(unit.getClass().getName());
+				oos.writeObject(unit.point());
+			}
+			//structure
+			oos.writeInt(GHQ.stage().structures.size());
+			for(Structure structure : GHQ.stage().structures) {
+				if(structure instanceof Tile) {
+					oos.writeObject("Tile");
+					final Tile tile = (Tile)structure;
+					oos.writeInt(tile.point().intX());
+					oos.writeInt(tile.point().intY());
+					oos.writeInt(tile.xTiles());
+					oos.writeInt(tile.yTiles());
+				}else if(structure instanceof Terrain) {
+					oos.writeObject("Terrain");
+					oos.writeObject(((Terrain)structure).hitShape());
+				}
+			}
+			//vegetation
+			oos.writeInt(GHQ.stage().vegetations.size());
+			for(Vegetation vegetation : GHQ.stage().vegetations) {
+				oos.writeObject(vegetation.getDotPaint());
+				oos.writeObject(vegetation.point());
+			}
+		}
+		@Override
+		public void input(ObjectInputStream ois) throws IOException {
+			switch(ois.readInt()) {
+			case 0:
+				//enemy
+				final int ENEMY_AMOUNT = ois.readInt();
+				for(int i = 0;i < ENEMY_AMOUNT;++i) {
+					try {
+						final String unitName = (String)ois.readObject();
+						System.out.println(unitName);
+						switch(unitName) {
+						case "thhunit.BlackMan":
+							GHQ.stage().addUnit(new BlackMan(ENEMY)).respawn((Point)ois.readObject()).loadImageData();;
+							break;
+						case "thhunit.Fairy":
+							GHQ.stage().addUnit(new Fairy(ENEMY)).respawn((Point)ois.readObject());
+							break;
+						case "thhunit.Marisa":
+							GHQ.stage().addUnit(new Marisa(FRIEND)).respawn((Point)ois.readObject());
+							break;
+						case "thhunit.Reimu":
+							GHQ.stage().addUnit(new Reimu(FRIEND)).respawn((Point)ois.readObject());
+							break;
+						case "thhunit.WhiteMan":
+							GHQ.stage().addUnit(new WhiteMan(ENEMY)).respawn((Point)ois.readObject());
+							break;
+						default:
+							System.out.println("unknown unit name: " + unitName);
+						}
+					}catch(ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+				}
+				//structure
+				final int STRUCTURE_AMOUNT = ois.readInt();
+				for(int i = 0;i < STRUCTURE_AMOUNT;++i) {
+					try {
+						final String structureName = (String)ois.readObject();
+						System.out.println(structureName);
+						switch(structureName) {
+						case "Tile":
+							GHQ.stage().addStructure(new Tile(ois.readInt(), ois.readInt(), ois.readInt(), ois.readInt()));
+							break;
+						case "Terrain":
+							GHQ.stage().addStructure(new Terrain((MyPolygon)ois.readObject()));
+							break;
+						default:
+							System.out.println("unknown structure name: " + structureName);
+						}
+					}catch(ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+				}
+				//vegetation
+				final int VEG_AMOUNT = ois.readInt();
+				for(int i = 0;i < VEG_AMOUNT;++i) {
+					try {
+						final DotPaint dotPaint = (DotPaint)ois.readObject();
+						if(dotPaint instanceof ImageFrame)
+							((ImageFrame)dotPaint).loadFromSave();
+						GHQ.stage().addVegetation(new Vegetation(dotPaint, (Point)ois.readObject()));
+					}catch(ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+				}
+				break;
+			}
+		}
+	};
 	//inputEvnet
 	private static final int inputKeys[] = 
 	{
@@ -62,19 +177,22 @@ public class Engine_THH1 extends Game implements MessageSource{
 	private static final DoubleNumKeyListener d_numKeyL = new DoubleNumKeyListener(20);
 	
 	//images
-	private int focusIID,magicCircleIID;
+	private ImageFrame focusIF,magicCircleIF;
 	
 	//editMode
 	private static DefaultStageEditor editor;
 	private static final String EDIT_GUI_GROUP = "EDIT_GUI_GROUP";
 	
 	//initialization
+	public Engine_THH1() {
+		super(new GUIPartsSwitcher(1, 0));
+	}
 	@Override
 	public String getTitleName() {
 		return "touhouHachidanmakusetu";
 	}
 	public static void main(String args[]){
-		new GHQ(new Engine_THH1());
+		new GHQ(new Engine_THH1(), 1000, 600);
 	}
 	@Override
 	public final GHQStage loadStage() {
@@ -85,12 +203,17 @@ public class Engine_THH1 extends Game implements MessageSource{
 		/////////////////////////////////
 		//images this engine required
 		/////////////////////////////////
-		focusIID = GHQ.loadImage("thhimage/focus.png");
-		magicCircleIID = GHQ.loadImage("thhimage/MagicCircle.png");
+		focusIF = ImageFrame.create("thhimage/focus.png");
+		magicCircleIF = ImageFrame.create("thhimage/MagicCircle.png");
 		/////////////////////////////////
 		//GUI
 		/////////////////////////////////
-		GHQ.addGUIParts(editor = new DefaultStageEditor(EDIT_GUI_GROUP, new File("stage/saveData1.txt")));
+		GHQ.addGUIParts(editor = new DefaultStageEditor(EDIT_GUI_GROUP) {
+			@Override
+			public void saveStage() {
+				stageDataSaver.doSave(new File("stage/saveData1.txt"));
+			}
+		});
 		/////////////////////////////////
 		//input
 		/////////////////////////////////
@@ -110,9 +233,9 @@ public class Engine_THH1 extends Game implements MessageSource{
 		//friend
 		friends = new THH_BasicUnit[2];
 		friends[0] = Unit.initialSpawn(new Marisa(FRIEND),formationCenterX + formationsX[0],formationCenterY + formationsY[0]);
-		friends[0].status.set(HP, 4000);
+		friends[0].HP.setMax(4000).setToMax();
 		friends[1] = Unit.initialSpawn(new Reimu(FRIEND),formationCenterX + formationsX[1],formationCenterY + formationsY[1]);
-		friends[1].status.set(HP, 4000);
+		friends[1].HP.setMax(4000).setToMax();
 		for(Unit friend : friends)
 			GHQ.stage().addUnit(friend);
 		//action
@@ -121,53 +244,42 @@ public class Engine_THH1 extends Game implements MessageSource{
 		//ActionInfo.addDstPlan(1000, GHQ.getScreenW() + 200, GHQ.getScreenH() + 100);
 		//final Action moveLeftToRight200 = new Action(this);
 		//enemy
-		GHQ.stage().addUnit(Unit.initialSpawn(new Fairy(ENEMY),300, 100)).status.setDefault(HP, 2500);
-		GHQ.stage().addUnit(Unit.initialSpawn(new Fairy(ENEMY),700, 20)).status.setDefault(HP, 2500);
-		GHQ.stage().addUnit(Unit.initialSpawn(new Fairy(ENEMY),1200, 300)).status.setDefault(HP, 2500);
-		GHQ.stage().addUnit(Unit.initialSpawn(new Fairy(ENEMY),1800, 700)).status.setDefault(HP, 2500);
-		GHQ.stage().addUnit(Unit.initialSpawn(new WhiteMan(ENEMY),400, GHQ.random2(100, 150))).status.setDefault(HP, 50000);
-		GHQ.stage().addUnit(Unit.initialSpawn(new BlackMan(ENEMY),200, GHQ.random2(100, 150))).status.setDefault(HP, 10000);
+		GHQ.stage().addUnit(Unit.initialSpawn(new Fairy(ENEMY),300, 100)).HP.setMax(2500).setToMax();
+		GHQ.stage().addUnit(Unit.initialSpawn(new Fairy(ENEMY),700, 20)).HP.setMax(2500).setToMax();
+		GHQ.stage().addUnit(Unit.initialSpawn(new Fairy(ENEMY),1200, 300)).HP.setMax(2500).setToMax();
+		GHQ.stage().addUnit(Unit.initialSpawn(new Fairy(ENEMY),1800, 700)).HP.setMax(2500).setToMax();
+		GHQ.stage().addUnit(Unit.initialSpawn(new WhiteMan(ENEMY),400, GHQ.random2(100, 150))).HP.setMax(50000).setToMax();
+		GHQ.stage().addUnit(Unit.initialSpawn(new BlackMan(ENEMY),200, GHQ.random2(100, 150))).HP.setMax(10000).setToMax();
 		//vegetation
-		GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf.png"),1172,886));
-		GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/veg_flower.png"),1200,800));
-		GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf2.png"),1800,350));
-		GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/veg_stone.png"),1160,870));
-		GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf3.png"),1102,830));
-		GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf3.png"),1122,815));
-		GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/veg_leaf3.png"),822,886));
+		GHQ.stage().addVegetation(new Vegetation(ImageFrame.create("thhimage/veg_leaf.png"),1172,886));
+		GHQ.stage().addVegetation(new Vegetation(ImageFrame.create("thhimage/veg_flower.png"),1200,800));
+		GHQ.stage().addVegetation(new Vegetation(ImageFrame.create("thhimage/veg_leaf2.png"),1800,350));
+		GHQ.stage().addVegetation(new Vegetation(ImageFrame.create("thhimage/veg_stone.png"),1160,870));
+		GHQ.stage().addVegetation(new Vegetation(ImageFrame.create("thhimage/veg_leaf3.png"),1102,830));
+		GHQ.stage().addVegetation(new Vegetation(ImageFrame.create("thhimage/veg_leaf3.png"),1122,815));
+		GHQ.stage().addVegetation(new Vegetation(ImageFrame.create("thhimage/veg_leaf3.png"),822,886));
 
-		stages[0] = (Stage_THH1)GHQ.loadData(new File("stage/saveData1.txt"));
-		if(stages[0] != null) {
-			for(Structure structure : stages[0].STRUCTURES) {
-				GHQ.stage().addStructure(structure);
-			}
-		}
+		stages[0] = new GHQStage(5000, 5000);
+		//stageDataSaver.doLoad(new File("stage/saveData1.txt"));
 		GHQ.addMessage(this,"This is a prototype stage.");
-		s_mouseL.enable();
-		s_keyL.enable();
-		s_numKeyL.enable();
-		d_numKeyL.enable();
-	}
-	@Override
-	public final StageSaveData getStageSaveData() {
-		return new Stage_THH1(GHQ.stage().units,GHQ.stage().structures,GHQ.stage().vegetations);
 	}
 	//idle
 	private static int gameFrame;
 	@Override
-	public final void idle(Graphics2D g2,int stopEventKind) {
-		if(friends == null)
+	public final void idle(Graphics2D g2, int stopEventKind) {
+		if(friends[0] == null) {
 			return;
+		}
 		gameFrame++;
 		//stagePaint
 		//background
 		GHQ.stage().fill(new Color(112, 173, 71));
 		//center point
-		GHQ.drawImageGHQ_center(magicCircleIID, formationCenterX, formationCenterY, (double)GHQ.nowFrame()/35.0);
+		magicCircleIF.dotPaint_turn(formationCenterX, formationCenterY, (double)GHQ.nowFrame()/35.0);
 		g2.setColor(Color.RED);
 		g2.fillOval(formationCenterX - 2, formationCenterY - 2, 5, 5);
 		////////////////
-		final int MOUSE_X = GHQ.getMouseX(),MOUSE_Y = GHQ.getMouseY();
+		final int MOUSE_X = GHQ.mouseX(), MOUSE_Y = GHQ.mouseY();
 		if(stopEventKind == GHQ.NONE) {
 			//gravity
 			if(doGravity) {
@@ -224,7 +336,7 @@ public class Engine_THH1 extends Game implements MessageSource{
 		g2.setColor(new Color(200,120,10,100));
 		g2.setStroke(GHQ.stroke3);
 		g2.drawLine(formationCenterX,formationCenterY,MOUSE_X,MOUSE_Y);
-		GHQ.drawImageGHQ_center(focusIID,MOUSE_X,MOUSE_Y);
+		focusIF.dotPaint(MOUSE_X, MOUSE_Y);
 		//editor
 		if(s_keyL.pullEvent(VK_F6)) {
 			editor.flit();

@@ -2,7 +2,6 @@ package core;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -25,12 +24,14 @@ import vegetation.Vegetation;
 public class GHQStage implements HasBoundingBox, Serializable{
 	private static final long serialVersionUID = 6086633760555467724L;
 	
+	public final Point point = new Point.IntPoint();
 	public final int WIDTH, HEIGHT;
 	public final GHQObjectList<Unit> units = new GHQObjectList<Unit>();
 	public final GHQObjectList<Bullet> bullets = new GHQObjectList<Bullet>();
 	public final GHQObjectList<Effect> effects = new GHQObjectList<Effect>();
 	public final GHQObjectList<Structure> structures = new GHQObjectList<Structure>();
 	public final GHQObjectList<Vegetation> vegetations = new GHQObjectList<Vegetation>();
+	public final GHQObjectList<ItemData> items = new GHQObjectList<ItemData>();
 	
 	public GHQStage(int width, int height) {
 		WIDTH = width;
@@ -39,9 +40,10 @@ public class GHQStage implements HasBoundingBox, Serializable{
 	
 	//main role
 	public void idle() {
-		units.defaultTraverse();
-		structures.defaultTraverse();
+		items.defaultTraverse();
 		vegetations.defaultTraverse();
+		structures.defaultTraverse();
+		units.defaultTraverse();
 		bullets.defaultTraverse();
 		effects.defaultTraverse();
 	}
@@ -52,6 +54,7 @@ public class GHQStage implements HasBoundingBox, Serializable{
 		case EFFECT: effects.defaultTraverse(); break;
 		case STRUCTURE: structures.defaultTraverse(); break;
 		case VEGETATION: vegetations.defaultTraverse(); break;
+		case ITEM: items.defaultTraverse(); break;
 		}
 	}
 	public void fill(Color color) {
@@ -115,6 +118,16 @@ public class GHQStage implements HasBoundingBox, Serializable{
 		if(!vegetations.contains(vegetation))
 			vegetations.add(vegetation);
 		return vegetation;
+	}
+	/**
+	 * Add a {@link ItemData} to current stage.
+	 * @param item
+	 * @return added item
+	 */
+	public final <T extends ItemData>T addItem(T item){
+		if(!items.contains(item))
+			items.add(item);
+		return item;
 	}
 	
 	//tool
@@ -232,6 +245,7 @@ public class GHQStage implements HasBoundingBox, Serializable{
 		effects.clear();
 		structures.clear();
 		vegetations.clear();
+		items.clear();
 	}
 	
 	//tool
@@ -266,10 +280,10 @@ public class GHQStage implements HasBoundingBox, Serializable{
 		return checkLoS(p1.intX(), p1.intY(), p2.intX(), p2.intY());
 	}
 	public final boolean hitObstacle(HitInteractable object) {
-		return !object.point().inStage() || structures.intersected(object);
+		return !inStage(object) || structures.intersected(object);
 	}
-	public final boolean hitObstacle(HitInteractable object, Point newPoint) {
-		return !inStage(newPoint) || structures.intersected(object, newPoint);
+	public final boolean hitObstacle_atNewPoint(HitInteractable object, double dx, double dy) {
+		return !inStage(object) || structures.intersected_atNewPoint(object, dx, dy);
 	}
 	
 	//information
@@ -303,9 +317,16 @@ public class GHQStage implements HasBoundingBox, Serializable{
 	public String entityAmountInfo() {
 		return "Unit:" + units.size() + " EF:" + effects.size() + " B:" + bullets.size();
 	}
-
 	@Override
-	public Rectangle2D boundingBox() {
-		return new Rectangle2D.Double(0, 0, WIDTH, HEIGHT);
+	public Point point() {
+		return point;
+	}
+	@Override
+	public int width() {
+		return WIDTH;
+	}
+	@Override
+	public int height() {
+		return HEIGHT;
 	}
 }

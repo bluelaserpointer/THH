@@ -13,7 +13,6 @@ public class MouseListenerEx implements Serializable{
 	private static final long serialVersionUID = 2878445766577630707L;
 
 	protected boolean button1,button2,button3;
-	private boolean isEnabled;
 	
 	public MouseListenerEx() {
 		GHQ.addListenerEx(this);
@@ -89,26 +88,6 @@ public class MouseListenerEx implements Serializable{
 			return true;
 		}
 		return false;
-	}
-	/**
-	 * Check if this listener is enabled.
-	 * @return true - enabled / false - disabled
-	 */
-	public final boolean isEnabled() {
-		return isEnabled;
-	}
-	/**
-	 * Enable this listener.
-	 */
-	public final void enable() {
-		isEnabled = true;
-	}
-	/**
-	 * Disable this listener.
-	 */
-	public final void disable() {
-		isEnabled = false;
-		reset();
 	}
 	/**
 	 * Remove all the event.

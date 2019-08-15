@@ -2,23 +2,30 @@ package physics;
 
 import core.GHQ;
 import core.GHQObject;
+import hitShape.HitShape;
 
-public abstract class Entity extends GHQObject implements HasDynam{
+public abstract class Entity extends GHQObject implements HitInteractable{
 	public final int INITIAL_FRAME;
-	public final Dynam dynam = def_dynam();
+	public HitShape hitShape;
+	public Standpoint standpoint;
 	
-	public Entity() {
+	public Entity(HitShape hitShape, Standpoint standpoint) {
 		INITIAL_FRAME = GHQ.nowFrame();
+		this.hitShape = hitShape;
+		this.standpoint = standpoint;
 	}
-	public Entity(int nowFrame) {
+	public Entity(HitShape hitShape, Standpoint standpoint, int nowFrame) {
 		INITIAL_FRAME = nowFrame;
+		this.hitShape = hitShape;
+		this.standpoint = standpoint;
 	}
-	
+	//information
 	@Override
-	public final Dynam dynam() {
-		return dynam;
+	public HitShape hitShape() {
+		return hitShape;
 	}
-	protected Dynam def_dynam() {
-		return new Dynam();
+	@Override
+	public Standpoint standpoint() {
+		return standpoint;
 	}
 }

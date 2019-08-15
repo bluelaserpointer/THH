@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Stroke;
 import java.awt.geom.Line2D;
-import java.util.Arrays;
+import java.util.Collection;
 
 import core.ErrorCounter;
 import core.GHQ;
@@ -15,68 +15,65 @@ public class MyPolygon extends HitShape{
 	private static final long serialVersionUID = 421774100779183845L;
 
 	protected Polygon polygon;
-	public final int WIDTH, HEIGHT;
-	private int px[], py[];
-
-	public MyPolygon() {
-		polygon = new Polygon();
-		final java.awt.Rectangle RECT = polygon.getBounds();
-		WIDTH = RECT.width;
-		HEIGHT = RECT.height;
-	}
-	public MyPolygon(Polygon polygon) {
-		this.polygon = polygon;
-		final java.awt.Rectangle RECT = polygon.getBounds();
-		WIDTH = RECT.width;
-		HEIGHT = RECT.height;
-	}
-	public MyPolygon(int[] pointX,int[] pointY) {
-		if(pointX.length < pointY.length) {
-			ErrorCounter.put("Terrain's constructer called Illegally: pointX.length = " + pointX.length + ", pointY.length = " + pointY.length);
-			polygon = new Polygon(pointX,pointY,pointX.length);
-			px = pointX;py = Arrays.copyOf(pointY, pointX.length);
-		}else if(pointX.length > pointY.length){
-			ErrorCounter.put("Terrain's constructer called Illegally: pointX.length = " + pointX.length + ", pointY.length = " + pointY.length);
-			polygon = new Polygon(pointX,pointY,pointY.length);
-			px = Arrays.copyOf(pointX, pointY.length);py = pointY;
-		}else {
-			polygon = new Polygon(pointX,pointY,pointX.length);
-			px = pointX;py = pointY;
+	private Point points[];
+	
+	private static final Polygon setPolygon(Point[] points) {
+		final int[] px = new int[points.length], py = new int[points.length];
+		for(int i = 0;i < points.length;++i) {
+			px[i] = points[i].intX();
+			py[i] = points[i].intY();
 		}
-		final java.awt.Rectangle RECT = polygon.getBounds();
-		WIDTH = RECT.width;
-		HEIGHT = RECT.height;
+		return new Polygon(px, py, points.length);
+	}
+	public MyPolygon(Point basePoint, Point[] points) {
+		super(basePoint);
+		polygon = setPolygon(this.points = points);
+	}
+	public MyPolygon(Point basePoint, Collection<Point> points) {
+		super(basePoint);
+		polygon = setPolygon(this.points = points.toArray(new Point.IntPoint[0]));
+	}
+	public MyPolygon(Point basePoint, int[] pointX, int[] pointY) {
+		super(basePoint);
+		if(pointX.length != pointY.length)
+			ErrorCounter.put("Terrain's constructer called Illegally: pointX.length = " + pointX.length + ", pointY.length = " + pointY.length);
+		polygon = new Polygon(pointX, pointY, Math.min(pointX.length, pointY.length));
+		points = new Point[pointX.length];
+		for(int i = 0;i < pointX.length;++i)
+			points[i] = new Point.IntPoint(pointX[i], pointY[i]);
 	}
 	@Override
-	public boolean intersects(Point p1, HitShape shape, Point p2) {
+	public boolean intersects(HitShape shape) {
+		final Point P2 = shape.point();
 		if(shape instanceof Rectangle) {
 			final Rectangle RECT = (Rectangle)shape;
-			return polygon.intersects(p2.intX(), p2.intY(), RECT.WIDTH, RECT.HEIGHT);
+			return polygon.intersects(P2.intX(), P2.intY(), RECT.WIDTH, RECT.HEIGHT);
 		}else if(shape instanceof Square) {
 			final int SIDE = ((Square)shape).SIDE;
-			return polygon.intersects(p2.intX(), p2.intY(), SIDE, SIDE);
+			return polygon.intersects(P2.intX(), P2.intY(), SIDE, SIDE);
 		}else if(shape instanceof Circle) {
 			final int SIDE = ((Circle)shape).RADIUS*2;
-			return polygon.intersects(p2.intX(), p2.intY(), SIDE, SIDE);
+			return polygon.intersects(P2.intX(), P2.intY(), SIDE, SIDE);
+		}else {
+			System.out.println("unhandled type: " + this.getClass().getName() + " against " + shape.getClass().getName());
 		}
-		//System.out.println("out:" + x + ", " + y);
 		return false;
 	}
 
 	@Override
-	public boolean intersectsDot(int myX, int myY, int x, int y) {
-		return polygon.contains(x, y);
+	public boolean intersectsDot(int x, int y) {
+		return polygon.contains(x - myPoint.intX(), y - myPoint.intY());
 	}
 
 	@Override
-	public boolean intersectsLine(int myX, int myY, int x1, int y1, int x2, int y2) {
-		final Line2D line = new Line2D.Double(x1, y1, x2, y2);
-		for(int i = 0;i < px.length - 1;i++) {
-			if(line.intersectsLine(px[i], py[i], px[i + 1], py[i + 1]))
+	public boolean intersectsLine(int x1, int y1, int x2, int y2) {
+		final Line2D line = new Line2D.Double(x1 - myPoint.intX(), y1 - myPoint.intY(), x2 - myPoint.intX(), y2 - myPoint.intY());
+		if(line.intersectsLine(points[points.length - 1].intX(), points[points.length - 1].intY(), points[0].intX(), points[0].intY()))
+			return true;
+		for(int i = 0;i < points.length - 1;i++) {
+			if(line.intersectsLine(points[i].intX(), points[i].intY(), points[i + 1].intX(), points[i + 1].intY()))
 				return true;
 		}
-		if(line.intersectsLine(px[px.length - 1], py[px.length - 1], px[0], py[0]))
-			return true;
 		return false;
 	}
 	@Override
@@ -98,21 +95,20 @@ public class MyPolygon extends HitShape{
 		G2.draw(polygon);
 		G2.translate(-TX, -TY);
 	}
-
+	//information
 	@Override
-	public HitShape clone() {
-		// TODO Auto-generated method stub
-		return null;
+	public HitShape clone(Point newPoint) {
+		return new MyPolygon(newPoint, points);
 	}
-
+	public Point[] getPoints() {
+		return points;
+	}
 	@Override
 	public int width() {
-		return WIDTH;
+		return polygon.getBounds().width;
 	}
-
 	@Override
 	public int height() {
-		return HEIGHT;
+		return polygon.getBounds().height;
 	}
-
 }

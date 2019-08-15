@@ -5,14 +5,11 @@ import static java.awt.event.KeyEvent.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
 import java.util.Collection;
 
 import core.GHQ;
 import core.GHQObject;
 import core.GHQObjectList;
-import gui.grouped.ArrangedButtons;
-import gui.grouped.GUIGroup;
 import input.key.SingleKeyListener;
 import math.SquareCellArranger;
 import paint.ColorFilling;
@@ -32,7 +29,7 @@ import vegetation.Vegetation;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class DefaultStageEditor extends GUIGroup{
+public abstract class DefaultStageEditor extends GUIParts{
 	private final GHQObjectList<Tile> tileScripts = new GHQObjectList<Tile>();
 	private final GHQObjectList<Terrain> terrainScripts = new GHQObjectList<Terrain>();
 	
@@ -66,11 +63,13 @@ public class DefaultStageEditor extends GUIGroup{
 	//GUI
 	private static TitledLabel configLabel;
 	//init
-	public DefaultStageEditor(String group,File stageFile) {
-		super(group, RectPaint.BLANK_SCRIPT, 0, 0, GHQ.screenW(), GHQ.screenH());
+	public DefaultStageEditor(String group) {
 		EDIT_MENU_GROUP = group + ">EDIT_MENU_GROUP>";
 		final int SCREEN_W = GHQ.screenW(),SCREEN_H = GHQ.screenH();
-		super.addLast(new BasicButton(EDIT_MENU_GROUP,new ColorFraming(Color.WHITE,GHQ.stroke3),150,0,SCREEN_W - 150,SCREEN_H) {
+		super.addLast(new BasicButton(RectPaint.BLANK_SCRIPT, new ColorFraming(Color.WHITE,GHQ.stroke3)) {
+			{
+				setName(EDIT_MENU_GROUP).setBounds(150, 0, SCREEN_W - 150, SCREEN_H);
+			}
 			@Override
 			public void idle() {
 				super.idle();
@@ -91,7 +90,7 @@ public class DefaultStageEditor extends GUIGroup{
 							G2.setStroke(GHQ.stroke5);
 							G2.draw(RECT);
 							G2.drawOval((int)RECT.getX() - 9,(int)RECT.getY() - 9,18,18);
-							G2.drawOval(GHQ.getMouseX() - 5,GHQ.getMouseY() - 5,10,10);
+							G2.drawOval(GHQ.mouseX() - 5,GHQ.mouseY() - 5,10,10);
 						}
 						if(selectObject != null) {
 							//changeSlot(Left side menu bar)
@@ -146,7 +145,6 @@ public class DefaultStageEditor extends GUIGroup{
 			public void clicked() {
 				if(placeKind == POINTING) {
 					selectObject = mouseOveredObject;
-					keyListener.enable();
 					final String labelText;
 					if(selectObject instanceof Tile) {
 						labelText = ((Tile)selectObject).getName();
@@ -165,7 +163,6 @@ public class DefaultStageEditor extends GUIGroup{
 					configLabel.setText(labelText.equals(GHQ.NOT_NAMED) ? "" : labelText);
 				}else { //object deselect
 					selectObject = null;
-					keyListener.disable();
 					switch(placeKind) {
 					case TERRAIN:
 						if(Terrain.blueprint_isOriginPoint(placeX, placeY))
@@ -175,7 +172,7 @@ public class DefaultStageEditor extends GUIGroup{
 						break;
 					case TILES:
 						if(Tile.blueprint_hasOriginPoint())
-							GHQ.stage().addStructure(Tile.blueprint_addEndPointAndFlush(GHQ.getMouseX(), GHQ.getMouseY()));
+							GHQ.stage().addStructure(Tile.blueprint_addEndPointAndFlush(GHQ.mouseX(), GHQ.mouseY()));
 						else
 							Tile.blueprint_addOriginPoint(placeX, placeY);
 						break;
@@ -183,7 +180,7 @@ public class DefaultStageEditor extends GUIGroup{
 						GHQ.stage().addUnit(new DummyUnit(new Dynam(placeX, placeY)));
 						break;
 					case VEGETATION:
-						GHQ.stage().addVegetation(new Vegetation(new ImageFrame("thhimage/gui_editor/Vegetation.png"), placeX, placeY));
+						GHQ.stage().addVegetation(new Vegetation(ImageFrame.create("thhimage/gui_editor/Vegetation.png"), placeX, placeY));
 						break;
 					case ITEM:
 						break;
@@ -191,8 +188,10 @@ public class DefaultStageEditor extends GUIGroup{
 				}
 			}
 		});
-		super.addLast(new ArrangedButtons<Integer>(EDIT_MENU_GROUP + "SelectionButtons", null, 25, 155
-				, new SquareCellArranger(1, 80, 80, 2, 2)) {
+		super.addLast(new ArrangedButtons<Integer>(25, 155, new SquareCellArranger(1, 80, 80, 2, 2)) {
+			{
+				setName(EDIT_MENU_GROUP + "SelectionButtons");
+			}
 			@Override
 			protected void clicked(Integer buttonValue) {
 				if(placeKind != buttonValue)
@@ -205,24 +204,32 @@ public class DefaultStageEditor extends GUIGroup{
 				placeKind = POINTING;
 			}
 		})
-		.appendButton(TILES, new ImageFrame("thhimage/gui_editor/Tiles.png"), 0, 0)
-		.appendButton(TERRAIN, new ImageFrame("thhimage/gui_editor/FreeShape.png"), 0, 1)
-		.appendButton(UNIT, new ImageFrame("thhimage/gui_editor/Unit.png"), 1, 0)
-		.appendButton(VEGETATION, new ImageFrame("thhimage/gui_editor/Vegetation.png"), 1, 1);
-		super.addLast(new BasicButton("SAVE_BUTTON", new ImageFrame("thhimage/gui_editor/Save.png"),25,500,85,40) {
+		.appendButton(TILES, ImageFrame.create("thhimage/gui_editor/Tiles.png"), 0, 0)
+		.appendButton(TERRAIN, ImageFrame.create("thhimage/gui_editor/FreeShape.png"), 0, 1)
+		.appendButton(UNIT, ImageFrame.create("thhimage/gui_editor/Unit.png"), 1, 0)
+		.appendButton(VEGETATION, ImageFrame.create("thhimage/gui_editor/Vegetation.png"), 1, 1);
+		super.addLast(new BasicButton() {
+			{
+				setName("SAVE_BUTTON").setBGPaint(ImageFrame.create("thhimage/gui_editor/Save.png"))
+				.setBounds(25,500,85,40);
+			}
 			@Override
 			public void clicked() {
 				System.out.println("saving...");
-				GHQ.saveData(GHQ.getEngine().getStageSaveData(),stageFile);
+				saveStage();
 				System.out.println("complete!");
 			}
 		});
-		super.addLast(configLabel = new TitledLabel(EDIT_MENU_GROUP + "CONFIG_LABEL",new ColorFilling(Color.WHITE),25,300,120,25){
-			
+		super.addLast(configLabel = new TitledLabel(){
+			{
+				setName(EDIT_MENU_GROUP + "CONFIG_LABEL").setBGPaint(new ColorFilling(Color.WHITE))
+				.setBounds(25, 300, 120, 25);
+			}
 		});
 		super.addLast(new InputOptionList(configLabel)).addWord("WHITE_WALL", "ABCD", "ABNK");
 	}
 	//role
+	public abstract void saveStage();
 	@Override
 	public void idle() {
 		super.idle();
@@ -233,7 +240,7 @@ public class DefaultStageEditor extends GUIGroup{
 			G2.setColor(Color.RED);
 			final int N = 100;
 			int S = 4;
-			final int SX = (GHQ.getMouseX() + N/2)/N,SY = (GHQ.getMouseY() + N/2)/N;
+			final int SX = (GHQ.mouseX() + N/2)/N,SY = (GHQ.mouseY() + N/2)/N;
 			for(int xi = -1;xi <= +1;xi++) {
 				for(int yi = -1;yi <= +1;yi++)
 					G2.fillOval((SX + xi)*N - S/2, (SY + yi)*N - S/2, S, S);

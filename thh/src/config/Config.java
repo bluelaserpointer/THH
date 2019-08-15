@@ -174,7 +174,7 @@ public class Config implements Serializable{
 	
 	//ID変換系
 	int convertID_enemy(String name){
-		if(!GHQ.isActualString(name))
+		if(!ConfigLoader.isActualString(name))
 			return GHQ.NONE;
 		if(nameToID_enemy.containsKey(name)) //指定名をIDに変換
 			return nameToID_enemy.get(name);
@@ -183,7 +183,7 @@ public class Config implements Serializable{
 		return GHQ.NONE;
 	}
 	int convertID_entity(String name){
-		if(!GHQ.isActualString(name))
+		if(!ConfigLoader.isActualString(name))
 			return GHQ.NONE;
 		if(nameToID_entity.containsKey(name)) //指定名をIDに変換
 			return nameToID_entity.get(name);
@@ -192,7 +192,7 @@ public class Config implements Serializable{
 		return GHQ.NONE;
 	}
 	int convertID_effect(String name){
-		if(!GHQ.isActualString(name))
+		if(!ConfigLoader.isActualString(name))
 			return GHQ.NONE;
 		if(nameToID_effect.containsKey(name)) //指定名をIDに変換
 			return nameToID_effect.get(name);
@@ -201,7 +201,7 @@ public class Config implements Serializable{
 		return GHQ.NONE;
 	}
 	int convertID_gimmick(String name){
-		if(!GHQ.isActualString(name))
+		if(!ConfigLoader.isActualString(name))
 			return GHQ.NONE;
 		if(nameToID_gimmick.containsKey(name)) //指定名をIDに変換
 			return nameToID_gimmick.get(name);
@@ -210,7 +210,7 @@ public class Config implements Serializable{
 		return GHQ.NONE;
 	}
 	int convertID_weapon(String name){
-		if(!GHQ.isActualString(name))
+		if(!ConfigLoader.isActualString(name))
 			return GHQ.NONE;
 		if(nameToID_weapon.containsKey(name)) //指定名をIDに変換
 			return nameToID_weapon.get(name);
@@ -219,7 +219,7 @@ public class Config implements Serializable{
 		return GHQ.NONE;
 	}
 	int convertID_bullet(String name){
-		if(!GHQ.isActualString(name))
+		if(!ConfigLoader.isActualString(name))
 			return GHQ.NONE;
 		if(nameToID_bullet.containsKey(name)) //指定名をIDに変換
 			return nameToID_bullet.get(name);

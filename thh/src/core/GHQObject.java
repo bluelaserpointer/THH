@@ -18,6 +18,9 @@ public class GHQObject {
 	public void claimDelete() {
 		isDeleted = true;
 	}
+	public void cancelDelete() {
+		isDeleted = false;
+	}
 	public void forceDelete() {
 		if(this instanceof Unit)
 			GHQ.stage().units.forceRemove((Unit)this);

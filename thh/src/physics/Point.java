@@ -3,18 +3,22 @@ package physics;
 import static java.lang.Math.atan2;
 import static java.lang.Math.sqrt;
 
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
 import core.GHQ;
+import loading.ObjectSavable;
+import loading.ObjectSaveTree;
 
 /**
  * A major class for managing object coordinate.
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Point implements Serializable{
+public abstract class Point implements Serializable, ObjectSavable{
 	private static final long serialVersionUID = -4012705097956450689L;
-
+	public static final Point NULL_POINT = new Point.IntPoint();
+	
 	@Override
 	public abstract Point clone();
 	
@@ -137,7 +141,7 @@ public abstract class Point implements Serializable{
 	}
 	///////////////angleToMouse
 	public double angleToMouse() {
-		return angleTo(GHQ.getMouseX(), GHQ.getMouseY());
+		return angleTo(GHQ.mouseX(), GHQ.mouseY());
 	}
 	///////////////intDX&DY
 	public final int intDX(int x) {
@@ -366,11 +370,18 @@ public abstract class Point implements Serializable{
 			dstX = doubleX() + DX*RATE;
 			dstY = doubleY() + DY*RATE;
 		}
-		if(!GHQ.stage().hitObstacle(source, cloneAt((int)dstX, (int)dstY)))
+		if(!GHQ.stage().hitObstacle_atNewPoint(source, (int)dstX, (int)dstY))
 			setXY(dstX, dstY);
 	}
 	public void approachIfNoObstacles(HitInteractable source, Point dstPoint, double speed) {
 		approachIfNoObstacles(source, dstPoint.doubleX(), dstPoint.doubleY(), speed);
+	}
+
+	///////////////
+	//other
+	///////////////
+	public Rectangle2D getRectangle2D(int width, int height) {
+		return new Rectangle2D.Double(intX() - width/2, intY() - height/2, intX() + width/2, intY() + height/2);
 	}
 	//////////////////////////////classes
 
@@ -388,6 +399,14 @@ public abstract class Point implements Serializable{
 		public IntPoint(Point point) {
 			this.x = point.intX();
 			this.y = point.intY();
+		}
+		public IntPoint(ObjectSaveTree tree) {
+			this.x = tree.pollInt();
+			this.y = tree.pollInt();
+		}
+		@Override
+		public ObjectSaveTree save() {
+			return new ObjectSaveTree(0, x, y);
 		}
 		@Override
 		public int intX() {
@@ -449,6 +468,14 @@ public abstract class Point implements Serializable{
 		public DoublePoint(Point point) {
 			this.x = point.doubleX();
 			this.y = point.doubleY();
+		}
+		public DoublePoint(ObjectSaveTree tree) {
+			this.x = tree.pollDouble();
+			this.y = tree.pollDouble();
+		}
+		@Override
+		public ObjectSaveTree save() {
+			return new ObjectSaveTree(0, x, y);
 		}
 		@Override
 		public int intX() {

@@ -1,3 +1,5 @@
+/.classpath
+/.project
 /.settings/
 /_config_1.0/
 /font/
@@ -8,15 +10,19 @@
 /action/
 /buff/
 /bullet/
+/config/
 /core/
 /effect/
 /engine/
-/geom/
 /gui/
+/hitShape/
 /input/
 /item/
+/loading/
+/math/
 /paint/
 /physics/
+/sound/
 /status/
 /storage/
 /structure/
@@ -24,8 +30,4 @@
 /unit/
 /vegetation/
 /weapon/
-/config/
-/sound/
-/key/
-/hitShape/
-/math/
+/calculate/

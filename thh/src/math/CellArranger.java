@@ -1,8 +1,7 @@
 package math;
 
 public abstract class CellArranger {
-
-	public int generalW, generalH;
+	protected int generalW, generalH;
 	public static class Cell {
 		public final int X, Y, W, H;
 		protected Cell(int x, int y, int w, int h) {
@@ -11,6 +10,12 @@ public abstract class CellArranger {
 			W = w;
 			H = h;
 		}
+	}
+	public int width() {
+		return generalW;
+	}
+	public int height() {
+		return generalH;
 	}
 	public abstract int cellW();
 	public abstract int cellH();

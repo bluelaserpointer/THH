@@ -17,7 +17,7 @@ public abstract class THH_EffectLibrary extends Effect{
 	//Marisa - 1
 	/////////////////
 	public static class SparkHitEF extends THH_EffectLibrary{
-		private static final DotPaint paint = new ImageFrame("thhimage/NarrowSpark_HitEffect.png");
+		private static final DotPaint paint = ImageFrame.create("thhimage/NarrowSpark_HitEffect.png");
 		public SparkHitEF(HasDynam source) {
 			super(source);
 			name = "SparkHitEF";
@@ -34,7 +34,7 @@ public abstract class THH_EffectLibrary extends Effect{
 	//Marisa - 2
 	/////////////////
 	public static class LightningEF extends THH_EffectLibrary{
-		static final DotPaint paint = new ImageFrame("thhimage/ReuseBomb_Effect.png");
+		static final DotPaint paint = ImageFrame.create("thhimage/ReuseBomb_Effect.png");
 		
 		public LightningEF(HasDynam source) {
 			super(source);
@@ -51,7 +51,7 @@ public abstract class THH_EffectLibrary extends Effect{
 	//Marisa - 3
 	/////////////////
 	public static class MissileTraceA_EF extends THH_EffectLibrary{
-		static final DotPaint paint = new ImageFrame("thhimage/StarEffect2.png");
+		static final DotPaint paint = ImageFrame.create("thhimage/StarEffect2.png");
 
 		public MissileTraceA_EF(HasDynam source, boolean appendClones) {
 			super(source);
@@ -78,7 +78,7 @@ public abstract class THH_EffectLibrary extends Effect{
 	//Marisa - 4
 	/////////////////
 	public static class MissileTraceB_EF extends THH_EffectLibrary{
-		static final DotPaint paint = new ImageFrame("thhimage/MagicMissile.png");
+		static final DotPaint paint = ImageFrame.create("thhimage/MagicMissile.png");
 		
 		public MissileTraceB_EF(HasDynam source) {
 			super(source);
@@ -99,7 +99,7 @@ public abstract class THH_EffectLibrary extends Effect{
 	//Marisa - 5
 	/////////////////
 	public static class MissileHitEF extends THH_EffectLibrary{
-		static final DotPaint paint = new ImageFrame("thhimage/MissileHitEffect.png");
+		static final DotPaint paint = ImageFrame.create("thhimage/MissileHitEffect.png");
 		
 		public MissileHitEF(HasDynam source, boolean makeClones) {
 			super(source);
@@ -125,7 +125,7 @@ public abstract class THH_EffectLibrary extends Effect{
 	//Reimu - 1
 	/////////////////
 	public static class FudaHitEF extends THH_EffectLibrary{
-		static final DotPaint paint = new ImageFrame("thhimage/FudaHitEffect.png");
+		static final DotPaint paint = ImageFrame.create("thhimage/FudaHitEffect.png");
 		
 		public FudaHitEF(HasDynam source, boolean makeClones) {
 			super(source);

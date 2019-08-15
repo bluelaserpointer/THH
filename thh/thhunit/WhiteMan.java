@@ -1,9 +1,9 @@
 package thhunit;
 
+import calculate.ConsumableEnergy;
 import core.GHQ;
 import paint.ImageFrame;
 import physics.HasDynam;
-import status.StatusWithDefaultValue;
 import unit.Unit;
 
 public class WhiteMan extends THH_BasicEnemy{
@@ -22,8 +22,8 @@ public class WhiteMan extends THH_BasicEnemy{
 	@Override
 	public final void loadImageData(){
 		super.loadImageData();
-		charaPaint = new ImageFrame("thhimage/WhiteBall.png");
-		bulletPaint[0] = new ImageFrame("thhimage/LightBallA.png");
+		charaPaint = ImageFrame.create("thhimage/WhiteBall.png");
+		bulletPaint[0] = ImageFrame.create("thhimage/LightBallA.png");
 	}
 	@Override
 	public void idle() {
@@ -32,9 +32,9 @@ public class WhiteMan extends THH_BasicEnemy{
 		if(blackManAdress == null)
 			return;
 		dstPoint.setXY(blackManAdress);
-		final StatusWithDefaultValue THE_STATUS = ((THH_BasicUnit)blackManAdress).status;
-		if(THE_STATUS.isBigger0(HP) && THE_STATUS.isSmaller(HP,10000) && dynam.inRange(dstPoint, 200)){
-			THE_STATUS.add(HP, 100);
+		final ConsumableEnergy THE_HP = ((THH_BasicUnit)blackManAdress).HP;
+		if(!THE_HP.isMin() && !THE_HP.isMax() && dynam.inRange(dstPoint, 200)){
+			THE_HP.consume(-100);
 		}
 		dynam.approachIfNoObstacles(this, dstPoint, charaSpeed);
 	}

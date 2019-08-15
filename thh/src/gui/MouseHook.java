@@ -2,7 +2,6 @@ package gui;
 
 import core.GHQ;
 import paint.dot.HasDotPaint;
-import paint.rect.RectPaint;
 
 /**
  * A subclass of {@link GUIParts} for managing mouse drag&drop actions.
@@ -16,22 +15,18 @@ public class MouseHook<T extends HasDotPaint> extends GUIParts{
 	//init
 	/**
 	 * Create a MouseHook.
-	 * @param group - name of the group this GUI belong to(use in {@link GHQ#enableGUIs(String)}, {@link GHQ#disableGUIs(String)})
-	 * @param paintScript - the {@link RectPaint} of this GUI background
 	 */
-	public MouseHook(String group, RectPaint paintScript) {
-		super(group, paintScript, 0, 0, 0, 0, false);
+	public MouseHook() {
 		SIZE = GHQ.NONE;
 	}
 	/**
 	 * Create a MouseHook.
-	 * @param group - name of the group this GUI belong to(use in {@link GHQ#enableGUIs(String)}, {@link GHQ#disableGUIs(String)})
-	 * @param paintScript - the {@link RectPaint} of this GUI background
 	 * @param size - the display size of dragging object
+	 * @param initialObject - initial hooking object
 	 */
-	public MouseHook(String group, RectPaint paintScript, int size) {
-		super(group, paintScript, 0, 0, 0, 0, false);
+	public MouseHook(int size, T initialObject) {
 		SIZE = size;
+		hookingObject = initialObject;
 	}
 	
 	//main role
@@ -39,9 +34,9 @@ public class MouseHook<T extends HasDotPaint> extends GUIParts{
 	public void idle() {
 		if(hookingObject != null) {
 			if(SIZE == GHQ.NONE)
-				hookingObject.getPaintScript().dotPaint(GHQ.getMouseScreenX(), GHQ.getMouseScreenY());
+				hookingObject.getDotPaint().dotPaint(GHQ.mouseScreenX(), GHQ.mouseScreenY());
 			else
-				hookingObject.getPaintScript().dotPaint_capSize(GHQ.getMouseScreenX(), GHQ.getMouseScreenY(), SIZE);
+				hookingObject.getDotPaint().dotPaint_capSize(GHQ.mouseScreenX(), GHQ.mouseScreenY(), SIZE);
 		}
 	}
 	
@@ -71,6 +66,15 @@ public class MouseHook<T extends HasDotPaint> extends GUIParts{
 	}
 	public void destory() {
 		hookingObject = null;
+	}
+
+	public void hookInStorageViewer(TableStorageViewer<T> inventoryViewer) {
+		final int HOVERED_ID = inventoryViewer.getMouseHoveredID();
+		if(hasObject()) {
+			hook(inventoryViewer.storage.set(HOVERED_ID, get()));
+		}else {
+			hook(inventoryViewer.storage.remove(HOVERED_ID));
+		}
 	}
 	
 	//information

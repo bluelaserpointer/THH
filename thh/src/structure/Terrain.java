@@ -7,17 +7,24 @@ import java.util.ArrayList;
 import core.GHQ;
 import hitShape.HitShape;
 import hitShape.MyPolygon;
+import physics.Point;
+import physics.Standpoint;
 
 public class Terrain extends Structure{
 	private static final long serialVersionUID = 7167638140442836310L;
-	protected MyPolygon hitShape;
 	public static ArrayList<Integer> bppx = new ArrayList<Integer>(), bppy = new ArrayList<Integer>();
 	
 	public Terrain() {
-		hitShape = new MyPolygon();
+		super(new MyPolygon(new Point.IntPoint(), new Point.IntPoint[0]), new Standpoint(GHQ.NONE));
+	}
+	public Terrain(int[] px, int[] py) {
+		super(new MyPolygon(new Point.IntPoint(), px, py), new Standpoint(GHQ.NONE));
+	}
+	public Terrain(Point[] points) {
+		super(new MyPolygon(new Point.IntPoint(), points), new Standpoint(GHQ.NONE));
 	}
 	public Terrain(MyPolygon polygon) {
-		hitShape = polygon;
+		super(polygon, new Standpoint(GHQ.NONE));
 	}
 
 	//role
@@ -67,7 +74,7 @@ public class Terrain extends Structure{
 		}
 		bppx.clear();
 		bppy.clear();
-		return new Terrain(new MyPolygon(rx, ry));
+		return new Terrain(rx, ry);
 	}
 	
 	//information

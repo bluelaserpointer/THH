@@ -12,28 +12,33 @@ public class Circle extends HitShape{
 	private static final long serialVersionUID = -1809578801160258098L;
 	public final int RADIUS;
 	
-	public Circle(int radius) {
+	public Circle(Point point, int radius) {
+		super(point);
 		RADIUS = radius;
 	}
 	@Override
-	public boolean intersects(Point p1, HitShape shape, Point p2) {
+	public boolean intersects(HitShape shape) {
 		if(shape instanceof Circle) {
 			final double DR = RADIUS + ((Circle)shape).RADIUS;
-			return p1.distanceSq(p2) < DR*DR;
+			return myPoint.distanceSq(shape.point()) < DR*DR;
 		}else if(shape instanceof Square) {
 			// TODO lacking strictness
-			return p1.inRangeXY(p2, (RADIUS + ((Square)shape).SIDE)/2);
+			return myPoint.inRangeXY(shape.point(), RADIUS + ((Square)shape).SIDE/2);
+		}else if(shape instanceof Rectangle) {
+			// TODO lacking strictness
+			return myPoint.inRangeXY(shape.point(), RADIUS + ((Rectangle)shape).WIDTH/2, RADIUS + ((Rectangle)shape).HEIGHT/2);
+		}else {
+			System.out.println("unhandled type: " + this.getClass().getName() + " against " + shape.getClass().getName());
 		}
 		return false;
 	}
 	@Override
-	public boolean intersectsDot(int myX, int myY, int x, int y) {
-		final int DX = x - myX, DY = y - myY;
-		return DX*DX + DY*DY < RADIUS*RADIUS;
+	public boolean intersectsDot(int x, int y) {
+		return super.myPoint.inRange(x, y, RADIUS);
 	}
 	@Override
-	public boolean intersectsLine(int myX, int myY, int x1, int y1, int x2, int y2) {
-		return Line2D.ptLineDistSq(x1, y1, x2, y2, myX, myY) < RADIUS*RADIUS;
+	public boolean intersectsLine(int x1, int y1, int x2, int y2) {
+		return Line2D.ptLineDistSq(x1, y1, x2, y2, myPoint.intX(), myPoint.intY()) < RADIUS*RADIUS;
 	}
 	@Override
 	public void fill(Point point, Color color) {
@@ -57,17 +62,17 @@ public class Circle extends HitShape{
 	
 	//tool
 	@Override
-	public HitShape clone() {
-		return new Circle(RADIUS);
+	public HitShape clone(Point newPoint) {
+		return new Circle(newPoint, RADIUS);
 	}
 	
 	//information
 	@Override
 	public int width() {
-		return RADIUS;
+		return RADIUS*2;
 	}
 	@Override
 	public int height() {
-		return RADIUS;
+		return RADIUS*2;
 	}
 }

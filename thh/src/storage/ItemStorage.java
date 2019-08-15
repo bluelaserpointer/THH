@@ -2,6 +2,7 @@ package storage;
 
 import java.io.Serializable;
 
+import calculate.Filter;
 import item.ItemData;
 
 /**
@@ -62,6 +63,14 @@ public class ItemStorage implements Serializable{
 		int total = 0;
 		for(int i = items.traverseFirst();i != -1;i = items.traverseNext(i)) {
 			if(targetItemName.equals(items.get(i).getName()))
+				total += items.get(i).getAmount();
+		}
+		return total;
+	}
+	public int countItem(Filter<ItemData> filter) {
+		int total = 0;
+		for(int i = items.traverseFirst();i != -1;i = items.traverseNext(i)) {
+			if(filter.judge(items.get(i)))
 				total += items.get(i).getAmount();
 		}
 		return total;

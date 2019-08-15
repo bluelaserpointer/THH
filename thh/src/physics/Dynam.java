@@ -3,6 +3,7 @@ package physics;
 import static java.lang.Math.*;
 
 import core.GHQ;
+import loading.ObjectSaveTree;
 
 /**
  * A major class for managing object physics.
@@ -14,8 +15,7 @@ public class Dynam extends Point.DoublePoint{
 	
 	public static final Dynam NULL_DYNAM = new Dynam();
 	
-	
-	protected double xSpd,ySpd;
+	protected double xSpd, ySpd;
 	protected final Angle moveAngle = new Angle() {
 		private static final long serialVersionUID = 6971378942148992685L;
 		@Override
@@ -51,6 +51,14 @@ public class Dynam extends Point.DoublePoint{
 	}
 	public Dynam(HasAnglePoint sample) {
 		setXYAngle(sample);
+	}
+	public Dynam(ObjectSaveTree tree) {
+		super(tree.pollSaveTreeForSuper());
+		setSpeed(tree.pollInt(), tree.pollInt());
+	}
+	@Override
+	public ObjectSaveTree save() {
+		return new ObjectSaveTree(0, super.save(), xSpd, ySpd);
 	}
 	public void clear() {
 		x = y = xSpd = ySpd = 0;
@@ -165,10 +173,10 @@ public class Dynam extends Point.DoublePoint{
 			if(ySpd == 0.0)
 				return 0.0;
 			else
-				return ySpd;
+				return Math.abs(ySpd);
 		}else {
 			if(ySpd == 0.0)
-				return xSpd;
+				return Math.abs(xSpd);
 			else
 				return sqrt(xSpd*xSpd + ySpd*ySpd);
 		}
@@ -250,7 +258,7 @@ public class Dynam extends Point.DoublePoint{
 		y += ySpd;
 	}
 	public void moveIfNoObstacles(HitInteractable source) {
-		if(xSpd == 0 && ySpd == 0 || GHQ.stage().hitObstacle(source, cloneAt((int)xSpd, (int)ySpd)))
+		if(xSpd == 0 && ySpd == 0 || GHQ.stage().hitObstacle_atNewPoint(source, (int)xSpd, (int)ySpd))
 			return;
 		x += xSpd;
 		y += ySpd;

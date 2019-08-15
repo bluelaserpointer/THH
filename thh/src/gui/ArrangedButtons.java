@@ -1,29 +1,30 @@
-package gui.grouped;
+package gui;
 
-import gui.BasicButton;
 import math.CellArranger;
 import math.SquareCellArranger;
 import paint.rect.RectPaint;
 
-public abstract class ArrangedButtons<T> extends GUIGroup{
+public abstract class ArrangedButtons<T> extends GUIParts{
 	
 	public final CellArranger arranger;
 	
-	public ArrangedButtons(String name, RectPaint bgPaint, int x, int y, CellArranger arranger) {
-		super(name, bgPaint, x, y, arranger.generalW, arranger.generalH);
+	public ArrangedButtons(int x, int y, CellArranger arranger) {
+		super.setBounds(x, y, arranger.width(), arranger.height());
 		this.arranger = arranger;
 	}
 	protected abstract void clicked(T buttonValue);
 	//addButtons
 	public BasicButton addButton(T buttonValue, RectPaint buttonPaint, CellArranger.Cell cell) {
 		final ArrangedButtons<T> outer = this;
-		return super.addLast(new BasicButton(this.NAME + " pos: (" + (x + cell.X) + ", " + (y + cell.Y) + ")", buttonPaint, x + cell.X, y + cell.Y, cell.W, cell.H) {
+		return (BasicButton)super.addLast(new BasicButton() {
 			@Override
 			public void clicked() {
 				super.clicked();
 				outer.clicked(buttonValue);
 			}
-		});
+		}).setName(this.NAME + " pos: (" + (x + cell.X) + ", " + (y + cell.Y) + ")")
+				.setBounds(x + cell.X, y + cell.Y, cell.W, cell.H)
+					.setBGPaint(buttonPaint);
 	}
 	public BasicButton addButton(T buttonValue, RectPaint buttonPaint, int xPos, int yPos) {
 		return addButton(buttonValue, buttonPaint, arranger.getBasicCell(xPos, yPos));

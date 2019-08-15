@@ -6,36 +6,34 @@ import core.GHQ;
 import paint.dot.DotPaint;
 import unit.Unit;
 import weapon.Weapon;
-import weapon.WeaponInfo;
 
 public class EnemyWeaponLibrary{
 	public static final int lightBall_S = 0,lightBall_ROUND = 1,BLACK_SLASH_BURST = 2,HEAL_SHOTGUN = 3;
 	
 	public static Weapon getWeaponController(int bulletKind) {
-		WeaponInfo.clear();
+		final Weapon WEAPON = new Weapon();
 		switch(bulletKind) {
 		case lightBall_S:
 		case lightBall_ROUND:
-			WeaponInfo.name = "lightBall_S";
-			WeaponInfo.coolTime = 5;
-			WeaponInfo.magazineSize = 6;
-			WeaponInfo.reloadTime = 100;
-			return new Weapon();
+			WEAPON.name = "lightBall_S";
+			WEAPON.coolTime = 5;
+			WEAPON.magazineSize = 6;
+			WEAPON.reloadTime = 100;
+			break;
 		case HEAL_SHOTGUN:
-			WeaponInfo.name = "HEAL_SHOTGUN";
-			WeaponInfo.coolTime = 5;
-			WeaponInfo.magazineSize = 3;
-			WeaponInfo.reloadTime = 20;
-			return new Weapon();
+			WEAPON.name = "HEAL_SHOTGUN";
+			WEAPON.coolTime = 5;
+			WEAPON.magazineSize = 3;
+			WEAPON.reloadTime = 20;
+			break;
 		case BLACK_SLASH_BURST:
-			WeaponInfo.name = "BLACK_SLASH_BURST";
-			WeaponInfo.coolTime = 5;
-			WeaponInfo.magazineSize = 1;
-			WeaponInfo.reloadTime = 40;
-			return new Weapon();
-		default:
-			return null;
+			WEAPON.name = "BLACK_SLASH_BURST";
+			WEAPON.coolTime = 5;
+			WEAPON.magazineSize = 1;
+			WEAPON.reloadTime = 40;
+			break;
 		}
+		return WEAPON;
 	}
 	public static void inputBulletInfo(Unit user,int bulletKind,DotPaint paintScript,Unit targetChara) {
 		switch(bulletKind) {

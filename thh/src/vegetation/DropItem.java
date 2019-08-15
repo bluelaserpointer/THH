@@ -3,8 +3,8 @@ package vegetation;
 import core.GHQ;
 import item.ItemData;
 import paint.dot.DotPaint;
-import physics.Dynam;
-import physics.HasDynam;
+import physics.HasPoint;
+import physics.Point;
 
 public class DropItem extends Vegetation{
 	private static final long serialVersionUID = -8747093817175771314L;
@@ -22,10 +22,20 @@ public class DropItem extends Vegetation{
 		HITBOX_W = w;
 		HITBOX_H = h;
 	}
-	public boolean isCovered(HasDynam di, int distance) {
-		final Dynam DYNAM = di.dynam();
-		return DYNAM.intAbsDX(point) < ((HITBOX_W != GHQ.NONE ? HITBOX_W : paintScript.width()) + distance)/2
-				&& DYNAM.intAbsDY(point) < ((HITBOX_H != GHQ.NONE ? HITBOX_H : paintScript.height()) + distance)/2;
+	public boolean isCovered(HasPoint source, int distance) {
+		final Point DYNAM = source.point();
+		return DYNAM.intAbsDX(point) < (this.width() + distance)/2 && DYNAM.intAbsDY(point) < (this.height() + distance)/2;
+	}
+	public String getName() {
+		return ITEM.getName();
+	}
+	@Override
+	public int width() {
+		return HITBOX_W != GHQ.NONE ? HITBOX_W : paintScript.width();
+	}
+	@Override
+	public int height() {
+		return HITBOX_H != GHQ.NONE ? HITBOX_H : paintScript.height();
 	}
 	public ItemData pickup() {
 		final ItemData tmpITEM = ITEM;

@@ -11,7 +11,7 @@ public abstract class THH_BasicPlayer extends THH_BasicUnit{
 	@Override
 	public void idle() {
 		super.idle();
-		final int mouseX = GHQ.getMouseX(), mouseY = GHQ.getMouseY();
+		final int mouseX = GHQ.mouseX(), mouseY = GHQ.mouseY();
 		////////////
 		//main
 		////////////

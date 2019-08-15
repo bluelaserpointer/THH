@@ -3,7 +3,6 @@ package core;
 import java.awt.Graphics2D;
 
 import gui.GUIPartsSwitcher;
-import stage.StageSaveData;
 
 /**
  * A important class which is a frame of game main system.
@@ -17,13 +16,9 @@ public abstract class Game{
 	public Game(GUIPartsSwitcher screen) {
 		mainScreen = screen;
 	}
-	public Game() {
-		mainScreen = null;
-	}
 	
 	public void loadResource() {}
 	public abstract GHQStage loadStage();
-	public abstract StageSaveData getStageSaveData();
 	
 	//idle
 	public abstract void idle(Graphics2D g2,int stopEventKind);

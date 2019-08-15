@@ -16,7 +16,7 @@ public class SerialImageFrame implements DotRectPaint{
 	public SerialImageFrame(int spanFrame, String... imageURL) {
 		IMAGE_IF = new ImageFrame[imageURL.length];
 		for(int i = 0;i < imageURL.length;++i) {
-			IMAGE_IF[i] = new ImageFrame(imageURL[i]);
+			IMAGE_IF[i] = ImageFrame.create(imageURL[i]);
 			if(!createdList.containsKey(imageURL[i]))
 				createdList.put(imageURL[i], IMAGE_IF[i]);
 		}

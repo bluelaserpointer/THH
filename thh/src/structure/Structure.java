@@ -3,6 +3,7 @@ package structure;
 import java.io.Serializable;
 
 import core.GHQObject;
+import hitShape.HitShape;
 import physics.HasStandpoint;
 import physics.HitInteractable;
 import physics.Point;
@@ -16,18 +17,25 @@ import physics.Standpoint;
 public abstract class Structure extends GHQObject implements Serializable, HitInteractable{
 	private static final long serialVersionUID = -641218813005671688L;
 	
-	protected final Point point = new Point.IntPoint();
+	protected final Point point;
+	protected final HitShape hitShape;
 	
-	protected Standpoint standpoint = Standpoint.NULL_STANDPOINT;
+	protected Standpoint standpoint;
+	
+	public Structure(HitShape hitShape, Standpoint standpoint) {
+		this.hitShape = hitShape;
+		this.point = hitShape.point();
+		this.standpoint = standpoint;
+	}
 	
 	//information
 	@Override
 	public final Standpoint standpoint() {
-		return Standpoint.NULL_STANDPOINT;
+		return standpoint;
 	}
 	@Override
-	public final Point point() {
-		return point;
+	public HitShape hitShape() {
+		return hitShape;
 	}
 	@Override
 	public boolean isFriend(HasStandpoint target) {

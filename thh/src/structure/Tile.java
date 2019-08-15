@@ -11,50 +11,43 @@ import core.GHQ;
 import hitShape.HitShape;
 import paint.rect.RectPaint;
 import physics.Point;
+import physics.Standpoint;
 
 public class Tile extends Structure{
 	private static final long serialVersionUID = -1364728656700080343L;
-	protected final int
-		ORIGIN_X,
-		ORIGIN_Y,
-		TILE_SIZE,
-		X_TILES,
-		Y_TILES;
-	protected final BitSet aliveTiles;
-	public static int bp_ox = GHQ.NONE,bp_oy,bp_tileSize = 100;
+	public static int bp_ox = GHQ.NONE, bp_oy,bp_tileSize = 100;
 	
-	public Tile(int ox, int oy, int x_tiles, int y_tiles) {
-		ORIGIN_X = ox;
-		ORIGIN_Y = oy;
-		TILE_SIZE = 100;
-		X_TILES = x_tiles;
-		Y_TILES = y_tiles;
-		aliveTiles = new BitSet(x_tiles*y_tiles);
-		aliveTiles.set(0, aliveTiles.size());
-	}
-	public Tile(Tile tile) {
-		ORIGIN_X = tile.ORIGIN_X;
-		ORIGIN_Y = tile.ORIGIN_Y;
-		TILE_SIZE = tile.TILE_SIZE;
-		X_TILES = tile.X_TILES;
-		Y_TILES = tile.Y_TILES;
-		aliveTiles = new BitSet(X_TILES*Y_TILES);
-		aliveTiles.set(0, aliveTiles.size());
-	}
-	private final HitShape hitShape = new HitShape() {
+	public static class TileHitShape extends HitShape{
+		protected static final int TILE_SIZE = 100;
+		protected final int
+			ORIGIN_X,
+			ORIGIN_Y,
+			X_TILES,
+			Y_TILES;
+		protected final BitSet aliveTiles;
+		public TileHitShape(int ox, int oy, int x_tiles, int y_tiles) {
+			super(new Point.IntPoint(ox, oy));
+			ORIGIN_X = ox;
+			ORIGIN_Y = oy;
+			X_TILES = x_tiles;
+			Y_TILES = y_tiles;
+			aliveTiles = new BitSet(X_TILES*Y_TILES);
+			aliveTiles.set(0, aliveTiles.size());
+		}
 		private static final long serialVersionUID = -8708171125934571442L;
 		@Override
-		public boolean intersects(Point p1, HitShape shape, Point p2) {
-			return intersectsDot(0, 0, p2.intX(), p2.intY());
+		public boolean intersects(HitShape shape) {
+			//TODO
+			return intersectsDot(shape.point().intX(), shape.point().intY());
 		}
 		@Override
-		public boolean intersectsDot(int myX, int myY, int x, int y) {
-			x -= ORIGIN_X;
-			y -= ORIGIN_Y;
-			return 0 < x && x < X_TILES*TILE_SIZE && 0 < y && y < Y_TILES*TILE_SIZE && aliveTiles.get(x/TILE_SIZE + y/TILE_SIZE*X_TILES);
+		public boolean intersectsDot(int x, int y) {
+			x -= myPoint.intX();
+			y -= myPoint.intY();
+			return 0 < x && x < width() && 0 < y && y < height() && aliveTiles.get(x/TILE_SIZE + y/TILE_SIZE*X_TILES);
 		}
 		@Override
-		public boolean intersectsLine(int myX, int myY, int x1, int y1, int x2, int y2) {
+		public boolean intersectsLine(int x1, int y1, int x2, int y2) {
 			final Line2D line = new Line2D.Double(x1, y1, x2, y2);
 			if(!line.intersects(ORIGIN_X, ORIGIN_Y, X_TILES*TILE_SIZE, Y_TILES*TILE_SIZE))
 				return false;
@@ -71,8 +64,6 @@ public class Tile extends Structure{
 		@Override
 		public void fill(Point point, Color color) {
 			final Graphics2D G2 = GHQ.getGraphics2D();
-			final int TX = point.intX(), TY = point.intY();
-			G2.translate(TX, TY);
 			for(int xi = 0;xi < X_TILES;xi++) {
 				for(int yi = 0;yi < Y_TILES;yi++) {
 					if(aliveTiles.get(xi + yi*X_TILES)){
@@ -82,44 +73,49 @@ public class Tile extends Structure{
 					}
 				}
 			}
-			G2.translate(-TX, -TY);
 		}
 		@Override
 		public void draw(Point point, Color color, Stroke stroke) {
 			final Graphics2D G2 = GHQ.getGraphics2D();
-			final int TX = point.intX(), TY = point.intY();
-			G2.translate(TX, TY);
 			for(int xi = 0;xi < X_TILES;xi++) {
 				for(int yi = 0;yi < Y_TILES;yi++) {
 					if(aliveTiles.get(xi + yi*X_TILES)){
 						final int PX = ORIGIN_X + xi*TILE_SIZE, PY = ORIGIN_Y + yi*TILE_SIZE;
 						G2.setColor(color);
 						G2.setStroke(stroke);
-						G2.fillRect(PX, PY, TILE_SIZE, TILE_SIZE);
+						G2.drawRect(PX, PY, TILE_SIZE, TILE_SIZE);
 					}
 				}
 			}
-			G2.translate(-TX, -TY);
 		}
 		@Override
-		public HitShape clone() {
-			// TODO Auto-generated method stub
-			return null;
+		public HitShape clone(Point newPoint) {
+			return new TileHitShape(newPoint.intX(), newPoint.intY(), X_TILES, Y_TILES);
+		}
+		public void putPaint(RectPaint paintScript) {
+			for(int xi = 0;xi < X_TILES;xi++) {
+				for(int yi = 0;yi < Y_TILES;yi++) {
+					if(aliveTiles.get(xi + yi*X_TILES)){
+						final int PX = ORIGIN_X + xi*TILE_SIZE, PY = ORIGIN_Y + yi*TILE_SIZE;
+						paintScript.rectPaint(PX, PY, TILE_SIZE, TILE_SIZE);
+					}
+				}
+			}
 		}
 		@Override
 		public int width() {
-			// TODO Auto-generated method stub
-			return 0;
+			return X_TILES*TILE_SIZE;
 		}
 		@Override
 		public int height() {
-			// TODO Auto-generated method stub
-			return 0;
+			return Y_TILES*TILE_SIZE;
 		}
-	};
-	@Override
-	public Rectangle2D boundingBox() {
-		return new Rectangle2D.Double(ORIGIN_X, ORIGIN_Y, X_TILES*TILE_SIZE, Y_TILES*TILE_SIZE);
+	}
+	public Tile(int ox, int oy, int x_tiles, int y_tiles) {
+		super(new TileHitShape(ox, oy, x_tiles, y_tiles), new Standpoint(GHQ.NONE));
+	}
+	public static Tile create(Rectangle2D rect) {
+		return new Tile((int)rect.getX(), (int)rect.getY(), (int)rect.getWidth()/100, (int)rect.getHeight()/100);
 	}
 	//role
 	@Override
@@ -127,18 +123,14 @@ public class Tile extends Structure{
 		hitShape.fill(point, Color.WHITE);
 		hitShape.draw(point, Color.LIGHT_GRAY, GHQ.stroke3);
 	}
-	public void putPaint(RectPaint paintScript) {
-		for(int xi = 0;xi < X_TILES;xi++) {
-			for(int yi = 0;yi < Y_TILES;yi++) {
-				if(aliveTiles.get(xi + yi*X_TILES)){
-					final int PX = ORIGIN_X + xi*TILE_SIZE, PY = ORIGIN_Y + yi*TILE_SIZE;
-					paintScript.rectPaint(PX, PY, TILE_SIZE, TILE_SIZE);
-				}
-			}
-		}
-	}
 	
 	//information
+	public int xTiles() {
+		return ((TileHitShape)hitShape).X_TILES;
+	}
+	public int yTiles() {
+		return ((TileHitShape)hitShape).Y_TILES;
+	}
 	@Override
 	public String getName() {
 		return "DefaultTile";
@@ -150,7 +142,7 @@ public class Tile extends Structure{
 	}
 	public static Tile blueprint_addEndPointAndFlush(int x, int y) {
 		final int x_tiles = Math.abs((x - bp_ox)/bp_tileSize) + 1, y_tiles = Math.abs((y - bp_oy)/bp_tileSize) + 1;
-		final Tile tile = new Tile(bp_ox < GHQ.getMouseX() ? bp_ox : bp_ox - x_tiles*bp_tileSize, bp_oy < GHQ.getMouseY() ? bp_oy : bp_oy - y_tiles*bp_tileSize, x_tiles, y_tiles);
+		final Tile tile = new Tile(bp_ox < GHQ.mouseX() ? bp_ox : bp_ox - x_tiles*bp_tileSize, bp_oy < GHQ.mouseY() ? bp_oy : bp_oy - y_tiles*bp_tileSize, x_tiles, y_tiles);
 		blueprint_clear();
 		return tile;
 	}
@@ -165,7 +157,7 @@ public class Tile extends Structure{
 		if(bp_ox != GHQ.NONE) {
 			g2.setColor(Color.WHITE);
 			g2.setStroke(GHQ.stroke1);
-			final int MOUSE_X = GHQ.getMouseX(), MOUSE_Y = GHQ.getMouseY();
+			final int MOUSE_X = GHQ.mouseX(), MOUSE_Y = GHQ.mouseY();
 			final int x_tiles = Math.abs((MOUSE_X - bp_ox)/bp_tileSize) + 1, y_tiles = Math.abs((MOUSE_Y - bp_oy)/bp_tileSize) + 1;
 			final int TX = bp_ox < MOUSE_X ? 0 : -x_tiles*bp_tileSize, TY = bp_oy < MOUSE_Y ? 0 : -y_tiles*bp_tileSize;
 			g2.translate(TX, TY);
@@ -178,9 +170,5 @@ public class Tile extends Structure{
 			g2.setStroke(GHQ.stroke3);
 			g2.drawLine(bp_ox, bp_oy, MOUSE_X, MOUSE_Y);
 		}
-	}
-	@Override
-	public HitShape hitShape() {
-		return hitShape;
 	}
 }

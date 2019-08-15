@@ -1,26 +1,18 @@
-package gui.grouped;
+package gui;
 
-import gui.GUIParts;
-import paint.rect.RectPaint;
-
-public class AutoResizeMenu extends GUIGroup{
+public class AutoResizeMenu extends GUIParts{
 	private final int DEFAULT_LINE_H;
 	private final int MARGIN;
 	private int lineAmount;
-	public AutoResizeMenu(String name, RectPaint bgPaint, int x, int y, int w, int defaultLineH) {
-		super(name, bgPaint, x, y, w, 1);
+	public AutoResizeMenu(int x, int y, int w, int defaultLineH) {
+		super.setBounds(x, y, w, 1);
 		DEFAULT_LINE_H = defaultLineH;
 		MARGIN = 0;
 	}
-	public AutoResizeMenu(String name, RectPaint bgPaint, int x, int y, int w, int defaultLineH, int partsMargin) {
-		super(name, bgPaint, x, y, w, 1);
+	public AutoResizeMenu(int x, int y, int w, int defaultLineH, int partsMargin) {
+		super.setBounds(x, y, w, 1);
 		DEFAULT_LINE_H = defaultLineH;
 		MARGIN = partsMargin;
-	}
-	
-	@Override
-	public void idle() {
-		super.idle();
 	}
 	public AutoResizeMenu addNewLine(GUIParts...guiParts) {
 		if(MARGIN == 0) {

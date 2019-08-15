@@ -6,8 +6,8 @@ import java.io.Serializable;
 import core.GHQ;
 import gui.MessageSource;
 import hitShape.HitShape;
-import hitShape.Rectangle;
 import physics.Angle;
+import physics.Dynam;
 import physics.Entity;
 import physics.HasAngleDynam;
 import physics.HitInteractable;
@@ -23,35 +23,30 @@ public abstract class Unit extends Entity implements MessageSource, HitInteracta
 	private static final long serialVersionUID = 7140005723063155203L;
 	
 	public String originalName = "";
-	public final HitShape hitshape;
-	public final Standpoint standpoint;
 	
 	public final Angle baseAngle = new Angle();
+	public final Dynam dynam;
 	
 	/////////////
 	//Initialization
 	/////////////
-	public Unit(HitShape hitshape, int initialGroup) {
-		this.hitshape = (hitshape != null ? hitshape : new Rectangle(0, 0));
-		standpoint = new Standpoint(initialGroup);
+	public Unit(HitShape hitshape, int initialGroup) { 
+		super(hitshape, new Standpoint(initialGroup));
+		dynam = (Dynam)super.hitShape.point();
 	}
 	public static final <T extends Unit>T initialSpawn(T unit, int spawnX,int spawnY) {
 		unit.loadImageData();
-		unit.loadSoundData();
-		unit.battleStarted();
 		unit.respawn(spawnX,spawnY);
 		return unit;
 	}
 	public static final <T extends Unit>T initialSpawn(T unit, Point point) {
 		return initialSpawn(unit, point.intX(), point.intY());
 	}
-	public abstract void respawn(int spawnX,int spawnY);
-	public final void respawn(Point point) {
-		respawn(point.intX(), point.intY());
+	public abstract Unit respawn(int spawnX, int spawnY);
+	public final Unit respawn(Point point) {
+		return respawn(point.intX(), point.intY());
 	}
 	public void loadImageData(){}
-	public void loadSoundData(){}
-	public void battleStarted(){}
 	
 	@Override
 	public void idle() {
@@ -82,16 +77,24 @@ public abstract class Unit extends Entity implements MessageSource, HitInteracta
 		return new Rectangle2D.Double(dynam.intX() - DEFAULT_SIZE/2,dynam.intY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
 	}
 	@Override
+	public Point point() {
+		return dynam;
+	}
+	@Override
+	public Dynam dynam() {
+		return dynam;
+	}
+	@Override
 	public Angle angle() {
 		return baseAngle;
 	}
 	@Override
 	public boolean intersects(HitInteractable object) {
-		return isAlive() && !isFriend(object) && hitshape.intersects(point(), object, object.point());
+		return isAlive() && super.intersects(object);
 	}
 	@Override
 	public HitShape hitShape() {
-		return hitshape;
+		return hitShape;
 	}
 	public abstract boolean isAlive();
 }

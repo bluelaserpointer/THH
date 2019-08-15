@@ -3,13 +3,15 @@ package physics;
 import java.io.Serializable;
 
 import core.GHQ;
+import loading.ObjectSavable;
+import loading.ObjectSaveTree;
 
 /**
  * A class for managing objects' friendly-or-hostile relationship.
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Standpoint implements Serializable{
+public class Standpoint implements Serializable, ObjectSavable{
 	private static final long serialVersionUID = 4039529801782707123L;
 
 	public static final Standpoint NULL_STANDPOINT = new Standpoint(GHQ.NONE);
@@ -23,6 +25,13 @@ public class Standpoint implements Serializable{
 	}
 	public Standpoint(int initialGroup) {
 		INITIAL_GROUP = group = initialGroup;
+	}
+	public Standpoint(ObjectSaveTree tree) {
+		INITIAL_GROUP = group = tree.pollInt();
+	}
+	@Override
+	public ObjectSaveTree save() {
+		return new ObjectSaveTree(0, group);
 	}
 	public boolean isFriend(Standpoint standpoint) {
 		return group == standpoint.group && group != GHQ.NONE || group == ALL || standpoint.group == ALL;

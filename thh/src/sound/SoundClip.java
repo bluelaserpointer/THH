@@ -1,5 +1,7 @@
 package sound;
 
+import java.util.HashMap;
+
 import javax.sound.sampled.*; //JavaZoom mp3
 import javax.swing.*;
 
@@ -37,6 +39,23 @@ public class SoundClip{
 		}catch(Exception e){}
 		this.control = control;
 	}
+	
+
+	/**
+	* Load the sound file.
+	* @param url
+	* @return SoundID (id of SoundClip array arraySound)
+	* @since alpha1.0
+	*/
+	private static final HashMap<String, SoundClip> soundClipRecords = new HashMap<String, SoundClip>();
+	public static final SoundClip loadSound(String url){ //画像読み込みメソッド
+		if(soundClipRecords.containsKey(url))
+			return soundClipRecords.get(url);
+		final SoundClip NEW_CLIP = new SoundClip(url);
+		soundClipRecords.put(url, NEW_CLIP);
+		return NEW_CLIP;
+	}
+	
 	public SoundClip(){
 		clip = null;
 		control = null;

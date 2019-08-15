@@ -34,12 +34,12 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Reimu - 1
 	/////////////////
 	public static class FudaKouhaku extends THH_BulletLibrary{
-		private static final DotPaint paint = ImageFrame.createNew("thhimage/KouhakuNoFuda.png");
+		private static final DotPaint paint = ImageFrame.create("thhimage/KouhakuNoFuda.png");
 		public FudaKouhaku(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "FudaKouhaku";
 			dynam.setSpeed(20);
-			hitShape = new Circle(10);
+			hitShape = new Circle(dynam, 10);
 			damage = 50;
 			limitFrame = 200;
 			paintScript = paint;
@@ -57,12 +57,12 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Reimu - 2
 	/////////////////
 	public static class FudaShiroKuro extends THH_BulletLibrary{
-		private static final DotPaint paint = ImageFrame.createNew("thhimage/ShirokuroNoFuda.png");
+		private static final DotPaint paint = ImageFrame.create("thhimage/ShirokuroNoFuda.png");
 		public FudaShiroKuro(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "FudaShiroKuro";
 			dynam.setSpeed(20);
-			hitShape = new Circle(10);
+			hitShape = new Circle(dynam, 10);
 			damage = 20;
 			limitFrame = 200;
 			paintScript = paint;
@@ -76,12 +76,12 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Reimu - 3
 	/////////////////
 	public static class FudaSouhaku extends THH_BulletLibrary{
-		private static final DotPaint paint = ImageFrame.createNew("thhimage/SouhakuNoFuda.png");
+		private static final DotPaint paint = ImageFrame.create("thhimage/SouhakuNoFuda.png");
 		public FudaSouhaku(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "FudaSouhaku";
 			dynam.setSpeed(20);
-			hitShape = new Circle(15);
+			hitShape = new Circle(dynam, 15);
 			damage = 25;
 			reflection = 1;
 			limitFrame = 40;
@@ -97,12 +97,12 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Marisa - 1
 	/////////////////
 	public static class MillkyWay extends THH_BulletLibrary{
-		private static final DotPaint paint = ImageFrame.createNew("thhimage/MillkyWay.png");
+		private static final DotPaint paint = ImageFrame.create("thhimage/MillkyWay.png");
 		public MillkyWay(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "MillkyWay";
 			dynam.setSpeed(20);
-			hitShape = new Circle(30);
+			hitShape = new Circle(dynam, 30);
 			damage = 40;
 			limitFrame = 200;
 			paintScript = paint;
@@ -116,12 +116,12 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Marisa - 2
 	/////////////////
 	public static class NarrowSpark extends THH_BulletLibrary{
-		private static final DotPaint paint = ImageFrame.createNew("thhimage/NarrowSpark_2.png");
+		private static final DotPaint paint = ImageFrame.create("thhimage/NarrowSpark_2.png");
 		public NarrowSpark(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "NarrowSpark";
 			dynam.setSpeed(2);
-			hitShape = new Circle(15);
+			hitShape = new Circle(dynam, 15);
 			damage = 8;
 			penetration = GHQ.MAX;
 			reflection = 3;
@@ -154,11 +154,11 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Marisa - 3
 	/////////////////
 	public static class ReuseBomb extends THH_BulletLibrary{
-		private static final DotPaint paint = ImageFrame.createNew("thhimage/ReuseBomb.png");
+		private static final DotPaint paint = ImageFrame.create("thhimage/ReuseBomb.png");
 		public ReuseBomb(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "ReuseBomb";
-			hitShape = new Circle(30);
+			hitShape = new Circle(dynam, 30);
 			dynam.setSpeed(40);
 			accel = -1.0;
 			damage = 10;
@@ -180,11 +180,11 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Marisa - 4
 	/////////////////
 	public static class MagicMissile extends THH_BulletLibrary{
-		private static final DotPaint paint = ImageFrame.createNew("thhimage/MagicMissile.png");
+		private static final DotPaint paint = ImageFrame.create("thhimage/MagicMissile.png");
 		public MagicMissile(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "MAGIC_MISSILE";
-			hitShape = new Circle(20);
+			hitShape = new Circle(dynam, 20);
 			accel = 1.07;
 			damage = 500;
 			limitFrame = 2000;
@@ -211,11 +211,11 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Enemy - 1
 	/////////////////
 	public static class LightBall extends THH_BulletLibrary{
-		private static final DotPaint paint = ImageFrame.createNew("thhimage/LightBallA.png");
+		private static final DotPaint paint = ImageFrame.create("thhimage/LightBallA.png");
 		public LightBall(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "LightBall";
-			hitShape = new Circle(10);
+			hitShape = new Circle(dynam, 10);
 			dynam.fastParaAdd_DSpd(10,3);
 			damage = 20;
 			paintScript = paint;
@@ -229,11 +229,11 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Enemy - 2
 	/////////////////
 	public static class HealShotgun extends THH_BulletLibrary{
-		private static final DotPaint paint = ImageFrame.createNew("thhimage/DarkNiddle2.png");
+		private static final DotPaint paint = ImageFrame.create("thhimage/DarkNiddle2.png");
 		public HealShotgun(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "HealShotgun";
-			hitShape = new Circle(10);
+			hitShape = new Circle(dynam, 10);
 			dynam.fastParaAdd_DSpd(10,3);
 			damage = -20;
 			limitRange = 150;
@@ -248,11 +248,11 @@ public abstract class THH_BulletLibrary extends Bullet{
 	//Enemy - 2
 	/////////////////
 	public static class BlackSlashBurst extends THH_BulletLibrary{
-		private static final DotPaint paint = ImageFrame.createNew("thhimage/DarkNiddle.png");
+		private static final DotPaint paint = ImageFrame.create("thhimage/DarkNiddle.png");
 		public BlackSlashBurst(Unit shooterUnit) {
 			super(Weapon.NULL_WEAPON, shooterUnit, shooterUnit.standpoint);
 			name = "BlackSlashBurst";
-			hitShape = new Circle(10);
+			hitShape = new Circle(dynam, 10);
 			damage = 20;
 			reflection = 1;
 			limitFrame = 200;

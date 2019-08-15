@@ -6,7 +6,6 @@ import core.GHQ;
 import paint.ImageFrame;
 import physics.HasDynam;
 import weapon.Weapon;
-import weapon.WeaponInfo;
 
 public class Reimu extends THH_BasicPlayer{
 	public Reimu(int initialGroup) {
@@ -30,36 +29,25 @@ public class Reimu extends THH_BasicPlayer{
 	@Override
 	public final void loadImageData(){
 		super.loadImageData();
-		charaPaint = new ImageFrame("thhimage/Reimu.png");
-		iconPaint = new ImageFrame("thhimage/ReimuIcon.png");
-	}
-	
-	@Override
-	public final void loadSoundData(){
-	}
-	
-	//Initialization
-	@Override
-	public final void battleStarted(){
+		charaPaint = ImageFrame.create("thhimage/Reimu.png");
+		iconPaint = ImageFrame.create("thhimage/ReimuIcon.png");
+		
 		//test area
 		weaponSlot[0] = FUDA_KOUHAKU;
 		spellSlot[0] = FUDA_SOUHAKU;
 		////weaponLoad
 		//FUDA_KOUHAKU
-		WeaponInfo.clear();
-		WeaponInfo.name = "FUDA_KOUHAKU";
-		WeaponInfo.coolTime = 6;
 		weapon[FUDA_KOUHAKU] = new Weapon();
+		weapon[FUDA_KOUHAKU].name = "FUDA_KOUHAKU";
+		weapon[FUDA_KOUHAKU].coolTime = 6;
 		//FUDA_SHIROKURO
-		WeaponInfo.clear();
-		WeaponInfo.name = "FUDA_SHIROKURO";
-		WeaponInfo.coolTime = 2;
 		weapon[FUDA_SHIROKURO] = new Weapon();
+		weapon[FUDA_SHIROKURO].name = "FUDA_SHIROKURO";
+		weapon[FUDA_SHIROKURO].coolTime = 2;
 		//FUDA_SOUHAKU
-		WeaponInfo.clear();
-		WeaponInfo.name = "FUDA_SOUHAKU";
-		WeaponInfo.coolTime = 12;
 		weapon[FUDA_SOUHAKU] = new Weapon();
+		weapon[FUDA_SOUHAKU].name = "FUDA_SOUHAKU";
+		weapon[FUDA_SOUHAKU].coolTime = 12;
 		/////////////////////
 		slot_spell = 0;
 	}

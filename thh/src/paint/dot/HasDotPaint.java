@@ -11,5 +11,5 @@ public interface HasDotPaint {
 	 * Return the DotPaint instance of this object.
 	 * @return {@link DotPaint}
 	 */
-	public abstract DotPaint getPaintScript();
+	public abstract DotPaint getDotPaint();
 }

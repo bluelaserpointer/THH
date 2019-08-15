@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Stroke;
-import java.awt.geom.Rectangle2D;
 
 import core.GHQ;
 import physics.Point;
@@ -12,31 +11,34 @@ import physics.Point;
 public class Square extends HitShape{
 	private static final long serialVersionUID = 8168254451812660305L;
 	public final int SIDE;
-	public Square(int side) {
+	public Square(Point point, int side) {
+		super(point);
 		SIDE = side;
 	}
 	@Override
-	public boolean intersects(Point coordinate1, HitShape shape, Point coordinate2) {
+	public boolean intersects(HitShape shape) {
 		if(shape instanceof Square) {
-			return coordinate1.inRangeXY(coordinate2, (SIDE + ((Square)shape).SIDE)/2);
+			return point().inRangeXY(shape.point(), (SIDE + ((Square)shape).SIDE)/2);
 		}else if(shape instanceof Rectangle) {
-			return coordinate1.inRangeXY(coordinate2, (SIDE + ((Rectangle)shape).WIDTH)/2, (SIDE + ((Rectangle)shape).HEIGHT)/2);
+			return point().inRangeXY(shape.point(), (SIDE + ((Rectangle)shape).WIDTH)/2, (SIDE + ((Rectangle)shape).HEIGHT)/2);
 		}else if(shape instanceof Circle) {
 			// TODO lacking strictness
-			return coordinate1.inRangeXY(coordinate2, (SIDE + ((Circle)shape).RADIUS)/2);
+			return point().inRangeXY(shape.point(), (SIDE + ((Circle)shape).RADIUS)/2);
 		}else if(shape instanceof MyPolygon) {
 			final Polygon POLY = ((MyPolygon)shape).polygon;
-			return POLY.intersects(coordinate1.intX() - SIDE/2, coordinate1.intY() - SIDE/2, SIDE, SIDE);
+			return POLY.intersects(point().intX() - SIDE/2, point().intY() - SIDE/2, SIDE, SIDE);
+		}else {
+			System.out.println("unhandled type: " + this.getClass().getName() + " against " + shape.getClass().getName());
 		}
 		return false;
 	}
 	@Override
-	public boolean intersectsDot(int myX, int myY, int x, int y) {
-		return Math.abs(myX - x) < SIDE/2 && Math.abs(myY - y) < SIDE/2;
+	public boolean intersectsDot(int x, int y) {
+		return myPoint.intAbsDX(x) < SIDE/2 && myPoint.intAbsDY(y) < SIDE/2;
 	}
 	@Override
-	public boolean intersectsLine(int myX, int myY, int x1, int y1, int x2, int y2) {
-		return new Rectangle2D.Double(myX - SIDE/2, myY - SIDE/2, myX + SIDE/2, myY + SIDE/2).intersectsLine(x1, y1, x2, y2);
+	public boolean intersectsLine(int x1, int y1, int x2, int y2) {
+		return myPoint.getRectangle2D(SIDE, SIDE).intersectsLine(x1, y1, x2, y2);
 	}
 	@Override
 	public void fill(Point point, Color color) {
@@ -60,8 +62,8 @@ public class Square extends HitShape{
 	
 	//tool
 	@Override
-	public HitShape clone() {
-		return new Square(SIDE);
+	public HitShape clone(Point newPoint) {
+		return new Square(newPoint, SIDE);
 	}
 	
 	//information

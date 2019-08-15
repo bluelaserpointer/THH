@@ -57,11 +57,15 @@ public class GHQObjectList<T extends GHQObject> extends LinkedList<T>{
 		}
 		return null;
 	}
-	public T forIntersects(HitInteractable object, Point newPoint){
+	public T forIntersects_atNewPoint(HitInteractable object, double dx, double dy){
+		object.point().addXY(dx, dy);
 		for(T element : this) {
-			if(element instanceof HitInteractable && object.intersects(((HitInteractable)element), newPoint))
+			if(element instanceof HitInteractable && object.intersects((HitInteractable)element)) {
+				object.point().addXY(-dx, -dy);
 				return element;
+			}
 		}
+		object.point().addXY(-dx, -dy);
 		return null;
 	}
 	public T forIntersectsDot(int x, int y) {
@@ -81,8 +85,8 @@ public class GHQObjectList<T extends GHQObject> extends LinkedList<T>{
 	public boolean intersected(HitInteractable object) {
 		return forIntersects(object) != null;
 	}
-	public boolean intersected(HitInteractable object, Point newPoint) {
-		return forIntersects(object, newPoint) != null;
+	public boolean intersected_atNewPoint(HitInteractable object, double dx, double dy) {
+		return forIntersects_atNewPoint(object, dx, dy) != null;
 	}
 	public boolean intersected_dot(int x, int y) {
 		return forIntersectsDot(x, y) != null;

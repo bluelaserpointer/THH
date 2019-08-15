@@ -16,7 +16,7 @@ public abstract class KeyListenerEx implements Serializable{
 
 	protected final int targetKeys[];
 	protected final BitSet hasKeyEvents;
-	private boolean isEnabled;
+	protected final BitSet pressingKeyEvents;
 	private void printNotFoundError(int keyCode) {
 		System.out.println("KeyListenerEx not found keyCode: " + keyCode);
 	}
@@ -28,6 +28,7 @@ public abstract class KeyListenerEx implements Serializable{
 	public KeyListenerEx(int targetKeys[]) {
 		this.targetKeys = targetKeys;
 		hasKeyEvents = new BitSet(targetKeys.length);
+		pressingKeyEvents = new BitSet(targetKeys.length);
 		GHQ.addListenerEx(this);
 	}
 	/**
@@ -69,6 +70,15 @@ public abstract class KeyListenerEx implements Serializable{
 		printNotFoundError(keyCode);
 		return false;
 	}
+	public final boolean hasEventOne(int... keyCodes) {
+		for(int i = 0;i < targetKeys.length;i++) {
+			for(int keyCode : keyCodes) {
+				if(targetKeys[i] == keyCode && hasKeyEvents.get(i))
+					return true;
+			}
+		}
+		return false;
+	}
 	/**
 	 * Judge if the key of "keyCode" has a event, and if so, remove the event at the same time.
 	 * @param keyCode
@@ -79,6 +89,7 @@ public abstract class KeyListenerEx implements Serializable{
 			if(targetKeys[i] == keyCode) {
 				if(hasKeyEvents.get(i)) {
 					hasKeyEvents.clear(i);
+					pressingKeyEvents.set(i);
 					return true;
 				}else
 					return false;
@@ -86,26 +97,6 @@ public abstract class KeyListenerEx implements Serializable{
 		}
 		printNotFoundError(keyCode);
 		return false;
-	}
-	/**
-	 * Check if this listener is enabled.
-	 * @return true - enabled / false - disabled
-	 */
-	public final boolean isEnabled() {
-		return isEnabled;
-	}
-	/**
-	 * Enable this listener.
-	 */
-	public final void enable() {
-		isEnabled = true;
-	}
-	/**
-	 * Disable this listener.
-	 */
-	public final void disable() {
-		isEnabled = false;
-		reset();
 	}
 	/**
 	 * Remove all the event.

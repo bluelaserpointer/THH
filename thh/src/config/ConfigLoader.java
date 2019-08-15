@@ -229,6 +229,7 @@ public class ConfigLoader extends JPanel{
 		new ConfigLoader();
 	}
 	
+	@SuppressWarnings("resource")
 	public ConfigLoader(){
 		
 		final long loadStartTime = System.currentTimeMillis();
@@ -594,14 +595,10 @@ public class ConfigLoader extends JPanel{
 					try{ //ファイル読み込み開始
 						br = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(nowConfigURL + "/" + fileName),"SJIS"));
 					}catch(IOException e){
-						try{
-							br.close();
-						}catch(Exception e2){}
 						continue;
 					}
 					errorSource = "[" + typeName + "]「" + fileName + "」";
 					boolean blockEntered = false;
-					String tagName = "";
 					loadedFileNumber++; //ロード済みファイル数更新
 					System.out.println("[config1.0]" + fileName); //ロードしたファイルの名前を出力
 					int line = 0;
@@ -617,7 +614,6 @@ public class ConfigLoader extends JPanel{
 							if(strData == null) //何のタグもなく読み込み終了
 								break;
 							if(strData.startsWith("[") && strData.endsWith("]")){ //最初のタグを見つける
-								tagName = strData;
 								blockEntered = true;
 							}
 						}else{
@@ -633,7 +629,7 @@ public class ConfigLoader extends JPanel{
 									//"="があった位置を保存して、strDataを名前と値に分割
 									final String propertyN_tmp = trim2(strData.substring(0,equalCharAt)),
 												propertyV_tmp = trim2(strData.substring(equalCharAt + 1));
-									if(!GHQ.isActualString(propertyN_tmp) || !GHQ.isActualString(propertyV_tmp)) //プロパティの名前、値の両方が有効値であることを確認
+									if(!isActualString(propertyN_tmp) || !isActualString(propertyV_tmp)) //プロパティの名前、値の両方が有効値であることを確認
 										continue;
 									propertyN[propertyTotal] = propertyN_tmp; //プロパティ名を登録
 									propertyV[propertyTotal] = propertyV_tmp; //プロパティ値を登録
@@ -665,11 +661,6 @@ public class ConfigLoader extends JPanel{
 									readGimmickTag(++gimmick_maxID,"1.0");
 							}
 							//チェック終了、次のタグへの準備
-							//エラー出力のために、このタグの名前を保存する
-							if(strData != null && strData.length() > 2) //タグに名前がある"[abc]"
-								tagName = strData;
-							else //タグに名前がない"[]"
-								tagName = "*未指定*";
 							//未使用プロパティを警告する
 							final StringBuilder sb = new StringBuilder();
 							int errorCount = 0;
@@ -716,9 +707,6 @@ public class ConfigLoader extends JPanel{
 				try{ //ファイル読み込み開始
 					br = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(configURL + "/" + fileName),"SJIS"));
 				}catch(IOException e){
-					try{
-						br.close();
-					}catch(Exception e2){}
 					continue;
 				}
 				boolean blockEntered = false;
@@ -773,7 +761,7 @@ public class ConfigLoader extends JPanel{
 								//"="があった位置を保存して、strDataを名前と値に分割
 								final String propertyN_tmp = trim2(strData.substring(0,equalCharAt)),
 											propertyV_tmp = trim2(strData.substring(equalCharAt + 1));
-								if(!GHQ.isActualString(propertyN_tmp) || !GHQ.isActualString(propertyV_tmp)) //プロパティの名前、値の両方が有効値であることを確認
+								if(!isActualString(propertyN_tmp) || !isActualString(propertyV_tmp)) //プロパティの名前、値の両方が有効値であることを確認
 									continue read; //どちらかが無効の場合、無視して次の行へ
 								if(propertyTotal >= propertyN.length){ //異常-プロパティ数が配列上限に達する
 									System.out.println("ファイルスキップ：" + fileName);
@@ -945,7 +933,7 @@ public class ConfigLoader extends JPanel{
 		}
 		final String[] timePhase_tmp = split2(getStringProperty("ImgTimePhase","NONE"),",");
 		int frameTotal = 0;
-		if(GHQ.isActualString(timePhase_tmp)){
+		if(isActualString(timePhase_tmp)){
 			effectTimePhase[id] = new int[timePhase_tmp.length];
 			for(int k = 0;k < timePhase_tmp.length;k++){
 				try{
@@ -975,7 +963,7 @@ public class ConfigLoader extends JPanel{
 		if(values.length == 1){ //固定透過度指定,またはデフォルト指定
 			if(frames[0] != NONE) //異常-タイミング指定がある
 				messageTime += GHQ.warningBox("AlphaValues「" + Arrays.toString(values) + "」に対しAlphaTimePhase「" + Arrays.toString(frames) + "」は形式が不適切です。\n※固定透過度であれば、AlphaTimePhase項目は不要です。\n場所：" + errorSource,"config構成エラー");
-			if(extendsMode && (values.length == 0 || values.length == 1 && !GHQ.isActualNumber(values[0]))){ //継承モード&何の値も書かれていない
+			if(extendsMode && (values.length == 0 || values.length == 1 && !isActualNumber(values[0]))){ //継承モード&何の値も書かれていない
 				effectAlphaInitial[id] = effectAlphaInitial[id - 1];
 				effectAlphaChanges[id] = effectAlphaChanges[id - 1];
 				effectAlphaChangeFrame[id] = effectAlphaChangeFrame[id - 1];
@@ -1061,7 +1049,7 @@ public class ConfigLoader extends JPanel{
 		weaponBulletSpeedDispersion[id] = getIntProperty("BulletSpeedDispersion",0);
 		//武器発射角度解析
 		final String angleStr = getStringProperty("Direction","NONE");
-		if(!GHQ.isActualString(angleStr))
+		if(!isActualString(angleStr))
 			weaponDirection[id] = NONE;
 		else if(angleStr.equalsIgnoreCase("SELF") || angleStr.equalsIgnoreCase("+SELF"))
 			weaponDirection[id] = SELF;
@@ -1086,7 +1074,7 @@ public class ConfigLoader extends JPanel{
 		weaponBulletAccelDispersion[id] = getIntProperty("BulletAccelDispersion",0);
 		//武器加速度角度解析
 		final String angleStr2 = getStringProperty("BulletAccelDirection","NONE");
-		if(!GHQ.isActualString(angleStr2))
+		if(!isActualString(angleStr2))
 			weaponBulletAccelDirection[id] = NONE;
 		else if(angleStr2.equalsIgnoreCase("SELF"))
 			weaponBulletAccelDirection[id] = SELF;
@@ -1112,7 +1100,7 @@ public class ConfigLoader extends JPanel{
 		weaponBulletPreventMultiPenetration.set(id,getBooleanProperty("BulletPreventMultiPenetration",false));
 		weaponLimitRange[id] = getIntProperty_saftyMin(new String[]{"LimitRange","Range"},MAX,0,true); //beta8.0対応、制限距離というより射程という概念であったためRangeになっていた
 		final String firePointStr = getStringProperty("FirePoint","self");
-		if(firePointStr.equalsIgnoreCase("self") || !GHQ.isActualString(firePointStr)) //自分(デフォルト)
+		if(firePointStr.equalsIgnoreCase("self") || !isActualString(firePointStr)) //自分(デフォルト)
 			weaponFirePoint[id] = SELF;
 		else if(firePointStr.equalsIgnoreCase("target")) //最も近い敵
 			weaponFirePoint[id] = TARGET;
@@ -1131,7 +1119,7 @@ public class ConfigLoader extends JPanel{
 		final String[] 
 			firePointsX_str = split2(getStringProperty("firePointsX","0"),","),
 			firePointsY_str = split2(getStringProperty("firePointsY","0"),",");
-		if(GHQ.isActualString(firePointsX_str) && GHQ.isActualString(firePointsY_str)){
+		if(isActualString(firePointsX_str) && isActualString(firePointsY_str)){
 			firePointsAmount += max(firePointsX_str.length,firePointsY_str.length);
 			for(int k = 0;k < firePointsAmount;k++){ //XとYで長さが違った時、足りない方を0で埋める
 				firePointsX_tmp[k] = k < firePointsX_str.length ? convertInt(firePointsX_str[k],0) : 0;
@@ -1146,7 +1134,7 @@ public class ConfigLoader extends JPanel{
 		//何も座標指定がなかったとき、座標(0,0)がデフォルトとなるが、既に上の処理でデフォルト値が代入されているため、こちらと極座標側では何もしない
 		final String[]
 			firePointsXY_str = split2(firePointsXY_rawStr,",");
-		if(GHQ.isActualString(firePointsXY_str)){
+		if(isActualString(firePointsXY_str)){
 			if(firePointsXY_str.length % 2 != 0)
 				messageTime += alertWrongStyle("firePointsXY",firePointsXY_rawStr);
 			else{
@@ -1165,7 +1153,7 @@ public class ConfigLoader extends JPanel{
 			firePointsRT_rawStr = getStringProperty("firePointsRT","NONE");
 		final String[]
 			firePointsRT_str = split2(firePointsRT_rawStr,",");
-		if(GHQ.isActualString(firePointsRT_str)){
+		if(isActualString(firePointsRT_str)){
 			if(firePointsRT_str.length % 2 != 0)
 				messageTime += alertWrongStyle("firePointsRT",firePointsRT_rawStr);
 			else{
@@ -1213,7 +1201,7 @@ public class ConfigLoader extends JPanel{
 		if(weaponReloadTime[id] < 1)
 			weaponReloadTime[id] = 1;
 		final String loopStr = getStringProperty("GunLoop","NONE");
-		if(GHQ.isActualString(loopStr)){
+		if(isActualString(loopStr)){
 			final String[] data = split2(loopStr,",");
 			try{
 				weaponGunLoop[id] = Integer.parseInt(data[0]); //重複数(int)
@@ -1225,7 +1213,7 @@ public class ConfigLoader extends JPanel{
 		}else
 			weaponGunLoop[id] = 0;
 		final String chainStr = getStringProperty("GunChain","NONE");
-		if(GHQ.isActualString(chainStr)){
+		if(isActualString(chainStr)){
 			final String[] data = split2(chainStr,",");
 			try{
 				weaponGunChain_BackUp[id] = data[0]; //連鎖武器名(String)
@@ -1252,7 +1240,7 @@ public class ConfigLoader extends JPanel{
 		else if(actionType.equalsIgnoreCase("chainsaw") || actionType.equals("6"))
 			weaponActionType[id] = 6;
 		else{
-			if(!GHQ.isActualString(actionType))
+			if(!isActualString(actionType))
 				messageTime += GHQ.warningBox("ActionType「" + actionType + "」は該当するものがありません。\n場所：" + errorSource,"config構成エラー");
 			weaponActionType[id] = 2;
 		}
@@ -1312,7 +1300,7 @@ public class ConfigLoader extends JPanel{
 		if(versionName.equals("1.0"))
 			return url;
 		else if(versionName.equals("2.0")){
-			if(GHQ.isActualString(url)){
+			if(isActualString(url)){
 				if(getClass().getResource(nowConfigURL + "/" + url) == null){ //異常-指定ファイルがそのフォルダ内で見つからない
 					messageTime += GHQ.warningBox("「" + url + "」がコンフィグフォルダ内で見つかりませんでした。\n場所：" + errorSource,"config構成エラー");
 					return localSpaceURL + "/" + url; //ローカルスペースを参照させる
@@ -1340,7 +1328,7 @@ public class ConfigLoader extends JPanel{
 		}
 	}
 	int convertID_enemy(String name,String errorSource){
-		if(!GHQ.isActualString(name))
+		if(!isActualString(name))
 			return NONE;
 		if(nameToID_enemy.containsKey(name)) //指定名をIDに変換
 			return nameToID_enemy.get(name);
@@ -1349,7 +1337,7 @@ public class ConfigLoader extends JPanel{
 		return NONE;
 	}
 	int convertID_entity(String name,String errorSource){
-		if(!GHQ.isActualString(name))
+		if(!isActualString(name))
 			return NONE;
 		if(nameToID_entity.containsKey(name)) //指定名をIDに変換
 			return nameToID_entity.get(name);
@@ -1358,7 +1346,7 @@ public class ConfigLoader extends JPanel{
 		return NONE;
 	}
 	int convertID_effect(String name,String errorSource){
-		if(!GHQ.isActualString(name))
+		if(!isActualString(name))
 			return NONE;
 		if(nameToID_effect.containsKey(name)) //指定名をIDに変換
 			return nameToID_effect.get(name);
@@ -1367,7 +1355,7 @@ public class ConfigLoader extends JPanel{
 		return NONE;
 	}
 	int convertID_gimmick(String name,String errorSource){
-		if(!GHQ.isActualString(name))
+		if(!isActualString(name))
 			return NONE;
 		if(nameToID_gimmick.containsKey(name)) //指定名をIDに変換
 			return nameToID_gimmick.get(name);
@@ -1376,7 +1364,7 @@ public class ConfigLoader extends JPanel{
 		return NONE;
 	}
 	int convertID_weapon(String name,String errorSource){
-		if(!GHQ.isActualString(name))
+		if(!isActualString(name))
 			return NONE;
 		if(nameToID_weapon.containsKey(name)) //指定名をIDに変換
 			return nameToID_weapon.get(name);
@@ -1385,7 +1373,7 @@ public class ConfigLoader extends JPanel{
 		return NONE;
 	}
 	int convertID_bullet(String name,String errorSource){
-		if(!GHQ.isActualString(name))
+		if(!isActualString(name))
 			return NONE;
 		if(nameToID_bullet.containsKey(name)) //指定名をIDに変換
 			return nameToID_bullet.get(name);
@@ -1404,7 +1392,7 @@ public class ConfigLoader extends JPanel{
 	*/
 	void autoIDConverter_2D(int TYPE,String[][] backup,int[][] real,String[] objectNames,String typeName,String propertyName){
 		for(int i = 0;i < backup.length;i++){
-			if(!GHQ.isActualString(backup[i])){ //２次元目の配列が空
+			if(!isActualString(backup[i])){ //２次元目の配列が空
 				real[i] = new int[0];
 			}else{ //２次元目の配列に何かある
 				final int length = backup[i].length;
@@ -1749,19 +1737,7 @@ public class ConfigLoader extends JPanel{
 	
 	
 	//tools
-
-	public static String buildStringArray(Object...objects) {
-		final StringBuilder SB = new StringBuilder();
-		for(int i = 0;;) {
-			SB.append(objects[i]);
-			if(++i < objects.length)
-				SB.append(',');
-			else
-				break;
-		}
-		return SB.toString();
-	}
-	public static final String trim2(String str){
+	static final String trim2(String str){
 		if(str == null || str.length() == 0)
 			return "";
 		for(int i = 0;;i++){
@@ -1791,8 +1767,8 @@ public class ConfigLoader extends JPanel{
 	* @return string array
 	* @since alpha1.0
 	*/
-	public static final String[] split2(String str,String token){
-		if(!GHQ.isActualString(str))
+	private static final String[] split2(String str,String token){
+		if(!isActualString(str))
 			return new String[0];
 		final String[] strs = str.split(token);
 		for(int i = 0;i < strs.length;i++)
@@ -1804,10 +1780,60 @@ public class ConfigLoader extends JPanel{
 	* @param degress
 	* @since alpha1.0
 	*/
-	public static final double toRadians2(double degress){
-		if(GHQ.isActualNumber(degress))
+	private static final double toRadians2(double degress){
+		if(isActualNumber(degress))
 			return degress*PI/180;
 		else
 			return degress;
+	}
+
+	/**
+	* Check if the string is null or equals "NONE"
+	*/
+	static final boolean isActualString(String value){
+		if(value != null && !value.isEmpty() && !value.equalsIgnoreCase("NONE"))
+			return true;
+		return false;
+	}
+	/**
+	* Check if the string array is null or empty or have only element "NONE"
+	*/
+	static final boolean isActualString(String[] value){
+		if(value != null && value.length > 0 && !value[0].isEmpty() && !value[0].equalsIgnoreCase("NONE"))
+			return true;
+		return false;
+	}
+	/**
+	* Check if the int value has a special meaning, including NONE.
+	* @param value
+	* @since alpha1.0
+	*/
+	static final boolean isActualNumber(int value){
+		switch(value){
+		case NONE:
+		case MAX:
+		case MIN:
+		case ConfigLoader.SELF:
+		case ConfigLoader.REVERSE_SELF:
+		case ConfigLoader.TARGET:
+		case ConfigLoader.REVERSE_TARGET:
+		case ConfigLoader.FOCUS:
+			return false;
+		}
+		return true;
+	}
+	/**
+	* Check if the double value has a special meaning, including NONE.
+	* @param value
+	* @since alpha1.0
+	*/
+	static final boolean isActualNumber(double value){
+		if(	value == Double.NaN ||
+			value == Double.NEGATIVE_INFINITY ||
+			value == Double.POSITIVE_INFINITY ||
+			!isActualNumber((int)value))
+			return false;
+		else
+			return true;
 	}
 }

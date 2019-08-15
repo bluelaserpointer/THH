@@ -1,13 +1,14 @@
 package thhunit;
 
+import calculate.ConsumableEnergy;
 import core.GHQ;
 import hitShape.Square;
 import item.ItemData;
 import paint.dot.DotPaint;
 import paint.rect.RectPaint;
+import physics.Dynam;
 import physics.HasDynam;
 import physics.Point;
-import status.StatusWithDefaultValue;
 import storage.ItemStorage;
 import storage.Storage;
 import unit.Unit;
@@ -30,23 +31,17 @@ public abstract class THH_BasicUnit extends Unit {
 
 	// Resource
 	// Images
-	protected DotPaint charaPaint;
+	protected DotPaint charaPaint = DotPaint.BLANK_SCRIPT;
 	public final DotPaint bulletPaint[] = new DotPaint[weapon_max], effectPaint[] = new DotPaint[10];
 
 	//status
-	public static final int PARAMETER_AMOUNT = 6;
-	public static final int HP = 0,MP = 1,ATK = 2,AGI = 3,BLO = 4,STUN = 5;
-	private static final String names[] = new String[PARAMETER_AMOUNT];
-	static {
-		names[HP] = "HP";
-		names[MP] = "MP";
-		names[ATK] = "ATK";
-		names[AGI] = "AGI";
-		names[BLO] = "BLO";
-		names[STUN] = "STUN";
-	}
-	public final StatusWithDefaultValue status = new StatusWithDefaultValue(PARAMETER_AMOUNT);
-	
+	public final ConsumableEnergy
+		HP = new ConsumableEnergy(1).setMin(0).setMax(1).setDefaultToMax(),
+		MP = new ConsumableEnergy(1).setMin(0).setDefaultToMax(),
+		ATK = new ConsumableEnergy(1).setMin(0).setDefaultToMax(),
+		AGI = new ConsumableEnergy(1).setMin(0).setDefaultToMax(),
+		BLO = new ConsumableEnergy(1).setMin(0).setDefaultToMax(),
+		STUN = new ConsumableEnergy(1).setMin(0).setDefaultToMax();
 	//inventory
 	public final ItemStorage inventory = def_inventory();
 	protected ItemStorage def_inventory() {
@@ -54,7 +49,7 @@ public abstract class THH_BasicUnit extends Unit {
 	}
 	
 	public THH_BasicUnit(int charaSize, int initialGroup) {
-		super(new Square(charaSize), initialGroup);
+		super(new Square(new Dynam(), charaSize), initialGroup);
 	}
 	
 	@Override
@@ -62,9 +57,13 @@ public abstract class THH_BasicUnit extends Unit {
 	}
 
 	@Override
-	public void respawn(int x, int y) {
+	public THH_BasicUnit respawn(int x, int y) {
 		resetOrder();
-		status.reset();
+		HP.reset();
+		if(HP.isMin()) {
+			System.out.println(getName() + " hp max is 0.");
+			HP.setLestConsumable(1);
+		}
 		dynam.clear();
 		dstPoint.setXY(dynam.setXY(x, y));
 		charaOnLand = false;
@@ -73,6 +72,7 @@ public abstract class THH_BasicUnit extends Unit {
 			if(ver != null)
 				ver.reset();
 		}
+		return this;
 	}
 	public void resetOrder() {
 		weaponChangeOrder = 0;
@@ -103,7 +103,7 @@ public abstract class THH_BasicUnit extends Unit {
 	@Override
 	public void paint(boolean doAnimation) {
 		charaPaint.dotPaint(dynam);
-		GHQ.paintHPArc(dynam, 20,status.get(HP), status.getDefault(HP));
+		GHQ.paintHPArc(dynam, 20, HP);
 	}
 	protected final void paintMode_magicCircle(DotPaint paintScript) {
 		paintScript.dotPaint_turn(dynam, (double)GHQ.nowFrame()/35.0);
@@ -120,10 +120,10 @@ public abstract class THH_BasicUnit extends Unit {
 	// decrease
 	@Override
 	public final int damage_amount(int amount) {
-		return status.add(HP, -amount);
+		return HP.consume_getEffect(amount).intValue();
 	}
 	public final boolean kill(boolean force) {
-		status.set(HP, 0);
+		HP.setToMin();
 		return true;
 	}
 
@@ -134,7 +134,7 @@ public abstract class THH_BasicUnit extends Unit {
 	}
 	@Override
 	public final boolean isAlive() {
-		return status.get(HP) > 0;
+		return !HP.isMin();
 	}
 	public boolean useWeapon(int kind) {
 		return weapon[kind].trigger(this);

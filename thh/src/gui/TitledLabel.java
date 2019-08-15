@@ -5,12 +5,10 @@ import java.awt.Graphics2D;
 
 import core.GHQ;
 import input.keyType.KeyTypeListener;
-import paint.rect.RectPaint;
 
 public class TitledLabel extends GUIParts{
 	private final KeyTypeListener typeListener;
-	public TitledLabel(String group, RectPaint paintScript, int x, int y, int w, int h) {
-		super(group, paintScript, x, y, w, h, true);
+	public TitledLabel() {
 		GHQ.addListenerEx(typeListener = new KeyTypeListener(w/5) {
 			@Override
 			public void typeEnd(String text) {
@@ -18,9 +16,9 @@ public class TitledLabel extends GUIParts{
 			}
 		});
 	}
-	public TitledLabel(String group, RectPaint paintScript) {
-		super(group, paintScript, true);
-		GHQ.addListenerEx(typeListener = new KeyTypeListener() {
+	public TitledLabel(String initialTitle) {
+		titleStr = initialTitle;
+		GHQ.addListenerEx(typeListener = new KeyTypeListener(w/5) {
 			@Override
 			public void typeEnd(String text) {
 				typeEnded(text);
@@ -47,12 +45,12 @@ public class TitledLabel extends GUIParts{
 		G2.setStroke(GHQ.stroke1);
 		G2.setFont(GHQ.basicFont);
 		G2.drawString(titleStr, x + 3, y - 8);
-		PAINT_SCRIPT.rectPaint(x, y, w, h);
+		backGroundPaint.rectPaint(x, y, w, h);
 		G2.setColor(Color.BLACK);
 		G2.setStroke(activated ? GHQ.stroke3 : GHQ.stroke1);
 		G2.drawRect(x, y, w, h);
 		//System.out.println(typeListener.getText());
-		if(activated && GHQ.getNowTime() % 1000 < 500)
+		if(activated && GHQ.nowTime() % 1000 < 500)
 			G2.drawString(typeListener.getText() + "|", x + 3, y + 20);
 		else
 			G2.drawString(typeListener.getText(), x + 3, y + 20);

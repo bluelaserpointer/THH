@@ -12,7 +12,7 @@ public class Fairy extends THH_BasicEnemy{
 	public Fairy(int initialGroup) {
 		super(70, initialGroup);
 	}
-	private DotPaint magicCircleIID;
+	private DotPaint magicCircleIID = ImageFrame.create("thhimage/MagicCircleBlue.png");
 	@Override
 	public final String getName() {
 		return "FairyA";
@@ -21,12 +21,8 @@ public class Fairy extends THH_BasicEnemy{
 	@Override
 	public final void loadImageData(){
 		super.loadImageData();
-		charaPaint = new ImageFrame("thhimage/YouseiA.png");
-		magicCircleIID = new ImageFrame("thhimage/MagicCircleBlue.png");
-		bulletPaint[0] = new ImageFrame("thhimage/LightBallA.png");
-	}
-	@Override
-	public final void battleStarted() {
+		charaPaint = ImageFrame.create("thhimage/YouseiA.png");
+		bulletPaint[0] = ImageFrame.create("thhimage/LightBallA.png");
 		weapon[0] = EnemyWeaponLibrary.getWeaponController(EnemyWeaponLibrary.lightBall_S);
 	}
 	@Override
@@ -39,7 +35,7 @@ public class Fairy extends THH_BasicEnemy{
 	@Override
 	public void paint(boolean doAnimation) {
 		super.paintMode_magicCircle(magicCircleIID);
-		GHQ.paintHPArc(dynam.intX(), dynam.intY(), 20,status.get(HP), status.getDefault(HP));
+		GHQ.paintHPArc(dynam.intX(), dynam.intY(), 20, HP);
 	}
 	@Override
 	public void setBullet(int kind,HasDynam source) {}

@@ -11,5 +11,5 @@ public interface HasRectPaint {
 	 * Return the RectPaint instance of this object.
 	 * @return {@link RectPaint}
 	 */
-	public abstract RectPaint getPaintScript();
+	public abstract RectPaint getRectPaint();
 }

@@ -2,15 +2,12 @@ package gui;
 
 import java.util.Stack;
 
-import paint.rect.RectPaint;
-
 public class GUIPartsSwitcher extends GUIParts{
 
 	private int defaultIndex, nowIndex;
 	private final GUIParts[] parts;
 	private final Stack<Integer> history = new Stack<Integer>();
-	public GUIPartsSwitcher(String NAME, int partsAmount, int defaultIndex, RectPaint bgPaint) {
-		super(NAME, bgPaint, true);
+	public GUIPartsSwitcher(int partsAmount, int defaultIndex) {
 		this.parts = new GUIParts[partsAmount];
 		nowIndex = this.defaultIndex = defaultIndex;
 	}
@@ -38,11 +35,35 @@ public class GUIPartsSwitcher extends GUIParts{
 	public void switchToDefault() {
 		switchTo(defaultIndex);
 	}
+	public GUIParts getSwitcherButton(int index) {
+		return new GUIParts() {
+			@Override
+			public void clicked() {
+				switchTo(index);
+			}
+		}.setName(NAME + "->SwitcherOf" + index);
+	}
 	public void prev() {
 		switchTo(nowIndex > 0 ? nowIndex - 1 : parts.length - 1);
 	}
 	public void next() {
 		switchTo(nowIndex < parts.length - 1 ? nowIndex + 1 : 0);
+	}
+	public GUIParts getPrevButton() {
+		return new GUIParts() {
+			@Override
+			public void clicked() {
+				prev();
+			}
+		}.setName(NAME + "->PrevButton");
+	}
+	public GUIParts getNextButton() {
+		return new GUIParts() {
+			@Override
+			public void clicked() {
+				next();
+			}
+		}.setName(NAME + "->NextButton");
 	}
 	public void prev(int page) {
 		switchTo((nowIndex - page) % parts.length);

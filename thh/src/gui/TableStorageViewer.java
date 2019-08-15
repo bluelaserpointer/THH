@@ -18,8 +18,9 @@ public class TableStorageViewer<T extends HasDotPaint> extends GUIParts{
 	 * The data of this TableStorageViewer.
 	 */
 	public final Storage<T> storage;
-	protected int storageW,storageH;
+	protected int storageW, storageH;
 	protected final int CELL_SIZE;
+	protected RectPaint cellPaint = RectPaint.BLANK_SCRIPT;
 	
 	//init
 	/**
@@ -31,8 +32,8 @@ public class TableStorageViewer<T extends HasDotPaint> extends GUIParts{
 	 * @param cellSize - size of the cells
 	 * @param datalink
 	 */
-	public TableStorageViewer(String group, RectPaint backgroundPaint, int x, int y, int cellSize, TableStorage<T> datalink) {
-		super(group, backgroundPaint, x, y, cellSize*datalink.getStorageW(), cellSize*datalink.getStorageH(), true);
+	public TableStorageViewer(int x, int y, int cellSize, TableStorage<T> datalink) {
+		super.setBounds(x, y, cellSize*datalink.getStorageW(), cellSize*datalink.getStorageH());
 		CELL_SIZE = cellSize;
 		storage = datalink;
 		storageW = datalink.getStorageW();
@@ -49,8 +50,8 @@ public class TableStorageViewer<T extends HasDotPaint> extends GUIParts{
 	 * @param storageW - columns of the cells
 	 * @param storageH - rows of the cells
 	 */
-	public TableStorageViewer(String group, RectPaint backgroundPaint, int x, int y, int cellSize, Storage<T> datalink, int storageW, int storageH) {
-		super(group, backgroundPaint, x, y, cellSize*storageW, cellSize*storageH, true);
+	public TableStorageViewer(int x, int y, int cellSize, Storage<T> datalink, int storageW, int storageH) {
+		super.setBounds(x, y, cellSize*storageW, cellSize*storageH);
 		CELL_SIZE = cellSize;
 		storage = datalink;
 		this.storageW = storageW;
@@ -87,7 +88,13 @@ public class TableStorageViewer<T extends HasDotPaint> extends GUIParts{
 	 */
 	protected void paintOfCell(HasDotPaint object, int x,int y) {
 		if(object != null)
-			object.getPaintScript().dotPaint_rate(x + CELL_SIZE/2, y + CELL_SIZE/2, (int)(CELL_SIZE*0.8));
+			object.getDotPaint().dotPaint_rate(x + CELL_SIZE/2, y + CELL_SIZE/2, (int)(CELL_SIZE*0.8));
+	}
+	
+	//control
+	public TableStorageViewer<T> setCellPaint(RectPaint paintScript) {
+		cellPaint = paintScript;
+		return this;
 	}
 	
 	//information
@@ -96,7 +103,7 @@ public class TableStorageViewer<T extends HasDotPaint> extends GUIParts{
 	 * @return ID of the hovered cell
 	 */
 	public int getMouseHoveredID() {
-		return (GHQ.getMouseScreenX() - x)/CELL_SIZE + storageW*((GHQ.getMouseScreenY() - y)/CELL_SIZE);
+		return (GHQ.mouseScreenX() - x)/CELL_SIZE + storageW*((GHQ.mouseScreenY() - y)/CELL_SIZE);
 	}
 	/**
 	 * Get Object of the cell which mouse is hovering.

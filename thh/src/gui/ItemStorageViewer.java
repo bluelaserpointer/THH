@@ -27,8 +27,8 @@ public class ItemStorageViewer extends TableStorageViewer<ItemData>{
 	 * @param cellSize - size of the cells
 	 * @param items - an already exist {@link TableStorage}{@literal <}{@link ItemData}{@literal >} to display
 	 */
-	public ItemStorageViewer(String group, RectPaint backgroundPaint, RectPaint cellPaint, int x, int y, int cellSize, TableStorage<ItemData> items) {
-		super(group, backgroundPaint, x, y, cellSize, items);
+	public ItemStorageViewer(RectPaint cellPaint, int x, int y, int cellSize, TableStorage<ItemData> items) {
+		super(x, y, cellSize, items);
 		this.cellPaint = cellPaint;
 	}
 	
@@ -41,7 +41,7 @@ public class ItemStorageViewer extends TableStorageViewer<ItemData>{
 			G2.drawString("Empty", x + CELL_SIZE - 23, y + CELL_SIZE - 9);
 			return;
 		}
-		object.getPaintScript().dotPaint_capSize(x + CELL_SIZE/2, y + CELL_SIZE/2, (int)(CELL_SIZE*0.8));
+		object.getDotPaint().dotPaint_capSize(x + CELL_SIZE/2, y + CELL_SIZE/2, (int)(CELL_SIZE*0.8));
 		if(storage instanceof TableStorage && ((TableStorage<? extends HasDotPaint>)storage).isNullElement(object)) {
 			final Graphics2D G2 = GHQ.getGraphics2D();
 			G2.setColor(Color.GRAY);

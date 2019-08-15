@@ -2,10 +2,18 @@ package item;
 
 import java.io.Serializable;
 
+import calculate.Filter;
 import core.GHQ;
+import core.GHQObject;
+import hitShape.HitShape;
+import hitShape.Rectangle;
 import paint.dot.DotPaint;
 import paint.dot.HasDotPaint;
+import physics.HitInteractable;
+import physics.Point;
+import physics.Standpoint;
 import storage.Storage;
+import unit.Unit;
 import vegetation.DropItem;
 
 /**
@@ -14,38 +22,55 @@ import vegetation.DropItem;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class ItemData implements Serializable,HasDotPaint{
+public class ItemData extends GHQObject implements Serializable, HasDotPaint, HitInteractable{
 	private static final long serialVersionUID = 1587964067620280674L;
+	protected Unit owner;
 	protected int amount;
-	protected final int STACK_CAP;
+	protected int stackCap = GHQ.MAX;
+	protected final Point point = new Point.IntPoint();
 	protected final DotPaint paintScript;
-	public abstract String getName();
+	protected int width = GHQ.NONE, height = GHQ.NONE;
+
+	@Override
+	public String getName() {
+		return "<Blank Item>";
+	}
 	
 	public static final ItemData BLANK_ITEM = new ItemData(null){
 		private static final long serialVersionUID = 7797829501331686714L;
 
-		@Override
-		public String getName() {
-			return "<Blank Item>";
-		}
 	};
 	
 	//init
-	public ItemData(int stackCap,DotPaint paintScript) {
-		STACK_CAP = stackCap;
-		this.paintScript = paintScript == null ? DotPaint.BLANK_SCRIPT : paintScript;
-	}
 	public ItemData(DotPaint paintScript) {
-		STACK_CAP = GHQ.MAX;
 		this.paintScript = paintScript == null ? DotPaint.BLANK_SCRIPT : paintScript;
 	}
 	//main role
-	public DropItem drop(DotPaint newPaintScript, int x, int y) {
-		return new DropItem(this,newPaintScript,x,y);
+	@Override
+	public void idle() {
+		if(!hasOwner()) //dropped in stage
+			paint();
 	}
-	public DropItem drop(int x, int y) {
-		return new DropItem(this,paintScript,x,y);
+	@Override
+	public void paint(boolean doAnimation) {
+		super.paint(doAnimation);
+		paintScript.dotPaint(point());
 	}
+	//control
+	public void setStackCap(int amount) {
+		stackCap = amount;
+	}
+	public void setSize(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
+	public void setOwner(Unit unit) {
+		owner = unit;
+	}
+	public boolean hasOwner() {
+		return owner != null;
+	}
+	public void use() {}
 	//information
 	public boolean isStackable(ItemData item) {
 		return item.getName().equals(this.getName());
@@ -60,15 +85,26 @@ public abstract class ItemData implements Serializable,HasDotPaint{
 		return amount;
 	}
 	public final int getLeftSpace() {
-		return STACK_CAP != GHQ.MAX ? STACK_CAP - amount : GHQ.MAX;
+		return stackCap != GHQ.MAX ? stackCap - amount : GHQ.MAX;
 	}
 	@Override
-	public final DotPaint getPaintScript() {
+	public final DotPaint getDotPaint() {
 		return paintScript;
 	}
 	//control
 	public void clear() {
 		this.amount = 0;
+	}
+	public ItemData drop(int x, int y) {
+		setOwner(null);
+		cancelDelete();
+		point().setXY(x, y);
+		return GHQ.stage().addItem(this);
+	}
+	public ItemData pickup(Unit newOwner) {
+		claimDelete();
+		setOwner(newOwner);
+		return this;
 	}
 	public int add(int amount) {
 		final int LFET_SPACE = getLeftSpace();
@@ -76,7 +112,7 @@ public abstract class ItemData implements Serializable,HasDotPaint{
 			this.amount += amount;
 			return amount;
 		}else {
-			this.amount = STACK_CAP;
+			this.amount = stackCap;
 			return LFET_SPACE;
 		}
 	}
@@ -144,5 +180,42 @@ public abstract class ItemData implements Serializable,HasDotPaint{
 		}
 		//not found enough amount of the item.
 		return removed;
+	}
+	public static int removeInInventory(Storage<ItemData> itemStorage, Filter<ItemData> filter, int amount) {
+		int removed = 0;
+		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
+			final ItemData ITEM = itemStorage.get(i);
+			if(filter.judge(ITEM)) {
+				removed += ITEM.consume(amount);
+				if(ITEM.isEmpty())
+					return removed;
+			}
+		}
+		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
+			final ItemData ITEM = itemStorage.get(i);
+			if(ITEM.isEmpty() && !ITEM.keepEvenEmpty())
+				itemStorage.remove(ITEM);
+		}
+		//not found enough amount of the item.
+		return removed;
+	}
+	@Override
+	public HitShape hitShape() {
+		return new Rectangle(point, width(), height());
+	}
+	@Override
+	public int width() {
+		return width != GHQ.NONE ? width : paintScript.width();
+	}
+	@Override
+	public int height() {
+		return height != GHQ.NONE ? height : paintScript.height();
+	}
+	@Override
+	public Standpoint standpoint() {
+		return new Standpoint(GHQ.NONE);
+	}
+	public static boolean isValid(ItemData item) {
+		return item != null && item != ItemData.BLANK_ITEM;
 	}
 }
