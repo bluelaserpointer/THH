@@ -18,7 +18,15 @@ public class ItemStorage implements Serializable{
 	 * @param storage
 	 */
 	public ItemStorage() {
-		items = new Storage<ItemData>();
+		items = new Storage<ItemData>() {
+			private static final long serialVersionUID = 12092658025404246L;
+			@Override
+			public ItemData objectToT(Object object) {
+				if(object instanceof ItemData)
+					return (ItemData)object;
+				return null;
+			}
+		};
 	}
 	/**
 	 * Create ItemInventory with a {@link Storage}{@literal <}{@link ItemData}{@literal >} or its subclasses.(like {@link TableStorage}{@literal <}{@link ItemData}{@literal >})
@@ -62,7 +70,7 @@ public class ItemStorage implements Serializable{
 	public int countItemByName(String targetItemName) {
 		int total = 0;
 		for(int i = items.traverseFirst();i != -1;i = items.traverseNext(i)) {
-			if(targetItemName.equals(items.get(i).getName()))
+			if(targetItemName.equals(items.get(i).name()))
 				total += items.get(i).getAmount();
 		}
 		return total;

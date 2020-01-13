@@ -31,14 +31,14 @@ public class ColorFraming implements RectPaint{
 		STROKE = new BasicStroke(strokeSize);
 	}
 	public static void rectPaint(Color color, Stroke stroke, int x, int y, int w, int h) {
-		final Graphics2D G2 = GHQ.getGraphics2D();
+		final Graphics2D G2 = GHQ.getG2D();
 		G2.setColor(color);
 		G2.setStroke(stroke);
 		G2.drawRect(x, y, w, h);
 	}
 	@Override
 	public void rectPaint(int x, int y, int w, int h) {
-		final Graphics2D G2 = GHQ.getGraphics2D();
+		final Graphics2D G2 = GHQ.getG2D();
 		G2.setColor(COLOR);
 		G2.setStroke(STROKE);
 		G2.drawRect(x, y, w, h);

@@ -16,13 +16,13 @@ public class InputOptionList extends GUIParts{
 	private final ArrayList<String> optionList = new ArrayList<String>();
 	public InputOptionList(TitledLabel label, int listViewMaxLength) {
 		super.setName(label.getGroup() + ">InputOptionList");
-		super.setBounds(label.x, label.y + label.h, label.w, label.h);
+		super.setBounds(label.intX(), label.intY() + label.height(), label.width(), label.height());
 		this.label = label;
 		this.listViewMaxLength = listViewMaxLength;
 	}
 	public InputOptionList(TitledLabel label) {
 		super.setName(label.getGroup() + ">InputOptionList");
-		super.setBounds(label.x, label.y + label.h, label.w, label.h);
+		super.setBounds(label.intX(), label.intY() + label.height(), label.width(), label.height());
 		this.label = label;
 		this.listViewMaxLength = GHQ.MAX;
 	}
@@ -54,24 +54,24 @@ public class InputOptionList extends GUIParts{
 			}
 		}
 		//paint
-		final Graphics2D G2 = GHQ.getGraphics2D();
+		final Graphics2D G2 = GHQ.getG2D();
 		G2.setColor(Color.WHITE);
-		final int H = h*nowListLength;
-		G2.fillRect(x, y, w, H);
+		final int H = height()*nowListLength;
+		G2.fillRect(intX(), intY(), width(), H);
 		//hovered position emphasize
 		if(hoveredPosition != GHQ.NONE) {
 			hoveredString = matchedOptions[hoveredPosition];
 			G2.setColor(Color.GRAY);
-			G2.fillRect(x, y + h*hoveredPosition, w, h);
+			G2.fillRect(intX(), intY() + height()*hoveredPosition, width(), height());
 		}
 		//frame
 		G2.setColor(Color.BLACK);
 		G2.setStroke(GHQ.stroke3);
-		G2.drawRect(x, y, w, H);
+		G2.drawRect(intX(), intY(), width(), H);
 		//text
 		G2.setFont(GHQ.basicFont);
 		for(int i = 0;i < nowListLength;i++)
-			G2.drawString(matchedOptions[i], x + 3, y + h*i + 20);
+			G2.drawString(matchedOptions[i], intX() + 3, intY() + height()*i + 20);
 	}
 	@Override
 	public void clicked() {
@@ -81,22 +81,21 @@ public class InputOptionList extends GUIParts{
 		}
 	}
 	@Override
-	public void mouseOvered() {
-		hoveredPosition = (GHQ.mouseScreenY() - y)/h;
+	public void mouseOver() {
+		hoveredPosition = (GHQ.mouseScreenY() - intY())/height();
 	}
 	@Override
-	public void outsideMouseOvered() {
+	public void mouseOut() {
 		hoveredPosition = GHQ.NONE;
 	}
 	@Override
 	public boolean isMouseEntered() {
-		final int H = h*nowListLength;
-		return (label.isInputMode() || hoveredPosition != GHQ.NONE) && GHQ.isMouseInArea_Screen(x, y, w, H);
+		final int H = height()*nowListLength;
+		return (label.isInputMode() || hoveredPosition != GHQ.NONE) && GHQ.isMouseInArea_Screen(intX(), intY(), width(), H);
 	}
 	//control
 	public void updatePosition() {
-		x = label.x;
-		y = label.y + h;
+		point().setXY(label.intX(), label.intY() + height());
 	}
 	public void removeWord(String word) {
 		optionList.remove(word);

@@ -43,7 +43,7 @@ public class Route {
 			debugEffects.remove().claimDelete();
 	}
 	public void debugPaint(Color color, Stroke stroke) {
-		final Graphics2D G2 = GHQ.getGraphics2D();
+		final Graphics2D G2 = GHQ.getG2D();
 		G2.setColor(color);
 		G2.setStroke(stroke);
 		Point prevPoint = null;

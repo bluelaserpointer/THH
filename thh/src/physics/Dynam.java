@@ -16,7 +16,7 @@ public class Dynam extends Point.DoublePoint{
 	public static final Dynam NULL_DYNAM = new Dynam();
 	
 	protected double xSpd, ySpd;
-	protected final Angle moveAngle = new Angle() {
+	/*protected final Angle moveAngle = new Angle() {
 		private static final long serialVersionUID = 6971378942148992685L;
 		@Override
 		public void set(double angle) {
@@ -33,19 +33,19 @@ public class Dynam extends Point.DoublePoint{
 		public void set(Angle sample) {
 			super.angle = sample.angle();
 		}
-	};
+	};*/
 	public Dynam() {}
-	public Dynam(Dynam dynam) {
+	public Dynam(Point dynam) {
 		setAll(dynam);
 	}
-	public Dynam(double x,double y) {
+	public Dynam(double x, double y) {
 		setXY(x, y);
 	}
-	public Dynam(double x,double y,double moveAngle) {
+	public Dynam(double x, double y, double moveAngle) {
 		setXY(x, y);
 		setMoveAngle(moveAngle);
 	}
-	public Dynam(double x,double y,double xSpd,double ySpd) {
+	public Dynam(double x, double y, double xSpd, double ySpd) {
 		setXY(x, y);
 		setSpeed(xSpd, ySpd);
 	}
@@ -62,50 +62,56 @@ public class Dynam extends Point.DoublePoint{
 	}
 	public void clear() {
 		x = y = xSpd = ySpd = 0;
-		moveAngle.clear();
 	}
-	public void setAll(Dynam sample) {
+	@Override
+	public Dynam setAll(Point sample) {
 		setXY(sample);
-		xSpd = sample.xSpd;
-		ySpd = sample.ySpd;
-		moveAngle.set(sample.moveAngle);
-	}
-	public void setAll(HasDynam hasSample) {
-		setAll(hasSample.dynam());
+		xSpd = sample.xSpeed();
+		ySpd = sample.ySpeed();
+		return this;
 	}
 	public void setXYAngle(HasAnglePoint sample) {
 		setXY(sample);
-		setMoveAngle(sample);
+		setMoveAngleByBaseAngle(sample);
 	}
+	@Override
 	public Dynam clone() {
 		return new Dynam(this);
 	}
+	@Override
 	public void addX_allowsMoveAngle(double dx) {
-		x += dx*moveAngle.sin();
-		y -= dx*moveAngle.cos();
+		final double moveAngle = atan2(ySpd, xSpd);
+		x += dx*sin(moveAngle);
+		y -= dx*cos(moveAngle);
 	}
+	@Override
 	public void addY_allowsMoveAngle(double dy) {
-		x += dy*moveAngle.cos();
-		y += dy*moveAngle.sin();
+		final double moveAngle = atan2(ySpd, xSpd);
+		x += dy*sin(moveAngle);
+		y += dy*cos(moveAngle);
 	}
-	public void addXY_DA(double distance,double angle) {
+	@Override
+	public void addXY_allowsMoveAngle(double dx, double dy) {
+		final double moveAngle = moveAngle();
+		final double cos_angle = cos(moveAngle), sin_angle = sin(moveAngle);
+		if(dx != 0.0) {
+			x += dx*sin_angle;
+			y -= dx*cos_angle;
+		}
+		if(dy != 0.0) {
+			x += dy*cos_angle;
+			y += dy*sin_angle;
+		}
+	}
+	@Override
+	public void addXY_DA(double distance, double angle) {
 		x += distance*cos(angle);
 		y += distance*sin(angle);
 	}
-	public void addXY_allowsMoveAngle(double dx,double dy) {
-		final double cos_angle = moveAngle.cos(),sin_angle = moveAngle.sin();
-		if(dx != 0.0) {
-			x += dx*sin_angle;
-			y -= dx*cos_angle;
-		}
-		if(dy != 0.0) {
-			x += dy*cos_angle;
-			y += dy*sin_angle;
-		}
-	}
-	public void fastParaAdd_ADXYSpd(double angle,double dx,double dy,double speed) {
-		this.moveAngle.spin(angle);
-		final double cos_angle = this.moveAngle.cos(), sin_angle = this.moveAngle.sin();
+	@Override
+	public void fastParaAdd_ADXYSpd(double angle, double dx, double dy, double speed) {
+		angle += moveAngle();
+		final double cos_angle = cos(angle), sin_angle = sin(angle);
 		if(dx != 0.0) {
 			x += dx*sin_angle;
 			y -= dx*cos_angle;
@@ -117,57 +123,65 @@ public class Dynam extends Point.DoublePoint{
 		xSpd = speed*cos_angle;
 		ySpd = speed*sin_angle;
 	}
-	public void fastParaAdd_DASpd(double distance,double angle,double speed) {
-		this.moveAngle.spin(angle);
-		final double cos_angle = this.moveAngle.cos(), sin_angle = this.moveAngle.sin();
-		x += distance*cos_angle;
-		y += distance*sin_angle;
-		xSpd = speed*cos_angle;
-		ySpd = speed*sin_angle;
+	@Override
+	public void fastParaAdd_DASpd(double distance, double angle, double speed) {
+		fastParaAdd_ADXYSpd(angle, 0.0, distance, speed);
 	}
-	public void fastParaAdd_DSpd(double distance,double speed) {
-		final double cos_angle = moveAngle.cos(),sin_angle = moveAngle.sin();
-		x += distance*cos_angle;
-		y += distance*sin_angle;
-		xSpd = speed*cos_angle;
-		ySpd = speed*sin_angle;
+	@Override
+	public void fastParaAdd_DSpd(double distance, double speed) {
+		fastParaAdd_DASpd(distance, 0.0, speed);
 	}
+	@Override
 	public double moveAngle() {
-		return moveAngle.angle();
+		return atan2(ySpd, xSpd);
 	}
+	@Override
 	public void setMoveAngle(double angle) {
-		this.moveAngle.set(angle);
+		final double SPEED = speed();
+		if(SPEED != 0.0) {
+			xSpd = SPEED*cos(angle);
+			ySpd = SPEED*sin(angle);
+		}else {
+			xSpd = cos(angle);
+			ySpd = sin(angle);
+		}
 	}
-	public void setMoveAngle(HasAngle sample) {
-		if(sample == null)
-			return;
-		setMoveAngle(sample.angle().angle());
-	}
+	@Override
 	public void setMoveAngleToTarget(HasPoint target) {
 		if(target != null)
 			setMoveAngle(angleTo(target));
 	}
-	public double spinMoveAngleToTargetCapped(HasDynam target, double maxTurnAngle) {
-		return target == null ? GHQ.MAX : moveAngle.spinTo_ConstSpd(angleTo(target), maxTurnAngle);
+	@Override
+	public void spinMoveAngleToTargetCapped(HasPoint target, double maxTurnAngle) {
+		if(target != null)
+			setMoveAngle(Angle.spinTo_ConstSpd(moveAngle(), angleTo(target), maxTurnAngle));
 	}
-	public double spinMoveAngleToTargetSuddenly(HasDynam target, double turnFrame) {
-		return target == null ? GHQ.MAX : moveAngle.spinTo_Suddenly(angleTo(target), turnFrame);
+	@Override
+	public void spinMoveAngleToTargetSuddenly(HasPoint target, double turnFrame) {
+		if(target != null)
+			setMoveAngle(Angle.spinTo_Suddenly(moveAngle(), angleTo(target), turnFrame));
 	}
+	@Override
 	public void spinMoveAngle(double angle) {
-		this.moveAngle.spin(angle);
+		setMoveAngle(moveAngle() + angle);
 	}
+	@Override
 	public boolean isMovable() {
 		return true;
 	}
+	@Override
 	public boolean isStop() {
 		return xSpd == 0.0 && ySpd == 0.0;
 	}
+	@Override
 	public double xSpeed() {
 		return xSpd;
 	}
+	@Override
 	public double ySpeed() {
 		return ySpd;
 	}
+	@Override
 	public double speed() {
 		if(xSpd == 0.0) {
 			if(ySpd == 0.0)
@@ -181,33 +195,42 @@ public class Dynam extends Point.DoublePoint{
 				return sqrt(xSpd*xSpd + ySpd*ySpd);
 		}
 	}
+	@Override
 	public void setXSpeed(double xSpeed) {
-		moveAngle.set(xSpd = xSpeed, ySpd);
+		xSpd = xSpeed;
 	}
+	@Override
 	public void setYSpeed(double ySpeed) {
-		moveAngle.set(xSpd, ySpd = ySpeed);
+		ySpd = ySpeed;
 	}
+	@Override
 	public void setSpeed(double xSpeed, double ySpeed) {
-		moveAngle.set(xSpd = xSpeed, ySpd = ySpeed);
+		xSpd = xSpeed;
+		ySpd = ySpeed;
 	}
+	@Override
 	public void setSpeed(double speed) {
-		xSpd = speed*moveAngle.cos();
-		ySpd = speed*moveAngle.sin();
+		final double RATE = speed/speed();
+		xSpd *= RATE;
+		ySpd *= RATE;
 	}
+	@Override
 	public void addSpeed(double xSpeed, double ySpeed) {
-		moveAngle.set(xSpd += xSpeed, ySpd += ySpeed);
+		xSpd += xSpeed;
+		ySpd += ySpeed;
 	}
+	@Override
 	public void addSpeed(double accel) {
 		final double SPEED = speed();
-		if(SPEED != 0) {
+		if(SPEED != 0.0) {
 			final double RATE = (SPEED + accel)/SPEED;
 			xSpd *= RATE;
 			ySpd *= RATE;
 		}else {
-			xSpd = accel*moveAngle.cos();
-			ySpd = accel*moveAngle.sin();
+			xSpd += accel;
 		}
 	}
+	@Override
 	public void addSpeed(double accel, boolean brakeMode) {
 		final double SPEED = speed(),NEW_SPEED = SPEED + accel;
 		if(accel < 0 && brakeMode && NEW_SPEED <= 0)
@@ -218,14 +241,16 @@ public class Dynam extends Point.DoublePoint{
 				xSpd *= RATE;
 				ySpd *= RATE;
 			}else {
-				xSpd = accel*moveAngle.cos();
-				ySpd = accel*moveAngle.sin();
+				xSpd += accel;
 			}
 		}
 	}
+	@Override
 	public void addSpeed_DA(double distance, double angle) {
-		this.moveAngle.set(xSpd += distance*cos(angle), ySpd += distance*sin(angle));
+		xSpd += distance*cos(angle);
+		ySpd += distance*sin(angle);
 	}
+	@Override
 	public void accelerate_MUL(double rate) {
 		if(rate == 0.0)
 			xSpd = ySpd = 0;
@@ -243,6 +268,7 @@ public class Dynam extends Point.DoublePoint{
 				ySpd *= rate;
 		}
 	}
+	@Override
 	public void stop() {
 		xSpd = ySpd = 0.0;
 	}
@@ -251,12 +277,14 @@ public class Dynam extends Point.DoublePoint{
 	/**
 	 * Move forward.
 	 */
+	@Override
 	public void move() {
 		if(xSpd == 0 && ySpd == 0)
 			return;
 		x += xSpd;
 		y += ySpd;
 	}
+	@Override
 	public void moveIfNoObstacles(HitInteractable source) {
 		if(xSpd == 0 && ySpd == 0 || GHQ.stage().hitObstacle_atNewPoint(source, (int)xSpd, (int)ySpd))
 			return;
@@ -268,6 +296,7 @@ public class Dynam extends Point.DoublePoint{
 	 * @param lengthCap
 	 * @return lest length need to go
 	 */
+	@Override
 	public double move(double lengthCap) {
 		if(xSpd == 0 && ySpd == 0)
 			return 0;

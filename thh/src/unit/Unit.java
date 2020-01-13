@@ -4,37 +4,27 @@ import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
 import core.GHQ;
+import core.GHQObject;
 import gui.MessageSource;
-import hitShape.HitShape;
-import physics.Angle;
-import physics.Dynam;
-import physics.Entity;
-import physics.HasAngleDynam;
+import item.ItemData;
+import physics.HasAnglePoint;
 import physics.HitInteractable;
 import physics.Point;
-import physics.Standpoint;
 
 /**
  * A primal class for managing unit.
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Unit extends Entity implements MessageSource, HitInteractable, HasAngleDynam, Serializable{
+public abstract class Unit extends GHQObject implements MessageSource, HasAnglePoint, Serializable{
 	private static final long serialVersionUID = 7140005723063155203L;
 	
 	public String originalName = "";
 	
-	public final Angle baseAngle = new Angle();
-	public final Dynam dynam;
-	
 	/////////////
 	//Initialization
 	/////////////
-	public Unit(HitShape hitshape, int initialGroup) { 
-		super(hitshape, new Standpoint(initialGroup));
-		dynam = (Dynam)super.hitShape.point();
-	}
-	public static final <T extends Unit>T initialSpawn(T unit, int spawnX,int spawnY) {
+	public static final <T extends Unit>T initialSpawn(T unit, int spawnX, int spawnY) {
 		unit.loadImageData();
 		unit.respawn(spawnX,spawnY);
 		return unit;
@@ -60,41 +50,26 @@ public abstract class Unit extends Entity implements MessageSource, HitInteracta
 	//control
 	/////////////
 	public abstract int damage_amount(int value);
+
+	/////////////
+	//event
+	/////////////
+	public void removedItem(ItemData item) {}
 	
 	/////////////
 	//information
 	/////////////
-	public String getName() {
+	public String name() {
 		return "[Unit]" + GHQ.NOT_NAMED;
-	}
-	@Override
-	public final Standpoint standpoint() {
-		return standpoint;
 	}
 	@Override
 	public Rectangle2D boundingBox() {
 		final int DEFAULT_SIZE = 80;
-		return new Rectangle2D.Double(dynam.intX() - DEFAULT_SIZE/2,dynam.intY() - DEFAULT_SIZE/2,DEFAULT_SIZE,DEFAULT_SIZE);
-	}
-	@Override
-	public Point point() {
-		return dynam;
-	}
-	@Override
-	public Dynam dynam() {
-		return dynam;
-	}
-	@Override
-	public Angle angle() {
-		return baseAngle;
+		return new Rectangle2D.Double(point().intX() - DEFAULT_SIZE/2, point().intY() - DEFAULT_SIZE/2, DEFAULT_SIZE, DEFAULT_SIZE);
 	}
 	@Override
 	public boolean intersects(HitInteractable object) {
 		return isAlive() && super.intersects(object);
-	}
-	@Override
-	public HitShape hitShape() {
-		return hitShape;
 	}
 	public abstract boolean isAlive();
 }

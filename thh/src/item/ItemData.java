@@ -5,13 +5,10 @@ import java.io.Serializable;
 import calculate.Filter;
 import core.GHQ;
 import core.GHQObject;
-import hitShape.HitShape;
-import hitShape.Rectangle;
 import paint.dot.DotPaint;
 import paint.dot.HasDotPaint;
-import physics.HitInteractable;
 import physics.Point;
-import physics.Standpoint;
+import physics.hitShape.ImageRectShape;
 import storage.Storage;
 import unit.Unit;
 import vegetation.DropItem;
@@ -22,18 +19,16 @@ import vegetation.DropItem;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class ItemData extends GHQObject implements Serializable, HasDotPaint, HitInteractable{
+public class ItemData extends GHQObject implements Serializable, HasDotPaint{
 	private static final long serialVersionUID = 1587964067620280674L;
 	protected Unit owner;
 	protected int amount;
 	protected int stackCap = GHQ.MAX;
-	protected final Point point = new Point.IntPoint();
-	protected final DotPaint paintScript;
-	protected int width = GHQ.NONE, height = GHQ.NONE;
+	protected DotPaint paintScript;
 
 	@Override
-	public String getName() {
-		return "<Blank Item>";
+	public String name() {
+		return "<ItemData>" + getClass().getName();
 	}
 	
 	public static final ItemData BLANK_ITEM = new ItemData(null){
@@ -42,8 +37,15 @@ public class ItemData extends GHQObject implements Serializable, HasDotPaint, Hi
 	};
 	
 	//init
-	public ItemData(DotPaint paintScript) {
-		this.paintScript = paintScript == null ? DotPaint.BLANK_SCRIPT : paintScript;
+	public ItemData(DotPaint dotScript) {
+		super(new Point.IntPoint());
+		this.paintScript = dotScript == null ? DotPaint.BLANK_SCRIPT : dotScript;
+		physics().setHitShape(new ImageRectShape(this, paintScript));
+		//physics().setHitShape(new RectShape(this, 100, 100));
+	}
+	public ItemData setDotPaint(DotPaint dotPaint) {
+		paintScript = dotPaint;
+		return this;
 	}
 	//main role
 	@Override
@@ -52,17 +54,13 @@ public class ItemData extends GHQObject implements Serializable, HasDotPaint, Hi
 			paint();
 	}
 	@Override
-	public void paint(boolean doAnimation) {
-		super.paint(doAnimation);
+	public void paint() {
+		super.paint();
 		paintScript.dotPaint(point());
 	}
 	//control
 	public void setStackCap(int amount) {
 		stackCap = amount;
-	}
-	public void setSize(int width, int height) {
-		this.width = width;
-		this.height = height;
 	}
 	public void setOwner(Unit unit) {
 		owner = unit;
@@ -73,7 +71,7 @@ public class ItemData extends GHQObject implements Serializable, HasDotPaint, Hi
 	public void use() {}
 	//information
 	public boolean isStackable(ItemData item) {
-		return item.getName().equals(this.getName());
+		return item.name().equals(this.name());
 	}
 	public final boolean isEmpty() {
 		return amount == 0;
@@ -95,8 +93,18 @@ public class ItemData extends GHQObject implements Serializable, HasDotPaint, Hi
 	public void clear() {
 		this.amount = 0;
 	}
+	/**
+	 * Drop this item form a unit.
+	 * Clear its owner information and appear to the current stage.
+	 * @param x
+	 * @param y
+	 * @return dropped item
+	 */
 	public ItemData drop(int x, int y) {
-		setOwner(null);
+		if(owner != null) {
+			owner.removedItem(this);
+			setOwner(null);
+		}
 		cancelDelete();
 		point().setXY(x, y);
 		return GHQ.stage().addItem(this);
@@ -198,22 +206,6 @@ public class ItemData extends GHQObject implements Serializable, HasDotPaint, Hi
 		}
 		//not found enough amount of the item.
 		return removed;
-	}
-	@Override
-	public HitShape hitShape() {
-		return new Rectangle(point, width(), height());
-	}
-	@Override
-	public int width() {
-		return width != GHQ.NONE ? width : paintScript.width();
-	}
-	@Override
-	public int height() {
-		return height != GHQ.NONE ? height : paintScript.height();
-	}
-	@Override
-	public Standpoint standpoint() {
-		return new Standpoint(GHQ.NONE);
 	}
 	public static boolean isValid(ItemData item) {
 		return item != null && item != ItemData.BLANK_ITEM;

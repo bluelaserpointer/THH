@@ -5,42 +5,41 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import core.GHQ;
+import core.GHQObject;
 import paint.ColorFilling;
 import paint.ImageFrame;
 import paint.rect.RectPaint;
 import physics.Point;
+import physics.hitShape.HitShape;
+import physics.hitShape.RectShape;
 
 /**
- * A primal class for managing GUI.
+ * A primely class for managing GUI.
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class GUIParts {
-	public String NAME;
+public class GUIParts extends GHQObject implements DragIO{ //TODO real point
 	protected boolean isEnabled;
 	protected boolean isClicking;
 	private boolean absorbsClickEvent;
-	public int x, y, w, h;
 	protected RectPaint backGroundPaint;
 	protected LinkedList<GUIParts> childList = null;
 	public GUIParts() {
-		NAME = getClass().getName() + "(default name)";
 		backGroundPaint = RectPaint.BLANK_SCRIPT;
-		x = y = 0;
-		w = GHQ.screenW();
-		h = GHQ.screenH();
+		physics().setPoint(new Point.IntPoint());
+		physics().setHitShape(new RectShape(this, GHQ.screenW(), GHQ.screenH()));
 		absorbsClickEvent = true;
+	}
+	@Override
+	public GUIParts setName(String name) {
+		super.setName(name);
+		return this;
 	}
 	//tool-getClildren
 	public LinkedList<GUIParts> getChildren(){
 		if(childList == null)
 			childList = new LinkedList<GUIParts>();
 		return childList;
-	}
-	//init-Name
-	public GUIParts setName(String name) {
-		NAME = name;
-		return this;
 	}
 	//init-background paint
 	public GUIParts setBGPaint(RectPaint paintScript) {
@@ -64,37 +63,30 @@ public class GUIParts {
 		absorbsClickEvent = b;
 		return this;
 	}
-	//init-coordinate
-	public void setXY(int x, int y) {
-		if(childList == null) {
-			this.x = x;
-			this.y = y;
-		}else {
-			addXY(x - this.x, y - this.y);
-		}
+	public RectShape rectShape() {
+		return ((RectShape)hitShape());
 	}
-	public void setXY_center(int centerX, int centerY) {
-		setXY(centerX - w/2, centerY - h/2);
+	public GUIParts setSize(int w, int h) {
+		rectShape().setSize(w, h);
+		return this;
+	}
+	public GUIParts setSize(HitShape hitShape) {
+		rectShape().setSize(hitShape);
+		return this;
 	}
 	public GUIParts setBounds(int x, int y, int w, int h) {
-		this.x = x;
-		this.y = y;
-		this.w = w;
-		this.h = h;
+		point().setXY(x, y);
+		setSize(w, h);
 		return this;
 	}
 	public GUIParts setBounds(GUIParts sample) {
-		x = sample.x;
-		y = sample.y;
-		w = sample.w;
-		h = sample.h;
+		point().setAll(sample.point());
+		setSize(sample.hitShape());
 		return this;
 	}
 	public GUIParts setBounds_center(int centerX, int centerY, int w, int h) {
-		this.x = centerX - w/2;
-		this.y = centerY - h/2;
-		this.w = w;
-		this.h = h;
+		point().setXY(centerX - w/2, centerY - h/2);
+		setSize(w, h);
 		return this;
 	}
 	public GUIParts setBounds_center(Point centerPoint, int w, int h) {
@@ -104,80 +96,55 @@ public class GUIParts {
 	public GUIParts appendFirst(GUIParts childParts) {
 		if(childParts == this)
 			System.out.println("! -- GUIParts.addFirst: cannot add itself to childParts");
-		else
+		else {
 			getChildren().addFirst(childParts);
+			childParts.enable();
+		}
 		return this;
 	}
 	public <T extends GUIParts>T addFirst(T childParts) {
 		if(childParts == this)
 			System.out.println("! -- GUIParts.addFirst: cannot add itself to childParts");
-		else
+		else {
 			getChildren().addFirst(childParts);
+			childParts.enable();
+		}
 		return childParts;
 	}
 	public GUIParts appendLast(GUIParts childParts) {
 		if(childParts == this)
 			System.out.println("! -- GUIParts.addFirst: cannot add itself to childParts");
-		else
+		else {
 			getChildren().addLast(childParts);
+			childParts.enable();
+		}
 		return this;
 	}
 	public <T extends GUIParts>T addLast(T childParts) {
 		if(childParts == this)
 			System.out.println("! -- GUIParts.addFirst: cannot add itself to childParts");
-		else
+		else {
 			getChildren().addLast(childParts);
+			childParts.enable();
+		}
 		return childParts;
 	}
 	public <T extends GUIParts>T remove(T childParts) {
 		getChildren().remove(childParts);
 		return childParts;
 	}
-	//control-event
-	public GUIParts callEvent(UIEvent event) {
-		switch(event) {
-		case CLICKED:
-			this.clicked();
-			break;
-		case RELEASED:
-			this.released();
-			break;
-		case ENABLE:
-			this.enable();
-			break;
-		case DISABLE:
-			this.disable();
-			break;
-		case OUTISDE_CLICKED:
-			this.outsideClicked();
-			break;
-		case OUTSIDE_RELEASED:
-			this.outsideReleased();
-			break;
-		case MOUSE_OVERED:
-			this.mouseOvered();
-			break;
-		case OUTSIDE_MOUSE_OVERED:
-			this.outsideMouseOvered();
-			break;
-		default:
-			System.out.println("! -- GUIParts.callEvent: unknown UIEvent");
-			break;
-		}
-		return this;
-	}
 	//control-coordinate
 	public void addXY(int dx, int dy) {
-		this.x += dx;
-		this.y += dy;
+		point().addXY(dx, dy);
 		if(childList != null) {
 			for(GUIParts ver : childList)
 				ver.addXY(dx, dy);
 		}
 	}
 	//main role
-	protected void idle() {
-		paint();
+	@Override
+	public void idle() {
+		super.idle();
 		//child idle
 		if(childList != null) {
 			final Iterator<GUIParts> ite = childList.descendingIterator();
@@ -189,62 +156,66 @@ public class GUIParts {
 		if(isEnabled)
 			idle();
 	}
+	@Override
 	public void paint() {
-		backGroundPaint.rectPaint(x, y, w, h);
+		backGroundPaint.rectPaint(point().intX(), point().intY(), width(), height());
 	}
 	//control-uiEvent
 	public void enable() {
 		isEnabled = true;
-		if(childList != null) {
-			for(GUIParts ver : childList)
-				ver.enable();
-		}
 	}
 	public void disable() {
 		isClicking = false;
 		isEnabled = false;
-		if(childList != null) {
-			for(GUIParts ver : childList)
-				ver.disable();
-		}
 	}
 	public boolean isMouseEntered() {
-		return GHQ.isMouseInArea_Screen(x, y, w, h);
+		return GHQ.isMouseInArea_Screen(point().intX(), point().intY(), width(), height());
 	}
 	public void clicked() {
+		GHQ.setLastClickedUI(this);
 		isClicking = true;
-		if(!GHQ.guiPartsClickCheck(childList))
-			marginClicked();
-	}
-	protected void marginClicked() {
-		
 	}
 	public void outsideClicked() {
 		isClicking = false;
 		if(childList != null) {
-			for(GUIParts ver : childList)
-				ver.outsideClicked();
+			for(GUIParts parts : childList) {
+				if(parts.isEnabled())
+					parts.outsideClicked();
+			}
 		}
 	}
 	public void released() {
 		isClicking = false;
-		GHQ.guiPartsReleaseCheck(childList);
 	}
 	public void outsideReleased() {
 		isClicking = false;
 		if(childList != null) {
-			for(GUIParts ver : childList)
-				ver.outsideReleased();
+			for(GUIParts parts : childList) {
+				if(parts.isEnabled())
+					parts.outsideReleased();
+			}
 		}
 	}
-	public void mouseOvered() {
-		GHQ.guiPartsMouseOverCheck(childList);
+	public void mouseOver() {
 	}
-	public void outsideMouseOvered() {
+	public void mouseOut() {
 		if(childList != null) {
-			for(GUIParts ver : childList)
-				ver.outsideMouseOvered();
+			for(GUIParts parts : childList) {
+				if(parts.isEnabled())
+					parts.mouseOut();
+			}
 		}
+	}
+	@Override
+	public GUIParts uiAtCursur() {
+		if(childList != null) {
+			for(GUIParts parts : childList) {
+				if(parts.isEnabled() && parts.isMouseEntered()) {
+					return parts.uiAtCursur();
+				}
+			}
+		}
+		return this;
 	}
 	public void flit() {
 		if(isEnabled)
@@ -269,11 +240,11 @@ public class GUIParts {
 		for(GUIParts parts : childList) {
 			if(parts.isEnabled()) {
 				if(clickAbsorbed || !parts.isMouseEntered()) {
-					System.out.println(parts.NAME + " is outside clicked.");
+					System.out.println(parts.name() + " is outside clicked.");
 					parts.outsideClicked();
 				}else {
 					parts.clicked();
-					System.out.println(parts.NAME + " is clicked.");
+					System.out.println(parts.name() + " is clicked.");
 					clicked = true;
 					clickAbsorbed = parts.absorbsClickEvent();
 				}

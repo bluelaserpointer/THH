@@ -2,10 +2,10 @@ package physics;
 
 import java.awt.geom.Rectangle2D;
 
-import hitShape.HasHitShape;
-import hitShape.HitShape;
+import physics.hitShape.HasHitShape;
+import physics.hitShape.HitShape;
 
-public interface HitInteractable extends HasHitShape, HasStandpoint{
+public interface HitInteractable extends HasHitShape, HasHitGroup{
 	public static final HitInteractable NULL_HIT_INTERACTABLE = new HitInteractable() {
 		@Override
 		public Point point() {
@@ -16,7 +16,7 @@ public interface HitInteractable extends HasHitShape, HasStandpoint{
 			return null;
 		}
 		@Override
-		public Standpoint standpoint() {
+		public HitGroup hitGroup() {
 			return null;
 		}
 		@Override
@@ -29,10 +29,10 @@ public interface HitInteractable extends HasHitShape, HasStandpoint{
 		}
 	};
 	public default boolean intersects(HitInteractable target) {
-		return !isFriend(target) && hitShape().intersects(target);
+		return hitableGroup(target) && hitShape().intersects(target);
 	}
 	public default boolean intersects_atNewPoint(double dx, double dy, HitInteractable target) {
-		return !isFriend(target) && hitShape().intersects_atNewPoint(dx, dy, target);
+		return hitableGroup(target) && hitShape().intersects_atNewPoint(dx, dy, target);
 	}
 	public default boolean intersectsDot(int x, int y) {
 		return hitShape().intersectsDot(x, y);
@@ -43,8 +43,8 @@ public interface HitInteractable extends HasHitShape, HasStandpoint{
 	public default boolean intersectsLine(Point p1, Point p2) {
 		return intersectsLine(p1.intX(), p1.intY(), p2.intX(), p2.intY());
 	}
-	public default boolean intersectsLine(HasDynam object1, HasDynam object2) {
-		return object1 == null || object2 == null ? false : intersectsLine(object1.dynam(), object2.dynam());
+	public default boolean intersectsLine(HasPoint object1, HasPoint object2) {
+		return object1 == null || object2 == null ? false : intersectsLine(object1.point(), object2.point());
 	}
 	@Override
 	public default Rectangle2D boundingBox() {

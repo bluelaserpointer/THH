@@ -17,22 +17,28 @@ public class AutoResizeMenu extends GUIParts{
 	public AutoResizeMenu addNewLine(GUIParts...guiParts) {
 		if(MARGIN == 0) {
 			final int AMOUNT = guiParts.length;
-			final int PARTS_W = super.w / AMOUNT;
-			for(int i = 0;i < guiParts.length;i++)
-				super.addLast(guiParts[i]).setBounds(super.x + PARTS_W*i, super.y + DEFAULT_LINE_H*lineAmount, PARTS_W, DEFAULT_LINE_H);
+			final int PARTS_W = super.width() / AMOUNT;
+			for(int i = 0;i < guiParts.length;i++) {
+				guiParts[i].physics().setPointBase(this);
+				guiParts[i].setBounds(PARTS_W*i, DEFAULT_LINE_H*lineAmount, PARTS_W, DEFAULT_LINE_H);
+				super.addLast(guiParts[i]);
+			}
 		}else {
 			final int AMOUNT = guiParts.length;
-			final int PARTS_W = super.w / AMOUNT;
-			for(int i = 0;i < guiParts.length;i++)
-				super.addLast(guiParts[i]).setBounds(super.x + PARTS_W*i + MARGIN, super.y + DEFAULT_LINE_H*lineAmount + MARGIN, PARTS_W - MARGIN*2, DEFAULT_LINE_H - MARGIN*2);
+			final int PARTS_W = width() / AMOUNT;
+			for(int i = 0;i < guiParts.length;i++) {
+				guiParts[i].physics().setPointBase(this);
+				guiParts[i].setBounds(PARTS_W*i + MARGIN, DEFAULT_LINE_H*lineAmount + MARGIN, PARTS_W - MARGIN*2, DEFAULT_LINE_H - MARGIN*2);
+				super.addLast(guiParts[i]);
+			}
 		}
 		lineAmount++;
-		super.h += DEFAULT_LINE_H;
+		rectShape().setHeight(height() + DEFAULT_LINE_H);
 		return this;
 	}
 	public AutoResizeMenu addEmptyLine() {
 		lineAmount++;
-		super.h += DEFAULT_LINE_H;
+		rectShape().setHeight(height() + DEFAULT_LINE_H);
 		return this;
 	}
 }

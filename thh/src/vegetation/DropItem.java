@@ -24,10 +24,10 @@ public class DropItem extends Vegetation{
 	}
 	public boolean isCovered(HasPoint source, int distance) {
 		final Point DYNAM = source.point();
-		return DYNAM.intAbsDX(point) < (this.width() + distance)/2 && DYNAM.intAbsDY(point) < (this.height() + distance)/2;
+		return DYNAM.intAbsDX(point()) < (this.width() + distance)/2 && DYNAM.intAbsDY(point()) < (this.height() + distance)/2;
 	}
-	public String getName() {
-		return ITEM.getName();
+	public String name() {
+		return ITEM.name();
 	}
 	@Override
 	public int width() {

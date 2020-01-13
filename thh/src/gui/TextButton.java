@@ -29,8 +29,8 @@ public class TextButton extends BasicButton{
 	@Override
 	public void idle() {
 		super.idle();
-		GHQ.getGraphics2D(Color.BLACK, GHQ.stroke1);
-		GHQ.drawStringGHQ(NAME, x, y + 15);
+		GHQ.getG2D(Color.BLACK, GHQ.stroke1);
+		GHQ.drawStringGHQ(name(), point().intX(), point().intY() + 15);
 	}
 
 }

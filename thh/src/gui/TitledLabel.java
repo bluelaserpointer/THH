@@ -9,7 +9,7 @@ import input.keyType.KeyTypeListener;
 public class TitledLabel extends GUIParts{
 	private final KeyTypeListener typeListener;
 	public TitledLabel() {
-		GHQ.addListenerEx(typeListener = new KeyTypeListener(w/5) {
+		GHQ.addListenerEx(typeListener = new KeyTypeListener(width()/5) {
 			@Override
 			public void typeEnd(String text) {
 				typeEnded(text);
@@ -18,7 +18,7 @@ public class TitledLabel extends GUIParts{
 	}
 	public TitledLabel(String initialTitle) {
 		titleStr = initialTitle;
-		GHQ.addListenerEx(typeListener = new KeyTypeListener(w/5) {
+		GHQ.addListenerEx(typeListener = new KeyTypeListener(width()/5) {
 			@Override
 			public void typeEnd(String text) {
 				typeEnded(text);
@@ -35,25 +35,23 @@ public class TitledLabel extends GUIParts{
 		enableInputMode();
 	}
 	@Override
-	public void outsideClicked() {
-		disableInputMode();
-	}
-	@Override
 	public void idle() {
-		final Graphics2D G2 = GHQ.getGraphics2D();
+		if(GHQ.isLastClickedUI(this))
+			disableInputMode();
+		final Graphics2D G2 = GHQ.getG2D();
 		G2.setColor(Color.BLACK);
 		G2.setStroke(GHQ.stroke1);
 		G2.setFont(GHQ.basicFont);
-		G2.drawString(titleStr, x + 3, y - 8);
-		backGroundPaint.rectPaint(x, y, w, h);
+		G2.drawString(titleStr, intX() + 3, intY() - 8);
+		backGroundPaint.rectPaint(point(), width(), height());
 		G2.setColor(Color.BLACK);
 		G2.setStroke(activated ? GHQ.stroke3 : GHQ.stroke1);
-		G2.drawRect(x, y, w, h);
+		G2.drawRect(intX(), intY(), width(), height());
 		//System.out.println(typeListener.getText());
 		if(activated && GHQ.nowTime() % 1000 < 500)
-			G2.drawString(typeListener.getText() + "|", x + 3, y + 20);
+			G2.drawString(typeListener.getText() + "|", intX() + 3, intY() + 20);
 		else
-			G2.drawString(typeListener.getText(), x + 3, y + 20);
+			G2.drawString(typeListener.getText(), intX() + 3, intY() + 20);
 	}
 	public void typeEnded(String text) {}
 	public void setText(String text) {
@@ -85,7 +83,7 @@ public class TitledLabel extends GUIParts{
 		typeListener.clear();
 	}
 	public String getGroup() {
-		return NAME;
+		return name();
 	}
 
 }

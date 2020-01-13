@@ -63,11 +63,11 @@ public interface DotPaint extends PaintScript{
 	 * @param rate
 	 */
 	public default void dotPaint_rate(int x, int y, double rate) {
-		GHQ.getGraphics2D().translate(x, y);
+		GHQ.getG2D().translate(x, y);
 		GHQ.scale(rate);
 		dotPaint(0, 0);
 		GHQ.scale(1.0/rate);
-		GHQ.getGraphics2D().translate(-x, -y);
+		GHQ.getG2D().translate(-x, -y);
 	}
 	public default void dotPaint_rate(Point point, int maxSize) {
 		dotPaint_rate(point.intX(), point.intY(), maxSize);
@@ -87,7 +87,7 @@ public interface DotPaint extends PaintScript{
 		dotPaint_turn(point.intX(), point.intY(), angle);
 	}
 	public default void dotPaint_turn(HasAnglePoint anglePoint) {
-		dotPaint_turn(anglePoint.point(), anglePoint.angle().angle());
+		dotPaint_turn(anglePoint.point(), anglePoint.angle().get());
 	}
 	/**
 	 * Drawing at specified coordinate but change its angle and keep its maxSize lower than a value.
@@ -97,7 +97,7 @@ public interface DotPaint extends PaintScript{
 	 * @param maxSize
 	 */
 	public default void dotPaint_turnAndCapSize(int x, int y, double angle, int maxSize) {
-		final Graphics2D G2 = GHQ.getGraphics2D();
+		final Graphics2D G2 = GHQ.getG2D();
 		G2.rotate(angle, x, y);
 		dotPaint_capSize(x, y, maxSize);
 		G2.rotate(-angle, x, y);
@@ -106,7 +106,7 @@ public interface DotPaint extends PaintScript{
 		dotPaint_turnAndCapSize(point.intX(), point.intY(), angle, maxSize);
 	}
 	public default void dotPaint_turnAndCapSize(HasAnglePoint anglePoint, int maxSize) {
-		dotPaint_turnAndCapSize(anglePoint.point(), anglePoint.angle().angle(), maxSize);
+		dotPaint_turnAndCapSize(anglePoint.point(), anglePoint.angle().get(), maxSize);
 	}
 	
 	//information

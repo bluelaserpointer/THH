@@ -22,8 +22,8 @@ public abstract class ArrangedButtons<T> extends GUIParts{
 				super.clicked();
 				outer.clicked(buttonValue);
 			}
-		}).setName(this.NAME + " pos: (" + (x + cell.X) + ", " + (y + cell.Y) + ")")
-				.setBounds(x + cell.X, y + cell.Y, cell.W, cell.H)
+		}).setName(name() + " id: " + (childList.size() - 1))
+				.setBounds(intX() + cell.X, intY() + cell.Y, cell.W, cell.H)
 					.setBGPaint(buttonPaint);
 	}
 	public BasicButton addButton(T buttonValue, RectPaint buttonPaint, int xPos, int yPos) {

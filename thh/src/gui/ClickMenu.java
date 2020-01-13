@@ -24,7 +24,7 @@ public class ClickMenu<T> extends AutoResizeMenu{
 		}else {
 			targetObject = object;
 			super.enable();
-			setXY(GHQ.mouseScreenX(), GHQ.mouseScreenY());
+			point().setXY(GHQ.mouseScreenX(), GHQ.mouseScreenY());
 			return true;
 		}
 	}

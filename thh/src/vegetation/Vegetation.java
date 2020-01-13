@@ -17,24 +17,25 @@ public class Vegetation extends GHQObject implements Serializable, HasBoundingBo
 	private static final long serialVersionUID = -5536970507937704287L;
 	
 	protected final DotPaint paintScript;
-	protected final Point.IntPoint point;
 
 	//init
 	public Vegetation(DotPaint paintScript, int x, int y) {
+		super(new Point.IntPoint(x, y));
 		this.paintScript = paintScript;
-		point = new Point.IntPoint(x, y);
 	}
 	public Vegetation(DotPaint paintScript, Point point) {
+		super(new Point.IntPoint(point));
 		this.paintScript = paintScript;
-		this.point = new Point.IntPoint(point);
 	}
 	public Vegetation(Vegetation sample) {
+		super(new Point.IntPoint(sample.point()));
 		this.paintScript = sample.paintScript;
-		point = new Point.IntPoint();
 	}
 	//idle
-	public void paint(boolean doAnimation) {
-		paintScript.dotPaint(point);
+	@Override
+	public void paint() {
+		super.paint();
+		paintScript.dotPaint(point());
 	}
 	//control
 	@Override
@@ -43,10 +44,6 @@ public class Vegetation extends GHQObject implements Serializable, HasBoundingBo
 	}
 	
 	//information
-	@Override
-	public Point point() {
-		return point;
-	}
 	@Override
 	public int width() {
 		return paintScript.width();

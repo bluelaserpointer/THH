@@ -1,5 +1,7 @@
 package storage;
 
+import java.util.Collection;
+
 import item.ItemData;
 
 /**
@@ -13,21 +15,27 @@ public class TableStorage<T> extends Storage<T>{
 	protected int storageW,storageH;
 	public final T NULL_ELEMENT;
 	
-	public TableStorage(int w,int h,T nullElement) {
+	public TableStorage(int w, int h, T nullElement) {
 		super(w*h);
 		storageW = w;
 		storageH = h;
-		NULL_ELEMENT = nullElement;
-		super.initFill(NULL_ELEMENT);
+		super.initFill(NULL_ELEMENT = nullElement);
 	}
-	public TableStorage(int w,int h) {
+	public TableStorage(Collection<T> sample, int w, int h, T nullElement) {
 		super(w*h);
 		storageW = w;
 		storageH = h;
-		NULL_ELEMENT = null;
-		super.initFill(null);
+		super.addAll(sample);
+		super.initFill(NULL_ELEMENT = nullElement);
 	}
-	
+	public TableStorage(T[] sample, int w, int h, T nullElement) {
+		super(w*h);
+		storageW = w;
+		storageH = h;
+		for(T ver : sample)
+			super.add(ver);
+		super.initFill(NULL_ELEMENT = nullElement);
+	}
 	//control
 	@Override
 	public boolean add(T element) {
@@ -107,7 +115,11 @@ public class TableStorage<T> extends Storage<T>{
 	public boolean isNullElement(Object element) {
 		return element == NULL_ELEMENT;
 	}
-	public T getCell(int x, int y) {
-		return super.get(x + y*storageW);
+	public int getCellID(int posX, int posY) {
+		return posX + posY*storageW;
+	}
+	public T getCell(int posX, int posY) {
+		final int ID = getCellID(posX, posY);
+		return 0 <= ID && ID < super.size() ? super.get(ID) : null;
 	}
 }

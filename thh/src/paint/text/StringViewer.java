@@ -26,7 +26,7 @@ public class StringViewer implements DotPaint{
 	}
 	@Override
 	public void dotPaint(int x, int y) {
-		final Graphics2D G2 = GHQ.getGraphics2D();
+		final Graphics2D G2 = GHQ.getG2D();
 		final Font PREV_FONT = G2.getFont();
 		G2.setFont(FONT);
 		G2.setColor(COLOR);

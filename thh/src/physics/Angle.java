@@ -7,6 +7,7 @@ import core.GHQ;
 public class Angle implements Serializable{
 	private static final long serialVersionUID = 5495261807326477442L;
 	protected double angle;
+	public static final Angle NULL_ANGLE = new Angle(0.0);
 	
 	//initialization
 	public Angle() {
@@ -60,11 +61,33 @@ public class Angle implements Serializable{
 		spin(TURN_ANGLE);
 		return Math.abs(D_ANGLE - TURN_ANGLE);
 	}
+	public static double spinTo_ConstSpd(double nowAngle, double targetAngle, double angularSpeed) {
+		if(angularSpeed <= 0)
+			return GHQ.MAX;
+		final double D_ANGLE = targetAngle - nowAngle;
+		if(D_ANGLE < 0) {
+			if(D_ANGLE < -angularSpeed) {
+				return nowAngle - angularSpeed;
+			} else {
+				return targetAngle;
+			}
+		}else if(D_ANGLE > 0){
+			if(D_ANGLE > angularSpeed) {
+				return nowAngle + angularSpeed;
+			} else {
+				return targetAngle;
+			}
+		}else
+			return nowAngle;
+	}
+	public static double spinTo_Suddenly(double nowAngle, double targetAngle, double turnFrame) {
+		return nowAngle + (targetAngle - nowAngle)/turnFrame;
+	}
 	public void clear() {
 		angle = GHQ.NONE;
 	}
 	//information
-	public double angle() {
+	public double get() {
 		return angle;
 	}
 	public double sin() {

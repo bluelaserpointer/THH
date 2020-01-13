@@ -5,33 +5,35 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import core.GHQ;
-import hitShape.HitShape;
-import hitShape.MyPolygon;
 import physics.Point;
-import physics.Standpoint;
+import physics.hitShape.MyPolygon;
 
 public class Terrain extends Structure{
 	private static final long serialVersionUID = 7167638140442836310L;
 	public static ArrayList<Integer> bppx = new ArrayList<Integer>(), bppy = new ArrayList<Integer>();
 	
 	public Terrain() {
-		super(new MyPolygon(new Point.IntPoint(), new Point.IntPoint[0]), new Standpoint(GHQ.NONE));
+		physics().setPoint(new Point.IntPoint());
+		physics().setHitShape(new MyPolygon(this, new Point.IntPoint[0]));
 	}
 	public Terrain(int[] px, int[] py) {
-		super(new MyPolygon(new Point.IntPoint(), px, py), new Standpoint(GHQ.NONE));
+		physics().setPoint(new Point.IntPoint());
+		physics().setHitShape(new MyPolygon(this, px, py));
 	}
 	public Terrain(Point[] points) {
-		super(new MyPolygon(new Point.IntPoint(), points), new Standpoint(GHQ.NONE));
+		physics().setPoint(new Point.IntPoint());
+		physics().setHitShape(new MyPolygon(this, points));
 	}
 	public Terrain(MyPolygon polygon) {
-		super(polygon, new Standpoint(GHQ.NONE));
+		physics().setPoint(new Point.IntPoint());
+		physics().setHitShape(polygon);
 	}
 
 	//role
 	@Override
-	public void paint(boolean doAnimation) {
-		hitShape.fill(point, Color.WHITE);
-		hitShape.draw(point, Color.LIGHT_GRAY, GHQ.stroke3);
+	public void paint() {
+		hitShape().fill(Color.WHITE);
+		hitShape().draw(Color.LIGHT_GRAY, GHQ.stroke3);
 	}
 	public static final void makeGuiding(Graphics2D g2) {
 		if(bppx.size() == 0)
@@ -50,7 +52,7 @@ public class Terrain extends Structure{
 	
 	//information
 	@Override
-	public String getName() {
+	public String name() {
 		return "DefaultTerrain";
 	}
 	
@@ -75,11 +77,5 @@ public class Terrain extends Structure{
 		bppx.clear();
 		bppy.clear();
 		return new Terrain(rx, ry);
-	}
-	
-	//information
-	@Override
-	public HitShape hitShape() {
-		return hitShape;
 	}
 }

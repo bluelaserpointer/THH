@@ -12,7 +12,7 @@ public class DebugEffect extends Effect{
 	public static int lifeSpan = GHQ.MAX;
 	public static Effect setLine(Color color, Stroke stroke, int x1, int y1, int x2, int y2) {
 		final DebugEffect effect = new DebugEffect();
-		effect.dynam().setXY(x1, y1);
+		effect.point().setXY(x1, y1);
 		effect.paintScript = new ColorLine(color, stroke).convertToDotPaint(x2, y2);
 		return GHQ.stage().addEffect(effect);
 	}

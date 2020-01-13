@@ -9,6 +9,7 @@ import java.io.Serializable;
 import core.GHQ;
 import loading.ObjectSavable;
 import loading.ObjectSaveTree;
+import physics.Direction.Direction4;
 
 /**
  * A major class for managing object coordinate.
@@ -34,6 +35,14 @@ public abstract class Point implements Serializable, ObjectSavable{
 	///////////////
 	//update
 	///////////////
+	
+	///////////////setAll
+	public abstract Point setAll(Point point);
+	public Point setAll(HasPoint hasPoint) {
+		if(hasPoint != null)
+			return setAll(hasPoint.point());
+		return this;
+	}
 	
 	///////////////setX&Y&XY
 	public abstract void setX(int x);
@@ -61,6 +70,12 @@ public abstract class Point implements Serializable, ObjectSavable{
 		if(hasPoint != null)
 			setXY(hasPoint.point());
 		return this;
+	}
+	public Point setMouseScreenXY() {
+		return setXY(GHQ.mouseScreenX(), GHQ.mouseScreenY());
+	}
+	public Point setMouseStageXY() {
+		return setXY(GHQ.mouseX(), GHQ.mouseY());
 	}
 	///////////////addX&Y&XY
 	public Point addX(int x) {
@@ -107,6 +122,42 @@ public abstract class Point implements Serializable, ObjectSavable{
 		}
 		return this;
 	}
+	public Point rectCircuit(int centerX, int centerY, int speed, boolean clockwise) {
+		final int DX = -intDX(centerX), DY = -intDY(centerY);
+		final int AbsDX = Math.abs(DX), AbsDY = Math.abs(DY);
+		if(AbsDX > AbsDY) {
+			if(DX > 0 ^ clockwise)
+				addY(-speed);
+			else
+				addY(speed);
+		}else if(AbsDX < AbsDY) {
+			if(DY > 0 ^ clockwise)
+				addX(speed);
+			else
+				addX(-speed);
+		}else if((DX > 0 == DY > 0) ^ clockwise) {
+			if(DX < 0)
+				addX(speed);
+			else
+				addX(-speed);
+		}else {
+			if(DY < 0)
+				addY(speed);
+			else
+				addY(-speed);
+			
+		}
+		return this;
+	}
+	public Point rectCircuit(Point centerPoint, int speed, boolean clockwise) {
+		return rectCircuit(centerPoint.intX(), centerPoint.intY(), speed, clockwise);
+	}
+	public Point diaCircuit(int centerX, int centerY, int speed, boolean clockwise) {
+		return this;
+	}
+	public Point diaCircuit(Point centerPoint, int speed, boolean clockwise) {
+		return rectCircuit(centerPoint.intX(), centerPoint.intY(), speed, clockwise);
+	}
 	///////////////clone
 	public Point cloneAt(int dx, int dy) {
 		return clone().addXY(dx, dy);
@@ -134,6 +185,10 @@ public abstract class Point implements Serializable, ObjectSavable{
 		return atan2(doubleDY(y), doubleDX(x));
 	}
 	public double angleTo(Point point) {
+		if(this == point) {
+			System.out.println("<!>Point.angleTo(Point point) received itself.");
+			return 0.0;
+		}
 		return atan2(doubleDY(point), doubleDX(point));
 	}
 	public double angleTo(HasPoint hasPoint) {
@@ -292,20 +347,14 @@ public abstract class Point implements Serializable, ObjectSavable{
 		return equals(point.doubleX(), point.doubleY());
 	}
 	///////////////checkVertical&checkHorizontal
-	public boolean isVert_int(Point point) {
+	public boolean isVert(Point point) {
 		return point == null ? false : intX() == point.intX();
 	}
-	public boolean isVert_double(Point point) {
-		return point == null ? false : doubleX() == point.doubleX();
-	}
-	public boolean isHorz_int(Point point) {
+	public boolean isHorz(Point point) {
 		return point == null ? false : intY() == point.intY();
 	}
-	public boolean isHorz_double(Point point) {
-		return point == null ? false : doubleY() == point.doubleY();
-	}
 	///////////////checkDirection
-	public boolean checkDirection_int(Point point, Direction4 direction) {
+	public boolean checkDirection(Point point, Direction4 direction) {
 		if(point == null)
 			return false;
 		switch(direction) {
@@ -321,28 +370,9 @@ public abstract class Point implements Serializable, ObjectSavable{
 			return false;
 		}
 	}
-	public boolean checkDirection_double(Point point, Direction4 direction) {
-		if(point == null)
-			return false;
-		switch(direction) {
-		case W:
-			return point.doubleY() < doubleY();
-		case S:
-			return point.doubleY() > doubleY();
-		case A:
-			return point.doubleX() < doubleX();
-		case D:
-			return point.doubleX() > doubleX();
-		default:
-			return false;
-		}
-	}
 	///////////////isFront
-	public boolean isFront_int(Point point, Direction4 direction) {
-		return (direction.isVert() ? isVert_int(point) : isHorz_int(point)) && checkDirection_int(point, direction);
-	}
-	public boolean isFront_double(Point point, Direction4 direction) {
-		return (direction.isVert() ? isVert_double(point) : isHorz_double(point)) && checkDirection_double(point, direction);
+	public boolean checkDirection_just(Point point, Direction4 direction) {
+		return (direction.isVert() ? isVert(point) : isHorz(point)) && checkDirection(point, direction);
 	}
 	///////////////approach&approachIfNoObstacles
 	public void approach(double dstX, double dstY, double speed) {
@@ -376,6 +406,82 @@ public abstract class Point implements Serializable, ObjectSavable{
 	public void approachIfNoObstacles(HitInteractable source, Point dstPoint, double speed) {
 		approachIfNoObstacles(source, dstPoint.doubleX(), dstPoint.doubleY(), speed);
 	}
+	///////////////
+	//dynam
+	///////////////
+	public void addX_allowsMoveAngle(double dx) {}
+	public void addY_allowsMoveAngle(double dy) {}
+	public void addXY_allowsMoveAngle(double dx, double dy) {}
+	public void addXY_DA(double distance, double angle) {}
+	public void fastParaAdd_ADXYSpd(double angle, double dx, double dy, double speed) {}
+	public void fastParaAdd_DASpd(double distance, double angle, double speed) {}
+	public void fastParaAdd_DSpd(double distance, double speed) {}
+	public double moveAngle() {
+		return GHQ.NONE;
+	}
+	public void setMoveAngle(double angle) {}
+	public void setMoveAngle(Angle angle) {
+		if(angle == null)
+			return;
+		setMoveAngle(angle.get());
+	}
+	public void setMoveAngleByBaseAngle(HasAngle sample) {
+		if(sample == null)
+			return;
+		setMoveAngle(sample.angle());
+	}
+	public void setMoveAngleByMoveAngle(Point sample) {
+		if(sample == null)
+			return;
+		setMoveAngle(sample.moveAngle());
+	}
+	public void setMoveAngleByMoveAngle(HasPoint sample) {
+		if(sample == null)
+			return;
+		setMoveAngleByMoveAngle(sample.point());
+	}
+	public void setMoveAngleToTarget(HasPoint target) {}
+	public void spinMoveAngleToTargetCapped(HasPoint target, double maxTurnAngle) {}
+	public void spinMoveAngleToTargetSuddenly(HasPoint target, double turnFrame) {}
+	public void spinMoveAngle(double angle) {}
+	public boolean isMovable() {
+		return false;
+	}
+	public boolean isStop() {
+		return true;
+	}
+	public double xSpeed() {
+		return 0.0;
+	}
+	public double ySpeed() {
+		return 0.0;
+	}
+	public double speed() {
+		return 0.0;
+	}
+	public void setXSpeed(double xSpeed) {}
+	public void setYSpeed(double ySpeed) {}
+	public void setSpeed(double xSpeed, double ySpeed) {}
+	public void setSpeed(double speed) {}
+	public void addSpeed(double xSpeed, double ySpeed) {}
+	public void addSpeed(double accel) {}
+	public void addSpeed(double accel, boolean brakeMode) {}
+	public void addSpeed_DA(double distance, double angle) {}
+	public void accelerate_MUL(double rate) {}
+	public void stop() {}
+	/**
+	 * Move forward.
+	 */
+	public void move() {}
+	public void moveIfNoObstacles(HitInteractable source) {}
+	/**
+	 * Move forward with a limited length.
+	 * @param lengthCap
+	 * @return lest length need to go
+	 */
+	public double move(double lengthCap) {
+		return lengthCap;
+	}
 
 	///////////////
 	//other
@@ -390,7 +496,7 @@ public abstract class Point implements Serializable, ObjectSavable{
 	///////////////
 	public static class IntPoint extends Point{
 		private static final long serialVersionUID = -7032532124881792105L;
-		protected int x,y;
+		protected int x, y;
 		public IntPoint() {}
 		public IntPoint(int x, int y) {
 			this.x = x;
@@ -407,6 +513,11 @@ public abstract class Point implements Serializable, ObjectSavable{
 		@Override
 		public ObjectSaveTree save() {
 			return new ObjectSaveTree(0, x, y);
+		}
+		@Override
+		public IntPoint setAll(Point point) {
+			setXY(point);
+			return this;
 		}
 		@Override
 		public int intX() {
@@ -459,7 +570,7 @@ public abstract class Point implements Serializable, ObjectSavable{
 	///////////////
 	public static class DoublePoint extends Point{
 		private static final long serialVersionUID = 2505276574895896202L;
-		protected double x,y;
+		protected double x, y;
 		public DoublePoint() {}
 		public DoublePoint(double x, double y) {
 			this.x = x;
@@ -476,6 +587,11 @@ public abstract class Point implements Serializable, ObjectSavable{
 		@Override
 		public ObjectSaveTree save() {
 			return new ObjectSaveTree(0, x, y);
+		}
+		@Override
+		public DoublePoint setAll(Point point) {
+			setXY(point);
+			return this;
 		}
 		@Override
 		public int intX() {
@@ -520,86 +636,6 @@ public abstract class Point implements Serializable, ObjectSavable{
 		@Override
 		public Point.DoublePoint clone() {
 			return new Point.DoublePoint(this);
-		}
-	}
-
-	///////////////
-	//IntVersionPassivePoint
-	///////////////
-	public static class IntPassivePoint extends IntPoint{
-		private static final long serialVersionUID = 3696216604252789195L;
-
-		private Point activePoint;
-		
-		public IntPassivePoint() {}
-		public IntPassivePoint(Point activePoint, int x, int y) {
-			super(x, y);
-			this.activePoint = activePoint;
-		}
-		public IntPassivePoint(Point activePoint, Point point) {
-			super(point);
-			this.activePoint = activePoint;
-		}
-		public IntPassivePoint(int x, int y) {
-			super(x, y);
-		}
-		public IntPassivePoint(Point point) {
-			super(point);
-		}
-		
-		public void setActivePoint(Point point) {
-			activePoint = point;
-		}
-		public void removeActivePoint() {
-			setActivePoint(null);
-		}
-		@Override
-		public int intX() {
-			return activePoint == null ? x : activePoint.intX() + x;
-		}
-		@Override
-		public int intY() {
-			return activePoint == null ? y : activePoint.intY() + y;
-		}
-	}
-
-	///////////////
-	//DoubleVersionPassivePoint
-	///////////////
-	public static class DoublePassivePoint extends DoublePoint{
-		private static final long serialVersionUID = 3696216604252789195L;
-
-		private Point activePoint;
-		
-		public DoublePassivePoint() {}
-		public DoublePassivePoint(Point activePoint, double x, double y) {
-			super(x, y);
-			this.activePoint = activePoint;
-		}
-		public DoublePassivePoint(Point activePoint, Point point) {
-			super(point);
-			this.activePoint = activePoint;
-		}
-		public DoublePassivePoint(double x, double y) {
-			super(x, y);
-		}
-		public DoublePassivePoint(Point point) {
-			super(point);
-		}
-		
-		public void setActivePoint(Point point) {
-			activePoint = point;
-		}
-		public void removeActivePoint() {
-			activePoint = null;
-		}
-		@Override
-		public double doubleX() {
-			return activePoint == null ? x : activePoint.doubleX() + x;
-		}
-		@Override
-		public double doubleY() {
-			return activePoint == null ? y : activePoint.doubleY() + y;
 		}
 	}
 }

@@ -3,17 +3,12 @@ package bullet;
 import static java.lang.Math.PI;
 
 import core.GHQ;
-import hitShape.HitShape;
-import hitShape.Square;
+import core.GHQObject;
 import paint.dot.DotPaint;
 import paint.dot.HasDotPaint;
 import physics.DstCntDynam;
-import physics.Dynam;
-import physics.Entity;
-import physics.HasAnglePoint;
-import physics.HasDynam;
-import physics.Point;
-import physics.Standpoint;
+import physics.HasPoint;
+import physics.hitShape.Square;
 import unit.Unit;
 import weapon.Weapon;
 
@@ -22,12 +17,10 @@ import weapon.Weapon;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Bullet extends Entity implements HasDynam, HasDotPaint{
-	public final Weapon ORIGIN_WEAPON;
-	public final HasAnglePoint SHOOTER; //an information source of user
-	protected final DstCntDynam dynam;
+public class Bullet extends GHQObject implements HasPoint, HasDotPaint{
+	protected Weapon originWeapon;
+	protected GHQObject shooter; //an information source of user
 	
-	public String name;
 	public int
 		damage;
 	public int
@@ -40,13 +33,7 @@ public class Bullet extends Entity implements HasDynam, HasDotPaint{
 		accel;
 	public DotPaint
 		paintScript;
-	public Bullet(Weapon originWeapon, HasAnglePoint shooter, Standpoint standpoint) {
-		super(new Square(new DstCntDynam(), 10), standpoint);
-		dynam = (DstCntDynam)super.hitShape.point();
-		dynam.setXYAngle(shooter);
-		ORIGIN_WEAPON = originWeapon;
-		SHOOTER = shooter;
-		name = GHQ.NOT_NAMED;
+	public void init() {
 		damage = 0;
 		limitFrame = GHQ.MAX;
 		limitRange = GHQ.MAX;
@@ -55,35 +42,45 @@ public class Bullet extends Entity implements HasDynam, HasDotPaint{
 		accel = 0.0;
 		paintScript = DotPaint.BLANK_SCRIPT;
 	}
-	public Bullet(Bullet bullet) {
-		super(bullet.hitShape.clone(new DstCntDynam(bullet.dynam())), bullet.standpoint());
-		dynam = (DstCntDynam)super.hitShape.point();
-		dynam.setAll(bullet);
-		ORIGIN_WEAPON = bullet.ORIGIN_WEAPON;
-		SHOOTER = bullet.SHOOTER;
-		name = bullet.name;
+	public Bullet(GHQObject shooter) {
+		physics().setPoint(new DstCntDynam().setXY(shooter));
+		super.point().setMoveAngleByBaseAngle(shooter);
+		physics().setHitShape(new Square(this, 10));
+		physics().setHitGroup(shooter.hitGroup());
+		this.shooter = shooter;
+		name = getClass().getName();
+		init();
+	}
+	public Bullet(Bullet sample) {
+		physics().setPoint(new DstCntDynam().setAll(sample));
+		point().setMoveAngleByBaseAngle(shooter);
+		physics().setHitShape(sample.hitShape().clone(this));
+		physics().setHitGroup(sample.hitGroup());
+		originWeapon = sample.originWeapon;
+		shooter = sample.shooter;
+		name = sample.name;
 		damage = 0;
-		limitFrame = bullet.limitFrame;
-		limitRange = bullet.limitRange;
-		penetration = bullet.penetration;
-		reflection = bullet.reflection;
-		accel = bullet.accel;
-		paintScript = bullet.paintScript;
+		limitFrame = sample.limitFrame;
+		limitRange = sample.limitRange;
+		penetration = sample.penetration;
+		reflection = sample.reflection;
+		accel = sample.accel;
+		paintScript = sample.paintScript;
 	}
 	@Override
 	public void idle() {
+		super.idle();
 		if(defaultDeleteCheck())
 			return;
 		if(!dynamIdle())
 			return;
-		paint();
 	}
 	public final boolean defaultDeleteCheck() {
 		if(checkIsOutofLifeSpan())
 			return outOfLifeSpan();
 		if(checkIsOutOfRange())
 			return outOfRange();
-		if(isOutOfStage())
+		if(!point().inStage())
 			return outOfStage();
 		return false;
 	}
@@ -97,10 +94,7 @@ public class Bullet extends Entity implements HasDynam, HasDotPaint{
 		return checkIsOutOfRange(limitRange);
 	}
 	public boolean checkIsOutOfRange(int range) {
-		return range <= dynam.getMovedDistance();
-	}
-	public boolean isOutOfStage() {
-		return !dynam.inStage();
+		return range <= ((DstCntDynam)point()).getMovedDistance();
 	}
 	public boolean outOfLifeSpan() {
 		claimDelete();
@@ -123,7 +117,7 @@ public class Bullet extends Entity implements HasDynam, HasDotPaint{
 			////////////
 			//speed
 			////////////
-			length = dynam.move(Math.min(length, maxGap));
+			length = point().move(Math.min(length, maxGap));
 			
 			////////////
 			//landscape collision
@@ -134,7 +128,7 @@ public class Bullet extends Entity implements HasDynam, HasDotPaint{
 			////////////
 			//entity collision
 			////////////
-			for(Unit unit : GHQ.stage().getHitUnits(GHQ.stage().getUnits_standpoint(this, false),this)) {
+			for(Unit unit : GHQ.stage().getHitUnits(GHQ.stage().getUnits_standpoint(this, false), this)) {
 				if(hitUnitDeleteCheck(unit))
 					return false;
 			}
@@ -143,15 +137,15 @@ public class Bullet extends Entity implements HasDynam, HasDotPaint{
 		////////////
 		//acceleration
 		////////////
-		dynam.addSpeed(accel,true);
+		point().addSpeed(accel, true);
 		return true;
 	}
 	@Override
-	public void paint(boolean doAnimation) {
+	public void paint() {
 		defaultPaint();
 	}
 	public final void defaultPaint() {
-		paintScript.dotPaint_turn(dynam, dynam.moveAngle());
+		paintScript.dotPaint_turn(point(), point().moveAngle());
 	}
 	//extends
 	public boolean judgeLandscapeCollision() {
@@ -190,6 +184,15 @@ public class Bullet extends Entity implements HasDynam, HasDotPaint{
 	}
 	public void hitObject() {
 	}
+	//////////////
+	//control
+	//////////////
+	public Weapon setOriginWeapon(Weapon weapon) {
+		return originWeapon = weapon;
+	}
+	public Weapon getOriginWeapon() {
+		return originWeapon;
+	}
 	
 	//////////////
 	//clone and split
@@ -199,61 +202,61 @@ public class Bullet extends Entity implements HasDynam, HasDotPaint{
 	}
 	public final Bullet getClone() {
 		Bullet BULLET = getOriginal();
-		BULLET.dynam.setAll(dynam);
+		BULLET.point().setAll(point());
 		return BULLET;
 	}
 	public final Bullet addCloneToGHQ() {
 		return GHQ.stage().addBullet(getClone());
 	}
 	public void split_xMirror(double dx,double dy) {
-		this.dynam.addXY_allowsMoveAngle(-dx/2,dy);
-		addCloneToGHQ().dynam.addX_allowsMoveAngle(dx);
+		this.point().addXY_allowsMoveAngle(-dx/2,dy);
+		addCloneToGHQ().point().addX_allowsMoveAngle(dx);
 	}
 	public void split_yMirror(double dx,double dy) {
-		this.dynam.addXY_allowsMoveAngle(dx,-dy/2);
-		addCloneToGHQ().dynam.addY_allowsMoveAngle(dy);
+		this.point().addXY_allowsMoveAngle(dx,-dy/2);
+		addCloneToGHQ().point().addY_allowsMoveAngle(dy);
 	}
 	public void split_Round(int radius,int amount) {
 		final double D_ANGLE = 2*PI/amount;
 		for(int i = 1;i < amount;i++)
-			addCloneToGHQ().dynam.addXY_DA(radius, D_ANGLE*i);
-		this.dynam.addXY_DA(radius, 0);
+			addCloneToGHQ().point().addXY_DA(radius, D_ANGLE*i);
+		this.point().addXY_DA(radius, 0);
 	}
 	public void clone_Round(int radius,int amount) {
 		final double D_ANGLE = 2*PI/amount;
 		for(int i = 0;i < amount;i++)
-			addCloneToGHQ().dynam.addXY_DA(radius, D_ANGLE*i);
+			addCloneToGHQ().point().addXY_DA(radius, D_ANGLE*i);
 	}
 	public void split_Burst(int radius,int amount,double speed) {
 		final double D_ANGLE = 2*PI/amount;
 		for(int i = 1;i < amount;i++)
-			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
-		this.dynam.fastParaAdd_DASpd(radius, 0, speed);
+			addCloneToGHQ().point().fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
+		this.point().fastParaAdd_DASpd(radius, 0, speed);
 	}
 	public void clone_Burst(int radius,int amount,double speed) {
 		final double D_ANGLE = 2*PI/amount;
 		for(int i = 0;i < amount;i++)
-			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
+			addCloneToGHQ().point().fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
 	}
 	public void split_NWay(int radius,double[] angles,double speed) {
 		for(int i = 1;i < angles.length;i++)
-			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, angles[i], speed);
-		this.dynam.fastParaAdd_DASpd(radius, angles[0], speed);
+			addCloneToGHQ().point().fastParaAdd_DASpd(radius, angles[i], speed);
+		this.point().fastParaAdd_DASpd(radius, angles[0], speed);
 	}
 	public void clone_NWay(int radius,double[] angles,double speed) {
 		for(double angle : angles)
-			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, angle, speed);
+			addCloneToGHQ().point().fastParaAdd_DASpd(radius, angle, speed);
 	}
 	public void split_NWay(int radius,double marginAngle,double amount,double speed) {
-		this.dynam.spinMoveAngle(-marginAngle*(double)(amount - 1)/2.0);
+		this.point().spinMoveAngle(-marginAngle*(double)(amount - 1)/2.0);
 		for(int i = 1;i < amount;i++)
-			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, marginAngle*i, speed);
-		this.dynam.fastParaAdd_DSpd(radius, speed);
+			addCloneToGHQ().point().fastParaAdd_DASpd(radius, marginAngle*i, speed);
+		this.point().fastParaAdd_DSpd(radius, speed);
 	}
 	public void clone_NWay(int radius,double marginAngle,double amount,double speed) {
-		this.dynam.spinMoveAngle(-marginAngle*(double)(amount - 1)/2.0);
+		this.point().spinMoveAngle(-marginAngle*(double)(amount - 1)/2.0);
 		for(int i = 0;i < amount;i++)
-			addCloneToGHQ().dynam.fastParaAdd_DASpd(radius, marginAngle*i, speed);
+			addCloneToGHQ().point().fastParaAdd_DASpd(radius, marginAngle*i, speed);
 	}
 
 	//////////////
@@ -269,23 +272,11 @@ public class Bullet extends Entity implements HasDynam, HasDotPaint{
 		return reflection;
 	}
 	@Override
-	public final HitShape hitShape() {
-		return hitShape;
-	}
-	@Override
 	public final DotPaint getDotPaint() {
 		return paintScript;
 	}
 	@Override
-	public String getName() {
+	public String name() {
 		return "[Bullet]" + name;
-	}
-	@Override
-	public Dynam dynam() {
-		return dynam;
-	}
-	@Override
-	public Point point() {
-		return dynam;
 	}
 }

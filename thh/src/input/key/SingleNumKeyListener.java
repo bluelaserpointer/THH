@@ -45,4 +45,7 @@ public class SingleNumKeyListener extends KeyListenerEx{
 		}
 		return GHQ.NONE;
 	}
+	public static final int keyNumToLocationNum(int keyNum) {
+		return keyNum == GHQ.NONE ? GHQ.NONE : (keyNum == 0 ? 9 : keyNum - 1);
+	}
 }

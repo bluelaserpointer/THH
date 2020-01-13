@@ -1,5 +1,7 @@
 package physics;
 
+import physics.Direction.Direction4;
+
 public class GridPoint extends Point.IntPoint{
 	private static final long serialVersionUID = -8901821167720670703L;
 	public Direction4 direction;

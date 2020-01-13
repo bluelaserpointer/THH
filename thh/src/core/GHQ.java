@@ -21,19 +21,22 @@ import java.awt.geom.*;
 import javax.swing.*;
 
 import calculate.ConsumableEnergy;
+import exsampleGame.engine.Engine_THH1;
 
 import java.io.*;
 import java.net.*;
 import java.text.DecimalFormat;
 import java.util.*;
 
-import engine.Engine_THH1;
 import gui.GUIParts;
 import gui.MessageSource;
+import gui.MouseHook;
 import input.key.KeyListenerEx;
 import input.keyType.KeyTypeListener;
 import input.mouse.MouseListenerEx;
+import physics.HasPoint;
 import physics.Point;
+import stage.GHQStage;
 import unit.Unit;
 
 /**
@@ -79,6 +82,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private static int loadTime_total;
 	public static String errorPoint = "NONE";
 	
+	//ui
+	public static final GUIParts BASE_SCREEN_UI = new GUIParts().setName("BASE_SCREEN_UI");
+	
 	//inputEvent
 	private static ArrayList<KeyListenerEx> keyListeners = new ArrayList<KeyListenerEx>();
 	private static ArrayList<MouseListenerEx> mouseListeners = new ArrayList<MouseListenerEx>();
@@ -102,9 +108,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 
 	//stage object data
 	private static GHQStage nowStage;
-	
-	//GUI data
-	private static final LinkedList<GUIParts> guiParts = new LinkedList<GUIParts>();
 	
 	//event data
 	private static final ArrayDeque<String> messageStr = new ArrayDeque<String>();
@@ -163,14 +166,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		//load assets
 		tracker = new MediaTracker(this);
 		//setup
-		//System.out.println("resetStageStart");
 		resetStage();
 		//font
-		//System.out.println("loadResource");
 		engine.loadResource();
 		basicFont = createFont("font/upcibi.ttf").deriveFont(25.0f);
 		commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN, 15.0f);
-		System.out.println("loadTimeReslut: " + (System.currentTimeMillis() - loadTime));
+		System.out.println("<<loadTimeReslut: " + (System.currentTimeMillis() - loadTime) + ">>");
 		new Thread(this).start();
 	}
 
@@ -211,7 +212,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private final BufferedImage offImage; //ダブルバッファキャンバス
 	private static Graphics2D g2;
 	public static Font initialFont, basicFont, commentFont;
-	public static final BasicStroke stroke1 = new BasicStroke(1f), stroke3 = new BasicStroke(3f), stroke5 = new BasicStroke(5f);
+	public static final BasicStroke stroke1 = new BasicStroke(1f), stroke3 = new BasicStroke(3f), stroke5 = new BasicStroke(5f), stroke7 = new BasicStroke(7f);
 	private static final Color HPWarningColor = new Color(255,120,120), debugTextColor = new Color(200, 200, 200);
 	public static final DecimalFormat DF00_00 = new DecimalFormat("00.00");
 	private final Rectangle2D screenRect;
@@ -246,9 +247,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		//GUIIdle
 		g2.translate(-TRANSLATE_X, -TRANSLATE_Y);
 		//gui parts////////////////////
-		for(GUIParts parts : guiParts) {
-			parts.idleIfEnabled();
-		}
+		BASE_SCREEN_UI.idle();
 		//message system///////////////
 		if(messageStop) {
 			if(messageStr.size() > 0) {
@@ -323,14 +322,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			g2.drawString("FPS:" + DF00_00.format(nowFPS), 30, 140);
 			g2.drawString("GameTime(ms):" + gameFrame, 30, 160);
 			//guiInfo
-			GUIParts parts = null;
-			for(GUIParts ver : guiParts) {
-				if(ver.isEnabled() && ver.isMouseEntered()) {
-					parts = ver;
-					break;
-				}
-			}
-			g2.drawString("PointingGUI: " + (parts == null ? "NONE" : parts.NAME), 30, 200);
+			g2.drawString("PointingGUI: " + mouseHoveredUI.name(), 30, 200);
 			//mouseInfo
 			g2.setColor(debugTextColor);
 			g2.setStroke(stroke5);
@@ -383,24 +375,30 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 
 	//control
 	//control-viewPoint
-	public static void viewMove(int dx, int dy) {
+	public static void viewMove(double dx, double dy) {
 		viewX -= dx;viewY -= dy;
 		viewDstX -= dx;viewDstY -= dy;
 	}
-	public static void viewTo(int x, int y) {
+	public static void viewTo(double x, double y) {
 		viewDstX = viewX = -x + screenW/2;
 		viewDstY = viewY = -y + screenH/2;
 	}
-	public static void pureViewMove(int dx, int dy) {
+	public static void viewTo(Point point) {
+		viewTo(point.intX(), point.intY());
+	}
+	public static void viewTo(HasPoint target) {
+		viewTo(target.point());
+	}
+	public static void pureViewMove(double dx, double dy) {
 		viewX -= dx;viewY -= dy;
 	}
-	public static void pureViewTo(int x, int y) {
+	public static void pureViewTo(double x, double y) {
 		viewX = x;viewY = y;
 	}
-	public static void viewTargetTo(int x, int y) {
+	public static void viewTargetTo(double x, double y) {
 		viewDstX = -x + screenW/2;viewDstY =  -y + screenH/2;
 	}
-	public static void viewTargetMove(int x, int y) {
+	public static void viewTargetMove(double x, double y) {
 		viewDstX -= x;viewDstY -= y;
 	}
 	public static void viewApproach_speed(int speed) {
@@ -451,7 +449,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 	}
 	public static final void paintHPArc(int x, int y, int radius, ConsumableEnergy hp) {
-		paintHPArc(x, y, radius, hp.intValue(), hp.getDefault().intValue());
+		paintHPArc(x, y, radius, hp.intValue(), hp.getMax().intValue());
 	}
 	public static final void paintHPArc(Point point, int radius, int hp, int maxHP) {
 		paintHPArc(point.intX(), point.intY(), radius, hp, maxHP);
@@ -463,65 +461,42 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	//input
 	private static int mouseX,mouseY;
 	public static int mousePressButton = GHQ.NONE;
+	private static GUIParts mouseHoveredUI = BASE_SCREEN_UI;
+	private static GUIParts lastClickedUI = BASE_SCREEN_UI;
 	private static boolean mouseDebugMode;
 	private static int mouseDebugX1, mouseDebugY1;
 	private static int mouseDebugX2, mouseDebugY2;
+	public static MouseHook mouseHook = new MouseHook();
 	public void mouseWheelMoved(MouseWheelEvent e){}
 	public void mouseEntered(MouseEvent e){}
 	public void mouseExited(MouseEvent e){}
 	public void mousePressed(MouseEvent e){
-		//MouseListenerExs event
+		//debug of ruler
 		if(e.getButton() == MouseEvent.BUTTON2) {
 			mouseDebugMode = true;
 			mouseDebugX2 = GHQ.NONE;
 			mouseDebugX1 = mouseX;
 			mouseDebugY1 = mouseY;
 		}
+		//MouseListenerExs event
 		switch(e.getButton()) {
 		case MouseEvent.BUTTON1:
 			mousePressButton = 1;
+			for(MouseListenerEx mle : mouseListeners)
+				mle.pressButton1Event();
 			break;
 		case MouseEvent.BUTTON2:
 			mousePressButton = 2;
+			for(MouseListenerEx mle : mouseListeners)
+				mle.pressButton2Event();
 			break;
 		case MouseEvent.BUTTON3:
 			mousePressButton = 3;
+			for(MouseListenerEx mle : mouseListeners)
+				mle.pressButton3Event();
 			break;
 		}
-		for(MouseListenerEx mle : mouseListeners) {
-			switch(e.getButton()) {
-			case MouseEvent.BUTTON1:
-				mle.pressButton1Event();
-				break;
-			case MouseEvent.BUTTON2:
-				mle.pressButton2Event();
-				break;
-			case MouseEvent.BUTTON3:
-				mle.pressButton3Event();
-				break;
-			}
-		}
-		//GUIParts click event
-		guiPartsClickCheck(guiParts);
-	}
-	public static final boolean guiPartsClickCheck(Collection<GUIParts> guiParts) {
-		if(guiParts == null)
-			return false;
-		boolean clickAbsorbed = false, clicked = false;
-		for(GUIParts parts : guiParts) {
-			if(parts.isEnabled()) {
-				if(clickAbsorbed || !parts.isMouseEntered()) {
-					//System.out.println(parts.NAME + " is outside clicked.");
-					parts.outsideClicked();
-				}else {
-					parts.clicked();
-					//System.out.println(parts.NAME + " is clicked.");
-					clicked = true;
-					clickAbsorbed = parts.absorbsClickEvent();
-				}
-			}
-		}
-		return clicked;
+		engine.mousePressed(e);
 	}
 	public void mouseReleased(MouseEvent e){
 		if(e.getButton() == MouseEvent.BUTTON2) {
@@ -543,50 +518,23 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				break;
 			}
 		}
-		//GUIParts release event
-		if(e.getButton() == MouseEvent.BUTTON1)
-			guiPartsReleaseCheck(guiParts);
+		engine.mouseReleased(e);
 	}
-	public static final void guiPartsReleaseCheck(Collection<GUIParts> guiParts) {
-		if(guiParts == null)
-			return;
-		boolean alreadyClicked = false;
-		for(GUIParts parts : guiParts) {
-			if(parts.isEnabled()) {
-				if(alreadyClicked || !parts.isMouseEntered()) {
-					parts.outsideReleased();
-				}else {
-					parts.released();
-					alreadyClicked = parts.absorbsClickEvent();
-				}
-			}
-		}
-	}
-	public void mouseClicked(MouseEvent e){
-	}
+	@Override
+	public void mouseClicked(MouseEvent e){}
+	@Override
 	public void mouseMoved(MouseEvent e){
-		final int x = e.getX(), y = e.getY();
-		mouseX = x;mouseY = y;
-		guiPartsMouseOverCheck(guiParts);
-	}
-	public static final void guiPartsMouseOverCheck(Collection<GUIParts> guiParts) {
-		if(guiParts == null)
-			return;
-		boolean alreadyOvered = false;
-		for(GUIParts parts : guiParts) {
-			if(parts.isEnabled()) {
-				if(alreadyOvered || !parts.isMouseEntered())
-					parts.outsideMouseOvered();
-				else {
-					parts.mouseOvered();
-					alreadyOvered = parts.absorbsClickEvent();
-				}
-			}
+		mouseX = e.getX();mouseY = e.getY();
+		final GUIParts hoveredUI = BASE_SCREEN_UI.uiAtCursur();
+		if(mouseHoveredUI != hoveredUI) {
+			mouseHoveredUI.mouseOut();
+			mouseHoveredUI = hoveredUI;
 		}
+		engine.mouseMoved(e);
 	}
 	public void mouseDragged(MouseEvent e){
-		final int x = e.getX(), y = e.getY();
-		mouseX = x;mouseY = y;
+		mouseX = e.getX();mouseY = e.getY();
+		engine.mouseDragged(e);
 	}
 	public static final int mouseX(){
 		return mouseX - (int)viewX;
@@ -605,6 +553,24 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final boolean isMouseInArea_Stage(int x, int y, int w, int h) {
 		return abs(x - mouseX + viewX) < w/2 && abs(y - mouseY + viewY) < h/2;
+	}
+	public static final GUIParts mouseHoveredUI() {
+		return mouseHoveredUI;
+	}
+	public static final boolean isMouseHoveredUI() {
+		return mouseHoveredUI != BASE_SCREEN_UI;
+	}
+	public static final GUIParts lastClickedUI() {
+		return lastClickedUI;
+	}
+	public static final boolean isLastClickedUI(GUIParts parts) {
+		return lastClickedUI == parts;
+	}
+	public static final void setLastClickedUI(GUIParts parts) {
+		if(lastClickedUI != parts) {
+			lastClickedUI.outsideClicked();
+			lastClickedUI = parts;
+		}
 	}
 	/**
 	 * Check if the mouse coordinate is in this rectangle area.
@@ -747,8 +713,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//generation
 	/**
-	 * Add a {@link GUIParts}.(Doesn't enable it automatically.)
-	 * @param GUIParts
+	 * Add a {@link GUIParts}.(Enable it automatically.)
+	 * @param guiParts
 	 * @return added GUIParts
 	 */
 	public static final <T extends GUIParts>T addGUIParts(T guiParts) {
@@ -756,12 +722,16 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			System.out.println("GHQ.addGUIParts recieved a null guiParts.");
 			return null;
 		}
-		GHQ.guiParts.add(guiParts);
+		GHQ.BASE_SCREEN_UI.addLast(guiParts);
 		return guiParts;
+	}
+	public static final GHQObject getMouseOveredGHQObject() {
+		stage().forMouseOver_stage();
+		return null;
 	}
 	/**
 	 * Add a {@link MouseListenerEx}.(Doesn't enable it automatically.)
-	 * @param GUIParts
+	 * @param mle
 	 * @return added GUIParts
 	 */
 	public static final void addListenerEx(MouseListenerEx mle) {
@@ -769,7 +739,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	/**
 	 * Add a {@link KeyListenerEx}.(Doesn't enable it automatically.)
-	 * @param GUIParts
+	 * @param kle
 	 * @return added GUIParts
 	 */
 	public static final void addListenerEx(KeyListenerEx kle) {
@@ -777,7 +747,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	/**
 	 * Add a {@link KeyTypeListener}.(Doesn't enable it automatically.)
-	 * @param GUIParts
+	 * @param kte
 	 * @return added GUIParts
 	 */
 	public static final void addListenerEx(KeyTypeListener kte) {
@@ -846,14 +816,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final double getFPS() {
 		return nowFPS;
 	}
-	public static final int getMSPF() {
-		return loadTime_total;
-	}
-	public static final double mulMSPF(double value) {
-		return getMSPF()*value;
-	}
 	public static final double getSPF() {
-		return (double)loadTime_total/1000.0;
+		return 1.0/nowFPS;
 	}
 	public static final double mulSPF(double value) {
 		return getSPF()*value;
@@ -903,7 +867,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		System.gc();
 		//System.out.println("stage reset done");
 		nowStage = engine.loadStage();
-		System.out.println("resetStageEnd");
 	}
 	
 	//ResourceLoad
@@ -917,7 +880,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 
 	/**
 	* Load the font file.
-	* @param url
+	* @param filename
 	* @return Font
 	* @since alpha1.0
 	*/
@@ -1017,6 +980,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @since alpha1.0
 	 */
 	public static final void setImageAlpha(float alpha) {
+		if(alpha < 0)
+			alpha = 0;
+		else if(alpha > 1F)
+			alpha = 1F;
 		g2.setComposite(AlphaComposite.SrcOver.derive(alpha));
 	}
 	//Paint
@@ -1101,14 +1068,14 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * Return Graphics2D instance.
 	 * @return
 	 */
-	public static final Graphics2D getGraphics2D() {
+	public static final Graphics2D getG2D() {
 		return g2;
 	}
 	/**
 	 * Return Graphics2D instance, and set color.
 	 * @return
 	 */
-	public static final Graphics2D getGraphics2D(Color color) {
+	public static final Graphics2D getG2D(Color color) {
 		g2.setColor(color);
 		return g2;
 	}
@@ -1116,9 +1083,14 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * Return Graphics2D instance, and set color and stroke.
 	 * @return
 	 */
-	public static final Graphics2D getGraphics2D(Color color, Stroke stroke) {
+	public static final Graphics2D getG2D(Color color, Stroke stroke) {
 		g2.setColor(color);
 		g2.setStroke(stroke);
+		return g2;
+	}
+	public static final Graphics2D getG2D(Color color, float strokeSize) {
+		g2.setColor(color);
+		g2.setStroke(new BasicStroke(strokeSize));
 		return g2;
 	}
 	

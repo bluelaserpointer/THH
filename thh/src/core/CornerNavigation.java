@@ -1,6 +1,6 @@
 package core;
 
-import static physics.Direction4.*;
+import static physics.Direction.Direction4.*;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -8,10 +8,10 @@ import java.util.LinkedList;
 
 import effect.debugEffect.DebugEffect;
 import paint.ColorFilling;
-import physics.Direction4;
 import physics.HasPoint;
 import physics.Point;
 import physics.Route;
+import physics.Direction.Direction4;
 
 public class CornerNavigation {
 	
@@ -89,7 +89,7 @@ public class CornerNavigation {
 				return null;
 			}else {
 				while(true) {
-					if(neighborPoint != null && !point.checkDirection_int(neighborPoint, direction)) { //arrive at the neighbor corner point
+					if(neighborPoint != null && !point.checkDirection(neighborPoint, direction)) { //arrive at the neighbor corner point
 						EdgeNode.connect(this, neighborPoint);
 						DebugEffect.setLine(Color.BLUE, GHQ.stroke3, intX(), intY(), neighborPoint.intX(), neighborPoint.intY());
 						return null;
@@ -114,7 +114,7 @@ public class CornerNavigation {
 		protected final Corner searchAnchorOrConer(Point basePoint, Direction4 direction) {
 			final Corner foundCorner = Direction4.getVertHorzClosest_int(basePoint, corners, direction);
 			final Anchor foundAnchor = Direction4.getVertHorzClosest_int(basePoint, anchors, direction);
-			if(Direction4.getOutermost_int(direction.back(), foundCorner, foundAnchor) == foundCorner)
+			if(Direction4.getOutermost(direction.back(), foundCorner, foundAnchor) == foundCorner)
 				return  foundCorner;
 			else
 				return  foundAnchor == null ? null : foundAnchor.NEST_CORNER;
@@ -149,7 +149,7 @@ public class CornerNavigation {
 			}
 			Corner neighbor = searchAnchorOrConer(basePoint, direction);
 			do {
-				if(!point.checkDirection_int(neighbor, direction)) { //arrive
+				if(!point.checkDirection(neighbor, direction)) { //arrive
 					if(basePoint.equals(4950,50))
 						System.out.println("marking2");
 					return neighbor;
@@ -210,7 +210,7 @@ public class CornerNavigation {
 		}
 	}
 	public void debugPreview() {
-		final Graphics2D G2 = GHQ.getGraphics2D();
+		final Graphics2D G2 = GHQ.getG2D();
 		for(Corner ver : corners) {
 			ColorFilling.rectPaint(Color.BLUE, ver.intX() - 5, ver.intY() - 5, 10, 10);
 			G2.setColor(Color.ORANGE);

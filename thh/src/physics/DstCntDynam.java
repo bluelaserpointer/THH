@@ -20,7 +20,7 @@ public class DstCntDynam extends Dynam{
 	public DstCntDynam() {
 		super();
 	}
-	public DstCntDynam(Dynam sample) {
+	public DstCntDynam(Point sample) {
 		super(sample);
 	}
 	public DstCntDynam(HasAnglePoint sample) {
@@ -29,10 +29,11 @@ public class DstCntDynam extends Dynam{
 	
 	//control
 	@Override
-	public void setAll(Dynam sample) {
+	public DstCntDynam setAll(Point sample) {
 		super.setAll(sample);
 		if(sample instanceof DstCntDynam)
 			movedDistance = ((DstCntDynam) sample).movedDistance;
+		return this;
 	}
 	public void setAllBySampleAndInitDistCnt(Dynam sample) {
 		super.setAll(sample);

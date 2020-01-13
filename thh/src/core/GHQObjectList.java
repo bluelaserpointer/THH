@@ -21,22 +21,22 @@ public class GHQObjectList<T extends GHQObject> extends LinkedList<T>{
 				iterator.remove();
 		}
 	}
-	public void traversePaint(boolean doAnimation) {
+	public void traversePaint() {
 		for(GHQObject element : this)
-			element.paint(doAnimation);
+			element.paint();
 	}
 	public final void defaultTraverse() {
 		if(GHQ.isNoStopEvent())
 			traverseIdle();
 		else
-			traversePaint(false);
+			traversePaint();
 	}
 	public void forceRemove(T element) {
 		remove(element);
 	}
 	public T forName(String name) {
 		for(T element : this) {
-			if(element.getName().equals(name))
+			if(element.name().equals(name))
 				return element;
 		}
 		return null;

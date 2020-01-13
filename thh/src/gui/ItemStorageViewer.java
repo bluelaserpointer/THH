@@ -36,24 +36,31 @@ public class ItemStorageViewer extends TableStorageViewer<ItemData>{
 	public void paintOfCell(HasDotPaint object, int x,int y) {
 		cellPaint.rectPaint(x, y, CELL_SIZE);
 		if(object == null) {
-			final Graphics2D G2 = GHQ.getGraphics2D();
+			final Graphics2D G2 = GHQ.getG2D();
 			G2.setColor(Color.GRAY);
 			G2.drawString("Empty", x + CELL_SIZE - 23, y + CELL_SIZE - 9);
 			return;
 		}
 		object.getDotPaint().dotPaint_capSize(x + CELL_SIZE/2, y + CELL_SIZE/2, (int)(CELL_SIZE*0.8));
 		if(storage instanceof TableStorage && ((TableStorage<? extends HasDotPaint>)storage).isNullElement(object)) {
-			final Graphics2D G2 = GHQ.getGraphics2D();
+			final Graphics2D G2 = GHQ.getG2D();
 			G2.setColor(Color.GRAY);
 			G2.drawString("Empty", x + CELL_SIZE - 23, y + CELL_SIZE - 9);
 		}
 		if(object instanceof ItemData && object != ItemData.BLANK_ITEM) {
 			final int AMOUNT = ((ItemData)object).getAmount();
-			final Graphics2D G2 = GHQ.getGraphics2D();
+			final Graphics2D G2 = GHQ.getG2D();
 			G2.setColor(Color.GRAY);
 			G2.drawString(String.valueOf(AMOUNT), x + CELL_SIZE - 23, y + CELL_SIZE - 9);
 			G2.setColor(Color.BLACK);
 			G2.drawString(String.valueOf(AMOUNT), x + CELL_SIZE - 24, y + CELL_SIZE - 10);
 		}
+	}
+
+	@Override
+	public ItemData objectToT(Object object) {
+		if(object instanceof ItemData)
+			return (ItemData)object;
+		return null;
 	}
 }

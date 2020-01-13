@@ -15,6 +15,7 @@ public class GUIPartsSwitcher extends GUIParts{
 	//idle
 	@Override
 	public void idle() {
+		super.idle();
 		parts[nowIndex].idle();
 	}
 	
@@ -24,6 +25,9 @@ public class GUIPartsSwitcher extends GUIParts{
 	}
 	public <T extends GUIParts>T set(int index, T parts) {
 		this.parts[index] = parts;
+		super.addLast(parts);
+		if(index != nowIndex)
+			parts.disable();
 		return parts;
 	}
 	public void switchTo(int index) {
@@ -41,7 +45,7 @@ public class GUIPartsSwitcher extends GUIParts{
 			public void clicked() {
 				switchTo(index);
 			}
-		}.setName(NAME + "->SwitcherOf" + index);
+		}.setName(name() + "->SwitcherOf" + index);
 	}
 	public void prev() {
 		switchTo(nowIndex > 0 ? nowIndex - 1 : parts.length - 1);
@@ -55,7 +59,7 @@ public class GUIPartsSwitcher extends GUIParts{
 			public void clicked() {
 				prev();
 			}
-		}.setName(NAME + "->PrevButton");
+		}.setName(name() + "->PrevButton");
 	}
 	public GUIParts getNextButton() {
 		return new GUIParts() {
@@ -63,7 +67,7 @@ public class GUIPartsSwitcher extends GUIParts{
 			public void clicked() {
 				next();
 			}
-		}.setName(NAME + "->NextButton");
+		}.setName(name() + "->NextButton");
 	}
 	public void prev(int page) {
 		switchTo((nowIndex - page) % parts.length);
@@ -104,41 +108,5 @@ public class GUIPartsSwitcher extends GUIParts{
 	//information
 	public int nowIndex() {
 		return nowIndex;
-	}
-	
-	//////////////////////
-	//For child parts
-	@Override
-	public void clicked() {
-		super.clicked();
-		if(parts[nowIndex].isMouseEntered())
-			parts[nowIndex].clicked();
-	}
-	@Override
-	public void outsideClicked() {
-		super.outsideClicked();
-		parts[nowIndex].outsideClicked();
-	}
-	@Override
-	public void released() {
-		super.released();
-		if(parts[nowIndex].isMouseEntered())
-			parts[nowIndex].released();
-	}
-	@Override
-	public void outsideReleased() {
-		super.outsideReleased();
-		parts[nowIndex].outsideReleased();
-	}
-	@Override
-	public void mouseOvered() {
-		super.mouseOvered();
-		if(parts[nowIndex].isMouseEntered())
-			parts[nowIndex].mouseOvered();
-	}
-	@Override
-	public void outsideMouseOvered() {
-		super.outsideMouseOvered();
-		parts[nowIndex].outsideMouseOvered();
 	}
 }

@@ -3,8 +3,8 @@ package weapon;
 import java.io.Serializable;
 
 import core.GHQ;
-import physics.HasAnglePoint;
-import physics.Standpoint;
+import core.GHQObject;
+import physics.HitGroup;
 import unit.Unit;
 
 /**
@@ -91,7 +91,7 @@ public class Weapon implements Serializable{
 	 * @param standpoint
 	 * @return
 	 */
-	public boolean trigger(HasAnglePoint shooter, Standpoint standpoint) {
+	public boolean trigger(GHQObject shooter, HitGroup standpoint) {
 		if(canFire()) {
 			startCool();
 			if(magazine != GHQ.MAX)
@@ -102,13 +102,13 @@ public class Weapon implements Serializable{
 		return false;
 	}
 	public final boolean trigger(Unit shooter) {
-		return trigger(shooter, shooter.standpoint());
+		return trigger(shooter, shooter.hitGroup());
 	}
 	/**
 	 * Set bullets.
 	 * @param shooter - the shooter of the bullets
 	 */
-	public void setBullets(HasAnglePoint shooter, Standpoint standpoint) {
+	public void setBullets(GHQObject shooter, HitGroup standpoint) {
 		
 	}
 	///////////////////
