@@ -11,8 +11,16 @@ public interface HasNumber {
 	public default double doubleValue() {
 		return getNumber().doubleValue();
 	}
-
 	public default boolean isNONE() {
 		return getNumber().intValue() == GHQ.NONE;
+	}
+	
+	public static HasNumber generateHasNumber(Number number) {
+		return new HasNumber() {
+			@Override
+			public Number getNumber() {
+				return number;
+			}
+		};
 	}
 }

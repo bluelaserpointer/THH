@@ -2,6 +2,7 @@ package bullet;
 
 import static java.lang.Math.PI;
 
+import calculate.Damage;
 import core.GHQ;
 import core.GHQObject;
 import paint.dot.DotPaint;
@@ -18,10 +19,11 @@ import weapon.Weapon;
  * @since alpha1.0
  */
 public class Bullet extends GHQObject implements HasPoint, HasDotPaint{
+	public static final Bullet NULL_BULLET = new Bullet(GHQObject.NULL_GHQ_OBJECT);
 	protected Weapon originWeapon;
 	protected GHQObject shooter; //an information source of user
 	
-	public int
+	public Damage
 		damage;
 	public int
 		limitFrame,
@@ -34,10 +36,10 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint{
 	public DotPaint
 		paintScript;
 	public void init() {
-		damage = 0;
+		damage = Damage.NULL_DAMAGE;
 		limitFrame = GHQ.MAX;
 		limitRange = GHQ.MAX;
-		penetration = 1;
+		penetration = 0;
 		reflection = 0;
 		accel = 0.0;
 		paintScript = DotPaint.BLANK_SCRIPT;
@@ -59,7 +61,7 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint{
 		originWeapon = sample.originWeapon;
 		shooter = sample.shooter;
 		name = sample.name;
-		damage = 0;
+		damage = Damage.NULL_DAMAGE;
 		limitFrame = sample.limitFrame;
 		limitRange = sample.limitRange;
 		penetration = sample.penetration;
@@ -168,7 +170,7 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint{
 		return false;
 	}
 	public boolean hitUnitDeleteCheck(Unit unit) {
-		unit.damage_amount(damage);
+		unit.damage(damage, this);
 		hitObject();
 		if(penetration > 0) {
 			if(penetration != GHQ.MAX)
@@ -189,9 +191,6 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint{
 	//////////////
 	public Weapon setOriginWeapon(Weapon weapon) {
 		return originWeapon = weapon;
-	}
-	public Weapon getOriginWeapon() {
-		return originWeapon;
 	}
 	
 	//////////////
@@ -262,6 +261,12 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint{
 	//////////////
 	//information
 	//////////////
+	public Weapon weapon() {
+		return originWeapon;
+	}
+	public GHQObject shooter() {
+		return shooter;
+	}
 	public int getPassedFrame() {
 		return GHQ.passedFrame(INITIAL_FRAME);
 	}

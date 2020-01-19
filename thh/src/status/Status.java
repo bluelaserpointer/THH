@@ -19,15 +19,12 @@ public class Status implements Serializable{
 		parameters.addAll(sample.parameters);
 	}
 	//control
+	public void reset() {
+		for(ConsumableEnergy ver : parameters)
+			ver.reset();
+	}
 	public Status clone() {
 		return new Status(this);
-	}
-	public Status reset() {
-		for(ConsumableEnergy ver : parameters) {
-			if(ver != null)
-				ver.reset();
-		}
-		return this;
 	}
 	public boolean isLegalIndex(int index) {
 		return 0 <= index && index < parameters.size();

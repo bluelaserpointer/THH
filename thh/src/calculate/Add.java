@@ -1,13 +1,19 @@
 package calculate;
 
-public class Add extends CalculateStream{
-	private static final long serialVersionUID = -7020264920780470221L;
-	private final Number ADD;
+public class Add extends Calculation{
+	private final HasNumber add;
+	public Add(HasNumber hasAdd) {
+		add = hasAdd;
+	}
 	public Add(Number add) {
-		ADD = add;
+		this.add = HasNumber.generateHasNumber(add);
 	}
 	@Override
 	protected Number calculate(Number value) {
-		return value.intValue() + ADD.intValue();
+		return value.intValue() + add.intValue();
+	}
+	@Override
+	public String name() {
+		return "NotNamedAdd";
 	}
 }

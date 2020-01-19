@@ -15,7 +15,7 @@ import structure.Structure;
 import unit.Unit;
 import vegetation.Vegetation;
 
-public class GHQObject implements HasPaint, HasPhysics {
+public class GHQObject implements HasName, HasPaint, HasPhysics  {
 	public final int INITIAL_FRAME;
 	private static int maxUniqueID = -1;
 	public final int UNIQUE_ID;
@@ -24,6 +24,8 @@ public class GHQObject implements HasPaint, HasPhysics {
 	public static int nowPaintOrder = -1;
 	
 	protected String name = this.getClass().getName() + GHQ.NOT_NAMED;
+	
+	protected GHQObject outerContainer = null;
 	
 	protected Physics physics;
 	
@@ -102,11 +104,18 @@ public class GHQObject implements HasPaint, HasPhysics {
 		return this;
 	}
 	//information
+	@Override
 	public String name() {
 		return name;
 	}
 	public boolean nameIs(String name) {
 		return this.name == name;
+	}
+	public void setOuterContainer(GHQObject container) {
+		outerContainer = container;
+	}
+	public GHQObject getOuterContainer() {
+		return outerContainer;
 	}
 	public static int getTotalAmount() {
 		return maxUniqueID + 1;

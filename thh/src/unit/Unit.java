@@ -3,6 +3,8 @@ package unit;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
+import bullet.Bullet;
+import calculate.Damage;
 import core.GHQ;
 import core.GHQObject;
 import gui.MessageSource;
@@ -49,7 +51,11 @@ public abstract class Unit extends GHQObject implements MessageSource, HasAngleP
 	/////////////
 	//control
 	/////////////
-	public abstract int damage_amount(int value);
+	public void damagedTarget(Unit targetUnit, Bullet bullet) {}
+	public abstract void damage(Damage damage, Bullet bullet);
+	public final void damage(Damage damage) {
+		damage(damage, Bullet.NULL_BULLET);
+	}
 
 	/////////////
 	//event

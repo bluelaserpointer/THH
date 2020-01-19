@@ -20,7 +20,7 @@ import java.awt.image.*;
 import java.awt.geom.*;
 import javax.swing.*;
 
-import calculate.ConsumableEnergy;
+import calculate.Consumables;
 import exsampleGame.engine.Engine_THH1;
 
 import java.io.*;
@@ -214,7 +214,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static Font initialFont, basicFont, commentFont;
 	public static final BasicStroke stroke1 = new BasicStroke(1f), stroke3 = new BasicStroke(3f), stroke5 = new BasicStroke(5f), stroke7 = new BasicStroke(7f);
 	private static final Color HPWarningColor = new Color(255,120,120), debugTextColor = new Color(200, 200, 200);
-	public static final DecimalFormat DF00_00 = new DecimalFormat("00.00");
+	public static final DecimalFormat DF0_00 = new DecimalFormat("0.00"), DF00_00 = new DecimalFormat("00.00");
 	private final Rectangle2D screenRect;
 	
 	public void paintComponent(Graphics g){
@@ -448,13 +448,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		g2.drawArc(x - radius, y - radius, radius*2, radius*2, 90, (int)((double)hp/(double)maxHP*360));
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 	}
-	public static final void paintHPArc(int x, int y, int radius, ConsumableEnergy hp) {
-		paintHPArc(x, y, radius, hp.intValue(), hp.getMax().intValue());
+	public static final void paintHPArc(int x, int y, int radius, Consumables hp) {
+		paintHPArc(x, y, radius, hp.intValue(), hp.max().intValue());
 	}
 	public static final void paintHPArc(Point point, int radius, int hp, int maxHP) {
 		paintHPArc(point.intX(), point.intY(), radius, hp, maxHP);
 	}
-	public static final void paintHPArc(Point point, int radius, ConsumableEnergy hp) {
+	public static final void paintHPArc(Point point, int radius, Consumables hp) {
 		paintHPArc(point.intX(), point.intY(), radius, hp);
 	}
 	

@@ -1,102 +1,105 @@
 package calculate;
 
-import core.GHQ;
+import calculate.adjuster.RangeChecker;
 
 public class ConsumableEnergy implements Consumables, HasNumber{
-	protected CalculateStream value, min, max, defaultValue;
-	protected int lastDecreased;
-	
-	public ConsumableEnergy() {
-		value = new FixedSetter(0);
+	protected ValueWithCalculation value = new ValueWithCalculation(),
+			min = new ValueWithCalculation(Integer.MIN_VALUE),
+			max = new ValueWithCalculation(Integer.MAX_VALUE),
+			defaultValue = new ValueWithCalculation(value.getNumber());
+	{
+		value.pushAdjuster(new RangeChecker("RangeChecker", new HasNumber() {
+			@Override
+			public Number getNumber() {
+				return min.getNumber();
+			}
+		}, new HasNumber() {
+			@Override
+			public Number getNumber() {
+				return max.getNumber();
+			}
+		}));
 	}
+	public ConsumableEnergy() {}
 	public ConsumableEnergy(Number initialValue) {
-		value = new FixedSetter(initialValue);
+		value.setValue(initialValue);
 	}
-	public ConsumableEnergy(CalculateStream formula) {
-		value = formula;
+	public ConsumableEnergy(Calculation...calculations) {
+		value.addCalculation(calculations);
 	}
-	public ConsumableEnergy(Number initialValue, Number min, Number max) {
-		value = new FixedSetter(initialValue);
-		this.defaultValue = this.min = new FixedSetter(min);
-		this.max = new FixedSetter(max);
-	}
-	public ConsumableEnergy(Number initialValue, CalculateStream min, CalculateStream max) {
-		value = new FixedSetter(initialValue);
-		this.defaultValue = this.min = min;
-		this.max = max;
-	}
-	public Number setWithCapCheck(CalculateStream newValue) {
-		return setWithCapCheck_getResult(newValue.getNumber());
-	}
-	public Number setWithCapCheck_getResult(Number newValue) {
-		final double OLD_VALUE = value.doubleValue();
-		if(max != null && max.doubleValue() < newValue.doubleValue())
-			value = max;
-		else if(min != null && newValue.doubleValue() < min.doubleValue())
-			value = min;
-		else
-			value = new FixedSetter(newValue);
-		if(OLD_VALUE > value.doubleValue())
-			lastDecreased = GHQ.nowFrame();
-		return value.getNumber();
-	}
-	public Number setWithCapCheck_getDiff(CalculateStream newValue) {
-		return setWithCapCheck_getDiff(newValue.getNumber());
-	}
-	public Number setWithCapCheck_getDiff(Number newValue) {
-		final Number OLD_VALUE = value.getNumber();
-		return setWithCapCheck_getResult(newValue).doubleValue() - OLD_VALUE.doubleValue();
-	}
-	public void doCapCheck() {
-		setWithCapCheck(value);
-	}
-	public ConsumableEnergy setMin(Number min) {
-		this.min = new FixedSetter(min);
+	//Set_Value
+	public ConsumableEnergy setValue(Number value) {
+		this.value.setValue(value);
 		return this;
 	}
-	public ConsumableEnergy setMin(CalculateStream min) {
-		this.min = min;
+	public ConsumableEnergy setValue(HasNumber hasNumber) {
+		this.value.setValue(hasNumber.getNumber());
+		return this;
+	}
+	@Override
+	public void setNumber(Number newValue) {
+		value.setValue(newValue);
+	}
+	@Override
+	public double consume(Number amount) {
+		final double oldValue = value.doubleValue();
+		value.setValue(value.doubleValue() - amount.doubleValue());
+		return oldValue - value.doubleValue();
+	}
+	public ConsumableEnergy reset() {
+		value.setValue(defaultValue.getNumber());
+		return this;
+	}
+	//Set_MinMax
+	public ConsumableEnergy setMin(Number value) {
+		this.min = new ValueWithCalculation(value);
+		return this;
+	}
+	public ConsumableEnergy setMin(Calculation formula) {
+		this.min = new ValueWithCalculation(formula);
+		return this;
+	}
+	public ConsumableEnergy setMax(Number value) {
+		this.max = new ValueWithCalculation(value);
+		return this;
+	}
+	public ConsumableEnergy setMax(Calculation formula) {
+		this.max = new ValueWithCalculation(formula);
+		//System.out.println("max: " + max());
 		return this;
 	}
 	public ConsumableEnergy setToMin() {
-		if(!isMin())
-			lastDecreased = GHQ.nowFrame();
-		value = min;
-		return this;
-	}
-	public Number getMin() {
-		return min.getNumber();
-	}
-	public CalculateStream getMinFormula() {
-		return min;
-	}
-	public ConsumableEnergy setMax(Number max) {
-		this.max = new FixedSetter(max);
-		return this;
-	}
-	public ConsumableEnergy setMax(CalculateStream max) {
-		this.max = max;
+		value.setValue(min.getNumber());
 		return this;
 	}
 	public ConsumableEnergy setToMax() {
 		value = max;
 		return this;
 	}
-	public Number getMax() {
+	@Override
+	public Number min() {
+		return min.getNumber();
+	}
+	@Override
+	public Number max() {
 		return max.getNumber();
 	}
-	public CalculateStream getMaxFormula() {
+	public ValueWithCalculation minCalculation() {
+		return min;
+	}
+	public ValueWithCalculation maxCalculation() {
 		return max;
 	}
 	public ConsumableEnergy setMinMax(Number min, Number max) {
 		return setMin(min).setMax(max);
 	}
+	//Set-DefaultValue
 	public ConsumableEnergy setDefault(Number defaultValue) {
-		this.defaultValue = new FixedSetter(defaultValue);
+		this.defaultValue = new ValueWithCalculation(defaultValue);
 		return this;
 	}
-	public ConsumableEnergy setDefault(CalculateStream defaultValue) {
-		this.defaultValue = defaultValue;
+	public ConsumableEnergy setDefault(Calculation defaultValue) {
+		this.defaultValue = new ValueWithCalculation(defaultValue);
 		return this;
 	}
 	public ConsumableEnergy setDefaultToMin() {
@@ -107,14 +110,13 @@ public class ConsumableEnergy implements Consumables, HasNumber{
 		defaultValue = max;
 		return this;
 	}
-	public Number getDefault() {
+	public Number defaultValue() {
 		return defaultValue != null ? defaultValue.getNumber() : null;
 	}
-	public ConsumableEnergy reset() {
-		if(defaultValue != null)
-			setWithCapCheck_getResult(defaultValue.getNumber());
-		return this;
+	public ValueWithCalculation defaultCalculation() {
+		return defaultValue;
 	}
+	//information
 	public double getRate() {
 		if(max == null || min == null) {
 			System.out.println("! --  getRate() called with null max or min");
@@ -123,40 +125,81 @@ public class ConsumableEnergy implements Consumables, HasNumber{
 		return (double)(value.doubleValue() - min.doubleValue())/(max.doubleValue() - min.doubleValue());
 	}
 	public boolean isMin() {
-		return value.doubleValue() == min.getNumber().doubleValue();
+		return value.doubleValue() == min.doubleValue();
 	}
 	public boolean isMax() {
-		return value.doubleValue() == max.getNumber().doubleValue();
+		return value.doubleValue() == max.doubleValue();
+	}
+	public boolean isDefault() {
+		return value.doubleValue() == defaultValue.doubleValue();
+	}
+	public int lastIncreasedFrame() {
+		return value.lastIncreaseFrame();
 	}
 	public int lastDecreasedFrame() {
-		return lastDecreased;
+		return value.lastDecreaseFrame();
 	}
-	public int lastDecreasedPassedFrame() {
-		return GHQ.passedFrame(lastDecreased);
+	public int lastUnchangedFrame() {
+		return value.lastUnchangeFrame();
 	}
-	public Number consume_getEffect(Number amount) {
-		return setWithCapCheck_getDiff(value.doubleValue() - amount.doubleValue());
+	public int lastChangedFrame() {
+		return Math.max(lastIncreasedFrame(), lastDecreasedFrame());
 	}
-	@Override
-	public void consume(Number amount) {
-		setWithCapCheck_getResult(value.doubleValue() - amount.doubleValue());
+	public int lastSettedFrame() {
+		return Math.max(lastChangedFrame(), lastUnchangedFrame());
 	}
-	@Override
-	public void setLestConsumable(Number newValue) {
-		setWithCapCheck_getResult(newValue);
+	public double lastChangedAmount() {
+		return value.lastChangeAmount();
 	}
-	@Override
-	public Number intLeftConsumable() {
-		return value.getNumber();
+	public double lastIncreaseAmount() {
+		return value.lastIncreaseAmount();
+	}
+	public double lastDecreaseAmount() {
+		return value.lastDecreaseAmount();
+	}
+	public double lastChangeAmount() {
+		return value.lastChangeAmount();
+	}
+	public double lastSetDiff() {
+		return value.lastSetDiff();
+	}
+	public double lastSetDiff_underZero() {
+		final double VALUE = lastSetDiff();
+		return VALUE < 0 ? -VALUE : 0;
+	}
+	public double lastSetDiff_overZero() {
+		final double VALUE = lastSetDiff();
+		return VALUE > 0 ? VALUE : 0;
+	}
+	public void clearLastChange() {
+		value.clearLastChange();
+	}
+	public void clearLastIncrease() {
+		value.clearLastIncrease();
+	}
+	public void clearLastDecrease() {
+		value.clearLastDecrease();
+	}
+	public void clearLastUnchange() {
+		value.clearLastUnchange();
+	}
+	public void clearLastSet() {
+		value.clearLastSet();
 	}
 	@Override
 	public Number getNumber() {
 		return value.getNumber();
 	}
-	public Number getValue() {
-		return getNumber();
-	}
-	public CalculateStream getValueFormula() {
+	public ValueWithCalculation getValueWithCalculation_value() {
 		return value;
+	}
+	public ValueWithCalculation getValueWithCalculation_min() {
+		return min;
+	}
+	public ValueWithCalculation getValueWithCalculation_max() {
+		return max;
+	}
+	public ValueWithCalculation getValueWithCalculation_default() {
+		return defaultValue;
 	}
 }

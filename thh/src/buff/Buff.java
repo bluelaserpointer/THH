@@ -3,9 +3,12 @@ package buff;
 import java.io.Serializable;
 
 import core.GHQ;
+import core.GHQObject;
+import paint.rect.HasRectPaint;
+import paint.rect.RectPaint;
 import unit.Unit;
 
-public abstract class Buff implements Serializable{
+public abstract class Buff extends GHQObject implements HasRectPaint, Serializable{
 	private static final long serialVersionUID = -6546281620292643179L;
 	final int INITIAL_FRAME;
 	protected Unit owner;
@@ -27,4 +30,5 @@ public abstract class Buff implements Serializable{
 	}
 	public void reset() {};
 	public void removed() {};
+	public abstract RectPaint getRectPaint();
 }

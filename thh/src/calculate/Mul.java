@@ -1,13 +1,19 @@
 package calculate;
 
-public class Mul extends CalculateStream{
-	private static final long serialVersionUID = -4816841917364698371L;
-	private final double MUL;
-	public Mul(double mul) {
-		MUL = mul;
+public class Mul extends Calculation{
+	private final HasNumber mul;
+	public Mul(HasNumber hasMul) {
+		mul = hasMul;
+	}
+	public Mul(Number mul) {
+		this.mul = HasNumber.generateHasNumber(mul);
 	}
 	@Override
 	protected Number calculate(Number value) {
-		return value.doubleValue()*MUL;
+		return value.doubleValue()*mul.doubleValue();
+	}
+	@Override
+	public String name() {
+		return "NotNamedMul";
 	}
 }

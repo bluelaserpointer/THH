@@ -419,7 +419,15 @@ public abstract class Point implements Serializable, ObjectSavable{
 	public double moveAngle() {
 		return GHQ.NONE;
 	}
+	/**
+	 * Waring: Don't use this method only for turning paint angle.
+	 * @param angle
+	 */
 	public void setMoveAngle(double angle) {}
+	/**
+	 * Waring: Don't use this method only for turning paint angle.
+	 * @param angle
+	 */
 	public void setMoveAngle(Angle angle) {
 		if(angle == null)
 			return;

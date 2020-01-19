@@ -1,5 +1,7 @@
 package unit;
 
+import bullet.Bullet;
+import calculate.Damage;
 import paint.ImageFrame;
 import physics.Dynam;
 
@@ -24,17 +26,12 @@ public class DummyUnit extends Unit{
 	}
 
 	@Override
-	public int damage_amount(int damage) {
-		
-		return 0;
-	}
+	public void damage(Damage damage, Bullet bullet) {}
 	
 	@Override
 	public boolean isAlive() {
-		
 		return true;
 	}
-	
 	@Override
 	public String name() {
 		return "DummyUnit";

@@ -1,6 +1,8 @@
 package exsampleGame.unit;
 
+import bullet.Bullet;
 import calculate.ConsumableEnergy;
+import calculate.Damage;
 import core.GHQ;
 import item.ItemData;
 import paint.dot.DotPaint;
@@ -65,7 +67,7 @@ public abstract class THH_BasicUnit extends Unit {
 		HP.reset();
 		if(HP.isMin()) {
 			System.out.println(name() + " hp max is 0.");
-			HP.setLestConsumable(1);
+			HP.setNumber(1);
 		}
 		point().stop();
 		dstPoint.setXY(point().setXY(x, y));
@@ -122,8 +124,8 @@ public abstract class THH_BasicUnit extends Unit {
 
 	// decrease
 	@Override
-	public final int damage_amount(int amount) {
-		return HP.consume_getEffect(amount).intValue();
+	public void damage(Damage damage, Bullet bullet) {
+		damage.doDamage(this); //HP.consume(amount).intValue();
 	}
 	public final boolean kill(boolean force) {
 		HP.setToMin();
