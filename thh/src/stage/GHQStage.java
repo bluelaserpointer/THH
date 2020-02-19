@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import bullet.Bullet;
 import core.GHQ;
@@ -179,6 +180,17 @@ public class GHQStage implements HasBoundingBox, Serializable{
 				visibleEnemies.add(enemy);
 		}
 		return visibleEnemies;
+	}
+	public final LinkedList<Unit> getVisibleUnit(HasPoint hasPoint) {
+		return getVisibleUnit(hasPoint.point());
+	}
+	public final LinkedList<Unit> getVisibleUnit(Point point) {
+		final LinkedList<Unit> visibleUnits = new LinkedList<Unit>();
+		for(Unit unit : units) {
+			if(point.isVisible(unit))
+				visibleUnits.add(unit);
+		}
+		return visibleUnits;
 	}
 	public final Unit getNearstVisibleEnemy(Unit unit) {
 		final Point DYNAM = unit.point();

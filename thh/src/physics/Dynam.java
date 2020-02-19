@@ -104,11 +104,6 @@ public class Dynam extends Point.DoublePoint{
 		}
 	}
 	@Override
-	public void addXY_DA(double distance, double angle) {
-		x += distance*cos(angle);
-		y += distance*sin(angle);
-	}
-	@Override
 	public void fastParaAdd_ADXYSpd(double angle, double dx, double dy, double speed) {
 		angle += moveAngle();
 		final double cos_angle = cos(angle), sin_angle = sin(angle);
@@ -191,8 +186,9 @@ public class Dynam extends Point.DoublePoint{
 		}else {
 			if(ySpd == 0.0)
 				return Math.abs(xSpd);
-			else
+			else {
 				return sqrt(xSpd*xSpd + ySpd*ySpd);
+			}
 		}
 	}
 	@Override
@@ -210,9 +206,13 @@ public class Dynam extends Point.DoublePoint{
 	}
 	@Override
 	public void setSpeed(double speed) {
-		final double RATE = speed/speed();
-		xSpd *= RATE;
-		ySpd *= RATE;
+		if(isStop())
+			xSpd = speed;
+		else {
+			final double RATE = speed/speed();
+			xSpd *= RATE;
+			ySpd *= RATE;
+		}
 	}
 	@Override
 	public void addSpeed(double xSpeed, double ySpeed) {

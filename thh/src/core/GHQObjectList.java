@@ -8,17 +8,26 @@ import physics.HasPoint;
 import physics.HitInteractable;
 import physics.Point;
 
+/**
+ * Note: This class does not used for class GUIParts.
+ * @author bluelaserpointer
+ *
+ * @param <T>
+ */
 public class GHQObjectList<T extends GHQObject> extends LinkedList<T>{
 	private static final long serialVersionUID = 1774337313239922412L;
 	
 	public void traverseIdle() {
-		for(GHQObject element : this)
+		for(GHQObject element : this) {
 			element.idle();
+		}
 		//check delete claim
 		final Iterator<? extends GHQObject> iterator = descendingIterator();
 		while(iterator.hasNext()) {
-			if(iterator.next().hasDeleteClaim())
+			GHQObject object = iterator.next();
+			if(object.hasDeleteClaim()) {
 				iterator.remove();
+			}
 		}
 	}
 	public void traversePaint() {
@@ -78,6 +87,13 @@ public class GHQObjectList<T extends GHQObject> extends LinkedList<T>{
 	public T forIntersectsLine(int x1, int y1, int x2, int y2) {
 		for(T element : this) {
 			if(element instanceof HitInteractable && ((HitInteractable)element).intersectsLine(x1, y1, x2, y2))
+				return element;
+		}
+		return null;
+	}
+	public T forIntersectsRect(int x, int y, int w, int h) {
+		for(T element : this) {
+			if(element instanceof HitInteractable && ((HitInteractable)element).intersectsRect(x, y, w, h))
 				return element;
 		}
 		return null;

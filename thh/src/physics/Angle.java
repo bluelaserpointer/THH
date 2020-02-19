@@ -1,13 +1,14 @@
 package physics;
 
-import java.io.Serializable;
-
 import core.GHQ;
 
-public class Angle implements Serializable{
-	private static final long serialVersionUID = 5495261807326477442L;
+public class Angle {
 	protected double angle;
-	public static final Angle NULL_ANGLE = new Angle(0.0);
+	public static final Angle NULL_ANGLE = new Angle() {
+		public double get() {
+			return 0.0;
+		}
+	};
 	
 	//initialization
 	public Angle() {
@@ -86,6 +87,10 @@ public class Angle implements Serializable{
 	public void clear() {
 		angle = GHQ.NONE;
 	}
+	//tool
+	public static double random() {
+		return Math.random()*Math.PI*2;
+	}
 	//information
 	public double get() {
 		return angle;
@@ -95,6 +100,12 @@ public class Angle implements Serializable{
 	}
 	public double cos() {
 		return Math.cos(angle);
+	}
+	public double sin(double r) {
+		return r*sin();
+	}
+	public double cos(double r) {
+		return r*cos();
 	}
 	public double getDelta(double angle) {
 		return GHQ.angleFormat(angle - this.angle);

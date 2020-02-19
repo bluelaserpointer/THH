@@ -2,12 +2,17 @@ package physics.hitShape;
 
 import physics.HasPoint;
 
-public class RectShape extends HitShape{
+public class RectShape extends HitShape {
 	private static final long serialVersionUID = 3869237032416439346L;
 	
 	protected int width, height;
 	public RectShape(HasPoint owner, int w, int h) {
 		super(owner);
+		width = w;
+		height = h;
+	}
+	public RectShape(int x, int y, int w, int h) {
+		super(HasPoint.generate(x, y));
 		width = w;
 		height = h;
 	}

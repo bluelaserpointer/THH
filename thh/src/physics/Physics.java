@@ -13,12 +13,12 @@ public abstract class Physics implements HitInteractable, HasAngle{
 		return this;
 	}
 	public Physics setPointBase(HasPoint base) {
-		setPoint(new RelativePoint(base, this));
+		setPoint(new RelativePoint(base, point(), true));
 		return this;
 	}
 	public Physics setPointBase_keepPos(HasPoint base) {
 		point().addXY(-base.point().doubleX(), -base.point().doubleY());
-		setPoint(new RelativePoint(base, this));
+		setPoint(new RelativePoint(base, point(), true));
 		return this;
 	}
 	public Physics addRelativePoint(HasPoint target) {

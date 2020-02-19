@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -74,11 +75,13 @@ public class InputOptionList extends GUIParts{
 			G2.drawString(matchedOptions[i], intX() + 3, intY() + height()*i + 20);
 	}
 	@Override
-	public void clicked() {
+	public boolean clicked(MouseEvent e) {
+		super.clicked(e);
 		if(hoveredPosition != GHQ.NONE) {
 			label.setText(hoveredString);
 			label.typeEnded(hoveredString);
 		}
+		return true;
 	}
 	@Override
 	public void mouseOver() {

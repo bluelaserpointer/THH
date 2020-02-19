@@ -4,9 +4,12 @@ import static java.awt.event.KeyEvent.*;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
+import bullet.Bullet;
+import calculate.Damage;
 import core.GHQ;
 import core.GHQObject;
 import core.GHQObjectList;
@@ -21,11 +24,12 @@ import paint.ColorFilling;
 import paint.ColorFraming;
 import paint.ImageFrame;
 import paint.rect.RectPaint;
+import physics.Angle;
 import physics.Dynam;
 import physics.HasBoundingBox;
+import physics.Point;
 import structure.Terrain;
 import structure.Tile;
-import unit.DummyUnit;
 import unit.Unit;
 import vegetation.Vegetation;
 
@@ -103,7 +107,7 @@ public abstract class DefaultStageEditor extends GUIParts{
 								if(++nowSlot > slot_max)
 									nowSlot = 0;
 								if(nowSlot == 1) { //select script
-									configLabel.clicked();
+									configLabel.enableInputMode();
 								}else {
 									configLabel.outsideClicked();
 								}
@@ -147,7 +151,8 @@ public abstract class DefaultStageEditor extends GUIParts{
 				}
 			}
 			@Override
-			public void clicked() {
+			public boolean clicked(MouseEvent e) {
+				super.clicked(e);
 				if(placeKind == POINTING) {
 					selectObject = mouseOveredObject;
 					final String labelText;
@@ -182,7 +187,28 @@ public abstract class DefaultStageEditor extends GUIParts{
 							Tile.blueprint_addOriginPoint(placeX, placeY);
 						break;
 					case UNIT:
-						GHQ.stage().addUnit(new DummyUnit(new Dynam(placeX, placeY)));
+						GHQ.stage().addUnit(new Unit() {
+							final Dynam dynam = new Dynam(placeX, placeY);
+							@Override
+							public Point point() {
+								return dynam;
+							}
+							@Override
+							public Angle angle() {
+								return Angle.NULL_ANGLE;
+							}
+							@Override
+							public Unit respawn(int spawnX, int spawnY) {
+								return null;
+							}
+							@Override
+							public void damage(Damage damage, Bullet bullet) {
+							}
+							@Override
+							public boolean isAlive() {
+								return true;
+							}
+						});
 						break;
 					case VEGETATION:
 						GHQ.stage().addVegetation(new Vegetation(ImageFrame.create("thhimage/gui_editor/Vegetation.png"), placeX, placeY));
@@ -191,6 +217,7 @@ public abstract class DefaultStageEditor extends GUIParts{
 						break;
 					}
 				}
+				return true;
 			}
 		});
 		super.addLast(new ArrangedButtons<Integer>(25, 155, new SquareCellArranger(1, 80, 80, 2, 2)) {
@@ -205,8 +232,10 @@ public abstract class DefaultStageEditor extends GUIParts{
 					placeKind = POINTING;
 			}
 			@Override
-			public void clicked() {
+			public boolean clicked(MouseEvent e) {
+				super.clicked(e);
 				placeKind = POINTING;
+				return true;
 			}
 		})
 		.appendButton(TILES, ImageFrame.create("thhimage/gui_editor/Tiles.png"), 0, 0)
@@ -219,10 +248,12 @@ public abstract class DefaultStageEditor extends GUIParts{
 				.setBounds(25,500,85,40);
 			}
 			@Override
-			public void clicked() {
+			public boolean clicked(MouseEvent e) {
+				super.clicked(e);
 				System.out.println("saving...");
 				saveStage();
 				System.out.println("complete!");
+				return true;
 			}
 		});
 		super.addLast(configLabel = new TitledLabel(){

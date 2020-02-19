@@ -3,29 +3,39 @@ package paint.animation;
 import java.util.HashMap;
 
 import core.GHQ;
+import core.GHQObject;
 import paint.ImageFrame;
-import paint.dotRect.DotRectPaint;
+import paint.dot.DotPaint;
 
-public class SerialImageFrame implements DotRectPaint{
-	private static final long serialVersionUID = -4932870277698726733L;
-	protected final ImageFrame[] IMAGE_IF;
-	protected int SPAN;
+public class SerialImageFrame extends DotPaint {
+	protected final ImageFrame[] images;
+	protected int span;
 	private static final HashMap<String, ImageFrame> createdList = new HashMap<String, ImageFrame>();
 	
 	//init
-	public SerialImageFrame(int spanFrame, String... imageURL) {
-		IMAGE_IF = new ImageFrame[imageURL.length];
+	public SerialImageFrame(GHQObject owner, int spanFrame, String... imageURL) {
+		super(owner);
+		images = new ImageFrame[imageURL.length];
 		for(int i = 0;i < imageURL.length;++i) {
-			IMAGE_IF[i] = ImageFrame.create(imageURL[i]);
+			images[i] = ImageFrame.create(owner, imageURL[i]);
 			if(!createdList.containsKey(imageURL[i]))
-				createdList.put(imageURL[i], IMAGE_IF[i]);
+				createdList.put(imageURL[i], images[i]);
 		}
-		SPAN = spanFrame;
+		span = spanFrame;
 	}
-	
+	public SerialImageFrame(int spanFrame, String... imageURL) {
+		images = new ImageFrame[imageURL.length];
+		for(int i = 0;i < imageURL.length;++i) {
+			images[i] = ImageFrame.create(owner, imageURL[i]);
+			if(!createdList.containsKey(imageURL[i]))
+				createdList.put(imageURL[i], images[i]);
+		}
+		span = spanFrame;
+	}
+
 	//main role
 	protected ImageFrame decideImage() {
-		return IMAGE_IF[GHQ.nowFrame() % (IMAGE_IF.length*SPAN) / SPAN];
+		return images[GHQ.nowFrame() % (images.length*span) / span];
 	}
 	@Override
 	public void dotPaint(int x, int y) {

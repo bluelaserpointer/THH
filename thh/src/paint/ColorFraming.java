@@ -14,9 +14,7 @@ import paint.rect.RectPaint;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class ColorFraming implements RectPaint{
-	private static final long serialVersionUID = 6260543840507733715L;
-	
+public class ColorFraming extends RectPaint {
 	private final Color COLOR;
 	private final Stroke STROKE;
 	/**

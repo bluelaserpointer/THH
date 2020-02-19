@@ -18,7 +18,7 @@ import weapon.Weapon;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Bullet extends GHQObject implements HasPoint, HasDotPaint{
+public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 	public static final Bullet NULL_BULLET = new Bullet(GHQObject.NULL_GHQ_OBJECT);
 	protected Weapon originWeapon;
 	protected GHQObject shooter; //an information source of user
@@ -26,7 +26,8 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint{
 	public Damage
 		damage;
 	public int
-		limitFrame,
+		limitFrame;
+	public double
 		limitRange;
 	public int
 		penetration,
@@ -35,6 +36,8 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint{
 		accel;
 	public DotPaint
 		paintScript;
+	public boolean
+		hitShooter;
 	public void init() {
 		damage = Damage.NULL_DAMAGE;
 		limitFrame = GHQ.MAX;
@@ -68,6 +71,7 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint{
 		reflection = sample.reflection;
 		accel = sample.accel;
 		paintScript = sample.paintScript;
+		hitShooter = sample.hitShooter;
 	}
 	@Override
 	public void idle() {
@@ -82,21 +86,22 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint{
 			return outOfLifeSpan();
 		if(checkIsOutOfRange())
 			return outOfRange();
-		if(!point().inStage())
+		if(!point().inStage()) {
 			return outOfStage();
+		}
 		return false;
 	}
 	public boolean checkIsOutofLifeSpan(){
 		return checkIsOutofLifeSpan(limitFrame);
 	}
 	public boolean checkIsOutofLifeSpan(int lifeSpan) {
-		return lifeSpan <= GHQ.passedFrame(super.INITIAL_FRAME);
+		return lifeSpan <= GHQ.passedFrame(super.initialFrame);
 	}
-	public boolean checkIsOutOfRange(){
+	public boolean checkIsOutOfRange() {
 		return checkIsOutOfRange(limitRange);
 	}
-	public boolean checkIsOutOfRange(int range) {
-		return range <= ((DstCntDynam)point()).getMovedDistance();
+	public boolean checkIsOutOfRange(double range) {
+		return range != GHQ.MAX && range <= ((DstCntDynam)point()).getMovedDistance();
 	}
 	public boolean outOfLifeSpan() {
 		claimDelete();
@@ -131,6 +136,8 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint{
 			//entity collision
 			////////////
 			for(Unit unit : GHQ.stage().getHitUnits(GHQ.stage().getUnits_standpoint(this, false), this)) {
+				if(!hitShooter && unit == shooter)
+					continue;
 				if(hitUnitDeleteCheck(unit))
 					return false;
 			}
@@ -268,7 +275,7 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint{
 		return shooter;
 	}
 	public int getPassedFrame() {
-		return GHQ.passedFrame(INITIAL_FRAME);
+		return GHQ.passedFrame(initialFrame);
 	}
 	public final int getPenetration() {
 		return penetration;

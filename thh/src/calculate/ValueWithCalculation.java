@@ -15,6 +15,7 @@ public class ValueWithCalculation implements Serializable, HasNumber, HasName {
 	private final LinkedList<ValueChangeAdjuster> adjusters = new LinkedList<ValueChangeAdjuster>();
 	private int lastIncreaseFrame, lastDecreaseFrame, lastUnchangeFrame;
 	private double lastIncreaseAmount, lastDecreaseAmount;
+	private double lastChangeAmount;
 	
 	public ValueWithCalculation() {
 		value = 0;
@@ -50,11 +51,13 @@ public class ValueWithCalculation implements Serializable, HasNumber, HasName {
 		diff = newValue.doubleValue() - value.doubleValue();
 		if(diff > 0) { //increased record
 			lastIncreaseFrame = GHQ.nowFrame();
-			lastIncreaseAmount = diff;
+			lastChangeAmount = lastIncreaseAmount = diff;
 		}else if(diff < 0) { //decreased record
 			lastDecreaseFrame = GHQ.nowFrame();
+			lastChangeAmount = diff;
 			lastDecreaseAmount = -diff;
 		}else { //unchanged record
+			lastChangeAmount = 0;
 			lastUnchangeFrame = GHQ.nowFrame();
 		}
 		this.value = newValue;
@@ -138,12 +141,7 @@ public class ValueWithCalculation implements Serializable, HasNumber, HasName {
 		return lastIncreaseFrame() > lastDecreaseFrame() ? lastIncreaseAmount() : lastDecreaseAmount();
 	}
 	public double lastSetDiff() {
-		final int LAST_SETTED_FRAME = lastSetFrame();
-		if(LAST_SETTED_FRAME == lastIncreaseFrame)
-			return lastIncreaseAmount();
-		if(LAST_SETTED_FRAME == lastIncreaseFrame)
-			return lastIncreaseAmount();
-		return 0;
+		return lastChangeAmount;
 	}
 	@Override
 	public String name() {

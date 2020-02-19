@@ -12,8 +12,7 @@ import paint.rect.RectPaint;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class ColorFilling implements RectPaint{
-	private static final long serialVersionUID = -2891833654516240206L;
+public class ColorFilling extends RectPaint {
 	private final Color COLOR;
 	/**
 	 * @param color The rectangle color.

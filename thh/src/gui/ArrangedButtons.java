@@ -1,5 +1,7 @@
 package gui;
 
+import java.awt.event.MouseEvent;
+
 import math.CellArranger;
 import math.SquareCellArranger;
 import paint.rect.RectPaint;
@@ -18,9 +20,10 @@ public abstract class ArrangedButtons<T> extends GUIParts{
 		final ArrangedButtons<T> outer = this;
 		return (BasicButton)super.addLast(new BasicButton() {
 			@Override
-			public void clicked() {
-				super.clicked();
+			public boolean clicked(MouseEvent e) {
+				super.clicked(e);
 				outer.clicked(buttonValue);
+				return true;
 			}
 		}).setName(name() + " id: " + (childList.size() - 1))
 				.setBounds(intX() + cell.X, intY() + cell.Y, cell.W, cell.H)

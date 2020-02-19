@@ -8,17 +8,16 @@ import physics.Point;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public interface RectPaint extends PaintScript{
+public abstract class RectPaint extends PaintScript{
 	public static final RectPaint BLANK_SCRIPT = new RectPaint() {
-		private static final long serialVersionUID = -4558496325553265908L;
 		@Override
 		public void rectPaint(int x, int y, int w, int h) {}
 	};
 	public abstract void rectPaint(int x,int y,int w,int h);
-	public default void rectPaint(int x,int y,int size) {
+	public void rectPaint(int x,int y,int size) {
 		rectPaint(x, y, size, size);
 	}
-	public default void rectPaint(Point point, int width, int height) {
+	public void rectPaint(Point point, int width, int height) {
 		rectPaint(point.intX(), point.intY(), width, height);
 	}
 }

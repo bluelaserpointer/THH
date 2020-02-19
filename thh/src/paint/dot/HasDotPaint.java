@@ -7,6 +7,12 @@ package paint.dot;
  * @since alpha1.0
  */
 public interface HasDotPaint {
+	public static final HasDotPaint NULL_HAS_DOT_PAINT = new HasDotPaint() {
+		@Override
+		public DotPaint getDotPaint() {
+			return DotPaint.BLANK_SCRIPT;
+		}
+	};
 	/**
 	 * Return the DotPaint instance of this object.
 	 * @return {@link DotPaint}

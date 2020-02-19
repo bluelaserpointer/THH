@@ -6,8 +6,14 @@ public class ConsumableEnergy implements Consumables, HasNumber{
 	protected ValueWithCalculation value = new ValueWithCalculation(),
 			min = new ValueWithCalculation(Integer.MIN_VALUE),
 			max = new ValueWithCalculation(Integer.MAX_VALUE),
-			defaultValue = new ValueWithCalculation(value.getNumber());
+			defaultValue = new ValueWithCalculation();
 	{
+		defaultValue.addCalculation(new Calculation() {
+			@Override
+			public Number calculate(Number number) {
+				return value.doubleValue();
+			}
+		});
 		value.pushAdjuster(new RangeChecker("RangeChecker", new HasNumber() {
 			@Override
 			public Number getNumber() {

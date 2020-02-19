@@ -1,7 +1,9 @@
 package core;
 
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 import gui.GUIPartsSwitcher;
 import stage.GHQStage;
@@ -11,7 +13,7 @@ import stage.GHQStage;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Game{
+public abstract class Game {
 	
 	protected final GUIPartsSwitcher mainScreen;
 	
@@ -27,10 +29,10 @@ public abstract class Game{
 	
 	//event
 	public void mousePressed(MouseEvent e) {
-		GHQ.mouseHoveredUI().clicked();
+		GHQ.doMouseClickUIEvent(e);
 	}
 	public void mouseReleased(MouseEvent e) {
-		GHQ.mouseHoveredUI().released();
+		GHQ.mouseHoveredUI().released(e);
 	}
 	public void mouseMoved(MouseEvent e) {
 		GHQ.mouseHoveredUI().mouseOver();
@@ -38,6 +40,11 @@ public abstract class Game{
 	public void mouseDragged(MouseEvent e) {
 		GHQ.mouseHoveredUI().mouseOver();
 	}
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		GHQ.doMouseWheelMovedUIEvent(e);
+	}
+	public void keyPressed(KeyEvent e) {}
+	public void keyReleased(KeyEvent e) {}
 	
 	//information
 	public String getTitleName(){

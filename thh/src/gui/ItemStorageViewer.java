@@ -33,24 +33,21 @@ public class ItemStorageViewer extends TableStorageViewer<ItemData>{
 	}
 	
 	@Override
-	public void paintOfCell(HasDotPaint object, int x,int y) {
+	public void paintOfCell(int id, HasDotPaint object, int x,int y) {
 		cellPaint.rectPaint(x, y, CELL_SIZE);
+		final Graphics2D G2 = GHQ.getG2D();
+		G2.setFont(GHQ.basicFont);
+		G2.setColor(Color.GRAY);
 		if(object == null) {
-			final Graphics2D G2 = GHQ.getG2D();
-			G2.setColor(Color.GRAY);
 			G2.drawString("Empty", x + CELL_SIZE - 23, y + CELL_SIZE - 9);
 			return;
 		}
 		object.getDotPaint().dotPaint_capSize(x + CELL_SIZE/2, y + CELL_SIZE/2, (int)(CELL_SIZE*0.8));
 		if(storage instanceof TableStorage && ((TableStorage<? extends HasDotPaint>)storage).isNullElement(object)) {
-			final Graphics2D G2 = GHQ.getG2D();
-			G2.setColor(Color.GRAY);
 			G2.drawString("Empty", x + CELL_SIZE - 23, y + CELL_SIZE - 9);
 		}
 		if(object instanceof ItemData && object != ItemData.BLANK_ITEM) {
 			final int AMOUNT = ((ItemData)object).getAmount();
-			final Graphics2D G2 = GHQ.getG2D();
-			G2.setColor(Color.GRAY);
 			G2.drawString(String.valueOf(AMOUNT), x + CELL_SIZE - 23, y + CELL_SIZE - 9);
 			G2.setColor(Color.BLACK);
 			G2.drawString(String.valueOf(AMOUNT), x + CELL_SIZE - 24, y + CELL_SIZE - 10);

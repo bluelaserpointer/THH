@@ -1,6 +1,8 @@
 package physics;
 
 import static java.lang.Math.atan2;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 
 import java.awt.geom.Rectangle2D;
@@ -16,7 +18,7 @@ import physics.Direction.Direction4;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Point implements Serializable, ObjectSavable{
+public abstract class Point implements Serializable, ObjectSavable {
 	private static final long serialVersionUID = -4012705097956450689L;
 	public static final Point NULL_POINT = new Point.IntPoint();
 	
@@ -100,6 +102,7 @@ public abstract class Point implements Serializable, ObjectSavable{
 		return this;
 	}
 	public Point addXY(double x, double y) {
+		//System.out.println();
 		setX(doubleX() + x);
 		setY(doubleY() + y);
 		return this;
@@ -406,13 +409,19 @@ public abstract class Point implements Serializable, ObjectSavable{
 	public void approachIfNoObstacles(HitInteractable source, Point dstPoint, double speed) {
 		approachIfNoObstacles(source, dstPoint.doubleX(), dstPoint.doubleY(), speed);
 	}
+
+	public void approach_rate(double dstX, double dstY, double rate) {
+		this.addXY((dstX - doubleX())*rate, (dstY - doubleY())*rate);
+	}
 	///////////////
 	//dynam
 	///////////////
 	public void addX_allowsMoveAngle(double dx) {}
 	public void addY_allowsMoveAngle(double dy) {}
 	public void addXY_allowsMoveAngle(double dx, double dy) {}
-	public void addXY_DA(double distance, double angle) {}
+	public void addXY_DA(double distance, double angle) {
+		addXY(distance*cos(angle), distance*sin(angle));
+	}
 	public void fastParaAdd_ADXYSpd(double angle, double dx, double dy, double speed) {}
 	public void fastParaAdd_DASpd(double distance, double angle, double speed) {}
 	public void fastParaAdd_DSpd(double distance, double speed) {}

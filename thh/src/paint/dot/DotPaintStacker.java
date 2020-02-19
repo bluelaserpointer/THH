@@ -2,14 +2,16 @@ package paint.dot;
 
 import java.util.ArrayList;
 
-public class DotPaintStacker implements DotPaint{
-	private static final long serialVersionUID = -832458123024960846L;
+import core.GHQObject;
+
+public class DotPaintStacker extends DotPaint {
 	private final ArrayList<DotPaint> SCRIPTS = new ArrayList<DotPaint>();
 	private final DotPaint[] LAYER_PAINTS;
 	private final int BIGGEST_SIZE, BIGGEST_W, BIGGEST_H;
 	
 	//init
-	public DotPaintStacker(DotPaint...layerPaints) {
+	public DotPaintStacker(GHQObject owner, DotPaint...layerPaints) {
+		super(owner);
 		LAYER_PAINTS = layerPaints;
 		BIGGEST_SIZE = DotPaint.getMaxSize(SCRIPTS);
 		int wBiggest = 0, hBiggest = 0;

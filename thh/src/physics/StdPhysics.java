@@ -2,7 +2,7 @@ package physics;
 
 import physics.hitShape.HitShape;
 
-public class StdPhysics extends Physics{
+public class StdPhysics extends Physics {
 	protected Point point;
 	protected Angle angle;
 	protected HitShape hitShape;

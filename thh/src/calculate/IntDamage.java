@@ -10,7 +10,7 @@ public class IntDamage implements Damage{
 		this.damageValue = damageValue;
 	}
 	@Override
-	public void doDamage(Unit unit) {
+	public void doDamage(Unit unit, Unit target) {
 		consumable.consume(damageValue);
 	}
 	public void setDamage(int value) {

@@ -125,7 +125,7 @@ public abstract class THH_BasicUnit extends Unit {
 	// decrease
 	@Override
 	public void damage(Damage damage, Bullet bullet) {
-		damage.doDamage(this); //HP.consume(amount).intValue();
+		damage.doDamage(this, null); //HP.consume(amount).intValue();
 	}
 	public final boolean kill(boolean force) {
 		HP.setToMin();

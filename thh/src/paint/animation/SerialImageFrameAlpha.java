@@ -1,14 +1,13 @@
 package paint.animation;
 
 import core.GHQ;
+import core.GHQObject;
 
 public class SerialImageFrameAlpha extends SerialImageFrame{
-	private static final long serialVersionUID = -3305478535136347723L;
-
 	private int startFrame;
 	
-	public SerialImageFrameAlpha(int spanFrame, String... imageURLs) {
-		super(spanFrame, imageURLs);
+	public SerialImageFrameAlpha(GHQObject owner, int spanFrame, String... imageURLs) {
+		super(owner, spanFrame, imageURLs);
 	}
 	
 	public void animate() {
@@ -16,34 +15,34 @@ public class SerialImageFrameAlpha extends SerialImageFrame{
 	}
 	
 	private float decideAlpha() {
-		if(GHQ.passedFrame(startFrame) >= IMAGE_IF.length*SPAN)
+		if(GHQ.passedFrame(startFrame) >= images.length*span)
 			return 1.0f;
 		else
-			return (float)(GHQ.passedFrame(startFrame)%SPAN)/SPAN;
+			return (float)(GHQ.passedFrame(startFrame)%span)/span;
 	}
 	private int decideImageID() {
-		if(GHQ.passedFrame(startFrame) >= IMAGE_IF.length*SPAN)
-			return IMAGE_IF.length - 1;
+		if(GHQ.passedFrame(startFrame) >= images.length*span)
+			return images.length - 1;
 		else {
-			return GHQ.passedFrame(startFrame) / SPAN;
+			return GHQ.passedFrame(startFrame) / span;
 		}
 	}
 	@Override
 	public void dotPaint(int x, int y) {
 		final int ID = decideImageID();
 		for(int i = 0;i < ID;++i)
-			IMAGE_IF[i].dotPaint(x, y);
+			images[i].dotPaint(x, y);
 		GHQ.setImageAlpha(decideAlpha());
-		IMAGE_IF[ID].dotPaint(x, y);
+		images[ID].dotPaint(x, y);
 		GHQ.setImageAlpha();
 	}
 	@Override
 	public void rectPaint(int x, int y, int w, int h) {
 		final int ID = decideImageID();
 		for(int i = 0;i < ID;++i)
-			IMAGE_IF[i].rectPaint(x, y, w, h);
+			images[i].rectPaint(x, y, w, h);
 		GHQ.setImageAlpha(decideAlpha());
-		IMAGE_IF[ID].rectPaint(x, y, w, h);
+		images[ID].rectPaint(x, y, w, h);
 		GHQ.setImageAlpha();
 	}
 }

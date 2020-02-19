@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.event.MouseEvent;
 import java.util.Stack;
 
 public class GUIPartsSwitcher extends GUIParts{
@@ -42,8 +43,10 @@ public class GUIPartsSwitcher extends GUIParts{
 	public GUIParts getSwitcherButton(int index) {
 		return new GUIParts() {
 			@Override
-			public void clicked() {
+			public boolean clicked(MouseEvent e) {
+				super.clicked(e);
 				switchTo(index);
+				return true;
 			}
 		}.setName(name() + "->SwitcherOf" + index);
 	}
@@ -56,16 +59,20 @@ public class GUIPartsSwitcher extends GUIParts{
 	public GUIParts getPrevButton() {
 		return new GUIParts() {
 			@Override
-			public void clicked() {
+			public boolean clicked(MouseEvent e) {
+				super.clicked(e);
 				prev();
+				return true;
 			}
 		}.setName(name() + "->PrevButton");
 	}
 	public GUIParts getNextButton() {
 		return new GUIParts() {
 			@Override
-			public void clicked() {
+			public boolean clicked(MouseEvent e) {
+				super.clicked(e);
 				next();
+				return true;
 			}
 		}.setName(name() + "->NextButton");
 	}

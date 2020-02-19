@@ -4,52 +4,80 @@ import loading.ObjectSaveTree;
 
 public class RelativePoint extends Point{
 	private static final long serialVersionUID = -2585237312428553012L;
-	protected Point basePoint;
+	protected HasPoint base;
+	protected HasAngle angleBase;
 	protected Point relativePoint;
 	
-	public RelativePoint(Point basePoint, Point relativePoint) {
-		this.basePoint = basePoint;
+	public RelativePoint(HasPoint base, Point relativePoint, HasAngle angle) {
+		this.base = base;
+		this.angleBase = angle;
 		this.relativePoint = relativePoint;
 	}
-	public RelativePoint(HasPoint base, HasPoint target) {
-		this.basePoint = base.point();
-		this.relativePoint = target.point();
+	public RelativePoint(HasPoint base, Point relativePoint, boolean useAngle) {
+		this.base = base;
+		this.angleBase = useAngle ? HasAngle.generate() : HasAngle.NULL_HAS_ANGLE;
+		this.relativePoint = relativePoint;
 	}
-	public void setBasePoint(Point basePoint) {
-		this.basePoint = basePoint;
+	public void setBasePoint(HasPoint base) {
+		this.base = base;
+	}
+	public void setBaseAngle(HasAngle angle) {
+		this.angleBase = angle;
 	}
 	public void setRelativePoint(Point relativePoint) {
 		this.relativePoint = relativePoint;
 	}
+	public HasPoint baseHasPoint() {
+		return base;
+	}
 	public Point basePoint() {
-		return basePoint;
+		return base.point();
+	}
+	public HasAngle baseHasAngle() {
+		return angleBase;
+	}
+	public Angle baseAngle() {
+		return angleBase.angle();
 	}
 	public Point relativePoint() {
 		return relativePoint;
 	}
 	@Override
 	public ObjectSaveTree save() {
-		return new ObjectSaveTree(0, basePoint, relativePoint);
+		return new ObjectSaveTree(0, basePoint(), relativePoint);
 	}
 	@Override
 	public RelativePoint clone() {
-		return new RelativePoint(basePoint, relativePoint.clone());
+		return new RelativePoint(base, relativePoint.clone(), angleBase);
 	}
 	@Override
 	public int intX() {
-		return basePoint.intX() + relativePoint.intX();
+		if(baseAngle().get() == 0.0)
+			return basePoint().intX() + relativePoint.intX();
+		else {
+			return (int)doubleX();
+		}
 	}
 	@Override
 	public int intY() {
-		return basePoint.intY() + relativePoint.intY();
+		if(baseAngle().get() == 0.0)
+			return basePoint().intY() + relativePoint.intY();
+		else
+			return (int)doubleY();
 	}
 	@Override
 	public double doubleX() {
-		return basePoint.doubleX() + relativePoint.doubleX();
+		if(baseAngle().get() == 0.0)
+			return basePoint().doubleX() + relativePoint.doubleX();
+		else
+			return basePoint().doubleX() + relativePoint.doubleX()*baseAngle().cos() - relativePoint.doubleY()*baseAngle().sin();
 	}
 	@Override
 	public double doubleY() {
-		return basePoint.doubleY() + relativePoint.doubleY();
+		if(baseAngle().get() == 0.0)
+			return basePoint().doubleY() + relativePoint.doubleY();
+		else
+			return basePoint().doubleY() + relativePoint.doubleX()*baseAngle().sin() + relativePoint.doubleY()*baseAngle().cos();
 	}
 	@Override
 	public Point setAll(Point point) {
@@ -58,26 +86,37 @@ public class RelativePoint extends Point{
 	}
 	@Override
 	public void setX(int x) {
-		relativePoint.setX(x);
+		setX((double)x);
 	}
 	@Override
 	public void setY(int y) {
-		relativePoint.setY(y);
+		setY((double)y);
 	}
 	@Override
 	public void setX(double x) {
-		relativePoint.setX(x);
+		final double cos = baseAngle().cos(), sin = baseAngle().sin();
+		final double dx = basePoint().doubleDX(x);
+		System.out.println("angle: " + baseAngle().get() + ", cos: " + baseAngle().cos() + ", sin: " + baseAngle().sin());
+		System.out.println("dx: " + dx);
+		//relativePoint.setX(dx*cos);
+		//relativePoint.setY(-dx*sin);
+		relativePoint.setX(100);
+		relativePoint.setY(0);
+		System.out.println("newRX: " + relativePoint.doubleX() + ", newRY: " + relativePoint.doubleY());
 	}
 	@Override
 	public void setY(double y) {
-		relativePoint.setY(y);
+		final double cos = baseAngle().cos(), sin = baseAngle().sin();
+		final double dy = basePoint().doubleDY(y);
+		relativePoint.setX(dy*sin);
+		relativePoint.setY(dy*cos);
 	}
 	@Override
 	public void setX(Point p) {
-		relativePoint.setX(p);
+		relativePoint.setX(basePoint().doubleDX(p));
 	}
 	@Override
 	public void setY(Point p) {
-		relativePoint.setY(p);
+		relativePoint.setY(basePoint().doubleDY(p));
 	}
 }

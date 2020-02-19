@@ -9,16 +9,15 @@ import java.net.URL;
 import java.util.HashMap;
 
 import core.GHQ;
+import core.GHQObject;
 import core.LoadRequester;
-import paint.dotRect.DotRectPaint;
-
+import paint.dot.DotPaint;
 /**
  * A popular PaintScript subclass which loads image resource and display it.
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class ImageFrame implements DotRectPaint{
-	private static final long serialVersionUID = -1537274221051413163L;
+public class ImageFrame extends DotPaint {
 	private transient Image IMAGE;
 	private URL image_url;
 	private static final HashMap<URL, Image> preloadedImageMap = new HashMap<URL, Image>();
@@ -27,13 +26,17 @@ public class ImageFrame implements DotRectPaint{
 	/////////////
 	//init
 	/////////////
-	private ImageFrame(String urlStr) {
+	private ImageFrame(GHQObject owner, String urlStr) {
+		super(owner);
 		GHQ.addLoadRequester(new LoadRequester() {
 			@Override
 			public void loadResource() {
 				IMAGE = loadImage(image_url = GHQ.hq.getClass().getResource("/" + urlStr));
 			}
 		});
+	}
+	private ImageFrame(GHQObject owner) {
+		super(owner);
 	}
 	public void loadFromSave() {
 		IMAGE = loadImage(image_url);
@@ -47,6 +50,7 @@ public class ImageFrame implements DotRectPaint{
 	public static Image loadImage(URL url) {
 		if(url == null) {
 			System.out.println("received a null image url");
+			int a = 0/0;
 			return GHQ.hq.createImage(1, 1);
 		}
 		if(preloadedImageMap.containsKey(url))
@@ -66,9 +70,12 @@ public class ImageFrame implements DotRectPaint{
 		return image;
 	}
 	public static ImageFrame create(String imageURL) {
+		return create(GHQObject.NULL_GHQ_OBJECT, imageURL);
+	}
+	public static ImageFrame create(GHQObject owner, String imageURL) {
 		if(createdIFMap.containsKey(imageURL))
 			return createdIFMap.get(imageURL);
-		final ImageFrame NEW_IF = new ImageFrame(imageURL);
+		final ImageFrame NEW_IF = new ImageFrame(owner, imageURL);
 		createdIFMap.put(imageURL, NEW_IF);
 		return NEW_IF;
 	}

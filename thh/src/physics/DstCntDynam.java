@@ -56,6 +56,18 @@ public class DstCntDynam extends Dynam{
 		movedDistance += sqrt(xSpd*xSpd + ySpd*ySpd);
 	}
 	@Override
+	public double move(double lengthCap) {
+		if(speed() < lengthCap) {
+			final double leftDistance = super.move(lengthCap);
+			movedDistance += speed();
+			return leftDistance;
+		}else {
+			super.move(lengthCap);
+			movedDistance += lengthCap;
+			return 0;
+		}
+	}
+	@Override
 	public void moveIfNoObstacles(HitInteractable source) {
 		if(xSpd == 0 && ySpd == 0 || GHQ.stage().hitObstacle_atNewPoint(source, (int)xSpd, (int)ySpd))
 			return;

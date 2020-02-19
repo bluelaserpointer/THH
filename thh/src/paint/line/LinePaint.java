@@ -1,5 +1,6 @@
 package paint.line;
 
+import core.GHQObject;
 import paint.PaintScript;
 import paint.dot.DotPaint;
 import physics.HasPoint;
@@ -10,15 +11,13 @@ import physics.Point;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public interface LinePaint extends PaintScript{
+public abstract class LinePaint extends PaintScript {
 	public abstract void linePaint(int x1, int y1, int x2, int y2);
-	public default void linePaint(Point startCoordinate, Point endCoordinate) {
+	public void linePaint(Point startCoordinate, Point endCoordinate) {
 		linePaint(startCoordinate.intX(), startCoordinate.intY(), (int)endCoordinate.intX(), (int)endCoordinate.intY());
 	}
-	public default DotPaint convertToDotPaint(int endX, int endY) {
-		return new DotPaint() {
-			private static final long serialVersionUID = 3179677097785869010L;
-			
+	public DotPaint convertToDotPaint(GHQObject owner, int endX, int endY) {
+		return new DotPaint(owner) {
 			final int END_X = endX, END_Y = endY;
 			@Override
 			public void dotPaint(int x, int y) {
@@ -50,10 +49,8 @@ public interface LinePaint extends PaintScript{
 			}
 		};
 	}
-	public default DotPaint convertToDotPaint(HasPoint endCoordinateSource) {
-		return new DotPaint() {
-			private static final long serialVersionUID = 3179677097785869010L;
-			
+	public DotPaint convertToDotPaint(GHQObject owner, HasPoint endCoordinateSource) {
+		return new DotPaint(owner) {
 			final HasPoint SOURCE = endCoordinateSource;
 			@Override
 			public void dotPaint(int x, int y) {

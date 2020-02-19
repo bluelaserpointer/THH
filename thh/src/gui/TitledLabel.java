@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 
 import core.GHQ;
 import input.keyType.KeyTypeListener;
@@ -31,8 +32,10 @@ public class TitledLabel extends GUIParts{
 		titleStr = title;
 	}
 	@Override
-	public void clicked() {
+	public boolean clicked(MouseEvent e) {
+		super.clicked(e);
 		enableInputMode();
+		return true;
 	}
 	@Override
 	public void idle() {

@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 
 import core.GHQ;
@@ -77,14 +78,16 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 			storageW = ((TableStorage<?>)storage).getStorageW();
 			storageH = ((TableStorage<?>)storage).getStorageH();
 			for(int xi = 0;xi < storageW;xi++) {
-				for(int yi = 0;yi < storageH;yi++)
-					paintOfCell(((TableStorage<? extends HasDotPaint>) storage).getCell(xi, yi), super.point().intX() + xi*CELL_SIZE, super.point().intY() + yi*CELL_SIZE);
+				for(int yi = 0;yi < storageH;yi++) {
+					final int INDEX = ((TableStorage<? extends HasDotPaint>)storage).getCellID(xi, yi);
+					paintOfCell(INDEX, INDEX < storage.size() ? storage.get(INDEX) : null, super.point().intX() + xi*CELL_SIZE, super.point().intY() + yi*CELL_SIZE);
+				}
 			}
 		}else {
 			for(int xi = 0;xi < storageW;xi++) {
 				for(int yi = 0;yi < storageH;yi++) {
 					final int INDEX = xi + yi*storageW;
-					paintOfCell(INDEX < storage.size() ? storage.get(INDEX) : null, super.point().intX() + xi*CELL_SIZE, super.point().intY() + yi*CELL_SIZE);
+					paintOfCell(INDEX, INDEX < storage.size() ? storage.get(INDEX) : null, super.point().intX() + xi*CELL_SIZE, super.point().intY() + yi*CELL_SIZE);
 				}
 			}
 		}
@@ -97,9 +100,9 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 	 * @param x - the x coordinate of the upper-left corner of this cell
 	 * @param y - the y coordinate of the upper-left corner of this cell
 	 */
-	protected void paintOfCell(HasDotPaint object, int x,int y) {
+	protected void paintOfCell(int id, HasDotPaint object, int x, int y) {
 		if(object != null)
-			object.getDotPaint().dotPaint_rate(x + CELL_SIZE/2, y + CELL_SIZE/2, (int)(CELL_SIZE*0.8));
+			object.getDotPaint().dotPaint_capSize(x + CELL_SIZE/2, y + CELL_SIZE/2, (int)(CELL_SIZE*0.8));
 	}
 	
 	//control
@@ -108,11 +111,13 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 		return this;
 	}
 	@Override
-	public void clicked() {
-		final int ID = getMouseHoveredID();
-		if(0 <= ID && ID < storage.size() && GHQ.mouseHook.isEmpty()) {
-			GHQ.mouseHook.hook(storage.get(ID), this);
+	public boolean clicked(MouseEvent e) {
+		super.clicked(e);
+		final T ELEMENT = getMouseHoveredElement();
+		if(ELEMENT != storage.NULL_ELEMENT && GHQ.mouseHook.isEmpty()) {
+			GHQ.mouseHook.hook(ELEMENT, this);
 		}
+		return true;
 	}
 	@Override
 	public boolean checkDragIn(GUIParts sourceUI, Object dropObject) {

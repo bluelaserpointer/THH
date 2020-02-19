@@ -12,9 +12,9 @@ public class CompoundDamage implements Damage {
 			dmgElements.add(ver);
 	}
 	@Override
-	public void doDamage(Unit unit) {
+	public void doDamage(Unit unit, Unit target) {
 		for(Damage ver : dmgElements)
-			ver.doDamage(unit);
+			ver.doDamage(unit, target);
 	}
 	@Override
 	public Damage compound(Damage anotherDamage) {

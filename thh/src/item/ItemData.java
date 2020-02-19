@@ -1,15 +1,16 @@
 package item;
 
-import java.io.Serializable;
-
 import calculate.Filter;
+import calculate.verifier.Verifier;
+import calculate.verifier.WhiteList;
 import core.GHQ;
 import core.GHQObject;
 import paint.dot.DotPaint;
-import paint.dot.HasDotPaint;
 import physics.Point;
 import physics.hitShape.ImageRectShape;
 import storage.Storage;
+import unit.BodyParts;
+import unit.BodyPartsType;
 import unit.Unit;
 import vegetation.DropItem;
 
@@ -19,23 +20,22 @@ import vegetation.DropItem;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class ItemData extends GHQObject implements Serializable, HasDotPaint{
-	private static final long serialVersionUID = 1587964067620280674L;
+public class ItemData extends GHQObject implements Usable {
+	public static final ItemData BLANK_ITEM = new ItemData(DotPaint.BLANK_SCRIPT);
+	
+	//base info
 	protected Unit owner;
 	protected int amount;
 	protected int stackCap = GHQ.MAX;
 	protected DotPaint paintScript;
+	private boolean isEquipped;
+	//equipment info
+	private Verifier<BodyPartsType> equippableBodyPartsTypeVerifier;
 
 	@Override
 	public String name() {
 		return "<ItemData>" + getClass().getName();
 	}
-	
-	public static final ItemData BLANK_ITEM = new ItemData(null){
-		private static final long serialVersionUID = 7797829501331686714L;
-
-	};
-	
 	//init
 	public ItemData(DotPaint dotScript) {
 		super(new Point.IntPoint());
@@ -45,6 +45,10 @@ public class ItemData extends GHQObject implements Serializable, HasDotPaint{
 	}
 	public ItemData setDotPaint(DotPaint dotPaint) {
 		paintScript = dotPaint;
+		return this;
+	}
+	public ItemData setEquippableBodyPartsType(BodyPartsType...whiteList) {
+		equippableBodyPartsTypeVerifier = new WhiteList<BodyPartsType>(whiteList);
 		return this;
 	}
 	//main role
@@ -65,9 +69,7 @@ public class ItemData extends GHQObject implements Serializable, HasDotPaint{
 	public void setOwner(Unit unit) {
 		owner = unit;
 	}
-	public boolean hasOwner() {
-		return owner != null;
-	}
+	@Override
 	public void use() {}
 	//information
 	public boolean isStackable(ItemData item) {
@@ -207,7 +209,34 @@ public class ItemData extends GHQObject implements Serializable, HasDotPaint{
 		//not found enough amount of the item.
 		return removed;
 	}
+	//tell
+	public void equipped() {
+		isEquipped = true;
+	}
+	public void dequipped() {
+		isEquipped = false;
+	}
+	//information
+	public Unit owner() {
+		return owner;
+	}
+	public boolean hasOwner() {
+		return owner != null;
+	}
 	public static boolean isValid(ItemData item) {
 		return item != null && item != ItemData.BLANK_ITEM;
+	}
+	public boolean canEquipTo(BodyParts bodyParts) {
+		for(BodyPartsType type : bodyParts.types()) {
+			if(equippableBodyPartsTypeVerifier.verify(type))
+				return true;
+		}
+		return false;
+	}
+	public Verifier<BodyPartsType> equippableBodyPartsTypeVerifier() {
+		return equippableBodyPartsTypeVerifier;
+	}
+	public boolean isEquipped() {
+		return isEquipped;
 	}
 }

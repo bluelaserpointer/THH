@@ -1,7 +1,6 @@
 package unit;
 
 import java.awt.geom.Rectangle2D;
-import java.io.Serializable;
 
 import bullet.Bullet;
 import calculate.Damage;
@@ -9,6 +8,7 @@ import core.GHQ;
 import core.GHQObject;
 import gui.MessageSource;
 import item.ItemData;
+import paint.ImageFrame;
 import physics.HasAnglePoint;
 import physics.HitInteractable;
 import physics.Point;
@@ -18,9 +18,29 @@ import physics.Point;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Unit extends GHQObject implements MessageSource, HasAnglePoint, Serializable{
-	private static final long serialVersionUID = 7140005723063155203L;
-	
+public abstract class Unit extends GHQObject implements MessageSource, HasAnglePoint {
+	public static final Unit NULL_UNIT = new Unit() {
+		private ImageFrame imageFrame = ImageFrame.create(this, "thhimage/gui_editor/Unit.png");
+		@Override
+		public void paint() {
+			super.paint();
+			imageFrame.dotPaint(point());
+		}
+		@Override
+		public Unit respawn(int spawnX, int spawnY) {
+			return this;
+		}
+		@Override
+		public void damage(Damage damage, Bullet bullet) {}
+		@Override
+		public boolean isAlive() {
+			return true;
+		}
+		@Override
+		public String name() {
+			return "DummyUnit";
+		}
+	};
 	public String originalName = "";
 	
 	/////////////

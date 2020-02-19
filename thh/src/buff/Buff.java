@@ -17,7 +17,6 @@ public abstract class Buff extends GHQObject implements HasRectPaint, Serializab
 		INITIAL_FRAME = GHQ.nowFrame();
 		this.owner = owner;
 	}
-	
 	public String getName() {
 		return "<Not named>";
 	}

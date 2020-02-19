@@ -7,9 +7,7 @@ import java.awt.Stroke;
 import core.GHQ;
 import paint.line.LinePaint;
 
-public class ColorLine implements LinePaint{
-	private static final long serialVersionUID = -4572501536482586169L;
-
+public class ColorLine extends LinePaint {
 	private final Color COLOR;
 	private final Stroke STROKE;
 	

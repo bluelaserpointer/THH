@@ -322,7 +322,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			g2.drawString("FPS:" + DF00_00.format(nowFPS), 30, 140);
 			g2.drawString("GameTime(ms):" + gameFrame, 30, 160);
 			//guiInfo
-			g2.drawString("PointingGUI: " + mouseHoveredUI.name(), 30, 200);
+			g2.drawString("PointingGUI: " + mouseHoveredUI().name(), 30, 200);
 			//mouseInfo
 			g2.setColor(debugTextColor);
 			g2.setStroke(stroke5);
@@ -461,18 +461,20 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	//input
 	private static int mouseX,mouseY;
 	public static int mousePressButton = GHQ.NONE;
-	private static GUIParts mouseHoveredUI = BASE_SCREEN_UI;
+	private static Stack<GUIParts> mouseHoveredUIs = new Stack<GUIParts>();
 	private static GUIParts lastClickedUI = BASE_SCREEN_UI;
 	private static boolean mouseDebugMode;
 	private static int mouseDebugX1, mouseDebugY1;
 	private static int mouseDebugX2, mouseDebugY2;
 	public static MouseHook mouseHook = new MouseHook();
-	public void mouseWheelMoved(MouseWheelEvent e){}
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		engine.mouseWheelMoved(e);
+	}
 	public void mouseEntered(MouseEvent e){}
 	public void mouseExited(MouseEvent e){}
 	public void mousePressed(MouseEvent e){
 		//debug of ruler
-		if(e.getButton() == MouseEvent.BUTTON2) {
+		if(e.getButton() == MouseEvent.BUTTON2) { 
 			mouseDebugMode = true;
 			mouseDebugX2 = GHQ.NONE;
 			mouseDebugX1 = mouseX;
@@ -525,16 +527,38 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	@Override
 	public void mouseMoved(MouseEvent e){
 		mouseX = e.getX();mouseY = e.getY();
-		final GUIParts hoveredUI = BASE_SCREEN_UI.uiAtCursur();
-		if(mouseHoveredUI != hoveredUI) {
-			mouseHoveredUI.mouseOut();
-			mouseHoveredUI = hoveredUI;
+		final Stack<GUIParts> newHoveredUIs = BASE_SCREEN_UI.uiAtCursur();
+		final Iterator<GUIParts> newIterator = newHoveredUIs.iterator();
+		while(!mouseHoveredUIs.isEmpty()) {
+			if(!newIterator.hasNext() || mouseHoveredUIs.peek() != newIterator.next()) {
+				while(!mouseHoveredUIs.isEmpty()) {
+					mouseHoveredUIs.pop().mouseOut();
+				}
+			}
 		}
+		while(newIterator.hasNext())
+			newIterator.next().mouseOver();
+		mouseHoveredUIs = newHoveredUIs;
 		engine.mouseMoved(e);
 	}
 	public void mouseDragged(MouseEvent e){
 		mouseX = e.getX();mouseY = e.getY();
 		engine.mouseDragged(e);
+	}
+	public static void doMouseClickUIEvent(MouseEvent e) {
+		final ListIterator<GUIParts> iterator = mouseHoveredUIs.listIterator(mouseHoveredUIs.size());
+		while(iterator.hasPrevious()) {
+			final GUIParts parts = iterator.previous();
+			if(parts.clicked(e))
+				break;
+		}
+	}
+	public static void doMouseWheelMovedUIEvent(MouseWheelEvent e) {
+		final Iterator<GUIParts> iterator = mouseHoveredUIs.iterator();
+		while(iterator.hasNext()) {
+			if(iterator.next().mouseWheelMoved(e))
+				break;
+		}
 	}
 	public static final int mouseX(){
 		return mouseX - (int)viewX;
@@ -555,10 +579,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return abs(x - mouseX + viewX) < w/2 && abs(y - mouseY + viewY) < h/2;
 	}
 	public static final GUIParts mouseHoveredUI() {
-		return mouseHoveredUI;
+		return mouseHoveredUIs.isEmpty() ? GUIParts.NULL_GUIPARTS : mouseHoveredUIs.peek();
 	}
-	public static final boolean isMouseHoveredUI() {
-		return mouseHoveredUI != BASE_SCREEN_UI;
+	public static final Stack<GUIParts> mouseHoveredUIs() {
+		return mouseHoveredUIs;
+	}
+	public static final boolean isMouseHoveredAnyUI() {
+		return mouseHoveredUI() != BASE_SCREEN_UI;
 	}
 	public static final GUIParts lastClickedUI() {
 		return lastClickedUI;
@@ -643,6 +670,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			freezeScreen = !freezeScreen;
 			break;
 		}
+		engine.keyPressed(e);
 	}
 	public void keyReleased(KeyEvent e){
 		final int KEY_CODE = e.getKeyCode();
@@ -684,6 +712,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			key_enter = false;
 			break;
 		}
+		engine.keyReleased(e);
 	}
 	public void keyTyped(KeyEvent e){
 		for(KeyTypeListener ktl : typeListeners) {
@@ -985,6 +1014,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		else if(alpha > 1F)
 			alpha = 1F;
 		g2.setComposite(AlphaComposite.SrcOver.derive(alpha));
+	}
+	public static final float getFadingAlpha(int initialFrame, int limitFrame) {
+		final float f = (float)(1.0 - (double)GHQ.passedFrame(initialFrame)/limitFrame);
+		return f < 0 ? 0 : (f > 1 ? 1 : f);
 	}
 	//Paint
 	/**

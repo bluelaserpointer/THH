@@ -1,5 +1,7 @@
 package gui;
 
+import java.awt.event.MouseEvent;
+
 import input.mouse.MouseListenerEx;
 import item.ItemData;
 
@@ -13,12 +15,13 @@ public class InventorySystem extends GUIParts {
 		addFirst(this.rcMenu = rcMenu).disable();
 	}
 	@Override
-	public void clicked() {
+	public boolean clicked(MouseEvent e) {
+		super.clicked(e);
 		if(s_mouseL.pullButton3Event()){
 			final ItemData HOVERED_ELEMENT = inventoryViewer.getMouseHoveredElement();
 			rcMenu.tryOpen(HOVERED_ELEMENT, HOVERED_ELEMENT != ItemData.BLANK_ITEM);
-		}else
-			super.clicked();
+		}
+		return true;
 	}
 
 }

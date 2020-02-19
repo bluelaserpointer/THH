@@ -79,7 +79,7 @@ public class Effect extends GHQObject implements HasPoint, HasDotPaint{
 	
 	//extends
 	public boolean isOutOfLifeSpan() {
-		return limitFrame <= GHQ.passedFrame(super.INITIAL_FRAME);
+		return limitFrame <= GHQ.passedFrame(super.initialFrame);
 	}
 	public boolean isOutOfRange() {
 		return limitRange <= ((DstCntDynam)point()).getMovedDistance();
@@ -102,12 +102,12 @@ public class Effect extends GHQObject implements HasPoint, HasDotPaint{
 	//paint
 	//////////////
 	public final void fadingPaint() {
-		GHQ.setImageAlpha((float)(1.0 - (double)GHQ.passedFrame(INITIAL_FRAME)/limitFrame));
+		GHQ.setImageAlpha((float)(1.0 - (double)GHQ.passedFrame(initialFrame)/limitFrame));
 		defaultPaint();
 		GHQ.setImageAlpha();
 	}
 	public final void fadingPaint(int delay) {
-		final int PASSED_FRAME = GHQ.passedFrame(INITIAL_FRAME);
+		final int PASSED_FRAME = GHQ.passedFrame(initialFrame);
 		if(PASSED_FRAME < delay)
 			defaultPaint();
 		else {
@@ -166,7 +166,7 @@ public class Effect extends GHQObject implements HasPoint, HasDotPaint{
 	//information
 	//////////////
 	public int getPassedFrame() {
-		return GHQ.passedFrame(INITIAL_FRAME);
+		return GHQ.passedFrame(initialFrame);
 	}
 	@Override
 	public final DotPaint getDotPaint() {

@@ -4,7 +4,8 @@ import java.awt.Graphics2D;
 import java.util.Collection;
 
 import core.GHQ;
-import paint.PaintScript;
+import core.GHQObject;
+import paint.rect.RectPaint;
 import physics.HasAnglePoint;
 import physics.Point;
 
@@ -13,10 +14,9 @@ import physics.Point;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public interface DotPaint extends PaintScript{
+public abstract class DotPaint extends RectPaint {
 	//constants
-	public static final DotPaint BLANK_SCRIPT = new DotPaint() {
-		private static final long serialVersionUID = 834697886156768195L;
+	public static final DotPaint BLANK_SCRIPT = new DotPaint(GHQObject.NULL_GHQ_OBJECT) {
 		@Override
 		public void dotPaint(int x, int y) {}
 		@Override
@@ -28,7 +28,13 @@ public interface DotPaint extends PaintScript{
 			return 0;
 		}
 	};
-	
+	protected GHQObject owner;
+	public DotPaint(GHQObject owner) {
+		this.owner = owner;
+	}
+	public DotPaint() {
+		owner = GHQObject.NULL_GHQ_OBJECT;
+	}
 	//main role
 	/**
 	 * Drawing at specified coordinate.
@@ -43,17 +49,30 @@ public interface DotPaint extends PaintScript{
 	 * @param y
 	 * @param maxSize
 	 */
-	public default void dotPaint(Point coordinate) {
+	public void dotPaint(Point coordinate) {
 		dotPaint(coordinate.intX(), coordinate.intY());
 	}
-	public default void dotPaint_capSize(int x, int y, int maxSize) {
+	public void dotPaint(DotPaintParameter parameter) {
+		this.dotPaint_turnAndCapSize(parameter.point, parameter.angle, parameter.sizeCap);
+	}
+	@Override
+	public void rectPaint(int x, int y, int w, int h) {
+		//TODO: rectPaint check
+		final double sx = w/width(), sy = h/height();
+		GHQ.getG2D().translate(x, y);
+		GHQ.getG2D().scale(sx, sy);
+		dotPaint(0, 0);
+		GHQ.getG2D().scale(1.0/sx, 1.0/sy);
+		GHQ.getG2D().translate(-x, -y);
+	}
+	public void dotPaint_capSize(int x, int y, int maxSize) {
 		final int SIZE_BIG = sizeOfBigger();
 		if(SIZE_BIG > maxSize) {
 			dotPaint_rate(x, y, (double)maxSize/SIZE_BIG);
 		}else
 			dotPaint(x, y);
 	}
-	public default void dotPaint_capSize(Point point, int maxSize) {
+	public void dotPaint_capSize(Point point, int maxSize) {
 		dotPaint_capSize(point.intX(), point.intY(), maxSize);
 	}
 	/**
@@ -62,15 +81,15 @@ public interface DotPaint extends PaintScript{
 	 * @param y
 	 * @param rate
 	 */
-	public default void dotPaint_rate(int x, int y, double rate) {
+	public void dotPaint_rate(int x, int y, double rate) {
 		GHQ.getG2D().translate(x, y);
 		GHQ.scale(rate);
 		dotPaint(0, 0);
 		GHQ.scale(1.0/rate);
 		GHQ.getG2D().translate(-x, -y);
 	}
-	public default void dotPaint_rate(Point point, int maxSize) {
-		dotPaint_rate(point.intX(), point.intY(), maxSize);
+	public void dotPaint_rate(Point point, double rate) {
+		dotPaint_rate(point.intX(), point.intY(), rate);
 	}
 	/**
 	 * Drawing at specified coordinate but change its angle.
@@ -78,15 +97,15 @@ public interface DotPaint extends PaintScript{
 	 * @param y
 	 * @param angle
 	 */
-	public default void dotPaint_turn(int x, int y, double angle) {
+	public void dotPaint_turn(int x, int y, double angle) {
 		GHQ.rotate(angle, x, y);
 		dotPaint(x, y);
 		GHQ.rotate(-angle, x, y);
 	}
-	public default void dotPaint_turn(Point point, double angle) {
+	public void dotPaint_turn(Point point, double angle) {
 		dotPaint_turn(point.intX(), point.intY(), angle);
 	}
-	public default void dotPaint_turn(HasAnglePoint anglePoint) {
+	public void dotPaint_turn(HasAnglePoint anglePoint) {
 		dotPaint_turn(anglePoint.point(), anglePoint.angle().get());
 	}
 	/**
@@ -96,21 +115,28 @@ public interface DotPaint extends PaintScript{
 	 * @param angle
 	 * @param maxSize
 	 */
-	public default void dotPaint_turnAndCapSize(int x, int y, double angle, int maxSize) {
+	public void dotPaint_turnAndCapSize(int x, int y, double angle, int maxSize) {
 		final Graphics2D G2 = GHQ.getG2D();
 		G2.rotate(angle, x, y);
 		dotPaint_capSize(x, y, maxSize);
 		G2.rotate(-angle, x, y);
 	}
-	public default void dotPaint_turnAndCapSize(Point point, double angle, int maxSize) {
+	public void dotPaint_turnAndCapSize(Point point, double angle, int maxSize) {
 		dotPaint_turnAndCapSize(point.intX(), point.intY(), angle, maxSize);
 	}
-	public default void dotPaint_turnAndCapSize(HasAnglePoint anglePoint, int maxSize) {
+	public void dotPaint_turnAndCapSize(HasAnglePoint anglePoint, int maxSize) {
 		dotPaint_turnAndCapSize(anglePoint.point(), anglePoint.angle().get(), maxSize);
 	}
-	
+	//control
+	public DotPaint setOwner(GHQObject owner) {
+		this.owner = owner;
+		return this;
+	}
 	//information
-	public default int sizeOfBigger() {
+	public GHQObject owner() {
+		return owner;
+	}
+	public int sizeOfBigger() {
 		return Math.max(width(), height());
 	}
 	public abstract int width();

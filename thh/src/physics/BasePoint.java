@@ -4,19 +4,16 @@ import java.util.LinkedList;
 
 import loading.ObjectSaveTree;
 
-public class BasePoint extends Point{
+public class BasePoint extends Point {
 	private static final long serialVersionUID = -2585237312428553012L;
 	protected LinkedList<Point> relativePoints = new LinkedList<Point>();
-	protected Point basePoint;
+	protected HasPoint base;
 	
-	public BasePoint(Point basePoint) {
-		this.basePoint = basePoint;
-	}
 	public BasePoint(HasPoint base) {
-		this.basePoint = base.point();
+		this.base = base;
 	}
-	public void setBasePoint(Point basePoint) {
-		this.basePoint = basePoint;
+	public void setBasePoint(HasPoint base) {
+		this.base = base;
 	}
 	public LinkedList<Point> relativePoints(){
 		return relativePoints;
@@ -27,39 +24,39 @@ public class BasePoint extends Point{
 	public void addRelativePoint(HasPoint relativeTarget) {
 		addRelativePoint(relativeTarget);
 	}
-	public Point basePoint() {
-		return basePoint;
+	public HasPoint base() {
+		return base;
 	}
-	public Point relativePoint() {
-		return basePoint;
+	public Point basePoint() {
+		return base.point();
 	}
 	@Override
 	public ObjectSaveTree save() {
-		return new ObjectSaveTree(0, basePoint, basePoint);
+		return new ObjectSaveTree(0, base, base);
 	}
 	@Override
-	public RelativePoint clone() {
-		return new RelativePoint(basePoint, basePoint.clone());
+	public BasePoint clone() {
+		return new BasePoint(base);
 	}
 	@Override
 	public int intX() {
-		return basePoint.intX() + basePoint.intX();
+		return base.intX() + base.intX();
 	}
 	@Override
 	public int intY() {
-		return basePoint.intY() + basePoint.intY();
+		return base.intY() + base.intY();
 	}
 	@Override
 	public double doubleX() {
-		return basePoint.doubleX() + basePoint.doubleX();
+		return base.doubleX() + base.doubleX();
 	}
 	@Override
 	public double doubleY() {
-		return basePoint.doubleY() + basePoint.doubleY();
+		return base.doubleY() + base.doubleY();
 	}
 	@Override
 	public Point setAll(Point point) {
-		basePoint.setAll(point);
+		basePoint().setAll(point);
 		return this;
 	}
 	@Override
@@ -67,41 +64,41 @@ public class BasePoint extends Point{
 		final int DX = intDX(x);
 		for(Point point : relativePoints)
 			point.addX(DX);
-		basePoint.setX(x);
+		basePoint().setX(x);
 	}
 	@Override
 	public void setY(int y) {
 		final int DY = intDY(y);
 		for(Point point : relativePoints)
 			point.addY(DY);
-		basePoint.setY(y);
+		basePoint().setY(y);
 	}
 	@Override
 	public void setX(double x) {
 		final double DX = doubleDX(x);
 		for(Point point : relativePoints)
 			point.addX(DX);
-		basePoint.setX(x);
+		basePoint().setX(x);
 	}
 	@Override
 	public void setY(double y) {
 		final double DY = doubleDY(y);
 		for(Point point : relativePoints)
 			point.addY(DY);
-		basePoint.setY(y);
+		basePoint().setY(y);
 	}
 	@Override
 	public void setX(Point p) {
 		final double DX = doubleDX(p);
 		for(Point point : relativePoints)
 			point.addX(DX);
-		basePoint.setX(p);
+		basePoint().setX(p);
 	}
 	@Override
 	public void setY(Point p) {
 		final double DY = doubleDY(p);
 		for(Point point : relativePoints)
 			point.addY(DY);
-		basePoint.setY(p);
+		basePoint().setY(p);
 	}
 }

@@ -41,4 +41,15 @@ public class AutoResizeMenu extends GUIParts{
 		rectShape().setHeight(height() + DEFAULT_LINE_H);
 		return this;
 	}
+	public <T extends GUIParts>T remove(T childParts) {
+		super.remove(childParts);
+		--lineAmount;
+		rectShape().setHeight(height() - DEFAULT_LINE_H);
+		return childParts;
+	}
+	public void removeAll() {
+		super.removeAll();
+		lineAmount = 0;
+		rectShape().setHeight(1);
+	}
 }

@@ -1,8 +1,11 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Stack;
 
 import core.GHQ;
 import core.GHQObject;
@@ -14,21 +17,20 @@ import physics.hitShape.HitShape;
 import physics.hitShape.RectShape;
 
 /**
- * A primely class for managing GUI.
+ * A primely class for managing UI.
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class GUIParts extends GHQObject implements DragIO{ //TODO real point
+public class GUIParts extends GHQObject implements DragIO {
+	public static final GUIParts NULL_GUIPARTS = new GUIParts();
 	protected boolean isEnabled;
 	protected boolean isClicking;
-	private boolean absorbsClickEvent;
 	protected RectPaint backGroundPaint;
 	protected LinkedList<GUIParts> childList = null;
 	public GUIParts() {
 		backGroundPaint = RectPaint.BLANK_SCRIPT;
 		physics().setPoint(new Point.IntPoint());
 		physics().setHitShape(new RectShape(this, GHQ.screenW(), GHQ.screenH()));
-		absorbsClickEvent = true;
 	}
 	@Override
 	public GUIParts setName(String name) {
@@ -51,16 +53,11 @@ public class GUIParts extends GHQObject implements DragIO{ //TODO real point
 		return this;
 	}
 	public GUIParts setBGImage(String imageURL) {
-		backGroundPaint = ImageFrame.create(imageURL);
+		backGroundPaint = ImageFrame.create(this, imageURL);
 		return this;
 	}
 	public GUIParts setBGBlank() {
 		backGroundPaint = RectPaint.BLANK_SCRIPT;
-		return this;
-	}
-	//init-ifAbsorbsClickEvent
-	public GUIParts setAbsorbsClickEvent(boolean b) {
-		absorbsClickEvent = b;
 		return this;
 	}
 	public RectShape rectShape() {
@@ -133,6 +130,9 @@ public class GUIParts extends GHQObject implements DragIO{ //TODO real point
 		getChildren().remove(childParts);
 		return childParts;
 	}
+	public void removeAll() {
+		getChildren().clear();
+	}
 	//control-coordinate
 	public void addXY(int dx, int dy) {
 		point().addXY(dx, dy);
@@ -171,9 +171,15 @@ public class GUIParts extends GHQObject implements DragIO{ //TODO real point
 	public boolean isMouseEntered() {
 		return GHQ.isMouseInArea_Screen(point().intX(), point().intY(), width(), height());
 	}
-	public void clicked() {
+	/**
+	 * 
+	 * @param e
+	 * @return If consume this signal.
+	 */
+	public boolean clicked(MouseEvent e) {
 		GHQ.setLastClickedUI(this);
 		isClicking = true;
+		return true;
 	}
 	public void outsideClicked() {
 		isClicking = false;
@@ -184,7 +190,7 @@ public class GUIParts extends GHQObject implements DragIO{ //TODO real point
 			}
 		}
 	}
-	public void released() {
+	public void released(MouseEvent e) {
 		isClicking = false;
 	}
 	public void outsideReleased() {
@@ -206,16 +212,26 @@ public class GUIParts extends GHQObject implements DragIO{ //TODO real point
 			}
 		}
 	}
-	@Override
-	public GUIParts uiAtCursur() {
+	public boolean mouseWheelMoved(MouseWheelEvent e) {
+		return false;
+	}
+	public final Stack<GUIParts> uiAtCursur() {
+		Stack<GUIParts> stack = new Stack<GUIParts>();
+		stack = uiAtCursur(stack);
+		return stack;
+	}
+	public Stack<GUIParts> uiAtCursur(Stack<GUIParts> stack) {
+		stack.push(this);
 		if(childList != null) {
 			for(GUIParts parts : childList) {
 				if(parts.isEnabled() && parts.isMouseEntered()) {
-					return parts.uiAtCursur();
+					//System.out.println("give to child: " + parts.name());
+					parts.uiAtCursur(stack);
+					break;
 				}
 			}
 		}
-		return this;
+		return stack;
 	}
 	public void flit() {
 		if(isEnabled)
@@ -230,12 +246,9 @@ public class GUIParts extends GHQObject implements DragIO{ //TODO real point
 	public final boolean isClicking() {
 		return isClicking;
 	}
-	public boolean absorbsClickEvent() {
-		return absorbsClickEvent;
-	}
 	
 	//tool
-	public boolean clicked_debugMode() {
+	public boolean clicked_debugMode(MouseEvent e) {
 		boolean clickAbsorbed = false, clicked = false;
 		for(GUIParts parts : childList) {
 			if(parts.isEnabled()) {
@@ -243,10 +256,9 @@ public class GUIParts extends GHQObject implements DragIO{ //TODO real point
 					System.out.println(parts.name() + " is outside clicked.");
 					parts.outsideClicked();
 				}else {
-					parts.clicked();
+					parts.clicked(e);
 					System.out.println(parts.name() + " is clicked.");
 					clicked = true;
-					clickAbsorbed = parts.absorbsClickEvent();
 				}
 			}
 		}

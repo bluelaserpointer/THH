@@ -54,7 +54,7 @@ public abstract class HitShape implements HasBoundingBox, Serializable{
 
 	protected HasPoint owner;
 	public HitShape() {
-		owner = HasPoint.NULL_COORDINATE_SOURCE;
+		owner = HasPoint.NULL_HAS_POINT;
 	}
 	public HitShape(HasPoint owner) {
 		this.owner = owner;

@@ -4,6 +4,7 @@ import java.awt.geom.Rectangle2D;
 
 import physics.hitShape.HasHitShape;
 import physics.hitShape.HitShape;
+import physics.hitShape.RectShape;
 
 public interface HitInteractable extends HasHitShape, HasHitGroup{
 	public static final HitInteractable NULL_HIT_INTERACTABLE = new HitInteractable() {
@@ -45,6 +46,9 @@ public interface HitInteractable extends HasHitShape, HasHitGroup{
 	}
 	public default boolean intersectsLine(HasPoint object1, HasPoint object2) {
 		return object1 == null || object2 == null ? false : intersectsLine(object1.point(), object2.point());
+	}
+	public default boolean intersectsRect(int x, int y, int w, int h) {
+		return hitShape().intersects(new RectShape(x, y, w, h));
 	}
 	@Override
 	public default Rectangle2D boundingBox() {

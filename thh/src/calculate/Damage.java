@@ -11,7 +11,7 @@ import unit.Unit;
 public interface Damage {
 	public static final Damage NULL_DAMAGE = new Damage() {
 		@Override
-		public void doDamage(Unit unit) {}
+		public void doDamage(Unit unit, Unit attacker) {}
 		@Override
 		public Damage compound(Damage anotherDamage) {
 			return anotherDamage;
@@ -27,7 +27,7 @@ public interface Damage {
 		return effect;
 	}
 	
-	public abstract void doDamage(Unit unit);
+	public abstract void doDamage(Unit unit, Unit attacker);
 	public default Damage compound(Damage anotherDamage) {
 		return new CompoundDamage(this, anotherDamage);
 	}

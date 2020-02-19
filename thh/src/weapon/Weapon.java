@@ -1,7 +1,5 @@
 package weapon;
 
-import java.io.Serializable;
-
 import core.GHQ;
 import core.GHQObject;
 import physics.HitGroup;
@@ -12,8 +10,7 @@ import unit.Unit;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Weapon implements Serializable{
-	private static final long serialVersionUID = -2165271452612401269L;
+public class Weapon {
 	public static final Weapon NULL_WEAPON = new Weapon();
 	public String
 		name;

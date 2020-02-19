@@ -7,9 +7,7 @@ import java.awt.Graphics2D;
 import core.GHQ;
 import paint.dot.DotPaint;
 
-public class StringPaint implements DotPaint{
-	private static final long serialVersionUID = 2882856528171908321L;
-	
+public class StringPaint extends DotPaint {
 	public final String WORDS;
 	public final Color COLOR;
 	public final Font FONT;

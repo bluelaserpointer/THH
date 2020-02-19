@@ -16,45 +16,43 @@ import unit.Unit;
 import vegetation.Vegetation;
 
 public class GHQObject implements HasName, HasPaint, HasPhysics  {
-	public final int INITIAL_FRAME;
+	public static final GHQObject NULL_GHQ_OBJECT = new GHQObject();
+	
+	public int initialFrame;
 	private static int maxUniqueID = -1;
-	public final int UNIQUE_ID;
+	public final int uniqueID;
 	private boolean isDeleted;
 	private int paintOrder = -1;
 	public static int nowPaintOrder = -1;
 	
 	protected String name = this.getClass().getName() + GHQ.NOT_NAMED;
 	
-	protected GHQObject outerContainer = null;
-	
 	protected Physics physics;
-	
-	public static final GHQObject NULL_GHQ_OBJECT = new GHQObject();
 	
 	//init
 	public GHQObject() {
-		INITIAL_FRAME = GHQ.nowFrame();
-		UNIQUE_ID = ++maxUniqueID;
+		initialFrame = GHQ.nowFrame();
+		uniqueID = ++maxUniqueID;
 		physics = new StdPhysics();
 	}
 	public GHQObject(Physics physics) {
-		INITIAL_FRAME = GHQ.nowFrame();
-		UNIQUE_ID = ++maxUniqueID;
+		initialFrame = GHQ.nowFrame();
+		uniqueID = ++maxUniqueID;
 		this.physics = physics;
 	}
 	public GHQObject(Point point) {
-		INITIAL_FRAME = GHQ.nowFrame();
-		UNIQUE_ID = ++maxUniqueID;
+		initialFrame = GHQ.nowFrame();
+		uniqueID = ++maxUniqueID;
 		physics = new StdPhysics().setPoint(point);
 	}
 	public GHQObject(Point point, HitShape hitShape) {
-		INITIAL_FRAME = GHQ.nowFrame();
-		UNIQUE_ID = ++maxUniqueID;
+		initialFrame = GHQ.nowFrame();
+		uniqueID = ++maxUniqueID;
 		physics = new StdPhysics().setPoint(point).setHitShape(hitShape);
 	}
 	public GHQObject(int x, int y, int w, int h) {
-		INITIAL_FRAME = GHQ.nowFrame();
-		UNIQUE_ID = ++maxUniqueID;
+		initialFrame = GHQ.nowFrame();
+		uniqueID = ++maxUniqueID;
 		physics = new StdPhysics().setPoint(new Point.IntPoint(x + w/2, y + h/2)).setHitShape(new RectShape(physics, w, h));
 	}
 	public GHQObject setName(String name) {
@@ -88,6 +86,9 @@ public class GHQObject implements HasName, HasPaint, HasPhysics  {
 		paintOrder = ++nowPaintOrder;
 		paint();
 	}
+	/**
+	 * This method automatically called by idle() in GHQObject.
+	 */
 	@Override
 	public void paint() {
 	}
@@ -100,8 +101,9 @@ public class GHQObject implements HasName, HasPaint, HasPhysics  {
 	public void tellNewFrameStart() {
 		nowPaintOrder = -1;
 	}
-	public GHQObject uiAtCursur() {
-		return this;
+	//control
+	public final void resetInitialFrame() {
+		initialFrame = GHQ.nowFrame();
 	}
 	//information
 	@Override
@@ -110,12 +112,6 @@ public class GHQObject implements HasName, HasPaint, HasPhysics  {
 	}
 	public boolean nameIs(String name) {
 		return this.name == name;
-	}
-	public void setOuterContainer(GHQObject container) {
-		outerContainer = container;
-	}
-	public GHQObject getOuterContainer() {
-		return outerContainer;
 	}
 	public static int getTotalAmount() {
 		return maxUniqueID + 1;

@@ -1,7 +1,6 @@
 package paint.rect;
 
-public class RectPaintMultiple implements RectPaint{
-	private static final long serialVersionUID = -4214430765465074156L;
+public class RectPaintMultiple extends RectPaint {
 	private final RectPaint[] SCRIPTS;
 	public RectPaintMultiple(RectPaint...RectPaints) {
 		SCRIPTS = RectPaints;

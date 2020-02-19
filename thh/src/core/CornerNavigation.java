@@ -139,19 +139,13 @@ public class CornerNavigation {
 		}
 		protected Corner explore1(Point basePoint, Direction4 direction) {
 			final Point point = new Point.IntPoint(basePoint);
-			if(basePoint.equals(4950,50))
-				System.out.println("marking0");
 			point.shift(direction, EQUAL_GAP);
 			if(hasWall(point)) { //hit wall at first step -> stop searching
-				if(basePoint.equals(4950,50))
-					System.out.println("marking1");
 				return null;
 			}
 			Corner neighbor = searchAnchorOrConer(basePoint, direction);
 			do {
 				if(!point.checkDirection(neighbor, direction)) { //arrive
-					if(basePoint.equals(4950,50))
-						System.out.println("marking2");
 					return neighbor;
 				}
 				point.shift(direction, EQUAL_GAP);
