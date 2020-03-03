@@ -223,6 +223,18 @@ public class ItemData extends GHQObject implements Usable {
 	public boolean hasOwner() {
 		return owner != null;
 	}
+	public int stackCap() {
+		return stackCap;
+	}
+	public double stackRate() {
+		return amount/stackCap;
+	}
+	public boolean isFullStacked() {
+		return amount >= stackCap;
+	}
+	public boolean isOverStacked() {
+		return amount > stackCap;
+	}
 	public static boolean isValid(ItemData item) {
 		return item != null && item != ItemData.BLANK_ITEM;
 	}
@@ -238,5 +250,54 @@ public class ItemData extends GHQObject implements Usable {
 	}
 	public boolean isEquipped() {
 		return isEquipped;
+	}
+	//public tool
+
+	/**
+	 * Add item with automatic stack.
+	 * @param targetItem
+	 * @return true - successfully added / false - overflowed
+	 */
+	public static boolean add_stack(Storage<ItemData> itemStorage, ItemData targetItem) {
+		for(int i = itemStorage.traverseFirst(); i != -1; i = itemStorage.traverseNext(i)) {
+			final ItemData ITEM = itemStorage.get(i);
+			if(ITEM.isStackable(targetItem)) {
+				ITEM.stack(targetItem);
+				if(targetItem.isEmpty()) {
+					if(targetItem.keepEvenEmpty()){
+						return itemStorage.add(targetItem);
+					}else
+						return true;
+				}
+			}
+		}
+		//not found same kind (stackable) item.
+		return itemStorage.add(targetItem);
+	}
+	
+	//public tool
+	public static int countItem(Storage<ItemData> itemStorage, ItemData targetItem) {
+		int total = 0;
+		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
+			if(targetItem.isStackable(itemStorage.get(i)))
+				total += itemStorage.get(i).getAmount();
+		}
+		return total;
+	}
+	public static int countItemByName(Storage<ItemData> itemStorage, String targetItemName) {
+		int total = 0;
+		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
+			if(targetItemName.equals(itemStorage.get(i).name()))
+				total += itemStorage.get(i).getAmount();
+		}
+		return total;
+	}
+	public static int countItem(Storage<ItemData> itemStorage, Filter<ItemData> filter) {
+		int total = 0;
+		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
+			if(filter.judge(itemStorage.get(i)))
+				total += itemStorage.get(i).getAmount();
+		}
+		return total;
 	}
 }

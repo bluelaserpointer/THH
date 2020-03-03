@@ -8,16 +8,13 @@ import java.awt.geom.Rectangle2D;
 import java.util.BitSet;
 
 import core.GHQ;
-import paint.rect.RectPaint;
 import physics.Point;
 import physics.hitShape.HitShape;
 import physics.HasPoint;
 
-public class Tile extends Structure{
-	private static final long serialVersionUID = -1364728656700080343L;
+public class Tile extends Structure {
 	public static int bp_ox = GHQ.NONE, bp_oy,bp_tileSize = 100;
-	
-	public static class TileHitShape extends HitShape{
+	public class TileHitShape extends HitShape{
 		protected static final int TILE_SIZE = 100;
 		protected final int
 			X_TILES,
@@ -40,8 +37,16 @@ public class Tile extends Structure{
 		private static final long serialVersionUID = -8708171125934571442L;
 		@Override
 		public boolean intersects(HitShape shape) {
-			//TODO
-			return intersectsDot(shape.point().intX(), shape.point().intY());
+			for(int xi = 0;xi < X_TILES;xi++) {
+				for(int yi = 0;yi < Y_TILES;yi++) {
+					if(aliveTiles.get(xi + yi*X_TILES)) {
+						Point point = new Point.IntPoint(point().intX() + xi*TILE_SIZE + TILE_SIZE/2, point().intY() + yi*TILE_SIZE + TILE_SIZE/2);
+						if(shape.point().inRangeXY(point, (TILE_SIZE + shape.width())/2, (TILE_SIZE + shape.height())/2))
+							return true;
+					}
+				}
+			}
+			return false;
 		}
 		@Override
 		public boolean intersectsDot(int x, int y) {
@@ -95,12 +100,12 @@ public class Tile extends Structure{
 		public HitShape clone(HasPoint newOwner) {
 			return new TileHitShape(newOwner, X_TILES, Y_TILES);
 		}
-		public void putPaint(RectPaint paintScript) {
+		public void paint() {
 			for(int xi = 0;xi < X_TILES;xi++) {
 				for(int yi = 0;yi < Y_TILES;yi++) {
 					if(aliveTiles.get(xi + yi*X_TILES)){
 						final int PX = point().intX() + xi*TILE_SIZE, PY = point().intY() + yi*TILE_SIZE;
-						paintScript.rectPaint(PX, PY, TILE_SIZE, TILE_SIZE);
+						paintCell(PX, PY, TILE_SIZE, TILE_SIZE);
 					}
 				}
 			}
@@ -124,8 +129,11 @@ public class Tile extends Structure{
 	//role
 	@Override
 	public void paint() {
-		hitShape().fill(Color.WHITE);
-		hitShape().draw(Color.LIGHT_GRAY, GHQ.stroke3);
+		((TileHitShape)hitShape()).paint();
+	}
+	protected void paintCell(int x, int y, int w, int h) {
+		GHQ.getG2D(Color.WHITE).fillRect(x, y, w, h);
+		GHQ.getG2D(Color.GRAY).drawRect(x, y, w, h);
 	}
 	
 	//information

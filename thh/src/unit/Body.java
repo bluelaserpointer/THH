@@ -187,6 +187,13 @@ public class Body implements HasPaint, HasAnglePoint {
 	public boolean isDoingAction(UnitAction action) {
 		return doingActions.contains(action);
 	}
+	public boolean isDoingAction(Class<?> action) { //TODO: Check if usable
+		for(UnitAction ver : doingActions) {
+			if(ver.getClass().isAssignableFrom(action))
+				return true;
+		}
+		return false;
+	}
 	/*public UnitAction getDoingAction(Class<? extends UnitAction> actionClass) {
 		for(UnitAction action : doingActions) {
 			if(actionClass.isAssignableFrom(action.getClass())) {

@@ -102,14 +102,16 @@ public class GUIPartsSwitcher extends GUIParts{
 		return true;
 	}
 	@Override
-	public void enable() {
+	public GUIParts enable() {
 		super.enable();
 		parts[nowIndex].enable();
+		return this;
 	}
 	@Override
-	public void disable() {
+	public GUIParts disable() {
 		super.disable();
 		parts[nowIndex].disable();
+		return this;
 	}
 	
 	//information

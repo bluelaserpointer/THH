@@ -98,6 +98,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	//screen
 	private static int screenW, screenH;
 	private static double viewX, viewY, viewDstX, viewDstY;
+	private static double stageZoomRate = 1.0;
 	
 	//frame
 	private static int systemFrame;
@@ -107,7 +108,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private static Game engine;
 
 	//stage object data
-	private static GHQStage nowStage;
+	private static GHQStage stage;
 	
 	//event data
 	private static final ArrayDeque<String> messageStr = new ArrayDeque<String>();
@@ -132,9 +133,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private static boolean loadComplete;
 	public final MediaTracker tracker;
 	public GHQ(Game engine, int screenW, int screenH){
-		final long loadTime = System.currentTimeMillis();
+		targetImageObserver = this;
 		GHQ.engine = engine;
-		offImage = new BufferedImage(GHQ.screenW = screenW, GHQ.screenH = screenH, BufferedImage.TYPE_INT_ARGB_PRE);
+		offImage = new BufferedImage(GHQ.screenW = screenW, GHQ.screenH = screenH, BufferedImage.TYPE_INT_RGB);
 		screenRect = new Rectangle2D.Double(0, 0, screenW, screenH);
 		hq = this;
 		//window setup
@@ -171,7 +172,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		engine.loadResource();
 		basicFont = createFont("font/upcibi.ttf").deriveFont(25.0f);
 		commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN, 15.0f);
-		System.out.println("<<loadTimeReslut: " + (System.currentTimeMillis() - loadTime) + ">>");
 		new Thread(this).start();
 	}
 
@@ -199,9 +199,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				//main process
 				if(!freezeScreen) {
 					repaint();
-					systemFrame++;
-					if(stopEventKind == NONE)
-						gameFrame++;
 				}
 			}
 		//}catch(Exception e){
@@ -214,13 +211,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static Font initialFont, basicFont, commentFont;
 	public static final BasicStroke stroke1 = new BasicStroke(1f), stroke3 = new BasicStroke(3f), stroke5 = new BasicStroke(5f), stroke7 = new BasicStroke(7f);
 	private static final Color HPWarningColor = new Color(255,120,120), debugTextColor = new Color(200, 200, 200);
-	public static final DecimalFormat DF0_00 = new DecimalFormat("0.00"), DF00_00 = new DecimalFormat("00.00");
+	public static final DecimalFormat DF0_0 = new DecimalFormat("0.0"), DF0_00 = new DecimalFormat("0.00"), DF00_00 = new DecimalFormat("00.00");
 	private final Rectangle2D screenRect;
 	
-	public void paintComponent(Graphics g){
+	public void paintComponent(Graphics g) {
 		final long LOAD_TIME_PAINT_COMPONENT = System.currentTimeMillis();
 		super.paintComponent(g);
-		if(g2 == null){
+		if(g2 == null) {
 			g2 = offImage.createGraphics();
 			g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
 			g2.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
@@ -242,7 +239,19 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		g2.setFont(initialFont);
 		////////////////////////////////////////////////////////////////////////
 		//gameIdle
-		engine.idle(g2, stopEventKind);
+		final int tx = (int)GHQ.getScreenCenterStageX(), ty = (int)GHQ.getScreenCenterStageY();
+		final double zoomRate = stageZoomRate;
+		if(zoomRate != 1.0) {
+			g2.translate(tx, ty);
+			GHQ.scale(zoomRate, zoomRate);
+			g2.translate(-tx, -ty);
+			engine.idle(g2, stopEventKind);
+			g2.translate(tx, ty);
+			final double _zoomRate = 1.0/zoomRate;
+			GHQ.scale(_zoomRate, _zoomRate);
+			g2.translate(-tx, -ty);
+		} else
+			engine.idle(g2, stopEventKind);
 		////////////////////////////////////////////////////////////////////////
 		//GUIIdle
 		g2.translate(-TRANSLATE_X, -TRANSLATE_Y);
@@ -291,33 +300,35 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				g2.drawLine(i, 0, i, screenH);
 			for(int i = 100;i < screenH;i += 100)
 				g2.drawLine(0, i, screenW, i);
+			GHQ.translateForGUI(false);
 			//Origin
 			g2.setColor(debugTextColor);
 			g2.setStroke(stroke1);
-			g2.drawOval(TRANSLATE_X - 35, TRANSLATE_Y - 35, 70, 70);
-			g2.drawOval(TRANSLATE_X - 25, TRANSLATE_Y - 25, 50, 50);
-			g2.drawOval(TRANSLATE_X - 15, TRANSLATE_Y - 15, 30, 30);
+			g2.drawOval(-35, -35, 70, 70);
+			g2.drawOval(-25, -25, 50, 50);
+			g2.drawOval(-15, -15, 30, 30);
 			//stageEdge
 			g2.setStroke(stroke3);
-			final int STAGE_W = nowStage.WIDTH, STAGE_H = nowStage.HEIGHT;
+			final int STAGE_W = stage.width(), STAGE_H = stage.height();
 			{ //LXRX lines
-				final int LX = TRANSLATE_X, RX = TRANSLATE_X + STAGE_W;
+				final int LX = 0, RX = STAGE_W;
 				for(int i = 0;i < 50;i++) {
-					final int Y = TRANSLATE_Y + STAGE_H*i/50;
+					final int Y = STAGE_H*i/50;
 					g2.drawLine(LX - 20, Y - 20, LX + 20, Y + 20);
 					g2.drawLine(RX - 20, Y - 20, RX + 20, Y + 20);
 				}
 			}
 			{ //LYRY lines
-				final int LY = TRANSLATE_Y, RY = TRANSLATE_Y + STAGE_H;
+				final int LY = 0, RY = STAGE_H;
 				for(int i = 0;i < 50;i++) {
-					final int X = TRANSLATE_X + STAGE_W*i/50;
+					final int X = STAGE_W*i/50;
 					g2.drawLine(X - 20, LY - 20, X + 20, LY + 20);
 					g2.drawLine(X - 20, RY - 20, X + 20, RY + 20);
 				}
 			}
+			GHQ.translateForGUI(true);
 			//entityInfo
-			g2.drawString(nowStage.entityAmountInfo(), 30, 100);
+			g2.drawString(stage.entityAmountInfo(), 30, 100);
 			g2.drawString("LoadTime(ms):" + loadTime_total, 30, 120);
 			g2.drawString("FPS:" + DF00_00.format(nowFPS), 30, 140);
 			g2.drawString("GameTime(ms):" + gameFrame, 30, 160);
@@ -334,7 +345,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			g2.setStroke(stroke5);
 			g2.drawString("(" + (MOUSE_X - (int)viewX) + "," + (MOUSE_Y - (int)viewY) + ")", MOUSE_X + 20, MOUSE_Y + 40);
 			//unitInfo
-			nowStage.unitDebugPaint(g2);
+			stage.unitDebugPaint(g2);
 			//ruler
 			if(mouseDebugMode) {
 				g2.setColor(Color.RED);
@@ -351,12 +362,17 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			}
 		}
 		g.drawImage(offImage, 0, 0, screenW, screenH, this);
+		//increase frame count
+		systemFrame++;
+		if(stopEventKind == NONE)
+			gameFrame++;
+		//calculate total paintComponent time
 		loadTime_total = (int)(System.currentTimeMillis() - LOAD_TIME_PAINT_COMPONENT);
 	}
 	
 	//information-stage
 	public static final GHQStage stage() {
-		return nowStage;
+		return stage;
 	}
 	public static final Game getEngine() {
 		return engine;
@@ -374,6 +390,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 
 	//control
+	//control-stage
+	public static GHQStage setStage(GHQStage stage) {
+		return GHQ.stage = stage;
+	}
+	public static void setStageZoomRate(double value) {
+		stageZoomRate = value;
+	}
 	//control-viewPoint
 	public static void viewMove(double dx, double dy) {
 		viewX -= dx;viewY -= dy;
@@ -396,7 +419,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		viewX = x;viewY = y;
 	}
 	public static void viewTargetTo(double x, double y) {
-		viewDstX = -x + screenW/2;viewDstY =  -y + screenH/2;
+		viewDstX = -x + screenW/2;viewDstY = -y + screenH/2;
 	}
 	public static void viewTargetMove(double x, double y) {
 		viewDstX -= x;viewDstY -= y;
@@ -427,6 +450,24 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static double getViewY() {
 		return viewY;
+	}
+	public static int getScreenCenterStageX() {
+		return toStageCoordinate_x(GHQ.screenW/2);
+	}
+	public static int getScreenCenterStageY() {
+		return toStageCoordinate_y(GHQ.screenH/2);
+	}
+	public static int getScreenLeftX_stageCod() {
+		return toStageCoordinate_x(0);
+	}
+	public static int getScreenTopY_stageCod() {
+		return toStageCoordinate_y(0);
+	}
+	public static int getScreenW_stageCod() {
+		return (int)(screenW/stageZoomRate);
+	}
+	public static int getScreenH_stageCod() {
+		return (int)(screenH/stageZoomRate);
 	}
 	//control-add
 
@@ -560,11 +601,31 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				break;
 		}
 	}
-	public static final int mouseX(){
-		return mouseX - (int)viewX;
+	public static final int mouseX() {
+		return toStageCoordinate_x(mouseX);
 	}
-	public static final int mouseY(){
-		return mouseY - (int)viewY;
+	public static final int mouseY() {
+		return toStageCoordinate_y(mouseY);
+	}
+	public static final int toStageCoordinate_x(int x) {
+		//return (int)(x/stageZoomRate + screenW/2*(1 - 1/stageZoomRate)) - (int)viewX;
+		return (int)((x - screenW/2)/stageZoomRate) + screenW/2 - (int)viewX;
+	}
+	public static final int toStageCoordinate_y(int y) {
+		//return (int)(y/stageZoomRate + screenH/2*(1 - 1/stageZoomRate)) - (int)viewY;
+		return (int)((y - screenH/2)/stageZoomRate) + screenH/2 - (int)viewY;
+	}
+	public static final int toScreenCoordinate_x(int x) { 
+		return (int)(x*stageZoomRate - screenW/2*(stageZoomRate - 1)) + (int)viewX;
+	}
+	public static final int toScreenCoordinate_y(int y) {
+		return (int)(y*stageZoomRate - screenH/2*(stageZoomRate - 1)) + (int)viewY;
+	}
+	public static final boolean intersectsScreen_screenCod(int x, int y, int w, int h) {
+		return Math.abs(x - screenW/2) < (screenW + w)/2 && Math.abs(y - screenH/2) < (screenH + h)/2;
+	}
+	public static final boolean intersectsScreen_stageCod(int x, int y, int w, int h) {
+		return intersectsScreen_screenCod(toScreenCoordinate_x(x), toScreenCoordinate_y(y), (int)(w/stageZoomRate), (int)(h/stageZoomRate));
 	}
 	public static final Point mousePoint() {
 		return new Point.IntPoint(mouseX(), mouseY());
@@ -575,7 +636,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final int mouseScreenY(){
 		return mouseY;
 	}
-	public static final boolean isMouseInArea_Stage(int x, int y, int w, int h) {
+	public static final boolean isMouseInArea_Stage(int x, int y, int w, int h) { //TODO: need be fixed
 		return abs(x - mouseX + viewX) < w/2 && abs(y - mouseY + viewY) < h/2;
 	}
 	public static final GUIParts mouseHoveredUI() {
@@ -886,8 +947,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//stage test area
 	final private void resetStage(){
-		if(nowStage != null)
-			nowStage.clear();
+		if(stage != null)
+			stage.clear();
 		messageSource.clear();
 		messageStr.clear();
 		messageEvent.clear();
@@ -895,7 +956,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		gameFrame = 0;
 		System.gc();
 		//System.out.println("stage reset done");
-		nowStage = engine.loadStage();
+		stage = engine.loadStage();
 	}
 	
 	//ResourceLoad
@@ -968,10 +1029,24 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @since alpha1.0
 	 */
 	public static final void translateForGUI(boolean forGUI) {
-		if(forGUI)
-			g2.translate(-viewX,-viewY);
-		else
-			g2.translate(viewX,viewY);
+		final int tx = (int)GHQ.getScreenCenterStageX(), ty = (int)GHQ.getScreenCenterStageY();
+		final double zoomRate = stageZoomRate;
+		if(forGUI) {
+			if(zoomRate != 1.0) {
+				g2.translate(tx, ty);
+				final double _zoomRate = 1/zoomRate;
+				GHQ.scale(_zoomRate, _zoomRate);
+				g2.translate(-tx, -ty);
+			}
+			g2.translate(-viewX, -viewY);
+		}else {
+			g2.translate(viewX, viewY);
+			if(zoomRate != 1.0) {
+				g2.translate(tx, ty);
+				GHQ.scale(zoomRate, zoomRate);
+				g2.translate(-tx, -ty);
+			}
+		}
 	}
 	/**
 	 * Call {@link Graphics2D#setClip(int, int, int, int)} directly.
@@ -1020,6 +1095,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return f < 0 ? 0 : (f > 1 ? 1 : f);
 	}
 	//Paint
+	static boolean doXFlip, doYFlip;
+	static ImageObserver targetImageObserver;
 	/**
 	* Draw an image.
 	* @param img 
@@ -1030,16 +1107,25 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @since alpha1.0
 	*/
 	public static final void drawImageGHQ(Image img, int x, int y, int w, int h){
-		g2.drawImage(img, x, y, w, h, hq);
+		if(doXFlip || doYFlip) {
+			final double xs = doXFlip ? -1 : 1;
+			final double ys = doYFlip ? -1 : 1;
+			g2.translate(x + w/2, y + h/2);
+			g2.scale(xs, ys);
+			g2.drawImage(img, -w/2, -h/2, w, h, targetImageObserver);
+			g2.scale(xs, ys);
+			g2.translate(-x - w/2, -y - h/2);
+		}else
+			g2.drawImage(img, x, y, w, h, targetImageObserver);
 	}
 	public static final void drawImageGHQ(Image img, int x, int y, int w, int h, double angle) {
 		if(angle != 0.0) {
 			final double OX = x + w/2, OY = y + h/2;
 			g2.rotate(angle, OX, OY);
-			g2.drawImage(img, x, y, w, h, hq);
+			drawImageGHQ(img, x, y, w, h);
 			g2.rotate(-angle, OX, OY);
 		}else
-			g2.drawImage(img, x, y, w, h, hq);
+			drawImageGHQ(img, x, y, w, h);
 	}
 	/**
 	* Draw an image.
@@ -1054,10 +1140,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			return;
 		if(angle != 0.0) {
 			g2.rotate(angle, x, y);
-			g2.drawImage(img, x - img.getWidth(null)/2, y - img.getHeight(null)/2, hq);
+			drawImageGHQ(img, x - img.getWidth(null)/2, y - img.getHeight(null)/2, img.getWidth(null), img.getHeight(null));
 			g2.rotate(-angle, x, y);
 		}else
-			g2.drawImage(img, x - img.getWidth(null)/2, y - img.getHeight(null)/2, hq);
+			drawImageGHQ(img, x - img.getWidth(null)/2, y - img.getHeight(null)/2, img.getWidth(null), img.getHeight(null));
 	}
 	/**
 	* Draw an image.
@@ -1067,7 +1153,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	* @since alpha1.0
 	*/
 	public static final void drawImageGHQ_center(Image img, int x, int y){
-		g2.drawImage(img, x - img.getWidth(null)/2, y - img.getHeight(null)/2, hq);
+		//g2.scale(-1.0, 1.0);
+		drawImageGHQ(img, x - img.getWidth(null)/2, y - img.getHeight(null)/2, img.getWidth(null), img.getHeight(null));
+		//g2.scale(-1.0, 1.0);
 	}
 	public static final void drawStringGHQ(String string, int x, int y, Font tmpFont) {
 		final Font FONT = g2.getFont();
@@ -1096,6 +1184,16 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			nowIndex += lineWordAmount;
 			y += lineH;
 		}
+	}
+	public static final void setFlip(boolean doXFlip, boolean doYFlip) {
+		GHQ.doXFlip = doXFlip ^ GHQ.doXFlip;
+		GHQ.doYFlip = doYFlip ^ GHQ.doYFlip;
+	}
+	public static final void setTargetImageObserver(ImageObserver imageObserver) {
+		targetImageObserver = imageObserver;
+	}
+	public static final void setTargetImageObserver() {
+		targetImageObserver = hq;
 	}
 	/**
 	 * Return Graphics2D instance.

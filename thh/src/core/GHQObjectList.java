@@ -18,7 +18,7 @@ public class GHQObjectList<T extends GHQObject> extends LinkedList<T>{
 	private static final long serialVersionUID = 1774337313239922412L;
 	
 	public void traverseIdle() {
-		for(GHQObject element : this) {
+		for(GHQObject element : (GHQObjectList<T>)this.clone()) {
 			element.idle();
 		}
 		//check delete claim
@@ -121,5 +121,29 @@ public class GHQObjectList<T extends GHQObject> extends LinkedList<T>{
 	}
 	public boolean intersected_line(HasPoint p1, HasPoint p2) {
 		return intersected_line(p1.point(), p2.point());
+	}
+	public T getClosest(Point point) {
+		T closestElement = null;
+		double closestDistance = Double.MAX_VALUE;
+		for(T element : this) {
+			final double distance = point.distance(element);
+			if(distance < closestDistance) {
+				closestDistance = distance;
+				closestElement = element;
+			}
+		}
+		return closestElement;
+	}
+	public T getClosestVisible(Point point) {
+		T closestElement = null;
+		double closestDistance = Double.MAX_VALUE;
+		for(T element : this) {
+			final double distance = point.distance(element);
+			if(distance < closestDistance && point.isVisible(element)) {
+				closestDistance = distance;
+				closestElement = element;
+			}
+		}
+		return closestElement;
 	}
 }

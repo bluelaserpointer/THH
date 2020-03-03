@@ -95,21 +95,16 @@ public class RelativePoint extends Point{
 	@Override
 	public void setX(double x) {
 		final double cos = baseAngle().cos(), sin = baseAngle().sin();
-		final double dx = basePoint().doubleDX(x);
-		System.out.println("angle: " + baseAngle().get() + ", cos: " + baseAngle().cos() + ", sin: " + baseAngle().sin());
-		System.out.println("dx: " + dx);
-		//relativePoint.setX(dx*cos);
-		//relativePoint.setY(-dx*sin);
-		relativePoint.setX(100);
-		relativePoint.setY(0);
-		System.out.println("newRX: " + relativePoint.doubleX() + ", newRY: " + relativePoint.doubleY());
+		final double dx = doubleDX(x);
+		relativePoint.addX(dx*cos);
+		relativePoint.addY(-dx*sin);
 	}
 	@Override
 	public void setY(double y) {
 		final double cos = baseAngle().cos(), sin = baseAngle().sin();
-		final double dy = basePoint().doubleDY(y);
-		relativePoint.setX(dy*sin);
-		relativePoint.setY(dy*cos);
+		final double dy = doubleDY(y);
+		relativePoint.addX(dy*sin);
+		relativePoint.addY(dy*cos);
 	}
 	@Override
 	public void setX(Point p) {

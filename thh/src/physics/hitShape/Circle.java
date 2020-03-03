@@ -7,6 +7,7 @@ import java.awt.geom.Line2D;
 
 import core.GHQ;
 import physics.HasPoint;
+import structure.Tile.TileHitShape;
 
 public class Circle extends HitShape{
 	private static final long serialVersionUID = -1809578801160258098L;
@@ -32,6 +33,9 @@ public class Circle extends HitShape{
 		}else if(shape instanceof RectShape) {
 			// TODO lacking strictness
 			return point().inRangeXY(shape.point(), radius + ((RectShape)shape).width/2, radius + ((RectShape)shape).height/2);
+		}else if(shape instanceof TileHitShape) {
+			// TODO lacking strictness
+			return ((TileHitShape)shape).intersects(this);
 		}else {
 			System.out.println("unhandled type: " + this.getClass().getName() + " against " + shape.getClass().getName());
 		}

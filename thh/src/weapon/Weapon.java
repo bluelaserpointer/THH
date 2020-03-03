@@ -19,11 +19,11 @@ public class Weapon {
 		coolSpeed, //
 		reloadTime, //
 		reloadSpeed, //
+		magazine,
 		magazineSize; //
 	protected int
 		coolProgress, //
 		reloadProgress, //
-		magazine, //
 		magazineConsumptionSpeed;
 	protected boolean
 		autoReload;
@@ -274,6 +274,9 @@ public class Weapon {
 	 */
 	public final int getMagazineFilledSpace() {
 		return magazine;
+	}
+	public final double getMagazineFilledRate() {
+		return magazine/magazineSize;
 	}
 	/**
 	 * Get the amount of fired magazine in current cartridge.

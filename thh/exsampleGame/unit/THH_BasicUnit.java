@@ -12,13 +12,11 @@ import physics.HasPoint;
 import physics.HitGroup;
 import physics.Point;
 import physics.hitShape.Square;
-import storage.ItemStorage;
 import storage.Storage;
 import unit.Unit;
 import weapon.Weapon;
 
 public abstract class THH_BasicUnit extends Unit {
-	private static final long serialVersionUID = 6736932836274080528L;
 	public Point.IntPoint dstPoint = new Point.IntPoint();
 	public double charaSpeed = 30;
 	public boolean charaOnLand;
@@ -46,9 +44,9 @@ public abstract class THH_BasicUnit extends Unit {
 		BLO = new ConsumableEnergy(1).setMin(0).setDefaultToMax(),
 		STUN = new ConsumableEnergy(1).setMin(0).setDefaultToMax();
 	//inventory
-	public final ItemStorage inventory = def_inventory();
-	protected ItemStorage def_inventory() {
-		return new ItemStorage(new Storage<ItemData>());
+	public final Storage<ItemData> inventory = def_inventory();
+	protected Storage<ItemData> def_inventory() {
+		return new Storage<ItemData>();
 	}
 	
 	public THH_BasicUnit(int charaSize, int initialGroup) {
@@ -101,7 +99,7 @@ public abstract class THH_BasicUnit extends Unit {
 		//dynam
 		////////////
 		point().moveIfNoObstacles(this);
-		point().accelerate_MUL(0.9);
+		point().mulSpeed(0.9);
 	}
 	public int weaponChangeOrder;
 	public boolean attackOrder, dodgeOrder, spellOrder;

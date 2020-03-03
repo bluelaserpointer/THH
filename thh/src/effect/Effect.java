@@ -82,7 +82,7 @@ public class Effect extends GHQObject implements HasPoint, HasDotPaint{
 		return limitFrame <= GHQ.passedFrame(super.initialFrame);
 	}
 	public boolean isOutOfRange() {
-		return limitRange <= ((DstCntDynam)point()).getMovedDistance();
+		return limitRange != GHQ.MAX && limitRange <= ((DstCntDynam)point()).getMovedDistance();
 	}
 	public boolean outOfLifeSpanProcess() {
 		claimDelete();

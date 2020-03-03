@@ -17,78 +17,38 @@ import storage.TableStorage;
  * @since alpha1.0
  * @param <T> the type of elements in the storage
  */
-public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts implements T_Verifier<T>{
+public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts implements T_Verifier<T> {
 	/**
 	 * The data of this TableStorageViewer.
 	 */
-	public final TableStorage<T> storage;
-	protected int storageW, storageH;
-	protected final int CELL_SIZE;
+	public TableStorage<T> storage;
+	protected int cellSize;
 	protected RectPaint cellPaint = RectPaint.BLANK_SCRIPT;
 	
 	//init
-	/**
-	 * Crate a TableStorageViewer with an already existed {@link Storage}.
-	 * @param group - name of the group this GUI belong to(use in {@link GHQ#enableGUIs(String)}, {@link GHQ#disableGUIs(String)})
-	 * @param backgroundPaint - the {@link RectPaint} of this GUI background
-	 * @param x - the x coordinate of the upper-left corner of this GUI
-	 * @param y - the y coordinate of the upper-left corner of this GUI
-	 * @param cellSize - size of the cells
-	 * @param datalink
-	 */
-	public TableStorageViewer(int x, int y, int cellSize, TableStorage<T> datalink) {
-		super.setBounds(x, y, cellSize*datalink.getStorageW(), cellSize*datalink.getStorageH());
-		CELL_SIZE = cellSize;
-		storage = datalink;
-		storageW = datalink.getStorageW();
-		storageH = datalink.getStorageH();
+	public TableStorageViewer<T> setTableStorage(TableStorage<T> tableStorage) {
+		storage = tableStorage;
+		return this;
 	}
-	/** 
-	 * Crate a TableStorageViewer with an already existed {@link Storage}, but redefine the columns and rows of the cells.
-	 * @param group - name of the group this GUI belong to(use in {@link GHQ#enableGUIs(String)}, {@link GHQ#disableGUIs(String)})
-	 * @param backgroundPaint - the {@link RectPaint} of this GUI background
-	 * @param x - the x coordinate of the upper-left corner of this GUI
-	 * @param y - the y coordinate of the upper-left corner of this GUI
-	 * @param cellSize - size of the cells
-	 * @param datalink - an already exist list to display
-	 * @param storageW - columns of the cells
-	 * @param storageH - rows of the cells
-	 */
-	public TableStorageViewer(int x, int y, int cellSize, Collection<T> datalink, T nullElement, int storageW, int storageH) {
-		super.setBounds(x, y, cellSize*storageW, cellSize*storageH);
-		CELL_SIZE = cellSize;
-		storage = new TableStorage<T>(datalink, storageW, storageH, nullElement);
-		this.storageW = storageW;
-		this.storageH = storageH;
+	public TableStorageViewer<T> setTableStorage(Collection<T> storage, T nullElement, int storageW, int storageH) {
+		this.storage = new TableStorage<T>(storage, storageW, storageH, nullElement);
+		return this;
 	}
-	public TableStorageViewer(int x, int y, int cellSize, T[] datalink, T nullElement, int storageW, int storageH) {
-		super.setBounds(x, y, cellSize*storageW, cellSize*storageH);
-		CELL_SIZE = cellSize;
-		storage = new TableStorage<T>(datalink, storageW, storageH, nullElement);
-		this.storageW = storageW;
-		this.storageH = storageH;
+	public TableStorageViewer<T> setCellSize(int cellSize) {
+		this.cellSize = cellSize;
+		return this;
 	}
-	
 	//main role
 	@Override
 	public void idle() {
 		//paint
 		super.idle();
-		if(storage instanceof TableStorage<?>) {
-			storageW = ((TableStorage<?>)storage).getStorageW();
-			storageH = ((TableStorage<?>)storage).getStorageH();
-			for(int xi = 0;xi < storageW;xi++) {
-				for(int yi = 0;yi < storageH;yi++) {
-					final int INDEX = ((TableStorage<? extends HasDotPaint>)storage).getCellID(xi, yi);
-					paintOfCell(INDEX, INDEX < storage.size() ? storage.get(INDEX) : null, super.point().intX() + xi*CELL_SIZE, super.point().intY() + yi*CELL_SIZE);
-				}
-			}
-		}else {
-			for(int xi = 0;xi < storageW;xi++) {
-				for(int yi = 0;yi < storageH;yi++) {
-					final int INDEX = xi + yi*storageW;
-					paintOfCell(INDEX, INDEX < storage.size() ? storage.get(INDEX) : null, super.point().intX() + xi*CELL_SIZE, super.point().intY() + yi*CELL_SIZE);
-				}
+		final int storageW = storage.storageW();
+		final int storageH = storage.storageH();
+		for(int xi = 0; xi < storageW; ++xi) {
+			for(int yi = 0; yi < storageH; ++yi) {
+				final int INDEX = ((TableStorage<? extends HasDotPaint>)storage).getCellID(xi, yi);
+				paintOfCell(INDEX, INDEX < storage.size() ? storage.get(INDEX) : null, super.point().intX() + xi*cellSize, super.point().intY() + yi*cellSize);
 			}
 		}
 	}
@@ -102,7 +62,7 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 	 */
 	protected void paintOfCell(int id, HasDotPaint object, int x, int y) {
 		if(object != null)
-			object.getDotPaint().dotPaint_capSize(x + CELL_SIZE/2, y + CELL_SIZE/2, (int)(CELL_SIZE*0.8));
+			object.getDotPaint().dotPaint_capSize(x + cellSize/2, y + cellSize/2, (int)(cellSize*0.8));
 	}
 	
 	//control
@@ -155,12 +115,18 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 	}
 	
 	//information
+	public int storageW() {
+		return storage.storageW();
+	}
+	public int storageH() {
+		return storage.storageH();
+	}
 	/**
 	 * Get ID of the cell which mouse is hovering.
 	 * @return ID of the hovered cell
 	 */
 	public int getMouseHoveredID() {
-		return (GHQ.mouseScreenX() - point().intX())/CELL_SIZE + storageW*((GHQ.mouseScreenY() - point().intY())/CELL_SIZE);
+		return (GHQ.mouseScreenX() - point().intX())/cellSize + storageW()*((GHQ.mouseScreenY() - point().intY())/cellSize);
 	}
 	/**
 	 * Get Object of the cell which mouse is hovering.

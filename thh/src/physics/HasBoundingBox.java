@@ -5,7 +5,7 @@ import java.awt.geom.Rectangle2D;
 import core.GHQ;
 import physics.hitShape.HasArea;
 
-public interface HasBoundingBox extends HasPoint, HasArea{
+public interface HasBoundingBox extends HasPoint, HasArea {
 	public abstract int width();
 	public abstract int height();
 	public default Rectangle2D boundingBox() {

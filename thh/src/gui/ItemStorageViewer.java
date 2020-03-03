@@ -15,42 +15,32 @@ import storage.TableStorage;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class ItemStorageViewer extends TableStorageViewer<ItemData>{
-	protected RectPaint cellPaint;
-	/**
-	 * Create an ItemStorageViewer with an already existed {@link TableStorage}{@literal <}{@link ItemData}{@literal >}.
-	 * @param group - name of the group this GUI belong to(use in {@link GHQ#enableGUIs(String)}, {@link GHQ#disableGUIs(String)})
-	 * @param backgroundPaint - the {@link RectPaint} of this GUI background
-	 * @param cellPaint - the {@link RectPaint} of the cells background
-	 * @param x - the x coordinate of the upper-left corner of this GUI
-	 * @param y - the y coordinate of the upper-left corner of this GUI
-	 * @param cellSize - size of the cells
-	 * @param items - an already exist {@link TableStorage}{@literal <}{@link ItemData}{@literal >} to display
-	 */
-	public ItemStorageViewer(RectPaint cellPaint, int x, int y, int cellSize, TableStorage<ItemData> items) {
-		super(x, y, cellSize, items);
-		this.cellPaint = cellPaint;
-	}
+public class ItemStorageViewer extends TableStorageViewer<ItemData> {
+	protected RectPaint cellPaint = RectPaint.BLANK_SCRIPT;
 	
+	public ItemStorageViewer setCellPaint(RectPaint cellPaint) {
+		this.cellPaint = cellPaint;
+		return this;
+	}
 	@Override
 	public void paintOfCell(int id, HasDotPaint object, int x,int y) {
-		cellPaint.rectPaint(x, y, CELL_SIZE);
+		cellPaint.rectPaint(x, y, cellSize);
 		final Graphics2D G2 = GHQ.getG2D();
 		G2.setFont(GHQ.basicFont);
 		G2.setColor(Color.GRAY);
 		if(object == null) {
-			G2.drawString("Empty", x + CELL_SIZE - 23, y + CELL_SIZE - 9);
+			G2.drawString("Empty", x + cellSize - 23, y + cellSize - 9);
 			return;
 		}
-		object.getDotPaint().dotPaint_capSize(x + CELL_SIZE/2, y + CELL_SIZE/2, (int)(CELL_SIZE*0.8));
+		object.getDotPaint().dotPaint_capSize(x + cellSize/2, y + cellSize/2, (int)(cellSize*0.8));
 		if(storage instanceof TableStorage && ((TableStorage<? extends HasDotPaint>)storage).isNullElement(object)) {
-			G2.drawString("Empty", x + CELL_SIZE - 23, y + CELL_SIZE - 9);
+			G2.drawString("Empty", x + cellSize - 23, y + cellSize - 9);
 		}
 		if(object instanceof ItemData && object != ItemData.BLANK_ITEM) {
 			final int AMOUNT = ((ItemData)object).getAmount();
-			G2.drawString(String.valueOf(AMOUNT), x + CELL_SIZE - 23, y + CELL_SIZE - 9);
+			G2.drawString(String.valueOf(AMOUNT), x + cellSize - 23, y + cellSize - 9);
 			G2.setColor(Color.BLACK);
-			G2.drawString(String.valueOf(AMOUNT), x + CELL_SIZE - 24, y + CELL_SIZE - 10);
+			G2.drawString(String.valueOf(AMOUNT), x + cellSize - 24, y + cellSize - 10);
 		}
 	}
 

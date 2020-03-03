@@ -78,9 +78,10 @@ public class TitledLabel extends GUIParts{
 		typeListener.disable();
 	}
 	@Override
-	public void disable() {
+	public GUIParts disable() {
 		super.disable();
 		typeListener.disable();
+		return this;
 	}
 	public void clear() {
 		typeListener.clear();

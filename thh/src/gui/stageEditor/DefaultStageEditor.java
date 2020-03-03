@@ -307,14 +307,16 @@ public abstract class DefaultStageEditor extends GUIParts{
 		terrainScripts.addAll(script);
 	}
 	@Override
-	public void enable() {
+	public GUIParts enable() {
 		super.enable();
 		GHQ.stopScreen();
 		selectObject = mouseOveredObject = null;
+		return this;
 	}
 	@Override
-	public void disable() {
+	public GUIParts disable() {
 		super.disable();
 		GHQ.clearStopEvent();
+		return this;
 	}
 }

@@ -10,7 +10,7 @@ import item.ItemData;
  * @since alpha1.0
  * @param <T> the type of elements in this list
  */
-public class TableStorage<T> extends Storage<T>{
+public class TableStorage<T> extends Storage<T> {
 	private static final long serialVersionUID = -823825080682852987L;
 	protected int storageW,storageH;
 	public final T NULL_ELEMENT;
@@ -106,10 +106,10 @@ public class TableStorage<T> extends Storage<T>{
 		}
 		return -1;
 	}
-	public int getStorageW() {
+	public int storageW() {
 		return storageW;
 	}
-	public int getStorageH() {
+	public int storageH() {
 		return storageH;
 	}
 	public boolean isNullElement(Object element) {

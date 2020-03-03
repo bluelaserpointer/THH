@@ -22,16 +22,16 @@ public class BodyParts implements HasPaint, HasAngle, HasDotPaint, HitInteractab
 	private boolean active;
 	private final LinkedList<BodyPartsType> types = new LinkedList<BodyPartsType>();
 	private UnitAction action; //current action
-	private ItemData equipment; //current equipment
+	protected ItemData equipment; //current equipment
 	private DotPaint dotPaint; //current appearance
 	private DotPaint baseDotPaint; //base appearance when standing still
 	
-	private DotPaintParameter equipmentDisplaySetting = new DotPaintParameter().setPoint(new RelativePoint(this, new Point.IntPoint(), true));
+	protected DotPaintParameter equipmentDisplaySetting = new DotPaintParameter().setPoint(new RelativePoint(this, new Point.IntPoint(), true));
 	private HasPaint equipmentLayer = new HasPaint() {
 		@Override
 		public void paint() {
 			if(equipment != null)
-				equipment.getDotPaint().dotPaint(equipmentDisplaySetting);		
+				weaponPaint();
 		}
 	};
 	
@@ -52,6 +52,10 @@ public class BodyParts implements HasPaint, HasAngle, HasDotPaint, HitInteractab
 	@Override
 	public void paint() {
 		dotPaint.dotPaint_turn(point(), angle.get());
+	}
+	//extend
+	protected void weaponPaint() {
+		equipment.getDotPaint().dotPaint(equipmentDisplaySetting);
 	}
 	//control
 	public void setActive(boolean active) {
@@ -97,9 +101,7 @@ public class BodyParts implements HasPaint, HasAngle, HasDotPaint, HitInteractab
 	public void setBasePaint(DotPaint basePaint) {
 		baseDotPaint = basePaint;
 		if(!hasAction())
-			;
-			//TODO:
-			//dotPaint = 
+			dotPaint = basePaint;
 	}
 	//information
 	public Body body() {

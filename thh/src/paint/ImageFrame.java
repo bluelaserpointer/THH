@@ -19,7 +19,7 @@ import paint.dot.DotPaint;
  */
 public class ImageFrame extends DotPaint {
 	private transient Image IMAGE;
-	private URL image_url;
+	private String originURLStr;
 	private static final HashMap<URL, Image> preloadedImageMap = new HashMap<URL, Image>();
 	private static final HashMap<String, ImageFrame> createdIFMap = new HashMap<String, ImageFrame>();
 	
@@ -31,7 +31,8 @@ public class ImageFrame extends DotPaint {
 		GHQ.addLoadRequester(new LoadRequester() {
 			@Override
 			public void loadResource() {
-				IMAGE = loadImage(image_url = GHQ.hq.getClass().getResource("/" + urlStr));
+				originURLStr = urlStr;
+				IMAGE = loadImage(GHQ.hq.getClass().getResource("/" + urlStr));
 			}
 		});
 	}
@@ -39,7 +40,7 @@ public class ImageFrame extends DotPaint {
 		super(owner);
 	}
 	public void loadFromSave() {
-		IMAGE = loadImage(image_url);
+		IMAGE = loadImage(GHQ.hq.getClass().getResource("/" + originURLStr));
 	}
 	/**
 	* Load the image file.
@@ -50,7 +51,6 @@ public class ImageFrame extends DotPaint {
 	public static Image loadImage(URL url) {
 		if(url == null) {
 			System.out.println("received a null image url");
-			int a = 0/0;
 			return GHQ.hq.createImage(1, 1);
 		}
 		if(preloadedImageMap.containsKey(url))
@@ -103,6 +103,9 @@ public class ImageFrame extends DotPaint {
 	}
 	
 	//information
+	public String originURLStr() {
+		return originURLStr;
+	}
 	@Override
 	public int width() {
 		return IMAGE.getWidth(null);

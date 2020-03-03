@@ -1,7 +1,5 @@
 package vegetation;
 
-import java.io.Serializable;
-
 import core.GHQObject;
 import paint.dot.DotPaint;
 import paint.dot.HasDotPaint;
@@ -13,9 +11,7 @@ import physics.Point;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class Vegetation extends GHQObject implements Serializable, HasBoundingBox, HasDotPaint{
-	private static final long serialVersionUID = -5536970507937704287L;
-	
+public class Vegetation extends GHQObject implements HasBoundingBox, HasDotPaint {
 	protected final DotPaint paintScript;
 
 	//init

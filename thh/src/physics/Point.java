@@ -416,9 +416,25 @@ public abstract class Point implements Serializable, ObjectSavable {
 	///////////////
 	//dynam
 	///////////////
-	public void addX_allowsMoveAngle(double dx) {}
-	public void addY_allowsMoveAngle(double dy) {}
-	public void addXY_allowsMoveAngle(double dx, double dy) {}
+	public void addX_allowsAngle(double dx, double angle) {
+		addXY(dx*sin(angle), -dx*cos(angle));
+	}
+	public void addY_allowsAngle(double dy, double angle) {
+		addXY(dy*cos(angle), dy*sin(angle));
+	}
+	public void addXY_allowsAngle(double dx, double dy, double angle) {
+		final double cos = cos(angle), sin = sin(angle);
+		addXY(dx*sin + dy*cos, -dx*cos + dy*sin);
+	}
+	public void addX_allowsMoveAngle(double dx) {
+		addX_allowsAngle(dx, moveAngle());
+	}
+	public void addY_allowsMoveAngle(double dy) {
+		addX_allowsAngle(dy, moveAngle());
+	}
+	public void addXY_allowsMoveAngle(double dx, double dy) {
+		addXY_allowsAngle(dx, dy, moveAngle());
+	}
 	public void addXY_DA(double distance, double angle) {
 		addXY(distance*cos(angle), distance*sin(angle));
 	}
@@ -484,7 +500,7 @@ public abstract class Point implements Serializable, ObjectSavable {
 	public void addSpeed(double accel) {}
 	public void addSpeed(double accel, boolean brakeMode) {}
 	public void addSpeed_DA(double distance, double angle) {}
-	public void accelerate_MUL(double rate) {}
+	public void mulSpeed(double rate) {}
 	public void stop() {}
 	/**
 	 * Move forward.

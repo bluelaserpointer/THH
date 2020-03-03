@@ -161,12 +161,14 @@ public class GUIParts extends GHQObject implements DragIO {
 		backGroundPaint.rectPaint(point().intX(), point().intY(), width(), height());
 	}
 	//control-uiEvent
-	public void enable() {
+	public GUIParts enable() {
 		isEnabled = true;
+		return this;
 	}
-	public void disable() {
+	public GUIParts disable() {
 		isClicking = false;
 		isEnabled = false;
+		return this;
 	}
 	public boolean isMouseEntered() {
 		return GHQ.isMouseInArea_Screen(point().intX(), point().intY(), width(), height());

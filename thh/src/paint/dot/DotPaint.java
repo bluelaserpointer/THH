@@ -53,7 +53,9 @@ public abstract class DotPaint extends RectPaint {
 		dotPaint(coordinate.intX(), coordinate.intY());
 	}
 	public void dotPaint(DotPaintParameter parameter) {
-		this.dotPaint_turnAndCapSize(parameter.point, parameter.angle, parameter.sizeCap);
+		GHQ.setFlip(parameter.doXFlip, parameter.doYFlip);
+		this.dotPaint_turnAndCapSize(parameter.point, parameter.angle.get(), parameter.sizeCap);
+		GHQ.setFlip(parameter.doXFlip, parameter.doYFlip);
 	}
 	@Override
 	public void rectPaint(int x, int y, int w, int h) {

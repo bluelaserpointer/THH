@@ -176,7 +176,7 @@ public class CornerNavigation {
 		corners.add(new Corner(x, y));
 	}
 	public void defaultCornerCollect() {
-		final int X_LIMIT = GHQ.stage().WIDTH, Y_LIMIT = GHQ.stage().HEIGHT;
+		final int X_LIMIT = GHQ.stage().width(), Y_LIMIT = GHQ.stage().height();
 		boolean oldBlockState = false;
 		final Point point = new Point.IntPoint(EQUAL_GAP/2, EQUAL_GAP/2);
 		for(;point.intX() < X_LIMIT;point.shift(D, EQUAL_GAP)) {

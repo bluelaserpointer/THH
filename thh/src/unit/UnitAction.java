@@ -45,6 +45,9 @@ public abstract class UnitAction implements HasAnglePoint {
 	public Angle angle() {
 		return body.angle();
 	}
+	public int initialFrame() {
+		return initialFrame;
+	}
 	//for child class
 	/**
 	 * Apply to this body doing the action.

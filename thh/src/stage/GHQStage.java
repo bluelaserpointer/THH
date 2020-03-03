@@ -2,7 +2,6 @@ package stage;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -24,11 +23,10 @@ import unit.Unit;
 import vegetation.DropItem;
 import vegetation.Vegetation;
 
-public class GHQStage implements HasBoundingBox, Serializable{
-	private static final long serialVersionUID = 6086633760555467724L;
+public class GHQStage implements HasBoundingBox {
 	
 	public final Point point = new Point.IntPoint();
-	public final int WIDTH, HEIGHT;
+	protected final int width, height;
 	public final GHQObjectList<Unit> units = new GHQObjectList<Unit>();
 	public final GHQObjectList<Bullet> bullets = new GHQObjectList<Bullet>();
 	public final GHQObjectList<Effect> effects = new GHQObjectList<Effect>();
@@ -37,8 +35,12 @@ public class GHQStage implements HasBoundingBox, Serializable{
 	public final GHQObjectList<ItemData> items = new GHQObjectList<ItemData>();
 	
 	public GHQStage(int width, int height) {
-		WIDTH = width;
-		HEIGHT = height;
+		this.width = width;
+		this.height = height;
+	}
+	public GHQStage(GHQStage sample) {
+		width = sample.width;
+		height = sample.height;
 	}
 	
 	//main role
@@ -63,7 +65,7 @@ public class GHQStage implements HasBoundingBox, Serializable{
 	public void fill(Color color) {
 		final Graphics2D G2 = GHQ.getG2D();
 		G2.setColor(color);
-		G2.fillRect(0, 0, WIDTH, HEIGHT);
+		G2.fillRect(0, 0, width, height);
 	}
 	
 	//update
@@ -197,7 +199,7 @@ public class GHQStage implements HasBoundingBox, Serializable{
 		Unit nearstVisibleEnemy = null;
 		double nearstDistanceSq = GHQ.MAX;
 		for(Unit enemy : getUnits_standpoint(unit, false)) {
-			if(!enemy.isAlive() || !DYNAM.isVisible(enemy))
+			if(!enemy.isAlive() || !DYNAM.isVisible(enemy) || enemy == unit)
 				continue;
 			if(nearstDistanceSq == GHQ.MAX) {
 				nearstVisibleEnemy = enemy;
@@ -306,7 +308,7 @@ public class GHQStage implements HasBoundingBox, Serializable{
 	 * @return true - in stage / false - in outside of stage
 	 */
 	public boolean inStage(int x, int y) {
-		return 0 < x && x < WIDTH && 0 < y && y < HEIGHT;
+		return 0 < x && x < width && 0 < y && y < height;
 	}
 	public final boolean inStage(Point point) {
 		return inStage(point.intX(), point.intY());
@@ -356,10 +358,10 @@ public class GHQStage implements HasBoundingBox, Serializable{
 	}
 	@Override
 	public int width() {
-		return WIDTH;
+		return width;
 	}
 	@Override
 	public int height() {
-		return HEIGHT;
+		return height;
 	}
 }

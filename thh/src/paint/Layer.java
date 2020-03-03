@@ -1,9 +1,9 @@
 package paint;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class Layer implements HasPaint {
-	private final LinkedList<HasPaint> paintLayers = new LinkedList<HasPaint>();
+	private final ArrayList<HasPaint> paintLayers = new ArrayList<HasPaint>();
 	public Layer() {}
 	public Layer(HasPaint...hasPaints) {
 		setLayers(hasPaints);
@@ -28,7 +28,7 @@ public class Layer implements HasPaint {
 		//TODO: complete patialSort
 		return this;
 	}
-	public LinkedList<HasPaint> layerList() {
+	public ArrayList<HasPaint> layerList() {
 		return paintLayers;
 	}
 }

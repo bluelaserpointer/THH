@@ -35,13 +35,15 @@ public class ClickMenu<T> extends AutoResizeMenu{
 		targetObject = null;
 	}
 	@Override
-	public void enable() {
+	public GUIParts enable() {
 		//reject normal enable();
+		return this;
 	}
 	@Override
-	public void disable() {
+	public GUIParts disable() {
 		super.disable();
 		remove();
+		return this;
 	}
 	@Override
 	public void outsideClicked() {

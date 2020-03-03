@@ -1,6 +1,7 @@
 package physics;
 
 import core.GHQ;
+import physics.Direction.DirectionLR;
 
 public class Angle {
 	protected double angle;
@@ -31,12 +32,12 @@ public class Angle {
 		set(Math.atan2(dy, dx));
 	}
 	public void spin(double angle) {
-		this.set(this.angle + angle);
+		set(get() + angle);
 	}
 	public double spinTo_ConstSpd(double targetAngle, double angularSpeed) {
 		if(angularSpeed <= 0)
 			return GHQ.MAX;
-		final double D_ANGLE = getDelta(targetAngle);
+		final double D_ANGLE = getDiff(targetAngle);
 		if(D_ANGLE < 0) {
 			if(D_ANGLE < -angularSpeed) {
 				spin(-angularSpeed);
@@ -57,7 +58,7 @@ public class Angle {
 			return 0.0;
 	}
 	public double spinTo_Suddenly(double targetAngle, double turnFrame) {
-		final double D_ANGLE = getDelta(targetAngle);
+		final double D_ANGLE = getDiff(targetAngle);
 		final double TURN_ANGLE = D_ANGLE/turnFrame;
 		spin(TURN_ANGLE);
 		return Math.abs(D_ANGLE - TURN_ANGLE);
@@ -84,9 +85,6 @@ public class Angle {
 	public static double spinTo_Suddenly(double nowAngle, double targetAngle, double turnFrame) {
 		return nowAngle + (targetAngle - nowAngle)/turnFrame;
 	}
-	public void clear() {
-		angle = GHQ.NONE;
-	}
 	//tool
 	public static double random() {
 		return Math.random()*Math.PI*2;
@@ -96,10 +94,10 @@ public class Angle {
 		return angle;
 	}
 	public double sin() {
-		return Math.sin(angle);
+		return Math.sin(get());
 	}
 	public double cos() {
-		return Math.cos(angle);
+		return Math.cos(get());
 	}
 	public double sin(double r) {
 		return r*sin();
@@ -107,10 +105,13 @@ public class Angle {
 	public double cos(double r) {
 		return r*cos();
 	}
-	public double getDelta(double angle) {
-		return GHQ.angleFormat(angle - this.angle);
+	public double getDiff(double angle) {
+		return GHQ.angleFormat(angle - get());
 	}
-	public boolean isDeltaSmaller(double angle, double range) {
-		return Math.abs(getDelta(angle)) < range;
+	public boolean isDiffSmaller(double angle, double range) {
+		return Math.abs(getDiff(angle)) < range;
+	}
+	public DirectionLR directionLR() {
+		return cos() > 0 ? DirectionLR.RIGHT : DirectionLR.LEFT;
 	}
 }
