@@ -289,7 +289,7 @@ public class GHQStage implements HasBoundingBox {
 	 * @param bullet
 	 * @return
 	 */
-	public final ArrayList<Unit> getHitUnits(ArrayList<Unit> units,HitInteractable object) {
+	public final ArrayList<Unit> getHitUnits(ArrayList<Unit> units, HitInteractable object) {
 		final ArrayList<Unit> result = new ArrayList<Unit>();
 		for(Unit unit : units) {
 			if(unit.intersects(object))

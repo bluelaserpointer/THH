@@ -3,7 +3,6 @@ package exsampleGame.unit;
 import static java.lang.Math.PI;
 
 import bullet.Bullet;
-import calculate.IntDamage;
 import core.GHQ;
 import core.GHQObject;
 import paint.ImageFrame;
@@ -39,7 +38,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 			name = "FudaKouhaku";
 			point().setSpeed(20);
 			physics().setHitShape(new Circle(this, 10));
-			setDamage(new IntDamage(((THH_BasicUnit)shooterUnit).HP, 50));
+			setDamage(new THH_damage(50));
 			limitFrame = 200;
 			paintScript = paint;
 		}
@@ -62,7 +61,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 			name = "FudaShiroKuro";
 			point().fastParaAdd_DASpd(0.0, shooterUnit.angle().get(), 20);
 			physics().setHitShape(new Circle(this, 10));
-			setDamage(new IntDamage(((THH_BasicUnit)shooterUnit).HP, 20));
+			setDamage(new THH_damage(20));
 			limitFrame = 200;
 			paintScript = paint;
 		}
@@ -81,7 +80,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 			name = "FudaSouhaku";
 			point().setSpeed(20);
 			physics().setHitShape(new Circle(this, 15));
-			setDamage(new IntDamage(((THH_BasicUnit)shooterUnit).HP, 25));
+			setDamage(new THH_damage(25));
 			reflection = 1;
 			limitFrame = 40;
 			accel = -2.0;
@@ -102,7 +101,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 			name = "MillkyWay";
 			point().fastParaAdd_DASpd(0.0, shooterUnit.angle().get(), 20);
 			physics().setHitShape(new Circle(this, 30));
-			setDamage(new IntDamage(((THH_BasicUnit)shooterUnit).HP, 40));
+			setDamage(new THH_damage(40));
 			limitFrame = 200;
 			paintScript = paint;
 		}
@@ -121,7 +120,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 			name = "NarrowSpark";
 			point().setSpeed(2);
 			physics().setHitShape(new Circle(this, 15));
-			setDamage(new IntDamage(((THH_BasicUnit)shooterUnit).HP, 8));
+			setDamage(new THH_damage(8));
 			penetration = GHQ.MAX;
 			reflection = 3;
 			limitFrame = 40;
@@ -160,7 +159,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 			physics().setHitShape(new Circle(this, 30));
 			point().setSpeed(40);
 			accel = -1.0;
-			setDamage(new IntDamage(((THH_BasicUnit)shooterUnit).HP, 10));
+			setDamage(new THH_damage(10));
 			limitFrame = 200;
 			paintScript = paint;
 		}
@@ -185,7 +184,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 			name = "MAGIC_MISSILE";
 			physics().setHitShape(new Circle(this, 20));
 			accel = 1.07;
-			setDamage(new IntDamage(((THH_BasicUnit)shooterUnit).HP, 500));
+			setDamage(new THH_damage(500));
 			limitFrame = 2000;
 			paintScript = paint;
 			point().fastParaAdd_DASpd(10, GHQ.random2(PI/36), 10.0);
@@ -216,7 +215,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 			name = "LightBall";
 			physics().setHitShape(new Circle(this, 10));
 			point().fastParaAdd_DASpd(10, shooterUnit.angle().get(), 3);
-			setDamage(new IntDamage(((THH_BasicUnit)shooterUnit).HP, 20));
+			setDamage(new THH_damage(20));
 			paintScript = paint;
 		}
 		@Override
@@ -234,7 +233,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 			name = "HealShotgun";
 			physics().setHitShape(new Circle(this, 10));
 			point().fastParaAdd_DASpd(10, shooterUnit.angle().get(), 3);
-			setDamage(new IntDamage(((THH_BasicUnit)shooterUnit).HP, -20));
+			setDamage(new THH_damage(-20));
 			limitRange = 150;
 			paintScript = paint;
 		}
@@ -252,7 +251,7 @@ public abstract class THH_BulletLibrary extends Bullet{
 			super(shooterUnit);
 			name = "BlackSlashBurst";
 			physics().setHitShape(new Circle(this, 10));
-			setDamage(new IntDamage(((THH_BasicUnit)shooterUnit).HP, 20));
+			setDamage(new THH_damage(20));
 			reflection = 1;
 			limitFrame = 200;
 			paintScript = paint;

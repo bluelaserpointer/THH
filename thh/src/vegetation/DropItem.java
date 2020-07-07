@@ -6,8 +6,7 @@ import paint.dot.DotPaint;
 import physics.HasPoint;
 import physics.Point;
 
-public class DropItem extends Vegetation{
-	private static final long serialVersionUID = -8747093817175771314L;
+public class DropItem extends Vegetation {
 	public final ItemData ITEM;
 	
 	private final int HITBOX_W, HITBOX_H;
@@ -39,7 +38,7 @@ public class DropItem extends Vegetation{
 	}
 	public ItemData pickup() {
 		final ItemData tmpITEM = ITEM;
-		claimDelete();
+		super.claimDeleteFromStage();
 		return tmpITEM;
 	}
 }

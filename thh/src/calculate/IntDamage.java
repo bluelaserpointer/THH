@@ -2,22 +2,17 @@ package calculate;
 
 import core.GHQObject;
 
-public class IntDamage extends Damage {
-	protected final Consumables consumable;
+public abstract class IntDamage extends Damage {
 	protected int damageValue;
-	public IntDamage(Consumables consumable, int damageValue) {
-		this.consumable = consumable;
+	public IntDamage(int damageValue) {
 		this.damageValue = damageValue;
 	}
 	public IntDamage(IntDamage intDamage) {
 		super(intDamage);
-		this.consumable = intDamage.consumable;
 		this.damageValue = intDamage.damageValue;
 	}
 	@Override
-	public void doDamage(GHQObject target) {
-		consumable.consume(damageValue);
-	}
+	public abstract void doDamage(GHQObject target);
 	public void setDamage(int value) {
 		damageValue = value;
 	}
@@ -29,7 +24,5 @@ public class IntDamage extends Damage {
 		return this;
 	}
 	@Override
-	public IntDamage clone() {
-		return new IntDamage(this);
-	}
+	public abstract IntDamage clone();
 }

@@ -7,7 +7,7 @@ import paint.ColorFilling;
 import paint.ColorFraming;
 import paint.rect.RectPaint;
 
-public class BasicButton extends GUIParts{
+public class BasicButton extends GUIParts {
 	protected ColorFraming borderPaint;
 	public BasicButton(RectPaint paintScript, ColorFraming borderPaint, int x, int y, int w, int h) {
 		super.setBGPaint(paintScript);

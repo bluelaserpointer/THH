@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 
 import core.GHQ;
 import core.T_Verifier;
+import paint.ImageFrame;
 import paint.dot.HasDotPaint;
 import paint.rect.RectPaint;
 import storage.StorageWithSpace;
@@ -61,7 +62,7 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 	 * @param x - the x coordinate of the upper-left corner of this cell
 	 * @param y - the y coordinate of the upper-left corner of this cell
 	 */
-	protected void paintOfCell(int id, HasDotPaint object, int x, int y) {
+	protected void paintOfCell(int index, HasDotPaint object, int x, int y) {
 		cellPaint.rectPaint(x, y, cellSize);
 		if(object != null)
 			object.getDotPaint().dotPaint_capSize(x + cellSize/2, y + cellSize/2, (int)(cellSize*0.8));
@@ -71,6 +72,9 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 	public TableStorageViewer<T> setCellPaint(RectPaint paintScript) {
 		cellPaint = paintScript;
 		return this;
+	}
+	public TableStorageViewer<T> setCellImage(String imageURL) {
+		return setCellPaint(ImageFrame.create(imageURL));
 	}
 	@Override
 	public boolean clicked(MouseEvent e) {
