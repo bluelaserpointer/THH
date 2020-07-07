@@ -1,15 +1,15 @@
 package physics.hitShape;
 
-import paint.dot.DotPaint;
+import paint.dot.HasDotPaint;
 import physics.HasPoint;
 
-public class ImageRectShape extends HitShape{
+public class ImageRectShape extends RectShape {
 	private static final long serialVersionUID = 1238409585756263924L;
 	
-	protected DotPaint paintScript;
-	public ImageRectShape(HasPoint owner, DotPaint paintScript) {
-		super(owner);
-		this.paintScript = paintScript;
+	protected HasDotPaint paintOwner;
+	public ImageRectShape(HasPoint pointOwner, HasDotPaint paintOwner) {
+		super(pointOwner, paintOwner.getDotPaint().width(), paintOwner.getDotPaint().height());
+		this.paintOwner = paintOwner;
 	}
 	@Override
 	public boolean intersects(HitShape shape) {
@@ -21,16 +21,16 @@ public class ImageRectShape extends HitShape{
 	//tool
 	@Override
 	public HitShape clone(HasPoint newOwner) {
-		return new ImageRectShape(newOwner, paintScript);
+		return new ImageRectShape(newOwner, paintOwner);
 	}
 	
 	//information
 	@Override
 	public int width() {
-		return paintScript.width();
+		return paintOwner.getDotPaint().width();
 	}
 	@Override
 	public int height() {
-		return paintScript.height();
+		return paintOwner.getDotPaint().height();
 	}
 }

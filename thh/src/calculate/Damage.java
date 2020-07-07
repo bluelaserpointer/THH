@@ -2,21 +2,41 @@ package calculate;
 
 import static java.lang.Math.PI;
 
+import bullet.Bullet;
 import core.GHQ;
+import core.GHQObject;
 import effect.Effect;
 import paint.text.StringPaint;
 import physics.HasPoint;
-import unit.Unit;
 
-public interface Damage {
+public abstract class Damage {
+	protected GHQObject attacker = GHQObject.NULL_GHQ_OBJECT;
+	protected Bullet attackerBullet = Bullet.NULL_BULLET;
 	public static final Damage NULL_DAMAGE = new Damage() {
 		@Override
-		public void doDamage(Unit unit, Unit attacker) {}
+		public void doDamage(GHQObject target) {}
 		@Override
-		public Damage compound(Damage anotherDamage) {
-			return anotherDamage;
+		public Damage clone() {
+			return this;
 		}
 	};
+	//init
+	public Damage(Damage sample) {
+		attacker = sample.attacker;
+		attackerBullet = sample.attackerBullet;
+	}
+	public Damage() {}
+	public Damage setAttacker(GHQObject attacker) {
+		this.attacker = attacker;
+		return this;
+	}
+	public Damage setAttackingBullet(Bullet bullet) {
+		this.attackerBullet = bullet;
+		this.attacker = bullet.shooter();
+		return this;
+	}
+	
+	public abstract void doDamage(GHQObject target);
 	public static Effect getDefaultDmgEffect(HasPoint damagedTarget, StringPaint stringPaint) {
 		final Effect effect = new Effect();
 		effect.setName("DefaultDamageNumberEffect");
@@ -27,8 +47,18 @@ public interface Damage {
 		return effect;
 	}
 	
-	public abstract void doDamage(Unit unit, Unit attacker);
-	public default Damage compound(Damage anotherDamage) {
-		return new CompoundDamage(this, anotherDamage);
+	//information
+	public abstract Damage clone();
+	public GHQObject attacker() {
+		return attacker;
+	}
+	public Bullet attackerBullet() {
+		return attackerBullet;
+	}
+	public boolean hasAttacker() {
+		return attacker != null && attacker != GHQObject.NULL_GHQ_OBJECT;
+	}
+	public boolean hasAttackingBullet() {
+		return attackerBullet != null && attackerBullet != Bullet.NULL_BULLET;
 	}
 }

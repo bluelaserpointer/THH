@@ -10,7 +10,6 @@ import paint.dot.HasDotPaint;
 import physics.DstCntDynam;
 import physics.HasPoint;
 import physics.hitShape.Square;
-import unit.Unit;
 import weapon.Weapon;
 
 /**
@@ -23,7 +22,7 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 	protected Weapon originWeapon;
 	protected GHQObject shooter; //an information source of user
 	
-	public Damage
+	protected Damage
 		damage;
 	public int
 		limitFrame;
@@ -51,7 +50,7 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 		physics().setPoint(new DstCntDynam().setXY(shooter));
 		super.point().setMoveAngleByBaseAngle(shooter);
 		physics().setHitShape(new Square(this, 10));
-		physics().setHitGroup(shooter.hitGroup());
+		physics().setHitRule(shooter.hitGroup());
 		this.shooter = shooter;
 		name = getClass().getName();
 		init();
@@ -60,11 +59,11 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 		physics().setPoint(new DstCntDynam().setAll(sample));
 		point().setMoveAngleByBaseAngle(shooter);
 		physics().setHitShape(sample.hitShape().clone(this));
-		physics().setHitGroup(sample.hitGroup());
+		physics().setHitRule(sample.hitGroup());
 		originWeapon = sample.originWeapon;
 		shooter = sample.shooter;
 		name = sample.name;
-		damage = Damage.NULL_DAMAGE;
+		damage = sample.damage().clone();
 		limitFrame = sample.limitFrame;
 		limitRange = sample.limitRange;
 		penetration = sample.penetration;
@@ -72,6 +71,18 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 		accel = sample.accel;
 		paintScript = sample.paintScript;
 		hitShooter = sample.hitShooter;
+	}
+	//init
+	public Bullet setDamage(Damage damage) {
+		this.damage = damage;
+		damage.setAttackingBullet(this);
+		return this;
+	}
+	public Bullet setDamage(Damage damage, GHQObject attacker) {
+		this.damage = damage;
+		damage.setAttackingBullet(this);
+		damage.setAttacker(attacker);
+		return this;
 	}
 	@Override
 	public void idle() {
@@ -104,15 +115,15 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 		return range != GHQ.MAX && range <= ((DstCntDynam)point()).getMovedDistance();
 	}
 	public boolean outOfLifeSpan() {
-		claimDelete();
+		claimDeleteFromStage();
 		return true;
 	}
 	public boolean outOfRange() {
-		claimDelete();
+		claimDeleteFromStage();
 		return true;
 	}
 	public boolean outOfStage() {
-		claimDelete();
+		claimDeleteFromStage();
 		return true;
 	}
 	public final boolean dynamIdle() {
@@ -127,20 +138,10 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 			length = point().move(Math.min(length, maxGap));
 			
 			////////////
-			//landscape collision
-			////////////
-			if(judgeLandscapeCollision())
-				return !hitLandScapeDeleteCheck();
-			
-			////////////
 			//entity collision
 			////////////
-			for(Unit unit : GHQ.stage().getHitUnits(GHQ.stage().getUnits_standpoint(this, false), this)) {
-				if(!hitShooter && unit == shooter)
-					continue;
-				if(hitUnitDeleteCheck(unit))
-					return false;
-			}
+			if(entityCollision())
+				return false;
 		} while(length > 0);
 		
 		////////////
@@ -148,6 +149,23 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 		////////////
 		point().addSpeed(accel, true);
 		return true;
+	}
+	/**
+	 * Test collision with others and return if this bullet should be deleted.
+	 * @return true - need delete, false - not need
+	 */
+	protected boolean entityCollision() {
+		for(GHQObject object : GHQ.stage().bulletCollisionGroup) {
+			if(intersects_checkNotDeleted(object)) {
+				if(hitObjectDeleteCheck(object))
+					return true;
+			}
+		}
+		return false;
+	}
+	@Override
+	public boolean intersects_checkNotDeleted(GHQObject object) {
+		return (hitShooter || object != shooter) && super.intersects_checkNotDeleted(object);
 	}
 	@Override
 	public void paint() {
@@ -157,28 +175,9 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 		paintScript.dotPaint_turn(point(), point().moveAngle());
 	}
 	//extends
-	public boolean judgeLandscapeCollision() {
-		return GHQ.stage().structures.intersected(this);
-	}
-	public boolean hitLandScapeDeleteCheck() {
-		hitObject();
-		if(penetration > 0) {
-			if(penetration != GHQ.MAX)
-				penetration--;
-		}else {
-			if(reflection > 0) {
-				if(reflection != GHQ.MAX)
-					reflection--;
-				//edit reflection process
-			}else {
-				return outOfPenetration();
-			}
-		}
-		return false;
-	}
-	public boolean hitUnitDeleteCheck(Unit unit) {
-		unit.damage(damage, this);
-		hitObject();
+	public boolean hitObjectDeleteCheck(GHQObject object) {
+		object.damage(damage);
+		hitObject(object);
 		if(penetration > 0) {
 			if(penetration != GHQ.MAX)
 				penetration--;
@@ -188,10 +187,10 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 		return false;
 	}
 	public boolean outOfPenetration() {
-		claimDelete();
+		claimDeleteFromStage();
 		return true;
 	}
-	public void hitObject() {
+	public void hitObject(GHQObject object) {
 	}
 	//////////////
 	//control
@@ -290,5 +289,8 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 	@Override
 	public String name() {
 		return "[Bullet]" + name;
+	}
+	public Damage damage() {
+		return damage;
 	}
 }

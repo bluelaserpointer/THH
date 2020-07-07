@@ -6,7 +6,7 @@ import core.GHQ;
 
 /**
  * A subclass of {@link Dynam} which is able to count its physical distance.<br>
- * Note that distance count is only available for {@link DstCntDynam#move()} and {@link DstCntDynam#approach(HasDynam, double)}/{@link DstCntDynam#approach(double, double, double)}.<br>
+ * Note that distance count is only available for {@link DstCntDynam#moveBySpeed()} and {@link DstCntDynam#approach(HasDynam, double)}/{@link DstCntDynam#approach(double, double, double)}.<br>
  * Such as {@link DstCntDynam#setXY(double, double)} don't affect the distance count.
  * @author bluelaserpointer
  * @since alpha1.0
@@ -48,7 +48,7 @@ public class DstCntDynam extends Dynam{
 		movedDistance = 0;
 	}
 	@Override
-	public void move() {
+	public void moveBySpeed() {
 		if(xSpd == 0 && ySpd == 0)
 			return;
 		x += xSpd;

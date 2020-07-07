@@ -2,13 +2,13 @@ package unit;
 
 import java.awt.geom.Rectangle2D;
 
-import bullet.Bullet;
 import calculate.Damage;
 import core.GHQ;
 import core.GHQObject;
-import gui.MessageSource;
 import item.ItemData;
 import paint.ImageFrame;
+import paint.dot.DotPaint;
+import paint.dot.HasDotPaint;
 import physics.HasAnglePoint;
 import physics.HitInteractable;
 import physics.Point;
@@ -18,7 +18,7 @@ import physics.Point;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Unit extends GHQObject implements MessageSource, HasAnglePoint {
+public abstract class Unit extends GHQObject implements HasAnglePoint, HasDotPaint {
 	public static final Unit NULL_UNIT = new Unit() {
 		private ImageFrame imageFrame = ImageFrame.create(this, "thhimage/gui_editor/Unit.png");
 		@Override
@@ -31,14 +31,16 @@ public abstract class Unit extends GHQObject implements MessageSource, HasAngleP
 			return this;
 		}
 		@Override
-		public void damage(Damage damage, Bullet bullet) {}
-		@Override
 		public boolean isAlive() {
 			return true;
 		}
 		@Override
 		public String name() {
 			return "DummyUnit";
+		}
+		@Override
+		public DotPaint getDotPaint() {
+			return DotPaint.BLANK_SCRIPT;
 		}
 	};
 	public String originalName = "";
@@ -64,18 +66,14 @@ public abstract class Unit extends GHQObject implements MessageSource, HasAngleP
 	public void idle() {
 		super.idle();
 		if(!isAlive()) {
-			claimDelete();
+			claimDeleteFromStage();
 		}
 	}
 	
 	/////////////
 	//control
 	/////////////
-	public void damagedTarget(Unit targetUnit, Bullet bullet) {}
-	public abstract void damage(Damage damage, Bullet bullet);
-	public final void damage(Damage damage) {
-		damage(damage, Bullet.NULL_BULLET);
-	}
+	public void damagedTarget(Unit targetUnit, Damage damage) {}
 
 	/////////////
 	//event

@@ -7,10 +7,9 @@ import static java.lang.Math.sqrt;
 
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 
 import core.GHQ;
-import loading.ObjectSavable;
-import loading.ObjectSaveTree;
 import physics.Direction.Direction4;
 
 /**
@@ -18,7 +17,7 @@ import physics.Direction.Direction4;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Point implements Serializable, ObjectSavable {
+public abstract class Point implements Serializable {
 	private static final long serialVersionUID = -4012705097956450689L;
 	public static final Point NULL_POINT = new Point.IntPoint();
 	
@@ -174,11 +173,18 @@ public abstract class Point implements Serializable, ObjectSavable {
 	///////////////
 	
 	///////////////toString
+	@Override
+	public String toString() {
+		return toString_int();
+	}
 	public String toString_int() {
 		return intX() + ", " + intY();
 	}
 	public String toString_double() {
 		return doubleX() + ", " + doubleY();
+	}
+	public String toString_double(DecimalFormat deciamlFormat) {
+		return deciamlFormat.format(doubleX()) + ", " + deciamlFormat.format(doubleY());
 	}
 	///////////////angleTo
 	public double angleTo(int x,int y) {
@@ -327,14 +333,27 @@ public abstract class Point implements Serializable, ObjectSavable {
 		return !GHQ.stage().inStage(this) || GHQ.stage().structures.intersected_dot(this);
 	}
 	///////////////isVisible
-	public boolean isVisible(int x,int y) {
-		return GHQ.stage().checkLoS(intX(), intY(), x, y);
+	public boolean isVisible(int x, int y, double viewDistance) {
+		final double dist = distance(x, y);
+		return !(dist > viewDistance) && dist + GHQ.stage().visibility(intX(), intY(), x, y) < viewDistance;
+	}
+	public boolean isVisible(Point point, double viewDistance) {
+		return isVisible(point.intX(), point.intY(), viewDistance);
+	}
+	public boolean isVisible(HasPoint hasPoint, double viewDistance) {
+		return hasPoint == null ? false : isVisible(hasPoint.point(), viewDistance);
+	}
+	public boolean isVisible(int x, int y) {
+		return GHQ.stage().visibility(intX(), intY(), x, y) == 0.0;
 	}
 	public boolean isVisible(Point point) {
 		return isVisible(point.intX(), point.intY());
 	}
 	public boolean isVisible(HasPoint hasPoint) {
 		return hasPoint == null ? false : isVisible(hasPoint.point());
+	}
+	public double visiblity(int x, int y) {
+		return GHQ.stage().visibility(intX(), intY(), x, y);
 	}
 	///////////////equals
 	public boolean equals(int x, int y) {
@@ -496,6 +515,7 @@ public abstract class Point implements Serializable, ObjectSavable {
 	public void setYSpeed(double ySpeed) {}
 	public void setSpeed(double xSpeed, double ySpeed) {}
 	public void setSpeed(double speed) {}
+	public void setSpeed_DA(double distance, double angle) {}
 	public void addSpeed(double xSpeed, double ySpeed) {}
 	public void addSpeed(double accel) {}
 	public void addSpeed(double accel, boolean brakeMode) {}
@@ -505,7 +525,10 @@ public abstract class Point implements Serializable, ObjectSavable {
 	/**
 	 * Move forward.
 	 */
-	public void move() {}
+	public void idle() {
+		moveBySpeed();
+	}
+	public void moveBySpeed() {}
 	public void moveIfNoObstacles(HitInteractable source) {}
 	/**
 	 * Move forward with a limited length.
@@ -538,14 +561,6 @@ public abstract class Point implements Serializable, ObjectSavable {
 		public IntPoint(Point point) {
 			this.x = point.intX();
 			this.y = point.intY();
-		}
-		public IntPoint(ObjectSaveTree tree) {
-			this.x = tree.pollInt();
-			this.y = tree.pollInt();
-		}
-		@Override
-		public ObjectSaveTree save() {
-			return new ObjectSaveTree(0, x, y);
 		}
 		@Override
 		public IntPoint setAll(Point point) {
@@ -612,14 +627,6 @@ public abstract class Point implements Serializable, ObjectSavable {
 		public DoublePoint(Point point) {
 			this.x = point.doubleX();
 			this.y = point.doubleY();
-		}
-		public DoublePoint(ObjectSaveTree tree) {
-			this.x = tree.pollDouble();
-			this.y = tree.pollDouble();
-		}
-		@Override
-		public ObjectSaveTree save() {
-			return new ObjectSaveTree(0, x, y);
 		}
 		@Override
 		public DoublePoint setAll(Point point) {

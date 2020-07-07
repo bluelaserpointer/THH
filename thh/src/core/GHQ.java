@@ -7,6 +7,7 @@ import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics;
@@ -15,6 +16,7 @@ import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.Toolkit;
 import java.awt.event.*;
 import java.awt.image.*;
 import java.awt.geom.*;
@@ -29,7 +31,6 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 import gui.GUIParts;
-import gui.MessageSource;
 import gui.MouseHook;
 import input.key.KeyListenerEx;
 import input.keyType.KeyTypeListener;
@@ -109,12 +110,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 
 	//stage object data
 	private static GHQStage stage;
-	
-	//event data
-	private static final ArrayDeque<String> messageStr = new ArrayDeque<String>();
-	private static final ArrayDeque<MessageSource> messageSource = new ArrayDeque<MessageSource>();
-	private static final ArrayDeque<Integer> messageEvent = new ArrayDeque<Integer>();
-	private int messageIterator;
 	
 	//Initialize methods/////////////
 	public static Game loadEngine(String fileURL) {
@@ -257,39 +252,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		g2.translate(-TRANSLATE_X, -TRANSLATE_Y);
 		//gui parts////////////////////
 		BASE_SCREEN_UI.idle();
-		//message system///////////////
-		if(messageStop) {
-			if(messageStr.size() > 0) {
-				if(messageIterator > messageStr.getFirst().length() - 1){
-					if(key_enter) { //next message order
-						messageStr.remove();
-						final int EVENT = messageEvent.remove();
-						if(EVENT != NONE)
-							messageSource.remove().eventNotice(EVENT);
-						messageIterator = 0;
-						key_enter = false;
-					}
-				}else if(key_enter) {
-					messageIterator = messageStr.getFirst().length();
-					key_enter = false;
-				}else if(systemFrame % 2 == 0) //reading
-					messageIterator++;
-				//show message
-				if(messageStr.size() > 0) {
-					g2.setFont(basicFont);
-					g2.setStroke(stroke5);
-					g2.setColor(Color.CYAN);
-					g2.drawString(messageStr.getFirst().substring(0, messageIterator), 150, 450);
-				}
-			}else { //finished reading
-				stopEventKind = NONE;
-				messageStop = false;
-				messageIterator = 0;
-				messageStr.clear();
-				messageSource.clear();
-				messageEvent.clear();
-			}
-		}
 		//debug ////////////////////////
 		if(debugMode){
 			//grid
@@ -396,6 +358,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static void setStageZoomRate(double value) {
 		stageZoomRate = value;
+	}
+	public static void showCursor(boolean show) {
+		if(show) {
+			hq.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		} else {
+			hq.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(hq.createImage(new MemoryImageSource(0, 0, new int[0], 0, 0)), new java.awt.Point(0, 0), null));
+		}
 	}
 	//control-viewPoint
 	public static void viewMove(double dx, double dy) {
@@ -853,6 +822,14 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return gameFrame;
 	}
 	/**
+	 * Returns passed frame that independents from game pause.
+	 * @return now gameFrame
+	 * @since 1.0
+	 */
+	public static final int systemFrame() {
+		return systemFrame;
+	}
+	/**
 	 * Returns frames passed from the indicated frame.
 	 * @param frame
 	 * @return passed frames
@@ -929,29 +906,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return freezeScreen;
 	}
 	
-	//event
-	public static final void addMessage(MessageSource source, String message) {
-		stopEventKind = STOP;
-		messageStop = true;
-		messageSource.add(source);
-		messageStr.add(message);
-		messageEvent.add(GHQ.NONE);
-	}
-	public static final void addMessage(MessageSource source, int event, String message) {
-		stopEventKind = STOP;
-		messageStop = true;
-		messageSource.add(source);
-		messageStr.add(message);
-		messageEvent.add(event);
-	}
-	
 	//stage test area
 	final private void resetStage(){
 		if(stage != null)
 			stage.clear();
-		messageSource.clear();
-		messageStr.clear();
-		messageEvent.clear();
 		ErrorCounter.clear();
 		gameFrame = 0;
 		System.gc();
@@ -1240,6 +1198,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			radian += PI*2;
 		return radian;
 	}
+	public static final Random random = new Random();
 	public static final int random2(int value1, int value2) {
 		if(value1 == value2)
 			return value1;

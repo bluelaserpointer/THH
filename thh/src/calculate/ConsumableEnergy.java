@@ -2,7 +2,7 @@ package calculate;
 
 import calculate.adjuster.RangeChecker;
 
-public class ConsumableEnergy implements Consumables, HasNumber{
+public class ConsumableEnergy implements Consumables {
 	protected ValueWithCalculation value = new ValueWithCalculation(),
 			min = new ValueWithCalculation(Integer.MIN_VALUE),
 			max = new ValueWithCalculation(Integer.MAX_VALUE),
@@ -34,13 +34,19 @@ public class ConsumableEnergy implements Consumables, HasNumber{
 		value.addCalculation(calculations);
 	}
 	//Set_Value
+	public ConsumableEnergy directSetValue(Number value) {
+		this.value.directSetValue(value);
+		return this;
+	}
+	public ConsumableEnergy directSetValue(HasNumber hasNumber) {
+		return directSetValue(hasNumber.getNumber());
+	}
 	public ConsumableEnergy setValue(Number value) {
 		this.value.setValue(value);
 		return this;
 	}
 	public ConsumableEnergy setValue(HasNumber hasNumber) {
-		this.value.setValue(hasNumber.getNumber());
-		return this;
+		return setValue(hasNumber.getNumber());
 	}
 	@Override
 	public void setNumber(Number newValue) {
@@ -130,15 +136,6 @@ public class ConsumableEnergy implements Consumables, HasNumber{
 		}
 		return (double)(value.doubleValue() - min.doubleValue())/(max.doubleValue() - min.doubleValue());
 	}
-	public boolean isMin() {
-		return value.doubleValue() == min.doubleValue();
-	}
-	public boolean isMax() {
-		return value.doubleValue() == max.doubleValue();
-	}
-	public boolean isDefault() {
-		return value.doubleValue() == defaultValue.doubleValue();
-	}
 	public int lastIncreasedFrame() {
 		return value.lastIncreaseFrame();
 	}
@@ -195,6 +192,18 @@ public class ConsumableEnergy implements Consumables, HasNumber{
 	@Override
 	public Number getNumber() {
 		return value.getNumber();
+	}
+	@Override
+	public Number minNumber() {
+		return min.getNumber();
+	}
+	@Override
+	public Number maxNumber() {
+		return max.getNumber();
+	}
+	@Override
+	public Number defaultNumber() {
+		return defaultValue.getNumber();
 	}
 	public ValueWithCalculation getValueWithCalculation_value() {
 		return value;

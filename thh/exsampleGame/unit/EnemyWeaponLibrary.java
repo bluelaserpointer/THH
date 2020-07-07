@@ -16,21 +16,21 @@ public class EnemyWeaponLibrary{
 		case lightBall_S:
 		case lightBall_ROUND:
 			WEAPON.name = "lightBall_S";
-			WEAPON.coolTime = 5;
-			WEAPON.magazineSize = 6;
-			WEAPON.reloadTime = 100;
+			WEAPON.setMagazineSize(6);
+			WEAPON.setCoolTime(5);
+			WEAPON.setReloadTime(100);
 			break;
 		case HEAL_SHOTGUN:
 			WEAPON.name = "HEAL_SHOTGUN";
-			WEAPON.coolTime = 5;
-			WEAPON.magazineSize = 3;
-			WEAPON.reloadTime = 20;
+			WEAPON.setMagazineSize(3);
+			WEAPON.setCoolTime(5);
+			WEAPON.setReloadTime(20);
 			break;
 		case BLACK_SLASH_BURST:
 			WEAPON.name = "BLACK_SLASH_BURST";
-			WEAPON.coolTime = 5;
-			WEAPON.magazineSize = 1;
-			WEAPON.reloadTime = 40;
+			WEAPON.setMagazineSize(1);
+			WEAPON.setCoolTime(5);
+			WEAPON.setReloadTime(40);
 			break;
 		}
 		return WEAPON;
@@ -48,7 +48,7 @@ public class EnemyWeaponLibrary{
 			break;
 		case BLACK_SLASH_BURST:
 			final double DEG10 = PI/18;
-			GHQ.stage().addBullet(new THH_BulletLibrary.BlackSlashBurst(user)).split_NWay(10,new double[] {-DEG10, 0.0, +DEG10},20);
+			GHQ.stage().addBullet(new THH_BulletLibrary.BlackSlashBurst(user)).split_NWay(10, new double[] {-DEG10, 0.0, +DEG10}, 20);
 			break;
 		}
 	}

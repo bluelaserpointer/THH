@@ -1,8 +1,12 @@
 package weapon;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import bullet.Bullet;
 import core.GHQ;
 import core.GHQObject;
-import physics.HitGroup;
+import physics.HitRule;
 import unit.Unit;
 
 /**
@@ -14,7 +18,7 @@ public class Weapon {
 	public static final Weapon NULL_WEAPON = new Weapon();
 	public String
 		name;
-	public int
+	protected int
 		coolTime, //
 		coolSpeed, //
 		reloadTime, //
@@ -29,15 +33,13 @@ public class Weapon {
 		autoReload;
 	public Weapon() {
 		name = "<Not named>";
-		coolTime = 0;
+		coolProgress = coolTime = 0;
 		coolSpeed = 1;
-		reloadTime = 0;
+		reloadProgress = reloadTime = 0;
 		reloadSpeed = 1;
 		magazineSize = GHQ.MAX;
 		magazineConsumptionSpeed = 1;
 		autoReload = true;
-		
-		coolProgress = coolTime;
 	}
 	/**
 	 * End current cool and reload process and unload the magazine.
@@ -71,6 +73,66 @@ public class Weapon {
 		}
 	}
 	///////////////////
+	//parameter init
+	///////////////////
+	public void setCoolTime(int coolTime) {
+		coolProgress = this.coolTime = coolTime;
+	}
+	public void setReloadTime(int reloadTime) {
+		reloadProgress = this.reloadTime = reloadTime;
+	}
+	public void setCoolSpeed(int coolSpeed) {
+		this.coolSpeed = coolSpeed;
+	}
+	public void setReloadSpeed(int reloadSpeed) {
+		this.reloadSpeed = reloadSpeed;
+	}
+	public void setCoolProgress(int coolProgress) {
+		this.coolProgress = coolProgress;
+	}
+	public void setReloadProgress(int reloadProgress) {
+		this.reloadProgress = reloadProgress;
+	}
+	public void setMagazine(int magazine) {
+		this.magazine = magazine;
+	}
+	public void setMagazineSize(int magazineSize) {
+		this.magazineSize = magazineSize;
+	}
+	public void setAutoReload(boolean autoReload) {
+		this.autoReload = autoReload;
+	}
+	///////////////////
+	//parameter info
+	///////////////////
+	public int coolTime() {
+		return coolTime;
+	}
+	public int reloadTime() {
+		return reloadTime;
+	}
+	public int coolSpeed() {
+		return coolSpeed;
+	}
+	public int reloadSpeed() {
+		return reloadSpeed;
+	}
+	public int coolProgress() {
+		return coolProgress;
+	}
+	public int reloadProgress() {
+		return reloadProgress;
+	}
+	public int magazine() {
+		return magazine;
+	}
+	public int magazineSize() {
+		return magazineSize;
+	}
+	public boolean autoReload() {
+		return autoReload;
+	}
+	///////////////////
 	//fire
 	///////////////////
 	/**
@@ -81,32 +143,41 @@ public class Weapon {
 		return isCoolFinished() && isReloadFinished() && magazine >= magazineConsumptionSpeed;
 	}
 	/**
-	 * Normally trigger this weapon. It will do nothing until the cool down process finished, or the required magazines are not enough.<br>
+	 * Fire if canFire() returns true.<br>
 	 * The bullets' initial Dynam is based on shooter's current dynam.<br>
-	 * Turn the dynam if you want the bullets face to another direction.
 	 * @param shooter
 	 * @param standpoint
-	 * @return
+	 * @return list of shoot bullets, or null if canFire() returns false
 	 */
-	public boolean trigger(GHQObject shooter, HitGroup standpoint) {
+	public List<Bullet> trigger(GHQObject shooter, HitRule standpoint) {
 		if(canFire()) {
 			startCool();
 			if(magazine != GHQ.MAX)
 				magazine -= magazineConsumptionSpeed;
-			setBullets(shooter, standpoint);
-			return true;
+			return setBullets(shooter, standpoint);
 		}
-		return false;
+		return null;
 	}
-	public final boolean trigger(Unit shooter) {
+	/**
+	 * 
+	 * @param shooter
+	 * @return
+	 */
+	public final List<Bullet> trigger(Unit shooter) {
 		return trigger(shooter, shooter.hitGroup());
+	}
+	public boolean triggerSuceed(GHQObject shooter, HitRule standpoint) {
+		return trigger(shooter, standpoint) != null;
+	}
+	public boolean triggerSucceed(GHQObject shooter) {
+		return triggerSuceed(shooter, shooter.hitGroup());
 	}
 	/**
 	 * Set bullets.
 	 * @param shooter - the shooter of the bullets
 	 */
-	public void setBullets(GHQObject shooter, HitGroup standpoint) {
-		
+	public List<Bullet> setBullets(GHQObject shooter, HitRule standpoint) {
+		return new LinkedList<Bullet>();
 	}
 	///////////////////
 	//cooldown
@@ -165,8 +236,8 @@ public class Weapon {
 	 * @param ammoLeft - max amount of required ammo
 	 * @return amount going to feed
 	 */
-	public int startReload() {
-		final int AMMO_LEFT = getLeftAmmo();
+	public double startReload() {
+		final double AMMO_LEFT = getLeftAmmo();
 		if(AMMO_LEFT <= 0)
 			return 0;
 		final int REQUIRED_AMMO = magazineSize - magazine;
@@ -179,7 +250,10 @@ public class Weapon {
 			reloadProgress = 0;
 		return REQUIRED_AMMO < AMMO_LEFT ? REQUIRED_AMMO : AMMO_LEFT;
 	}
-	public int startReloadIfNotDoing() {
+	public void startReloadForced() {
+		reloadProgress = 0;
+	}
+	public double startReloadIfNotDoing() {
 		if(!isReloadFinished())
 			return 0;
 		return startReload();
@@ -199,14 +273,14 @@ public class Weapon {
 	 * Finish current reload process and feed the magazine to full.
 	 * @return feed amount
 	 */
-	public int reloadEnd() {
+	public double reloadEnd() {
 		reloadProgress = reloadTime;
-		final int FEED_AMOUNT = Math.min(getMagazineEmptySpace(), getLeftAmmo());
+		final double FEED_AMOUNT = Math.min(getMagazineEmptySpace(), getLeftAmmo());
 		magazine += FEED_AMOUNT;
 		consumeAmmo(FEED_AMOUNT);
 		return FEED_AMOUNT;
 	}
-	public void consumeAmmo(int value) {
+	public void consumeAmmo(double value) {
 		
 	}
 	/**
@@ -265,7 +339,7 @@ public class Weapon {
 	 * You can set it always returns a constant number(like 1), to perform separative reloads such as pump-action shotgun.
 	 * @return amount of left ammo.
 	 */
-	public int getLeftAmmo() {
+	public double getLeftAmmo() {
 		return GHQ.MAX;
 	}
 	/**

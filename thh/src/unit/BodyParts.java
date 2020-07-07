@@ -9,7 +9,7 @@ import paint.dot.DotPaintParameter;
 import paint.dot.HasDotPaint;
 import physics.Angle;
 import physics.HasAngle;
-import physics.HitGroup;
+import physics.HitRule;
 import physics.HitInteractable;
 import physics.Point;
 import physics.RelativePoint;
@@ -145,7 +145,7 @@ public class BodyParts implements HasPaint, HasAngle, HasDotPaint, HitInteractab
 		return point;
 	}
 	@Override
-	public HitGroup hitGroup() {
+	public HitRule hitGroup() {
 		// TODO Auto-generated method stub
 		return null;
 	}

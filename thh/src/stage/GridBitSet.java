@@ -8,16 +8,16 @@ public class GridBitSet extends GridPainter {
 	final BitSet bitSet;
 	public GridBitSet(HasBoundingBox stage, int gridSize) {
 		super(stage, gridSize);
-		bitSet = new BitSet(super.W_GRIDS*super.H_GRIDS);
+		bitSet = new BitSet(super.xGrids*super.yGrids);
 	}
 	
 	//control
 	public void set_cellPos(int xPos, int yPos, boolean bool) {
-		if(0 <= xPos && xPos < W_GRIDS && 0 <= yPos && yPos < H_GRIDS)
-			bitSet.set(xPos + yPos*W_GRIDS, bool);
+		if(0 <= xPos && xPos < xGrids && 0 <= yPos && yPos < yGrids)
+			bitSet.set(xPos + yPos*xGrids, bool);
 	}
 	public void set_stageCod(int x, int y, boolean bool) {
-		set_cellPos(x/GRID_SIZE, y/GRID_SIZE, bool);
+		set_cellPos(x/gridSize, y/gridSize, bool);
 	}
 	public void set_cellPos(int xPos, int yPos) {
 		set_cellPos(xPos, yPos, true);
@@ -34,12 +34,12 @@ public class GridBitSet extends GridPainter {
 		return bitSet;
 	}
 	public boolean get_cellPos(int xPos, int yPos, boolean valueWhenOutOfBounds) {
-		if(0 <= xPos && xPos < W_GRIDS && 0 <= yPos && yPos < H_GRIDS)
-			return bitSet.get(xPos + yPos*W_GRIDS);
+		if(0 <= xPos && xPos < xGrids && 0 <= yPos && yPos < yGrids)
+			return bitSet.get(xPos + yPos*xGrids);
 		else
 			return valueWhenOutOfBounds;
 	}
 	public boolean get_stageCod(int x, int y, boolean valueWhenOutOfBounds) {
-		return get_cellPos(x/GRID_SIZE, y/GRID_SIZE, valueWhenOutOfBounds);
+		return get_cellPos(x/gridSize, y/gridSize, valueWhenOutOfBounds);
 	}
 }

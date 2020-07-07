@@ -6,8 +6,7 @@ import paint.ImageFrame;
 import physics.HasPoint;
 import unit.Unit;
 
-public class WhiteMan extends THH_BasicEnemy{
-	private static final long serialVersionUID = -3224085275647002850L;
+public class WhiteMan extends THH_BasicEnemy {
 	public WhiteMan(int initialGroup) {
 		super(120, initialGroup);
 	}

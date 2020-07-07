@@ -20,11 +20,11 @@ public class ColorFraming extends RectPaint {
 	/**
 	 * @param color The line color.
 	 */
-	public ColorFraming(Color color,Stroke stroke) {
+	public ColorFraming(Color color, Stroke stroke) {
 		COLOR = color;
 		STROKE = stroke;
 	}
-	public ColorFraming(Color color,float strokeSize) {
+	public ColorFraming(Color color, float strokeSize) {
 		COLOR = color;
 		STROKE = new BasicStroke(strokeSize);
 	}

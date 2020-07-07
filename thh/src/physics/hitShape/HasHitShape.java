@@ -8,7 +8,7 @@ import physics.Point;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public interface HasHitShape extends HasBoundingBox{
+public interface HasHitShape extends HasBoundingBox {
 	public abstract HitShape hitShape();
 	@Override
 	public default int width() {

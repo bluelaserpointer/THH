@@ -1,16 +1,23 @@
 package core;
 
+import java.util.Iterator;
+
 import bullet.Bullet;
+import calculate.Damage;
 import effect.Effect;
 import gui.GUIParts;
 import gui.stageEditor.GHQObjectHashMap;
+import item.ItemData;
 import paint.HasPaint;
+import physics.Angle;
+import physics.Dynam;
 import physics.HasPhysics;
+import physics.HitRule;
 import physics.Physics;
 import physics.Point;
 import physics.StdPhysics;
-import physics.hitShape.HitShape;
-import physics.hitShape.RectShape;
+import physics.hitShape.Square;
+import stage.GHQStage;
 import structure.Structure;
 import unit.Unit;
 import vegetation.Vegetation;
@@ -33,36 +40,26 @@ public class GHQObject implements HasName, HasPaint, HasPhysics  {
 	public GHQObject() {
 		initialFrame = GHQ.nowFrame();
 		uniqueID = ++maxUniqueID;
-		physics = new StdPhysics();
+		physics = predefine_physics();
 	}
-	public GHQObject(Physics physics) {
-		initialFrame = GHQ.nowFrame();
-		uniqueID = ++maxUniqueID;
-		this.physics = physics;
+	//physics = new StdPhysics().setPoint(new Point.IntPoint(x + w/2, y + h/2)).setHitShape(new RectShape(physics, w, h));
+	protected Physics predefine_physics() {
+		return new StdPhysics(predefine_point(), predefine_angle(), Square.SQUARE_10, HitRule.HIT_ALL);
 	}
-	public GHQObject(Point point) {
-		initialFrame = GHQ.nowFrame();
-		uniqueID = ++maxUniqueID;
-		physics = new StdPhysics().setPoint(point);
+	protected Point predefine_point() {
+		return new Dynam();
 	}
-	public GHQObject(Point point, HitShape hitShape) {
-		initialFrame = GHQ.nowFrame();
-		uniqueID = ++maxUniqueID;
-		physics = new StdPhysics().setPoint(point).setHitShape(hitShape);
-	}
-	public GHQObject(int x, int y, int w, int h) {
-		initialFrame = GHQ.nowFrame();
-		uniqueID = ++maxUniqueID;
-		physics = new StdPhysics().setPoint(new Point.IntPoint(x + w/2, y + h/2)).setHitShape(new RectShape(physics, w, h));
+	protected Angle predefine_angle() {
+		return new Angle();
 	}
 	public GHQObject setName(String name) {
 		this.name = name;
 		return this;
 	}
-	public void claimDelete() {
+	public void claimDeleteFromStage() {
 		isDeleted = true;
 	}
-	public void cancelDelete() {
+	public void cancelDeleteFromStage() {
 		isDeleted = false;
 	}
 	public void forceDelete() {
@@ -74,12 +71,14 @@ public class GHQObject implements HasName, HasPaint, HasPhysics  {
 			GHQ.stage().effects.forceRemove((Effect)this);
 		else if(this instanceof Structure)
 			GHQ.stage().structures.forceRemove((Structure)this);
+		else if(this instanceof ItemData)
+			GHQ.stage().items.forceRemove((ItemData)this);
 		else if(this instanceof Vegetation)
 			GHQ.stage().vegetations.forceRemove((Vegetation)this);
 		else if(this instanceof GUIParts)
 			System.out.println("Not supported to delete GUIParts.");
 	}
-	public final boolean hasDeleteClaim() {
+	public final boolean hasDeleteClaimFromStage() {
 		return isDeleted;
 	}
 	public void idle() {
@@ -105,6 +104,19 @@ public class GHQObject implements HasName, HasPaint, HasPhysics  {
 	public final void resetInitialFrame() {
 		initialFrame = GHQ.nowFrame();
 	}
+	public void damage(Damage damage) {
+		damage.doDamage(this);
+	}
+	//event
+	public void addedToStage(GHQStage stage) {}
+	//public tool
+	public static void removeDeletedFromList(Iterable<GHQObject> list) {
+		final Iterator<GHQObject> iterator = list.iterator();
+		while(iterator.hasNext()) {
+			if(iterator.next().hasDeleteClaimFromStage())
+				iterator.remove();
+		}
+	}
 	//information
 	@Override
 	public String name() {
@@ -112,6 +124,24 @@ public class GHQObject implements HasName, HasPaint, HasPhysics  {
 	}
 	public boolean nameIs(String name) {
 		return this.name == name;
+	}
+	public final boolean isUnit() {
+		return this instanceof Unit;
+	}
+	public final boolean isBullet() {
+		return this instanceof Bullet;
+	}
+	public final boolean isEffect() {
+		return this instanceof Effect;
+	}
+	public final boolean isStructure() {
+		return this instanceof Structure;
+	}
+	public final boolean isItemData() {
+		return this instanceof ItemData;
+	}
+	public boolean intersects_checkNotDeleted(GHQObject object) {
+		return !object.hasDeleteClaimFromStage() && intersects(object);
 	}
 	public static int getTotalAmount() {
 		return maxUniqueID + 1;

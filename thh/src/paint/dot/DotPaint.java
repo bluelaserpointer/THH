@@ -1,20 +1,20 @@
 package paint.dot;
 
 import java.awt.Graphics2D;
-import java.util.Collection;
 
 import core.GHQ;
 import core.GHQObject;
 import paint.rect.RectPaint;
 import physics.HasAnglePoint;
 import physics.Point;
+import physics.hitShape.HasArea;
 
 /**
  * One of the major PaintScript's direct subinterfaces.Describes a paint method which has original width and height but need specified coordinate
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class DotPaint extends RectPaint {
+public abstract class DotPaint extends RectPaint implements HasArea {
 	//constants
 	public static final DotPaint BLANK_SCRIPT = new DotPaint(GHQObject.NULL_GHQ_OBJECT) {
 		@Override
@@ -59,7 +59,6 @@ public abstract class DotPaint extends RectPaint {
 	}
 	@Override
 	public void rectPaint(int x, int y, int w, int h) {
-		//TODO: rectPaint check
 		final double sx = w/width(), sy = h/height();
 		GHQ.getG2D().translate(x, y);
 		GHQ.getG2D().scale(sx, sy);
@@ -68,7 +67,7 @@ public abstract class DotPaint extends RectPaint {
 		GHQ.getG2D().translate(-x, -y);
 	}
 	public void dotPaint_capSize(int x, int y, int maxSize) {
-		final int SIZE_BIG = sizeOfBigger();
+		final int SIZE_BIG = maxSide();
 		if(SIZE_BIG > maxSize) {
 			dotPaint_rate(x, y, (double)maxSize/SIZE_BIG);
 		}else
@@ -138,17 +137,16 @@ public abstract class DotPaint extends RectPaint {
 	public GHQObject owner() {
 		return owner;
 	}
-	public int sizeOfBigger() {
-		return Math.max(width(), height());
-	}
+	@Override
 	public abstract int width();
+	@Override
 	public abstract int height();
 	
 	//tool
-	public static int getMaxSize(Collection<DotPaint> scripts) {
+	public static int getMaxSize(Iterable<DotPaint> scripts) {
 		int biggestSize = 0;
 		for(DotPaint ver : scripts) {
-			final int BIGGER_SIZE = ver.sizeOfBigger();
+			final int BIGGER_SIZE = ver.maxSide();
 			if(biggestSize < BIGGER_SIZE)
 				biggestSize = BIGGER_SIZE;
 		}
@@ -157,7 +155,7 @@ public abstract class DotPaint extends RectPaint {
 	public static int getMaxSize(DotPaint[] scripts) {
 		int biggestSize = 0;
 		for(DotPaint ver : scripts) {
-			final int BIGGER_SIZE = ver.sizeOfBigger();
+			final int BIGGER_SIZE = ver.maxSide();
 			if(biggestSize < BIGGER_SIZE)
 				biggestSize = BIGGER_SIZE;
 		}

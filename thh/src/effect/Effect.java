@@ -66,7 +66,7 @@ public class Effect extends GHQObject implements HasPoint, HasDotPaint{
 		if(!point().inStage() && outOfStageProcess())
 			return;
 		//Speed & Acceleration
-		point().move();
+		point().moveBySpeed();
 		point().addSpeed(accel,true);
 	}
 	@Override
@@ -79,21 +79,21 @@ public class Effect extends GHQObject implements HasPoint, HasDotPaint{
 	
 	//extends
 	public boolean isOutOfLifeSpan() {
-		return limitFrame <= GHQ.passedFrame(super.initialFrame);
+		return limitFrame <= passedFrame();
 	}
 	public boolean isOutOfRange() {
 		return limitRange != GHQ.MAX && limitRange <= ((DstCntDynam)point()).getMovedDistance();
 	}
 	public boolean outOfLifeSpanProcess() {
-		claimDelete();
+		claimDeleteFromStage();
 		return true;
 	}
 	public boolean outOfRangeProcess() {
-		claimDelete();
+		claimDeleteFromStage();
 		return true;
 	}
 	public boolean outOfStageProcess() {
-		claimDelete();
+		claimDeleteFromStage();
 		return true;
 	}
 	
@@ -101,13 +101,16 @@ public class Effect extends GHQObject implements HasPoint, HasDotPaint{
 	//////////////
 	//paint
 	//////////////
+	public final void setImageAlphaByLimitFrame() {
+		GHQ.setImageAlpha((float)(1.0 - lifePercent()));
+	}
 	public final void fadingPaint() {
-		GHQ.setImageAlpha((float)(1.0 - (double)GHQ.passedFrame(initialFrame)/limitFrame));
+		setImageAlphaByLimitFrame();
 		defaultPaint();
 		GHQ.setImageAlpha();
 	}
 	public final void fadingPaint(int delay) {
-		final int PASSED_FRAME = GHQ.passedFrame(initialFrame);
+		final int PASSED_FRAME = passedFrame();
 		if(PASSED_FRAME < delay)
 			defaultPaint();
 		else {
@@ -165,8 +168,11 @@ public class Effect extends GHQObject implements HasPoint, HasDotPaint{
 	//////////////
 	//information
 	//////////////
-	public int getPassedFrame() {
+	public int passedFrame() {
 		return GHQ.passedFrame(initialFrame);
+	}
+	public double lifePercent() {
+		return (double)passedFrame()/limitFrame;
 	}
 	@Override
 	public final DotPaint getDotPaint() {

@@ -1,7 +1,5 @@
 package physics;
 
-import loading.ObjectSaveTree;
-
 public class RelativePoint extends Point{
 	private static final long serialVersionUID = -2585237312428553012L;
 	protected HasPoint base;
@@ -41,10 +39,6 @@ public class RelativePoint extends Point{
 	}
 	public Point relativePoint() {
 		return relativePoint;
-	}
-	@Override
-	public ObjectSaveTree save() {
-		return new ObjectSaveTree(0, basePoint(), relativePoint);
 	}
 	@Override
 	public RelativePoint clone() {

@@ -56,6 +56,12 @@ public class GameInputList {
 		final GameInput input = find(name);
 		return input == null ? false : input.consume();
 	}
+	public boolean hasEvent(String name, boolean doConsume) {
+		return doConsume ? consume(name): hasEvent(name);
+	}
+	public boolean hasEvent(HasName input, boolean doConsume) {
+		return hasEvent(input.name(), doConsume);
+	}
 	public boolean hasEventOne(String...names) {
 		for(String name : names) {
 			if(hasEvent(name))
@@ -76,10 +82,6 @@ public class GameInputList {
 			return true;
 		}else
 			return false;
-	}
-	public boolean hasSecondEvent(String name) {
-		final GameInput input = find(name);
-		return input == null ? false : input.enabled && !input.isHeadInput;
 	}
 	public void keyPressed(KeyEvent e) {
 		for(GameInput.Keyboard input : inputList_key)

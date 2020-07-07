@@ -25,13 +25,13 @@ public class RectShape extends HitShape {
 		height = h;
 		return this;
 	}
-	public RectShape setSize(int w, int h) {
+	public RectShape setBoundsSize(int w, int h) {
 		width = w;
 		height = h;
 		return this;
 	}
-	public RectShape setSize(HitShape sample) {
-		return setSize(sample.width(), sample.height());
+	public RectShape setBoundsSize(HitShape sample) {
+		return setBoundsSize(sample.width(), sample.height());
 	}
 	@Override
 	public boolean intersects(HitShape shape) {

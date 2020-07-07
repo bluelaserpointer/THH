@@ -4,34 +4,22 @@ import static java.awt.event.KeyEvent.*;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 import core.GHQ;
 import core.Game;
 import exsampleGame.unit.*;
 import gui.GUIPartsSwitcher;
-import gui.MessageSource;
 import gui.stageEditor.DefaultStageEditor;
 import input.key.DoubleNumKeyListener;
 import input.key.SingleKeyListener;
 import input.key.SingleNumKeyListener;
 import input.mouse.MouseListenerEx;
-import loading.MyDataSaver;
 import paint.ImageFrame;
-import paint.dot.DotPaint;
-import physics.Point;
-import physics.hitShape.MyPolygon;
 import stage.GHQStage;
-import structure.Structure;
-import structure.Terrain;
-import structure.Tile;
 import unit.Unit;
 import vegetation.Vegetation;
 
-public class Engine_THH1 extends Game implements MessageSource{
+public class Engine_THH1 extends Game {
 	static {
 		GHQ.setScreenSize(1000, 600);
 	}
@@ -50,108 +38,6 @@ public class Engine_THH1 extends Game implements MessageSource{
 		return "alpha1.0.0";
 	}
 	//saveData
-	private static final MyDataSaver stageDataSaver = new MyDataSaver() {
-		@Override
-		public void output(ObjectOutputStream oos) throws IOException {
-			//version
-			oos.writeInt(0);
-			//enemy
-			oos.writeInt(GHQ.stage().units.size());
-			for(Unit unit : GHQ.stage().units) {
-				oos.writeObject(unit.getClass().getName());
-				oos.writeObject(unit.point());
-			}
-			//structure
-			oos.writeInt(GHQ.stage().structures.size());
-			for(Structure structure : GHQ.stage().structures) {
-				if(structure instanceof Tile) {
-					oos.writeObject("Tile");
-					final Tile tile = (Tile)structure;
-					oos.writeInt(tile.point().intX());
-					oos.writeInt(tile.point().intY());
-					oos.writeInt(tile.xTiles());
-					oos.writeInt(tile.yTiles());
-				}else if(structure instanceof Terrain) {
-					oos.writeObject("Terrain");
-					oos.writeObject(((Terrain)structure).hitShape());
-				}
-			}
-			//vegetation
-			oos.writeInt(GHQ.stage().vegetations.size());
-			for(Vegetation vegetation : GHQ.stage().vegetations) {
-				oos.writeObject(vegetation.getDotPaint());
-				oos.writeObject(vegetation.point());
-			}
-		}
-		@Override
-		public void input(ObjectInputStream ois) throws IOException {
-			switch(ois.readInt()) {
-			case 0:
-				//enemy
-				final int ENEMY_AMOUNT = ois.readInt();
-				for(int i = 0;i < ENEMY_AMOUNT;++i) {
-					try {
-						final String unitName = (String)ois.readObject();
-						System.out.println(unitName);
-						switch(unitName) {
-						case "thhunit.BlackMan":
-							GHQ.stage().addUnit(new BlackMan(ENEMY)).respawn((Point)ois.readObject()).loadImageData();;
-							break;
-						case "thhunit.Fairy":
-							GHQ.stage().addUnit(new Fairy(ENEMY)).respawn((Point)ois.readObject());
-							break;
-						case "thhunit.Marisa":
-							GHQ.stage().addUnit(new Marisa(FRIEND)).respawn((Point)ois.readObject());
-							break;
-						case "thhunit.Reimu":
-							GHQ.stage().addUnit(new Reimu(FRIEND)).respawn((Point)ois.readObject());
-							break;
-						case "thhunit.WhiteMan":
-							GHQ.stage().addUnit(new WhiteMan(ENEMY)).respawn((Point)ois.readObject());
-							break;
-						default:
-							System.out.println("unknown unit name: " + unitName);
-						}
-					}catch(ClassNotFoundException e) {
-						e.printStackTrace();
-					}
-				}
-				//structure
-				final int STRUCTURE_AMOUNT = ois.readInt();
-				for(int i = 0;i < STRUCTURE_AMOUNT;++i) {
-					try {
-						final String structureName = (String)ois.readObject();
-						System.out.println(structureName);
-						switch(structureName) {
-						case "Tile":
-							GHQ.stage().addStructure(new Tile(ois.readInt(), ois.readInt(), ois.readInt(), ois.readInt()));
-							break;
-						case "Terrain":
-							GHQ.stage().addStructure(new Terrain((MyPolygon)ois.readObject()));
-							break;
-						default:
-							System.out.println("unknown structure name: " + structureName);
-						}
-					}catch(ClassNotFoundException e) {
-						e.printStackTrace();
-					}
-				}
-				//vegetation
-				final int VEG_AMOUNT = ois.readInt();
-				for(int i = 0;i < VEG_AMOUNT;++i) {
-					try {
-						final DotPaint dotPaint = (DotPaint)ois.readObject();
-						if(dotPaint instanceof ImageFrame)
-							((ImageFrame)dotPaint).loadFromSave();
-						GHQ.stage().addVegetation(new Vegetation(dotPaint, (Point)ois.readObject()));
-					}catch(ClassNotFoundException e) {
-						e.printStackTrace();
-					}
-				}
-				break;
-			}
-		}
-	};
 	//inputEvnet
 	private static final int inputKeys[] = 
 	{
@@ -210,9 +96,10 @@ public class Engine_THH1 extends Game implements MessageSource{
 		GHQ.addGUIParts(editor = new DefaultStageEditor(EDIT_GUI_GROUP) {
 			@Override
 			public void saveStage() {
-				stageDataSaver.doSave(new File("stage/saveData1.txt"));
+				//TODO: save
+				//stageDataSaver.doSave(new File("stage/saveData1.txt"));
 			}
-		});
+		}).disable();
 		/////////////////////////////////
 		//input
 		/////////////////////////////////
@@ -260,7 +147,6 @@ public class Engine_THH1 extends Game implements MessageSource{
 
 		stages[0] = new GHQStage(5000, 5000);
 		//stageDataSaver.doLoad(new File("stage/saveData1.txt"));
-		GHQ.addMessage(this,"This is a prototype stage.");
 	}
 	//idle
 	@Override

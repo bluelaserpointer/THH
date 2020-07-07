@@ -13,8 +13,9 @@ public class WhiteList<T> extends Verifier<T> {
 	@Override
 	public boolean verify(T t) {
 		for(T var : whiteList) {
-			if(var == t)
+			if(var == t) {
 				return true;
+			}
 		}
 		return false;
 	}

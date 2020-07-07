@@ -17,10 +17,9 @@ import physics.HasPoint;
 import physics.HasHitGroup;
 import physics.HitInteractable;
 import physics.Point;
-import physics.HitGroup;
+import physics.HitRule;
 import structure.Structure;
 import unit.Unit;
-import vegetation.DropItem;
 import vegetation.Vegetation;
 
 public class GHQStage implements HasBoundingBox {
@@ -34,6 +33,8 @@ public class GHQStage implements HasBoundingBox {
 	public final GHQObjectList<Vegetation> vegetations = new GHQObjectList<Vegetation>();
 	public final GHQObjectList<ItemData> items = new GHQObjectList<ItemData>();
 	
+	public final GHQObjectList<GHQObject> bulletCollisionGroup = new GHQObjectList<GHQObject>();
+	
 	public GHQStage(int width, int height) {
 		this.width = width;
 		this.height = height;
@@ -45,6 +46,7 @@ public class GHQStage implements HasBoundingBox {
 	
 	//main role
 	public void idle() {
+		GHQObject.removeDeletedFromList(bulletCollisionGroup);
 		items.defaultTraverse();
 		vegetations.defaultTraverse();
 		structures.defaultTraverse();
@@ -77,9 +79,17 @@ public class GHQStage implements HasBoundingBox {
 	 * @return created Bullet
 	 * @since alpha1.0
 	 */
-	public final <T extends Bullet>T addBullet(T bullet){
-		if(!bullets.contains(bullet))
+	public <T extends Bullet>T addBullet(T bullet) {
+		return addBullet(bullet, false);
+	}
+	public <T extends Bullet>T addBullet(T bullet, boolean joinBulletCollisionGroup){
+		if(!bullets.contains(bullet)) {
 			bullets.add(bullet);
+			bullet.cancelDeleteFromStage();
+			bullet.addedToStage(this);
+			if(joinBulletCollisionGroup)
+				this.bulletCollisionGroup.add(bullet);
+		}
 		return bullet;
 	}
 	/**
@@ -89,9 +99,17 @@ public class GHQStage implements HasBoundingBox {
 	 * @return created Effect
 	 * @since alpha1.0
 	 */
-	public final <T extends Effect>T addEffect(T effect){
-		if(!effects.contains(effect))
+	public <T extends Effect>T addEffect(T effect) {
+		return addEffect(effect, false);
+	}
+	public <T extends Effect>T addEffect(T effect, boolean joinBulletCollisionGroup){
+		if(!effects.contains(effect)) {
 			effects.add(effect);
+			effect.cancelDeleteFromStage();
+			effect.addedToStage(this);
+			if(joinBulletCollisionGroup)
+				this.bulletCollisionGroup.add(effect);
+		}
 		return effect;
 	}
 	/**
@@ -99,9 +117,17 @@ public class GHQStage implements HasBoundingBox {
 	 * @param unit
 	 * @return added unit
 	 */
-	public final <T extends Unit>T addUnit(T unit) {
-		if(!units.contains(unit))
+	public <T extends Unit>T addUnit(T unit) {
+		return addUnit(unit, true);
+	}
+	public <T extends Unit>T addUnit(T unit, boolean joinBulletCollisionGroup) {
+		if(!units.contains(unit)) {
 			units.add(unit);
+			unit.cancelDeleteFromStage();
+			unit.addedToStage(this);
+			if(joinBulletCollisionGroup)
+				this.bulletCollisionGroup.add(unit);
+		}
 		return unit;
 	}
 	/**
@@ -109,9 +135,17 @@ public class GHQStage implements HasBoundingBox {
 	 * @param structure
 	 * @return added structure
 	 */
-	public final <T extends Structure>T addStructure(T structure) {
-		if(!structures.contains(structure))
+	public <T extends Structure>T addStructure(T structure) {
+		return addStructure(structure, true);
+	}
+	public <T extends Structure>T addStructure(T structure, boolean joinBulletCollisionGroup) {
+		if(!structures.contains(structure)) {
 			structures.add(structure);
+			structure.cancelDeleteFromStage();
+			structure.addedToStage(this);
+			if(joinBulletCollisionGroup)
+				this.bulletCollisionGroup.add(structure);
+		}
 		return structure;
 	}
 	/**
@@ -119,9 +153,17 @@ public class GHQStage implements HasBoundingBox {
 	 * @param vegetation
 	 * @return added vegetation
 	 */
-	public final <T extends Vegetation>T addVegetation(T vegetation){
-		if(!vegetations.contains(vegetation))
+	public <T extends Vegetation>T addVegetation(T vegetation) {
+		return addVegetation(vegetation, true);
+	}
+	public <T extends Vegetation>T addVegetation(T vegetation, boolean joinBulletCollisionGroup){
+		if(!vegetations.contains(vegetation)) {
 			vegetations.add(vegetation);
+			vegetation.cancelDeleteFromStage();
+			vegetation.addedToStage(this);
+			if(joinBulletCollisionGroup)
+				this.bulletCollisionGroup.add(vegetation);
+		}
 		return vegetation;
 	}
 	/**
@@ -129,9 +171,17 @@ public class GHQStage implements HasBoundingBox {
 	 * @param item
 	 * @return added item
 	 */
-	public final <T extends ItemData>T addItem(T item){
-		if(!items.contains(item))
+	public <T extends ItemData>T addItem(T item) {
+		return addItem(item, true);
+	}
+	public <T extends ItemData>T addItem(T item, boolean joinBulletCollisionGroup){
+		if(!items.contains(item)) {
 			items.add(item);
+			item.cancelDeleteFromStage();
+			item.addedToStage(this);
+			if(joinBulletCollisionGroup)
+				this.bulletCollisionGroup.add(item);
+		}
 		return item;
 	}
 	
@@ -139,7 +189,7 @@ public class GHQStage implements HasBoundingBox {
 	/////////////////
 	//Unit
 	/////////////////
-	public final ArrayList<Unit> getUnits_standpoint(HitGroup standPoint, boolean white) {
+	public final ArrayList<Unit> getUnits_standpoint(HitRule standPoint, boolean white) {
 		final ArrayList<Unit> unitArray = new ArrayList<Unit>();
 		for(Unit unit : units) {
 			if(white == !standPoint.hitableGroup(unit.hitGroup()))
@@ -153,7 +203,7 @@ public class GHQStage implements HasBoundingBox {
 	public final ArrayList<Unit> getUnits_standPoint(HasHitGroup source) {
 		return getUnits_standpoint(source, true);
 	}
-	public final Unit getNearstEnemy(HitGroup standpoint, int x, int y) {
+	public final Unit getNearstEnemy(HitRule standpoint, int x, int y) {
 		double nearstDistanceSq = GHQ.MAX;
 		Unit nearstUnit = null;
 		for(Unit enemy : getUnits_standpoint(standpoint, false)) {
@@ -167,7 +217,7 @@ public class GHQStage implements HasBoundingBox {
 		}
 		return nearstUnit;
 	}
-	public final Unit getNearstEnemy(HitGroup source, Point point) {
+	public final Unit getNearstEnemy(HitRule source, Point point) {
 		return getNearstEnemy(source, point.intX(), point.intY());
 	}
 	public final Unit getNearstEnemy(Unit unit) {
@@ -256,6 +306,7 @@ public class GHQStage implements HasBoundingBox {
 		return getHitUnits(getUnits_standpoint(object, false), object);
 	}
 	public void clear() {
+		bulletCollisionGroup.clear();
 		units.clear();
 		bullets.clear();
 		effects.clear();
@@ -265,35 +316,22 @@ public class GHQStage implements HasBoundingBox {
 	}
 	
 	//tool
-	//vegetation
-	public final DropItem getCoveredDropItem(HasPoint di, int distance) {
-		for(Vegetation vegetation : vegetations) {
-			if(vegetation instanceof DropItem && ((DropItem)vegetation).isCovered(di, distance)) {
-				return (DropItem)vegetation;
-			}
-		}
-		return null;
-	}
-	public final ItemData getCoveredDropItem_pickup(HasPoint di, int distance) {
-		for(Vegetation vegetation : vegetations) {
-			if(vegetation instanceof DropItem && ((DropItem)vegetation).isCovered(di, distance)) {
-				return ((DropItem)vegetation).pickup();
-			}
-		}
-		return null;
-	}
-	
-	//tool
 	//structure
-	public final boolean checkLoS(int x1, int y1, int x2, int y2) {
+	public double visibility(int x1, int y1, int x2, int y2) {
+		double totalVisibility = 0.0;
 		for(Structure structure : structures) {
-			if(structure.intersectsLine(x1, y1, x2, y2))
-				return false;
+			if(structure.intersectsLine(x1, y1, x2, y2)) {
+				final double visibility = structure.visibility();
+				if(visibility == Double.NEGATIVE_INFINITY)
+					return visibility;
+				else
+					totalVisibility += visibility;
+			}
 		}
-		return true;
+		return totalVisibility;
 	}
-	public final boolean checkLoS(Point p1, Point p2) {
-		return checkLoS(p1.intX(), p1.intY(), p2.intX(), p2.intY());
+	public final double visibility(Point p1, Point p2) {
+		return visibility(p1.intX(), p1.intY(), p2.intX(), p2.intY());
 	}
 	public final boolean hitObstacle(HitInteractable object) {
 		return !inStage(object) || structures.intersected(object);

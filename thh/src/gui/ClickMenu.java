@@ -2,7 +2,7 @@ package gui;
 
 import core.GHQ;
 
-public class ClickMenu<T> extends AutoResizeMenu{
+public class ClickMenu<T> extends AutoResizeMenu {
 	
 	protected T targetObject;
 	

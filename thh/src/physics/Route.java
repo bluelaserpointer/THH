@@ -40,7 +40,7 @@ public class Route {
 	}
 	public void removeDebugEffect() {
 		while(!debugEffects.isEmpty())
-			debugEffects.remove().claimDelete();
+			debugEffects.remove().claimDeleteFromStage();
 	}
 	public void debugPaint(Color color, Stroke stroke) {
 		final Graphics2D G2 = GHQ.getG2D();

@@ -52,7 +52,7 @@ public class DotPaintStacker extends DotPaint {
 		return LAYER_PAINTS.length;
 	}
 	@Override
-	public int sizeOfBigger() {
+	public int maxSide() {
 		return BIGGEST_SIZE;
 	}
 	@Override

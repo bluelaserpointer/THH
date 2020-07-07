@@ -1,8 +1,8 @@
 package physics;
 
 public interface HasHitGroup {
-	public abstract HitGroup hitGroup();
-	public default boolean hitableGroup(HitGroup hitGroup) {
+	public abstract HitRule hitGroup();
+	public default boolean hitableGroup(HitRule hitGroup) {
 		return hitGroup().hitableGroup(hitGroup);
 	}
 	public default boolean hitableGroup(HasHitGroup target) {

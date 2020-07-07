@@ -1,18 +1,17 @@
 package gui;
 
 import java.awt.event.MouseEvent;
-import java.util.Collection;
 
 import core.GHQ;
 import core.T_Verifier;
 import paint.dot.HasDotPaint;
 import paint.rect.RectPaint;
-import storage.Storage;
+import storage.StorageWithSpace;
 import storage.TableStorage;
 
 /**
  * A GUIParts subclass for managing Excel-like object display.The Objects to display needs implements {@link HasDotPaint}.<br>
- * It can link to a already exist {@link Storage} and display its contents.
+ * It can link to a already exist {@link StorageWithSpace} and display its contents.
  * @author bluelaserpointer
  * @since alpha1.0
  * @param <T> the type of elements in the storage
@@ -22,33 +21,35 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 	 * The data of this TableStorageViewer.
 	 */
 	public TableStorage<T> storage;
-	protected int cellSize;
+	protected int cellSize = 50;
 	protected RectPaint cellPaint = RectPaint.BLANK_SCRIPT;
 	
 	//init
 	public TableStorageViewer<T> setTableStorage(TableStorage<T> tableStorage) {
 		storage = tableStorage;
-		return this;
-	}
-	public TableStorageViewer<T> setTableStorage(Collection<T> storage, T nullElement, int storageW, int storageH) {
-		this.storage = new TableStorage<T>(storage, storageW, storageH, nullElement);
+		updateBoundingBox();
 		return this;
 	}
 	public TableStorageViewer<T> setCellSize(int cellSize) {
 		this.cellSize = cellSize;
+		updateBoundingBox();
 		return this;
+	}
+	public void updateBoundingBox() {
+		if(storage != null)
+			super.setBoundsSize(storage.xCells()*cellSize, storage.yCells()*cellSize);
 	}
 	//main role
 	@Override
-	public void idle() {
+	public void paint() {
+		super.paint();
 		//paint
-		super.idle();
-		final int storageW = storage.storageW();
-		final int storageH = storage.storageH();
+		final int storageW = storage.xCells();
+		final int storageH = storage.yCells();
 		for(int xi = 0; xi < storageW; ++xi) {
 			for(int yi = 0; yi < storageH; ++yi) {
-				final int INDEX = ((TableStorage<? extends HasDotPaint>)storage).getCellID(xi, yi);
-				paintOfCell(INDEX, INDEX < storage.size() ? storage.get(INDEX) : null, super.point().intX() + xi*cellSize, super.point().intY() + yi*cellSize);
+				final int index = storage.cellIndex(xi, yi);
+				paintOfCell(index, storage.isValidIndex(index) ? storage.get(index) : null, super.point().intX() + xi*cellSize, super.point().intY() + yi*cellSize);
 			}
 		}
 	}
@@ -61,6 +62,7 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 	 * @param y - the y coordinate of the upper-left corner of this cell
 	 */
 	protected void paintOfCell(int id, HasDotPaint object, int x, int y) {
+		cellPaint.rectPaint(x, y, cellSize);
 		if(object != null)
 			object.getDotPaint().dotPaint_capSize(x + cellSize/2, y + cellSize/2, (int)(cellSize*0.8));
 	}
@@ -73,20 +75,20 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 	@Override
 	public boolean clicked(MouseEvent e) {
 		super.clicked(e);
-		final T ELEMENT = getMouseHoveredElement();
-		if(ELEMENT != storage.NULL_ELEMENT && GHQ.mouseHook.isEmpty()) {
-			GHQ.mouseHook.hook(ELEMENT, this);
+		final T element = getMouseHoveredElement();
+		if(element != null && !storage.isSpaceElement(element) && GHQ.mouseHook.isEmpty()) {
+			GHQ.mouseHook.hook(element, this);
 		}
 		return true;
 	}
 	@Override
 	public boolean checkDragIn(GUIParts sourceUI, Object dropObject) {
 		//only check if the position is legal
-		final int id = getMouseHoveredID();
-		if(0 <= id && id < storage.size() && objectToTAccepts(dropObject)) {
+		final int id = getMouseHoveredIndex();
+		if(storage.isValidIndex(id) && objectToTAccepts(dropObject)) {
 			final T overWrittenObject = storage.get(id);
-			 //when swap, only accept if the original element is accepted by the source UI.
-			return storage.isNullElement(overWrittenObject) || sourceUI instanceof TableStorageViewer || sourceUI.checkDragIn(this, overWrittenObject);
+			//when swap, only accept if the original element is accepted by the source UI.
+			return storage.isSpaceElement(overWrittenObject) || sourceUI instanceof TableStorageViewer || sourceUI.checkDragIn(this, overWrittenObject);
 		}
 		return false;
 	}
@@ -97,13 +99,13 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 	}
 	@Override
 	public void dragIn(GUIParts sourceUI, Object dropObject) {
-		final int id = getMouseHoveredID();
+		final int id = getMouseHoveredIndex();
 		storage.set(id, objectToT(dropObject));
 	}
 	@Override
 	public Object peekDragObject() {
-		final T originalObj = storage.get(getMouseHoveredID());
-		return storage.isNullElement(originalObj) ? null : originalObj;
+		final T originalObj = storage.get(getMouseHoveredIndex());
+		return storage.isSpaceElement(originalObj) ? null : originalObj;
 	}
 	@Override
 	public void dragOut(GUIParts targetUI, Object dropObject, Object swapObject) {
@@ -116,28 +118,25 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 	
 	//information
 	public int storageW() {
-		return storage.storageW();
+		return storage.xCells();
 	}
 	public int storageH() {
-		return storage.storageH();
+		return storage.yCells();
 	}
 	/**
-	 * Get ID of the cell which mouse is hovering.
-	 * @return ID of the hovered cell
+	 * Get　the index of the cell which mouse is hovering.
+	 * @return index of the hovered cell, or -1 if mouse is not hovering any cell.
 	 */
-	public int getMouseHoveredID() {
-		return (GHQ.mouseScreenX() - point().intX())/cellSize + storageW()*((GHQ.mouseScreenY() - point().intY())/cellSize);
+	public int getMouseHoveredIndex() {
+		return storage.cellIndex((GHQ.mouseScreenX() - point().intX())/cellSize, (GHQ.mouseScreenY() - point().intY())/cellSize);
 	}
 	/**
 	 * Get Object of the cell which mouse is hovering.
-	 * @return Object of the hovered cell
+	 * @return Object of the hovered cell, or null if mouse is not hovering any cell.
 	 */
 	public T getMouseHoveredElement() {
-		final int ID = getMouseHoveredID();
-		if(0 <= ID && ID < storage.size())
-			return storage.get(ID);
-		else
-			return null;
+		final int index = getMouseHoveredIndex();
+		return storage.isValidIndex(index) ? storage.get(index) : null;
 	}
 	@Override
 	public abstract T objectToT(Object object);

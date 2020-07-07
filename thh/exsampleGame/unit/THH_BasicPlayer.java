@@ -2,8 +2,7 @@ package exsampleGame.unit;
 
 import core.GHQ;
 
-public abstract class THH_BasicPlayer extends THH_BasicUnit{
-	private static final long serialVersionUID = -8336591617807677807L;
+public abstract class THH_BasicPlayer extends THH_BasicUnit {
 	public THH_BasicPlayer(int charaSize, int initialGroup) {
 		super(charaSize, initialGroup);
 	}

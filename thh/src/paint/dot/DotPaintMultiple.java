@@ -34,11 +34,14 @@ public class DotPaintMultiple extends DotPaint {
 	}
 	@Override
 	public void dotPaint(int x, int y) {
-		for(DotPaint ver : SCRIPTS)
+		System.out.println(SCRIPTS.length);
+		for(DotPaint ver : SCRIPTS) {
+			System.out.println(ver.getClass().getName());
 			ver.dotPaint(x, y);
+		}
 	}
 	@Override
-	public int sizeOfBigger() {
+	public int maxSide() {
 		return BIGGEST_SIZE;
 	}
 	@Override

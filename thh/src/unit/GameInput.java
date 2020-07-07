@@ -6,21 +6,26 @@ import java.awt.event.MouseEvent;
 import core.GHQ;
 
 public class GameInput {
-	protected boolean enabled, consumed, isHeadInput;
+	protected boolean enabled, consumed;
 	protected int lastPressedFrame;
+	protected int lastReleasedFrame;
 	private String name;
 	public GameInput(String name) {
 		this.name = name;
 	}
 	protected final void pressed() {
 		enabled = true;
+		lastPressedFrame = GHQ.nowFrame();
 	}
 	protected final void released() {
 		enabled = consumed = false;
-		isHeadInput = true;
+		lastReleasedFrame = GHQ.nowFrame();
 	}
 	public final boolean hasEvent() {
 		return enabled && !consumed;
+	}
+	public final boolean hasEnabled() {
+		return enabled;
 	}
 	public final boolean consume() {
 		if(hasEvent()) {
@@ -28,6 +33,9 @@ public class GameInput {
 			return true;
 		}else
 			return false;
+	}
+	public final int lastPressedFrame() {
+		return lastPressedFrame;
 	}
 	public final int passedFrame() {
 		return GHQ.passedFrame(lastPressedFrame);

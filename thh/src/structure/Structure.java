@@ -8,5 +8,9 @@ import physics.HitInteractable;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class Structure extends GHQObject implements HitInteractable{
+public abstract class Structure extends GHQObject implements HitInteractable, HasVisibility {
+	@Override
+	public double visibility() {
+		return Double.NEGATIVE_INFINITY;
+	}
 }

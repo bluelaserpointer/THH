@@ -14,6 +14,16 @@ public class AutoResizeMenu extends GUIParts{
 		DEFAULT_LINE_H = defaultLineH;
 		MARGIN = partsMargin;
 	}
+	public AutoResizeMenu(int w, int defaultLineH) {
+		super.setBounds(0, 0, w, 1);
+		DEFAULT_LINE_H = defaultLineH;
+		MARGIN = 0;
+	}
+	public AutoResizeMenu(int w, int defaultLineH, int partsMargin) {
+		super.setBounds(0, 0, w, 1);
+		DEFAULT_LINE_H = defaultLineH;
+		MARGIN = partsMargin;
+	}
 	public AutoResizeMenu addNewLine(GUIParts...guiParts) {
 		if(MARGIN == 0) {
 			final int AMOUNT = guiParts.length;

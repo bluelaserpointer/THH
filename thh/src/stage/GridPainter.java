@@ -2,40 +2,57 @@ package stage;
 
 import java.awt.Graphics2D;
 
+import calculate.HasGrid;
 import core.GHQ;
+import paint.rect.RectPaint;
 import physics.HasBoundingBox;
 import physics.Point;
 
-public class GridPainter {
-	public final int W_GRIDS, H_GRIDS;
-	public final int GRID_SIZE;
+public class GridPainter implements HasGrid {
+	protected final int xGrids, yGrids;
+	protected final int gridSize;
 	
 	public GridPainter(HasBoundingBox stage, int gridSize) {
-		GRID_SIZE = gridSize;
-		W_GRIDS = stage.width()/GRID_SIZE + 1;
-		H_GRIDS = stage.height()/GRID_SIZE + 1;
+		this.gridSize = gridSize;
+		xGrids = stage.width()/gridSize + 1;
+		yGrids = stage.height()/gridSize + 1;
 	}
 	//control
 	public void drawGrid(Graphics2D g2, int xPos, int yPos) {
-		g2.drawRect(xPos*GRID_SIZE, yPos*GRID_SIZE, GRID_SIZE, GRID_SIZE);
+		g2.drawRect(xPos*gridSize, yPos*gridSize, gridSize, gridSize);
 	}
 	public void fillGrid(Graphics2D g2, int xPos, int yPos) {
-		g2.fillRect(xPos*GRID_SIZE, yPos*GRID_SIZE, GRID_SIZE, GRID_SIZE);
+		g2.fillRect(xPos*gridSize, yPos*gridSize, gridSize, gridSize);
+	}
+	public void paintGrid(RectPaint rectPaint, int xPos, int yPos) {
+		rectPaint.rectPaint(xPos*gridSize, yPos*gridSize, gridSize, gridSize);
 	}
 	//information
 	public Point getPosPoint(int xPos, int yPos) {
-		return new Point.DoublePoint(xPos*GRID_SIZE, yPos*GRID_SIZE);
+		return new Point.DoublePoint(xPos*gridSize, yPos*gridSize);
 	}
 	public int screenLeftXPos() {
-		return GHQ.getScreenLeftX_stageCod()/GRID_SIZE;
+		return GHQ.getScreenLeftX_stageCod()/gridSize;
 	}
 	public int screenTopYPos() {
-		return GHQ.getScreenTopY_stageCod()/GRID_SIZE;
+		return GHQ.getScreenTopY_stageCod()/gridSize;
 	}
 	public int gridsToFillScreenWidth() {
-		return GHQ.getScreenW_stageCod()/GRID_SIZE + 2;
+		return GHQ.getScreenW_stageCod()/gridSize + 2;
 	}
 	public int gridsToFillScreenHeight() {
-		return GHQ.getScreenH_stageCod()/GRID_SIZE + 2;
+		return GHQ.getScreenH_stageCod()/gridSize + 2;
+	}
+	@Override
+	public int gridSize() {
+		return gridSize;
+	}
+	@Override
+	public int xGrids() {
+		return xGrids;
+	}
+	@Override
+	public int yGrids() {
+		return yGrids;
 	}
 }

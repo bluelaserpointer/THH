@@ -10,6 +10,7 @@ import physics.HasPoint;
 
 public class Square extends HitShape{
 	private static final long serialVersionUID = 8168254451812660305L;
+	public static final Square SQUARE_10 = new Square(10);
 	protected int side;
 	public Square(HasPoint owner, int side) {
 		super(owner);

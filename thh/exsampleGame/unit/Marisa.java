@@ -5,8 +5,7 @@ import paint.ImageFrame;
 import physics.HasPoint;
 import weapon.Weapon;
 
-public class Marisa extends THH_BasicPlayer{
-	private static final long serialVersionUID = -1533719907505962673L;
+public class Marisa extends THH_BasicPlayer {
 	
 	public Marisa(int initialGroup) {
 		super(20, initialGroup);
@@ -39,20 +38,20 @@ public class Marisa extends THH_BasicPlayer{
 		//MILLKY_WAY
 		weapon[MILLKY_WAY] = new Weapon();
 		weapon[MILLKY_WAY].name = "MILLKY_WAY";
-		weapon[MILLKY_WAY].coolTime = 10;
+		weapon[MILLKY_WAY].setCoolTime(10);
 		//NARROW_SPARK
 		weapon[NARROW_SPARK] = new Weapon();
 		weapon[NARROW_SPARK].name = "NARROW_SPARK";
-		weapon[NARROW_SPARK].coolTime = 150;
-		weapon[NARROW_SPARK].magazineSize = 1;
+		weapon[NARROW_SPARK].setCoolTime(150);
+		weapon[NARROW_SPARK].setMagazineSize(1);
 		//REUSE_BOMB
 		weapon[REUSE_BOMB] = new Weapon();
 		weapon[REUSE_BOMB].name = "REUSE_BOMB";
-		weapon[REUSE_BOMB].coolTime = 10;
+		weapon[REUSE_BOMB].setCoolTime(10);
 		//MAGIC_MISSILE
 		weapon[MAGIC_MISSILE] = new Weapon();
 		weapon[MAGIC_MISSILE].name = "MAGIC_MISSILE";
-		weapon[MAGIC_MISSILE].coolTime = 25;
+		weapon[MAGIC_MISSILE].setCoolTime(25);
 		/////////////////////
 		slot_spell = 0;
 	}

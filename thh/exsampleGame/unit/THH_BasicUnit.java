@@ -1,6 +1,5 @@
 package exsampleGame.unit;
 
-import bullet.Bullet;
 import calculate.ConsumableEnergy;
 import calculate.Damage;
 import core.GHQ;
@@ -9,10 +8,10 @@ import paint.dot.DotPaint;
 import paint.rect.RectPaint;
 import physics.Dynam;
 import physics.HasPoint;
-import physics.HitGroup;
+import physics.HitRule;
 import physics.Point;
 import physics.hitShape.Square;
-import storage.Storage;
+import storage.StorageWithSpace;
 import unit.Unit;
 import weapon.Weapon;
 
@@ -44,15 +43,15 @@ public abstract class THH_BasicUnit extends Unit {
 		BLO = new ConsumableEnergy(1).setMin(0).setDefaultToMax(),
 		STUN = new ConsumableEnergy(1).setMin(0).setDefaultToMax();
 	//inventory
-	public final Storage<ItemData> inventory = def_inventory();
-	protected Storage<ItemData> def_inventory() {
-		return new Storage<ItemData>();
+	public final StorageWithSpace<ItemData> inventory = def_inventory();
+	protected StorageWithSpace<ItemData> def_inventory() {
+		return new StorageWithSpace<ItemData>();
 	}
 	
 	public THH_BasicUnit(int charaSize, int initialGroup) {
 		physics().setPoint(new Dynam());
 		physics().setHitShape(new Square(this, charaSize));
-		physics().setHitGroup(new HitGroup(initialGroup));
+		physics().setHitRule(new HitRule(initialGroup));
 	}
 	
 	@Override
@@ -122,8 +121,8 @@ public abstract class THH_BasicUnit extends Unit {
 
 	// decrease
 	@Override
-	public void damage(Damage damage, Bullet bullet) {
-		damage.doDamage(this, null); //HP.consume(amount).intValue();
+	public void damage(Damage damage) {
+		damage.doDamage(this);
 	}
 	public final boolean kill(boolean force) {
 		HP.setToMin();
@@ -131,6 +130,10 @@ public abstract class THH_BasicUnit extends Unit {
 	}
 
 	// information
+	@Override
+	public DotPaint getDotPaint() {
+		return charaPaint;
+	}
 	@Override
 	public String name() {
 		return GHQ.NOT_NAMED;
@@ -140,7 +143,7 @@ public abstract class THH_BasicUnit extends Unit {
 		return !HP.isMin();
 	}
 	public boolean useWeapon(int kind) {
-		return weapon[kind].trigger(this);
+		return weapon[kind].triggerSucceed(this);
 	}
 	public abstract void setBullet(int kind, HasPoint source);
 }

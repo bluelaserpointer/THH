@@ -1,6 +1,6 @@
 package calculate;
 
-public interface Consumables extends HasNumber{
+public interface Consumables extends HasNumber {
 	public double consume(Number amount);
 	public default double consumeRate(double rate) {
 		return consume(doubleValue()*rate);

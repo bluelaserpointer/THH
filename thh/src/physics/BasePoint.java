@@ -2,8 +2,6 @@ package physics;
 
 import java.util.LinkedList;
 
-import loading.ObjectSaveTree;
-
 public class BasePoint extends Point {
 	private static final long serialVersionUID = -2585237312428553012L;
 	protected LinkedList<Point> relativePoints = new LinkedList<Point>();
@@ -29,10 +27,6 @@ public class BasePoint extends Point {
 	}
 	public Point basePoint() {
 		return base.point();
-	}
-	@Override
-	public ObjectSaveTree save() {
-		return new ObjectSaveTree(0, base, base);
 	}
 	@Override
 	public BasePoint clone() {

@@ -7,12 +7,10 @@ import paint.ImageFrame;
 import physics.HasPoint;
 import weapon.Weapon;
 
-public class Reimu extends THH_BasicPlayer{
+public class Reimu extends THH_BasicPlayer {
 	public Reimu(int initialGroup) {
 		super(20, initialGroup);
 	}
-
-	private static final long serialVersionUID = 1669960313477709935L;
 	@Override
 	public final String name() {
 		return "Reimu";
@@ -39,15 +37,15 @@ public class Reimu extends THH_BasicPlayer{
 		//FUDA_KOUHAKU
 		weapon[FUDA_KOUHAKU] = new Weapon();
 		weapon[FUDA_KOUHAKU].name = "FUDA_KOUHAKU";
-		weapon[FUDA_KOUHAKU].coolTime = 6;
+		weapon[FUDA_KOUHAKU].setCoolTime(6);
 		//FUDA_SHIROKURO
 		weapon[FUDA_SHIROKURO] = new Weapon();
 		weapon[FUDA_SHIROKURO].name = "FUDA_SHIROKURO";
-		weapon[FUDA_SHIROKURO].coolTime = 2;
+		weapon[FUDA_SHIROKURO].setCoolTime(2);
 		//FUDA_SOUHAKU
 		weapon[FUDA_SOUHAKU] = new Weapon();
 		weapon[FUDA_SOUHAKU].name = "FUDA_SOUHAKU";
-		weapon[FUDA_SOUHAKU].coolTime = 12;
+		weapon[FUDA_SOUHAKU].setCoolTime(12);
 		/////////////////////
 		slot_spell = 0;
 	}

@@ -1,9 +1,9 @@
 package calculate;
 
-import unit.Unit;
+import core.GHQObject;
 
-public class RateDamage implements Damage{
+public abstract class RateDamage extends Damage {
 	@Override
-	public void doDamage(Unit unit, Unit target) {
+	public void doDamage(GHQObject target) {
 	}
 }

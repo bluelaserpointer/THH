@@ -1,5 +1,7 @@
 package item;
 
+import java.util.Collection;
+
 import calculate.Filter;
 import calculate.verifier.Verifier;
 import calculate.verifier.WhiteList;
@@ -8,15 +10,13 @@ import core.GHQObject;
 import paint.dot.DotPaint;
 import physics.Point;
 import physics.hitShape.ImageRectShape;
-import storage.Storage;
+import storage.StorageWithSpace;
 import unit.BodyParts;
 import unit.BodyPartsType;
 import unit.Unit;
-import vegetation.DropItem;
 
 /**
  * A primal class for managing item data.
- * Note that Item class and {@link DropItem} class is different.(One commonly put in {@link storage.Storage} but the another one can put in stage as {@link vegetation.Vegetation} object.)
  * @author bluelaserpointer
  * @since alpha1.0
  */
@@ -38,10 +38,8 @@ public class ItemData extends GHQObject implements Usable {
 	}
 	//init
 	public ItemData(DotPaint dotScript) {
-		super(new Point.IntPoint());
 		this.paintScript = dotScript == null ? DotPaint.BLANK_SCRIPT : dotScript;
-		physics().setHitShape(new ImageRectShape(this, paintScript));
-		//physics().setHitShape(new RectShape(this, 100, 100));
+		physics().setHitShape(new ImageRectShape(this, this));
 	}
 	public ItemData setDotPaint(DotPaint dotPaint) {
 		paintScript = dotPaint;
@@ -54,8 +52,10 @@ public class ItemData extends GHQObject implements Usable {
 	//main role
 	@Override
 	public void idle() {
-		if(!hasOwner()) //dropped in stage
+		if(!hasOwner()) { //dropped in stage
 			paint();
+			point().idle();
+		}
 	}
 	@Override
 	public void paint() {
@@ -69,11 +69,17 @@ public class ItemData extends GHQObject implements Usable {
 	public void setOwner(Unit unit) {
 		owner = unit;
 	}
+	public void removeOwner() {
+		if(owner != null) {
+			owner.removedItem(this);
+			setOwner(null);
+		}
+	}
 	@Override
 	public void use() {}
 	//information
-	public boolean isStackable(ItemData item) {
-		return item.name().equals(this.name());
+	public boolean stackable(ItemData item) {
+		return getClass().equals(item.getClass());
 	}
 	public final boolean isEmpty() {
 		return amount == 0;
@@ -103,18 +109,24 @@ public class ItemData extends GHQObject implements Usable {
 	 * @return dropped item
 	 */
 	public ItemData drop(int x, int y) {
-		if(owner != null) {
-			owner.removedItem(this);
-			setOwner(null);
-		}
-		cancelDelete();
+		removeOwner();
+		cancelDeleteFromStage();
 		point().setXY(x, y);
 		return GHQ.stage().addItem(this);
 	}
+	public ItemData drop(Point point) {
+		return drop(point.intX(), point.intY());
+	}
 	public ItemData pickup(Unit newOwner) {
-		claimDelete();
+		claimDeleteFromStage();
 		setOwner(newOwner);
 		return this;
+	}
+	public Object substantialize(int x, int y) {
+		return null;
+	}
+	public Object substantialize(Point point) {
+		return substantialize(point.intX(), point.intY());
 	}
 	public int add(int amount) {
 		final int LFET_SPACE = getLeftSpace();
@@ -155,59 +167,6 @@ public class ItemData extends GHQObject implements Usable {
 		final int CONSUMED = consume(item.amount);
 		item.consume(CONSUMED);
 		return CONSUMED;
-	}
-	//public tool
-	public static boolean addInInventory(Storage<ItemData> itemStorage, ItemData targetItem) {
-		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
-			final ItemData ITEM = itemStorage.get(i);
-			if(ITEM.isStackable(targetItem)) {
-				ITEM.stack(targetItem);
-				if(targetItem.isEmpty()) {
-					if(targetItem.keepEvenEmpty()){
-						return itemStorage.add(targetItem);
-					}else
-						return true;
-				}
-			}
-		}
-		//not found same kind (stackable) item.
-		return itemStorage.add(targetItem);
-	}
-	public static int removeInInventory(Storage<ItemData> itemStorage, ItemData targetItem) {
-		int removed = 0;
-		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
-			final ItemData ITEM = itemStorage.get(i);
-			if(ITEM.isStackable(targetItem)) {
-				removed += ITEM.setOff(targetItem);
-				if(targetItem.isEmpty())
-					return removed;
-			}
-		}
-		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
-			final ItemData ITEM = itemStorage.get(i);
-			if(ITEM.isEmpty() && !ITEM.keepEvenEmpty())
-				itemStorage.remove(ITEM);
-		}
-		//not found enough amount of the item.
-		return removed;
-	}
-	public static int removeInInventory(Storage<ItemData> itemStorage, Filter<ItemData> filter, int amount) {
-		int removed = 0;
-		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
-			final ItemData ITEM = itemStorage.get(i);
-			if(filter.judge(ITEM)) {
-				removed += ITEM.consume(amount);
-				if(ITEM.isEmpty())
-					return removed;
-			}
-		}
-		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
-			final ItemData ITEM = itemStorage.get(i);
-			if(ITEM.isEmpty() && !ITEM.keepEvenEmpty())
-				itemStorage.remove(ITEM);
-		}
-		//not found enough amount of the item.
-		return removed;
 	}
 	//tell
 	public void equipped() {
@@ -251,17 +210,19 @@ public class ItemData extends GHQObject implements Usable {
 	public boolean isEquipped() {
 		return isEquipped;
 	}
-	//public tool
-
+	///////////////////////////////
+	//public tool - add and remove from inventory with stacking
+	///////////////////////////////
 	/**
-	 * Add item with automatic stack.
+	 * Add items to StorageWithSpace with automatic stack.
+	 * @param itemStorage
 	 * @param targetItem
 	 * @return true - successfully added / false - overflowed
 	 */
-	public static boolean add_stack(Storage<ItemData> itemStorage, ItemData targetItem) {
-		for(int i = itemStorage.traverseFirst(); i != -1; i = itemStorage.traverseNext(i)) {
+	public static boolean addInInventory(StorageWithSpace<ItemData> itemStorage, ItemData targetItem) {
+		for(int i = itemStorage.nextNonspaceIndex();i != -1;i = itemStorage.nextNonspaceIndex(i)) {
 			final ItemData ITEM = itemStorage.get(i);
-			if(ITEM.isStackable(targetItem)) {
+			if(ITEM.stackable(targetItem)) {
 				ITEM.stack(targetItem);
 				if(targetItem.isEmpty()) {
 					if(targetItem.keepEvenEmpty()){
@@ -271,30 +232,106 @@ public class ItemData extends GHQObject implements Usable {
 				}
 			}
 		}
-		//not found same kind (stackable) item.
+		//cannot found any more stackable item.
 		return itemStorage.add(targetItem);
 	}
-	
-	//public tool
-	public static int countItem(Storage<ItemData> itemStorage, ItemData targetItem) {
+	public static boolean addInInventory(Collection<ItemData> itemStorage, ItemData targetItem) {
+		for(ItemData item : itemStorage) {
+			if(item.stackable(targetItem)) {
+				item.stack(targetItem);
+				if(targetItem.isEmpty()) {
+					if(targetItem.keepEvenEmpty()){
+						return itemStorage.add(targetItem);
+					}else
+						return true;
+				}
+			}
+		}
+		//cannot found any more stackable item.
+		return itemStorage.add(targetItem);
+	}
+	/**
+	 * Remove items from StorageWithSpace.
+	 * @param itemStorage
+	 * @param targetItem
+	 * @return removed amount
+	 */
+	public static int removeInInventory(StorageWithSpace<? extends ItemData> itemStorage, ItemData targetItem) {
+		int removed = 0;
+		for(int i = itemStorage.nextNonspaceIndex();i != -1;i = itemStorage.nextNonspaceIndex(i)) {
+			final ItemData item = itemStorage.get(i);
+			if(item.stackable(targetItem)) {
+				removed += item.setOff(targetItem); 
+				if(item.isEmpty() && !item.keepEvenEmpty())
+					itemStorage.remove(targetItem);
+				if(targetItem.isEmpty())
+					return removed;
+			}
+		}
+		//not found enough amount of the item.
+		return removed;
+	}
+	public static int removeInInventory(Collection<? extends ItemData> itemStorage, ItemData targetItem) {
+		int removed = 0;
+		for(ItemData item : itemStorage) {
+			if(item.stackable(targetItem)) {
+				removed += item.setOff(targetItem);
+				if(item.isEmpty() && !item.keepEvenEmpty())
+					itemStorage.remove(targetItem);
+				if(targetItem.isEmpty())
+					return removed;
+			}
+		}
+		//not found enough amount of the item.
+		return removed;
+	}
+	/**
+	 * Remove some items from StorageWithSpace with Filter.
+	 * @param itemStorage
+	 * @param filter
+	 * @param amount
+	 * @return removed amount
+	 */
+	public static <T extends ItemData>int removeInInventory(StorageWithSpace<T> itemStorage, Filter<T> filter, int amount) {
+		int removed = 0;
+		for(int i = itemStorage.nextNonspaceIndex();i != -1;i = itemStorage.nextNonspaceIndex(i)) {
+			final T item = itemStorage.get(i);
+			if(filter.judge(item)) {
+				removed += item.consume(amount);
+				if(item.isEmpty())
+					return removed;
+			}
+		}
+		for(int i = itemStorage.nextNonspaceIndex();i != -1;i = itemStorage.nextNonspaceIndex(i)) {
+			final ItemData ITEM = itemStorage.get(i);
+			if(ITEM.isEmpty() && !ITEM.keepEvenEmpty())
+				itemStorage.remove(ITEM);
+		}
+		//not found enough amount of the item.
+		return removed;
+	}
+	///////////////////////////////
+	//public tool - count item amount in a inventory
+	///////////////////////////////
+	public static int countItem(StorageWithSpace<? extends ItemData> itemStorage, ItemData targetItem) {
 		int total = 0;
-		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
-			if(targetItem.isStackable(itemStorage.get(i)))
+		for(int i = itemStorage.nextNonspaceIndex();i != -1;i = itemStorage.nextNonspaceIndex(i)) {
+			if(targetItem.stackable(itemStorage.get(i)))
 				total += itemStorage.get(i).getAmount();
 		}
 		return total;
 	}
-	public static int countItemByName(Storage<ItemData> itemStorage, String targetItemName) {
+	public static int countItemByName(StorageWithSpace<? extends ItemData> itemStorage, String targetItemName) {
 		int total = 0;
-		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
+		for(int i = itemStorage.nextNonspaceIndex();i != -1;i = itemStorage.nextNonspaceIndex(i)) {
 			if(targetItemName.equals(itemStorage.get(i).name()))
 				total += itemStorage.get(i).getAmount();
 		}
 		return total;
 	}
-	public static int countItem(Storage<ItemData> itemStorage, Filter<ItemData> filter) {
+	public static <T extends ItemData>int countItem(StorageWithSpace<T> itemStorage, Filter<T> filter) {
 		int total = 0;
-		for(int i = itemStorage.traverseFirst();i != -1;i = itemStorage.traverseNext(i)) {
+		for(int i = itemStorage.nextNonspaceIndex();i != -1;i = itemStorage.nextNonspaceIndex(i)) {
 			if(filter.judge(itemStorage.get(i)))
 				total += itemStorage.get(i).getAmount();
 		}

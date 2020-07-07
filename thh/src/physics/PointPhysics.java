@@ -21,8 +21,8 @@ public class PointPhysics extends Physics{
 		return HitShape.NULL_HITSHAPE;
 	}
 	@Override
-	public HitGroup hitGroup() {
-		return HitGroup.HIT_ALL;
+	public HitRule hitGroup() {
+		return HitRule.HIT_ALL;
 	}
 	@Override
 	public Angle angle() {

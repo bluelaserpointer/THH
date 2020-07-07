@@ -2,14 +2,32 @@ package physics;
 
 import physics.hitShape.HitShape;
 
-public abstract class Physics implements HitInteractable, HasAngle{
+public abstract class Physics implements HitInteractable, HasAngle {
+	public static final Physics NULL_PHYSICS = new Physics() {
+		@Override
+		public HitShape hitShape() {
+			return HitShape.NULL_HITSHAPE;
+		}
+		@Override
+		public Point point() {
+			return Point.NULL_POINT;
+		}
+		@Override
+		public HitRule hitGroup() {
+			return HitRule.HIT_NONE;
+		}
+		@Override
+		public Angle angle() {
+			return Angle.NULL_ANGLE;
+		}
+	};
 	public Physics setPoint(Point point) {
 		return this;
 	}
 	public Physics setHitShape(HitShape hitShape) {
 		return this;
 	}
-	public Physics setHitGroup(HitGroup hitGroup) {
+	public Physics setHitRule(HitRule hitGroup) {
 		return this;
 	}
 	public Physics setPointBase(HasPoint base) {

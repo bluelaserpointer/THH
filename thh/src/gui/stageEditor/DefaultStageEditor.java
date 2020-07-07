@@ -8,8 +8,6 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
-import bullet.Bullet;
-import calculate.Damage;
 import core.GHQ;
 import core.GHQObject;
 import core.GHQObjectList;
@@ -23,6 +21,7 @@ import math.SquareCellArranger;
 import paint.ColorFilling;
 import paint.ColorFraming;
 import paint.ImageFrame;
+import paint.dot.DotPaint;
 import paint.rect.RectPaint;
 import physics.Angle;
 import physics.Dynam;
@@ -202,11 +201,12 @@ public abstract class DefaultStageEditor extends GUIParts{
 								return null;
 							}
 							@Override
-							public void damage(Damage damage, Bullet bullet) {
-							}
-							@Override
 							public boolean isAlive() {
 								return true;
+							}
+							@Override
+							public DotPaint getDotPaint() {
+								return DotPaint.BLANK_SCRIPT;
 							}
 						});
 						break;
@@ -225,7 +225,7 @@ public abstract class DefaultStageEditor extends GUIParts{
 				setName(EDIT_MENU_GROUP + "SelectionButtons");
 			}
 			@Override
-			protected void clicked(Integer buttonValue) {
+			protected void buttonClicked(Integer buttonValue) {
 				if(placeKind != buttonValue)
 					placeKind = buttonValue;
 				else

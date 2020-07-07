@@ -6,8 +6,7 @@ import exsampleGame.unit.EnemyWeaponLibrary;
 import paint.ImageFrame;
 import physics.HasPoint;
 
-public class BlackMan extends THH_BasicEnemy{
-	private static final long serialVersionUID = -1004211237829934326L;
+public class BlackMan extends THH_BasicEnemy {
 	{
 		charaSpeed = 2;
 	}
@@ -35,9 +34,9 @@ public class BlackMan extends THH_BasicEnemy{
 		if(targetEnemy != null) {
 			final double ANGLE = point().angleTo(dstPoint.setXY(targetEnemy));
 			angle().set(ANGLE);
-			if(weapon[0].trigger(this)) {
-				EnemyWeaponLibrary.inputBulletInfo(this,EnemyWeaponLibrary.BLACK_SLASH_BURST,bulletPaint[0],targetEnemy);
-				EnemyWeaponLibrary.inputBulletInfo(this,EnemyWeaponLibrary.BLACK_SLASH_BURST,bulletPaint[1],targetEnemy);
+			if(weapon[0].triggerSucceed(this)) {
+				EnemyWeaponLibrary.inputBulletInfo(this,EnemyWeaponLibrary.BLACK_SLASH_BURST, bulletPaint[0], targetEnemy);
+				EnemyWeaponLibrary.inputBulletInfo(this,EnemyWeaponLibrary.BLACK_SLASH_BURST, bulletPaint[1], targetEnemy);
 			}
 		}
 		point().approachIfNoObstacles(this, dstPoint, charaSpeed);

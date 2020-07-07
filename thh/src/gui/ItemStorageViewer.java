@@ -2,12 +2,11 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 
 import core.GHQ;
 import item.ItemData;
 import paint.dot.HasDotPaint;
-import paint.rect.RectPaint;
-import storage.TableStorage;
 
 /**
  * A {@link GUIParts} subclass for managing Excel-like {@link ItemData} display, additionally draws their amount at the right-bottom corner.
@@ -16,10 +15,11 @@ import storage.TableStorage;
  * @since alpha1.0
  */
 public class ItemStorageViewer extends TableStorageViewer<ItemData> {
-	protected RectPaint cellPaint = RectPaint.BLANK_SCRIPT;
+	protected ClickMenu<ItemData> itemRCMenu;
 	
-	public ItemStorageViewer setCellPaint(RectPaint cellPaint) {
-		this.cellPaint = cellPaint;
+	//init
+	public ItemStorageViewer setRCMenu(ClickMenu<ItemData> rcMenu) {
+		super.addLast(itemRCMenu = rcMenu).disable();
 		return this;
 	}
 	@Override
@@ -33,7 +33,7 @@ public class ItemStorageViewer extends TableStorageViewer<ItemData> {
 			return;
 		}
 		object.getDotPaint().dotPaint_capSize(x + cellSize/2, y + cellSize/2, (int)(cellSize*0.8));
-		if(storage instanceof TableStorage && ((TableStorage<? extends HasDotPaint>)storage).isNullElement(object)) {
+		if(storage.isSpaceElement(object)) {
 			G2.drawString("Empty", x + cellSize - 23, y + cellSize - 9);
 		}
 		if(object instanceof ItemData && object != ItemData.BLANK_ITEM) {
@@ -44,6 +44,29 @@ public class ItemStorageViewer extends TableStorageViewer<ItemData> {
 		}
 	}
 
+	@Override
+	public boolean clicked(MouseEvent e) {
+		final ItemData ELEMENT = getMouseHoveredElement();
+		if(ELEMENT != storage.spaceElement() && e.getButton() == MouseEvent.BUTTON3) {
+			if(itemRCMenu != null)
+				itemRCMenu.tryOpen(ELEMENT);
+			else
+				return false;
+		}else
+			super.clicked(e);
+		return true;
+	}
+	@Override
+	public void dragOut(GUIParts targetUI, Object dropObject, Object swapObject) {
+		final int id = storage.indexOf(dropObject);
+		//remove owner info from item
+		if(targetUI != this)
+			objectToT(dropObject).setOwner(null);
+		if(swapObject == null) { //move
+			storage.remove(id);
+		} else //swap
+			storage.set(id, objectToT(swapObject));
+	}
 	@Override
 	public ItemData objectToT(Object object) {
 		if(object instanceof ItemData)

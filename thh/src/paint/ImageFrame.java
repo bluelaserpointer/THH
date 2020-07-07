@@ -62,7 +62,7 @@ public class ImageFrame extends DotPaint {
 			preloadedImageMap.put(url, image);
 		}catch(IOException | NullPointerException e){ //異常-読み込み失敗
 			if(url.toString() != null && !url.toString().isEmpty())
-				GHQ.warningBox("Image " + url + " is not found and could not be loaded.Error code: " + url.toString(),"ImageLoadingError");
+				GHQ.warningBox("Image " + url + " is not found and could not be loaded.Error code: " + url.toString(), "ImageLoadingError");
 			else
 				GHQ.warningBox("Image " + url + " is not found and could not be loaded.", "ImageLoadingError");
 			return GHQ.hq.createImage(1, 1);

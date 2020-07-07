@@ -3,7 +3,6 @@ package physics;
 import static java.lang.Math.*;
 
 import core.GHQ;
-import loading.ObjectSaveTree;
 
 /**
  * A major class for managing object physics.
@@ -16,24 +15,6 @@ public class Dynam extends Point.DoublePoint{
 	public static final Dynam NULL_DYNAM = new Dynam();
 	
 	protected double xSpd, ySpd;
-	/*protected final Angle moveAngle = new Angle() {
-		private static final long serialVersionUID = 6971378942148992685L;
-		@Override
-		public void set(double angle) {
-			if(super.angle != angle) {
-				super.angle = angle;
-				final double SPEED = speed();
-				if(SPEED != 0.0) {
-					xSpd = SPEED*cos();
-					ySpd = SPEED*sin();
-				}
-			}
-		}
-		@Override
-		public void set(Angle sample) {
-			super.angle = sample.angle();
-		}
-	};*/
 	public Dynam() {}
 	public Dynam(Point dynam) {
 		setAll(dynam);
@@ -51,14 +32,6 @@ public class Dynam extends Point.DoublePoint{
 	}
 	public Dynam(HasAnglePoint sample) {
 		setXYAngle(sample);
-	}
-	public Dynam(ObjectSaveTree tree) {
-		super(tree.pollSaveTreeForSuper());
-		setSpeed(tree.pollInt(), tree.pollInt());
-	}
-	@Override
-	public ObjectSaveTree save() {
-		return new ObjectSaveTree(0, super.save(), xSpeed(), ySpeed());
 	}
 	public void clear() {
 		setXY(0, 0);
@@ -184,6 +157,10 @@ public class Dynam extends Point.DoublePoint{
 		else
 			mulSpeed(speed/oldSpeed);
 	}
+	@Override
+	public void setSpeed_DA(double distance, double angle) {
+		setSpeed(distance*cos(angle), distance*sin(angle));
+	}
 	public void addXSpeed(double xSpeed) {
 		setXSpeed(xSpeed() + xSpeed);
 	}
@@ -237,13 +214,13 @@ public class Dynam extends Point.DoublePoint{
 	 * Move forward.
 	 */
 	@Override
-	public void move() {
+	public void moveBySpeed() {
 		addXY(xSpeed(), ySpeed());
 	}
 	@Override
 	public void moveIfNoObstacles(HitInteractable source) {
 		if(!GHQ.stage().hitObstacle_atNewPoint(source, (int)xSpeed(), (int)ySpeed()))
-			move();
+			moveBySpeed();
 	}
 	/**
 	 * Move forward with a limited length.
@@ -256,7 +233,7 @@ public class Dynam extends Point.DoublePoint{
 			return 0;
 		final double SPEED = speed();
 		if(SPEED <= lengthCap) {
-			move();
+			moveBySpeed();
 			return 0;
 		}else {
 			final double RATE = lengthCap/SPEED;

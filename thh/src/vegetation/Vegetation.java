@@ -14,17 +14,22 @@ import physics.Point;
 public class Vegetation extends GHQObject implements HasBoundingBox, HasDotPaint {
 	protected final DotPaint paintScript;
 
-	//init
+	//init-physics parameter
+	@Override
+	protected Point predefine_point() {
+		return new Point.IntPoint();
+	}
+	//init-constructor
 	public Vegetation(DotPaint paintScript, int x, int y) {
-		super(new Point.IntPoint(x, y));
+		point().setXY(x, y);
 		this.paintScript = paintScript;
 	}
 	public Vegetation(DotPaint paintScript, Point point) {
-		super(new Point.IntPoint(point));
+		point().setXY(point);
 		this.paintScript = paintScript;
 	}
 	public Vegetation(Vegetation sample) {
-		super(new Point.IntPoint(sample.point()));
+		point().setXY(sample);
 		this.paintScript = sample.paintScript;
 	}
 	//idle

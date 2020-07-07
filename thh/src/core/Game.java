@@ -25,7 +25,7 @@ public abstract class Game {
 	public abstract GHQStage loadStage();
 	
 	//idle
-	public abstract void idle(Graphics2D g2,int stopEventKind);
+	public abstract void idle(Graphics2D g2, int stopEventKind);
 	
 	//event
 	public void mousePressed(MouseEvent e) {

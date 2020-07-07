@@ -34,8 +34,12 @@ public class ValueWithCalculation implements Serializable, HasNumber, HasName {
 		this.calculations = new CompoundCalculation(calculations);
 	}
 	//control
+	public void directSetValue(Number newValue) {
+		value = newValue;
+	}
 	public void setValue(Number newValue) {
 		double diff;
+		//adjust value change
 		for(ValueChangeAdjuster adjuster : adjusters) {
 			diff = newValue.doubleValue() - value.doubleValue();
 			if(diff > 0) { //increased event
@@ -48,6 +52,7 @@ public class ValueWithCalculation implements Serializable, HasNumber, HasName {
 				newValue = adjuster.unchanged(value, newValue);
 			}
 		}
+		//record value change
 		diff = newValue.doubleValue() - value.doubleValue();
 		if(diff > 0) { //increased record
 			lastIncreaseFrame = GHQ.nowFrame();
@@ -60,7 +65,7 @@ public class ValueWithCalculation implements Serializable, HasNumber, HasName {
 			lastChangeAmount = 0;
 			lastUnchangeFrame = GHQ.nowFrame();
 		}
-		this.value = newValue;
+		this.directSetValue(newValue);
 	}
 	public void addCalculation(Calculation...calculations) {
 		this.calculations.add(calculations);

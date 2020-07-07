@@ -17,7 +17,7 @@ public interface HitInteractable extends HasHitShape, HasHitGroup{
 			return null;
 		}
 		@Override
-		public HitGroup hitGroup() {
+		public HitRule hitGroup() {
 			return null;
 		}
 		@Override
@@ -35,6 +35,7 @@ public interface HitInteractable extends HasHitShape, HasHitGroup{
 	public default boolean intersects_atNewPoint(double dx, double dy, HitInteractable target) {
 		return hitableGroup(target) && hitShape().intersects_atNewPoint(dx, dy, target);
 	}
+	@Override
 	public default boolean intersectsDot(int x, int y) {
 		return hitShape().intersectsDot(x, y);
 	}

@@ -6,29 +6,33 @@ public class StdPhysics extends Physics {
 	protected Point point;
 	protected Angle angle;
 	protected HitShape hitShape;
-	protected HitGroup hitGroup;
-	public StdPhysics(Point point, Angle angle, HitShape hitShape, HitGroup hitGroup) {
+	protected HitRule hitRule;
+	public StdPhysics(Point point, Angle angle, HitShape hitShape, HitRule hitGroup) {
 		this.point = point;
 		this.angle = angle;
 		this.hitShape = hitShape;
-		this.hitGroup = hitGroup;
+		this.hitRule = hitGroup;
 	}
 	public StdPhysics() {
 		point = Point.NULL_POINT;
-		angle = new Angle();
+		angle = Angle.NULL_ANGLE;
 		hitShape = HitShape.NULL_HITSHAPE;
-		hitGroup = HitGroup.HIT_ALL;
+		hitRule = HitRule.HIT_ALL;
 	}
 	public StdPhysics setPoint(Point point) {
 		this.point = point;
+		return this;
+	}
+	public StdPhysics setAngle(Angle angle) {
+		this.angle = angle;
 		return this;
 	}
 	public StdPhysics setHitShape(HitShape hitShape) {
 		this.hitShape = hitShape;
 		return this;
 	}
-	public StdPhysics setHitGroup(HitGroup hitGroup) {
-		this.hitGroup = hitGroup;
+	public StdPhysics setHitRule(HitRule hitRule) {
+		this.hitRule = hitRule;
 		return this;
 	}
 	@Override
@@ -40,8 +44,8 @@ public class StdPhysics extends Physics {
 		return hitShape;
 	}
 	@Override
-	public HitGroup hitGroup() {
-		return hitGroup;
+	public HitRule hitGroup() {
+		return hitRule;
 	}
 	@Override
 	public Angle angle() {

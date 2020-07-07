@@ -10,6 +10,12 @@ public abstract class CellArranger {
 			W = w;
 			H = h;
 		}
+		public final int centerX() {
+			return X + W/2;
+		}
+		public final int centerY() {
+			return Y + H/2;
+		}
 	}
 	public int width() {
 		return generalW;

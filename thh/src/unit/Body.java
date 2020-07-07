@@ -75,6 +75,14 @@ public class Body implements HasPaint, HasAnglePoint {
 		this.equipped(equipment);
 		return true;
 	}
+	public boolean equip(ItemData equipment, BodyParts targetBodyParts) {
+		if(equipment.canEquipTo(targetBodyParts)) {
+			targetBodyParts.equip(equipment);
+			this.equipped(equipment);
+			return true;
+		}
+		return false;
+	}
 	public boolean dequip(ItemData equipment) {
 		for(BodyParts parts : bodyParts) {
 			if(parts.equipment() == equipment) {

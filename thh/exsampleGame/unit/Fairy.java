@@ -7,8 +7,7 @@ import paint.dot.DotPaint;
 import physics.HasPoint;
 import unit.Unit;
 
-public class Fairy extends THH_BasicEnemy{
-	private static final long serialVersionUID = -8167654165444569286L;
+public class Fairy extends THH_BasicEnemy {
 	public Fairy(int initialGroup) {
 		super(70, initialGroup);
 	}
@@ -29,8 +28,8 @@ public class Fairy extends THH_BasicEnemy{
 	public void idle() {
 		super.idle();
 		final Unit targetEnemy = GHQ.stage().getNearstVisibleEnemy(this);
-		if(targetEnemy != null && weapon[0].trigger(this))
-			EnemyWeaponLibrary.inputBulletInfo(this,EnemyWeaponLibrary.lightBall_ROUND,bulletPaint[0],targetEnemy);
+		if(targetEnemy != null && weapon[0].triggerSucceed(this))
+			EnemyWeaponLibrary.inputBulletInfo(this, EnemyWeaponLibrary.lightBall_ROUND,bulletPaint[0], targetEnemy);
 	}
 	@Override
 	public void paint() {

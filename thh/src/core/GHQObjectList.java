@@ -14,18 +14,20 @@ import physics.Point;
  *
  * @param <T>
  */
-public class GHQObjectList<T extends GHQObject> extends LinkedList<T>{
+public class GHQObjectList<T extends GHQObject> extends LinkedList<T> {
 	private static final long serialVersionUID = 1774337313239922412L;
 	
 	public void traverseIdle() {
-		for(GHQObject element : (GHQObjectList<T>)this.clone()) {
+		final LinkedList<GHQObject> elements = new LinkedList<GHQObject>();
+		elements.addAll(this);
+		for(GHQObject element : elements) {
 			element.idle();
 		}
 		//check delete claim
 		final Iterator<? extends GHQObject> iterator = descendingIterator();
 		while(iterator.hasNext()) {
 			GHQObject object = iterator.next();
-			if(object.hasDeleteClaim()) {
+			if(object.hasDeleteClaimFromStage()) {
 				iterator.remove();
 			}
 		}
@@ -140,6 +142,34 @@ public class GHQObjectList<T extends GHQObject> extends LinkedList<T>{
 		for(T element : this) {
 			final double distance = point.distance(element);
 			if(distance < closestDistance && point.isVisible(element)) {
+				closestDistance = distance;
+				closestElement = element;
+			}
+		}
+		return closestElement;
+	}
+	public T getClosest(T searcher) {
+		T closestElement = null;
+		double closestDistance = Double.MAX_VALUE;
+		for(T element : this) {
+			if(element == searcher)
+				continue;
+			final double distance = searcher.point().distance(element);
+			if(distance < closestDistance) {
+				closestDistance = distance;
+				closestElement = element;
+			}
+		}
+		return closestElement;
+	}
+	public T getClosestVisible(T searcher) {
+		T closestElement = null;
+		double closestDistance = Double.MAX_VALUE;
+		for(T element : this) {
+			if(element == searcher)
+				continue;
+			final double distance = searcher.point().distance(element);
+			if(distance < closestDistance && searcher.point().isVisible(element)) {
 				closestDistance = distance;
 				closestElement = element;
 			}

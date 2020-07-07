@@ -63,27 +63,31 @@ public class GUIParts extends GHQObject implements DragIO {
 	public RectShape rectShape() {
 		return ((RectShape)hitShape());
 	}
-	public GUIParts setSize(int w, int h) {
-		rectShape().setSize(w, h);
+	public GUIParts setBoundsSize(int w, int h) {
+		rectShape().setBoundsSize(w, h);
 		return this;
 	}
-	public GUIParts setSize(HitShape hitShape) {
-		rectShape().setSize(hitShape);
+	public GUIParts setBoundsSize(HitShape hitShape) {
+		rectShape().setBoundsSize(hitShape);
 		return this;
 	}
 	public GUIParts setBounds(int x, int y, int w, int h) {
-		point().setXY(x, y);
-		setSize(w, h);
+		setXY(x, y);
+		setBoundsSize(w, h);
 		return this;
 	}
 	public GUIParts setBounds(GUIParts sample) {
 		point().setAll(sample.point());
-		setSize(sample.hitShape());
+		setBoundsSize(sample.hitShape());
+		return this;
+	}
+	public GUIParts setXY(int x, int y) {
+		point().setXY(x, y);
 		return this;
 	}
 	public GUIParts setBounds_center(int centerX, int centerY, int w, int h) {
 		point().setXY(centerX - w/2, centerY - h/2);
-		setSize(w, h);
+		setBoundsSize(w, h);
 		return this;
 	}
 	public GUIParts setBounds_center(Point centerPoint, int w, int h) {
@@ -145,7 +149,9 @@ public class GUIParts extends GHQObject implements DragIO {
 	@Override
 	public void idle() {
 		super.idle();
-		//child idle
+		childIdle();
+	}
+	public void childIdle() {
 		if(childList != null) {
 			final Iterator<GUIParts> ite = childList.descendingIterator();
 			while(ite.hasNext())

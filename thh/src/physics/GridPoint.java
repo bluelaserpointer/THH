@@ -1,55 +1,42 @@
 package physics;
 
-import physics.Direction.Direction4;
+public class GridPoint extends Point.IntPoint {
+	private static final long serialVersionUID = -7403163749353622067L;
 
-public class GridPoint extends Point.IntPoint{
-	private static final long serialVersionUID = -8901821167720670703L;
-	public Direction4 direction;
-	protected final int GRID_SIZE;
-	
+	private final int gridSize;
 	public GridPoint(int gridSize) {
-		direction = Direction4.D;
-		GRID_SIZE = gridSize;
+		this.gridSize = gridSize;
 	}
-	public GridPoint(int x, int y, int gridSize, Direction4 initialDirection) {
-		super(x, y);
-		direction = initialDirection;
-		GRID_SIZE = gridSize;
+	@Override
+	public void setX(int x) {
+		super.setX(x - x%gridSize);
 	}
-	public GridPoint move(Direction4 direction4) {
-		switch(direction4) {
-		case W:
-			y -= GRID_SIZE;
-			break;
-		case D:
-			x += GRID_SIZE;
-			break;
-		case S:
-			y += GRID_SIZE;
-			break;
-		case A:
-			x -= GRID_SIZE;
-			break;
-		}
+	@Override
+	public void setY(int y) {
+		super.setY(y - y%gridSize);
+	}
+	public GridPoint setPos(int xPos, int yPos) {
+		setXPos(xPos);
+		setYPos(yPos);
 		return this;
 	}
-	public GridPoint moveFoward() {
-		this.move(direction);
+	public GridPoint setXPos(int xPos) {
+		super.setX(xPos*gridSize + gridSize/2);
 		return this;
 	}
-	public GridPoint moveBack() {
-		this.move(direction.back());
+	public GridPoint setYPos(int yPos) {
+		super.setY(yPos*gridSize + gridSize/2);
 		return this;
 	}
-	public GridPoint turnLeft() {
-		direction = direction.left();
-		return this;
+	
+	//information
+	public int gridSize() {
+		return gridSize;
 	}
-	public GridPoint turnRight() {
-		direction = direction.right();
-		return this;
+	public int xPos() {
+		return super.intX()/gridSize;
 	}
-	public void turnBack() {
-		direction = direction.back();
+	public int yPos() {
+		return super.intY()/gridSize;
 	}
 }
