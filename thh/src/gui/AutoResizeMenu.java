@@ -30,7 +30,7 @@ public class AutoResizeMenu extends GUIParts{
 			final int PARTS_W = super.width() / AMOUNT;
 			for(int i = 0;i < guiParts.length;i++) {
 				guiParts[i].physics().setPointBase(this);
-				guiParts[i].setBounds(PARTS_W*i, DEFAULT_LINE_H*lineAmount, PARTS_W, DEFAULT_LINE_H);
+				guiParts[i].setBounds(PARTS_W*i, point().intY() + DEFAULT_LINE_H*lineAmount, PARTS_W, DEFAULT_LINE_H);
 				super.addLast(guiParts[i]);
 			}
 		}else {
@@ -38,7 +38,7 @@ public class AutoResizeMenu extends GUIParts{
 			final int PARTS_W = width() / AMOUNT;
 			for(int i = 0;i < guiParts.length;i++) {
 				guiParts[i].physics().setPointBase(this);
-				guiParts[i].setBounds(PARTS_W*i + MARGIN, DEFAULT_LINE_H*lineAmount + MARGIN, PARTS_W - MARGIN*2, DEFAULT_LINE_H - MARGIN*2);
+				guiParts[i].setBounds(PARTS_W*i + MARGIN, point().intY() + DEFAULT_LINE_H*lineAmount + MARGIN, PARTS_W - MARGIN*2, DEFAULT_LINE_H - MARGIN*2);
 				super.addLast(guiParts[i]);
 			}
 		}
