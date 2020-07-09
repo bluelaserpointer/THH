@@ -1,6 +1,5 @@
 package physics;
 
-import core.GHQ;
 import physics.Direction.DirectionLR;
 
 public class Angle {
@@ -35,8 +34,6 @@ public class Angle {
 		set(get() + angle);
 	}
 	public double spinTo_ConstSpd(double targetAngle, double angularSpeed) {
-		if(angularSpeed <= 0)
-			return GHQ.MAX;
 		final double D_ANGLE = getDiff(targetAngle);
 		if(D_ANGLE < 0) {
 			if(D_ANGLE < -angularSpeed) {
@@ -64,8 +61,6 @@ public class Angle {
 		return Math.abs(D_ANGLE - TURN_ANGLE);
 	}
 	public static double spinTo_ConstSpd(double nowAngle, double targetAngle, double angularSpeed) {
-		if(angularSpeed <= 0)
-			return GHQ.MAX;
 		final double D_ANGLE = targetAngle - nowAngle;
 		if(D_ANGLE < 0) {
 			if(D_ANGLE < -angularSpeed) {
@@ -106,7 +101,7 @@ public class Angle {
 		return r*cos();
 	}
 	public double getDiff(double angle) {
-		return GHQ.angleFormat(angle - get());
+		return (angle - get()) % (Math.PI*2);
 	}
 	public boolean isDiffSmaller(double angle, double range) {
 		return Math.abs(getDiff(angle)) < range;
