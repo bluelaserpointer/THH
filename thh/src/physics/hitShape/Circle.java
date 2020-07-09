@@ -7,7 +7,7 @@ import java.awt.geom.Line2D;
 
 import core.GHQ;
 import physics.HasPoint;
-import structure.Tile.TileHitShape;
+import preset.structure.Tile.TileHitShape;
 
 public class Circle extends HitShape{
 	private static final long serialVersionUID = -1809578801160258098L;

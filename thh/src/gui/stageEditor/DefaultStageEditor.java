@@ -27,9 +27,9 @@ import physics.Angle;
 import physics.Dynam;
 import physics.HasBoundingBox;
 import physics.Point;
-import structure.Terrain;
-import structure.Tile;
-import unit.Unit;
+import preset.structure.Terrain;
+import preset.structure.Tile;
+import preset.unit.Unit;
 import vegetation.Vegetation;
 
 /**

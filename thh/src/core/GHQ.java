@@ -37,8 +37,8 @@ import input.keyType.KeyTypeListener;
 import input.mouse.MouseListenerEx;
 import physics.HasPoint;
 import physics.Point;
-import stage.GHQStage;
-import unit.Unit;
+import physics.stage.GHQStage;
+import preset.unit.Unit;
 
 /**
  * The core class for engine "THH"

@@ -3,7 +3,6 @@ package exsampleGame.unit;
 import calculate.ConsumableEnergy;
 import calculate.Damage;
 import core.GHQ;
-import item.ItemData;
 import paint.dot.DotPaint;
 import paint.rect.RectPaint;
 import physics.Dynam;
@@ -11,8 +10,9 @@ import physics.HasPoint;
 import physics.HitRule;
 import physics.Point;
 import physics.hitShape.Square;
+import preset.item.ItemData;
+import preset.unit.Unit;
 import storage.StorageWithSpace;
-import unit.Unit;
 import weapon.Weapon;
 
 public abstract class THH_BasicUnit extends Unit {

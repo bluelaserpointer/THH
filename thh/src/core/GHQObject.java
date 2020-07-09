@@ -2,12 +2,9 @@ package core;
 
 import java.util.Iterator;
 
-import bullet.Bullet;
 import calculate.Damage;
-import effect.Effect;
 import gui.GUIParts;
 import gui.stageEditor.GHQObjectHashMap;
-import item.ItemData;
 import paint.HasPaint;
 import physics.Angle;
 import physics.Dynam;
@@ -17,9 +14,12 @@ import physics.Physics;
 import physics.Point;
 import physics.StdPhysics;
 import physics.hitShape.Square;
-import stage.GHQStage;
-import structure.Structure;
-import unit.Unit;
+import physics.stage.GHQStage;
+import preset.bullet.Bullet;
+import preset.effect.Effect;
+import preset.item.ItemData;
+import preset.structure.Structure;
+import preset.unit.Unit;
 import vegetation.Vegetation;
 
 public class GHQObject implements HasName, HasPaint, HasPhysics  {

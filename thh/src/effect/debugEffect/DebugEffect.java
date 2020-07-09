@@ -5,9 +5,9 @@ import java.awt.Stroke;
 
 import core.GHQ;
 import core.GHQObject;
-import effect.Effect;
 import paint.ColorLine;
 import physics.Point;
+import preset.effect.Effect;
 
 public class DebugEffect extends Effect{
 	public static int lifeSpan = GHQ.MAX;

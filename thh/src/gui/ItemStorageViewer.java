@@ -5,8 +5,8 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 
 import core.GHQ;
-import item.ItemData;
 import paint.dot.HasDotPaint;
+import preset.item.ItemData;
 
 /**
  * A {@link GUIParts} subclass for managing Excel-like {@link ItemData} display, additionally draws their amount at the right-bottom corner.

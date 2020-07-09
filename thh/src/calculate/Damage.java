@@ -2,12 +2,12 @@ package calculate;
 
 import static java.lang.Math.PI;
 
-import bullet.Bullet;
 import core.GHQ;
 import core.GHQObject;
-import effect.Effect;
 import paint.text.StringPaint;
 import physics.HasPoint;
+import preset.bullet.Bullet;
+import preset.effect.Effect;
 
 public abstract class Damage {
 	protected GHQObject attacker = GHQObject.NULL_GHQ_OBJECT;

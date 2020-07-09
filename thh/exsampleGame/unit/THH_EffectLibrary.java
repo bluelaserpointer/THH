@@ -5,9 +5,9 @@ import static java.lang.Math.random;
 
 import core.GHQ;
 import core.GHQObject;
-import effect.Effect;
 import paint.ImageFrame;
 import paint.dot.DotPaint;
+import preset.effect.Effect;
 
 public abstract class THH_EffectLibrary extends Effect{
 	public THH_EffectLibrary(GHQObject source) {

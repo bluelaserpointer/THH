@@ -2,13 +2,13 @@ package exsampleGame.unit;
 
 import static java.lang.Math.PI;
 
-import bullet.Bullet;
 import core.GHQ;
 import core.GHQObject;
 import paint.ImageFrame;
 import paint.dot.DotPaint;
 import physics.hitShape.Circle;
-import unit.Unit;
+import preset.bullet.Bullet;
+import preset.unit.Unit;
 
 public abstract class THH_BulletLibrary extends Bullet{
 	public THH_BulletLibrary(Unit shooter) {

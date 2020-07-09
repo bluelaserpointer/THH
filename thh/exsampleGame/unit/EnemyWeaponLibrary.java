@@ -4,7 +4,7 @@ import static java.lang.Math.*;
 
 import core.GHQ;
 import paint.dot.DotPaint;
-import unit.Unit;
+import preset.unit.Unit;
 import weapon.Weapon;
 
 public class EnemyWeaponLibrary{

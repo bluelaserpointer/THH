@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
 import gui.GUIPartsSwitcher;
-import stage.GHQStage;
+import physics.stage.GHQStage;
 
 /**
  * A important class which is a frame of game main system.

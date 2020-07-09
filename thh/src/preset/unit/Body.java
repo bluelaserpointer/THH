@@ -1,16 +1,16 @@
-package unit;
+package preset.unit;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-import item.ItemData;
 import paint.HasPaint;
 import paint.dot.DotPaint;
 import physics.Angle;
 import physics.HasAnglePoint;
 import physics.Point;
+import preset.item.ItemData;
 
 public class Body implements HasPaint, HasAnglePoint {
 	public static final Body NULL_BODY = new Body(Unit.NULL_UNIT);
@@ -183,7 +183,7 @@ public class Body implements HasPaint, HasAnglePoint {
 	public Set<Class<? extends UnitAction>> doableActions() {
 		return doableActionsMap.keySet();
 	}
-	public LinkedList<UnitAction> doingActinos() {
+	public LinkedList<UnitAction> doingActions() {
 		return doingActions;
 	}
 	public boolean hasEquipment(ItemData equipment) {

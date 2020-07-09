@@ -5,7 +5,7 @@ import exsampleGame.unit.EnemyWeaponLibrary;
 import paint.ImageFrame;
 import paint.dot.DotPaint;
 import physics.HasPoint;
-import unit.Unit;
+import preset.unit.Unit;
 
 public class Fairy extends THH_BasicEnemy {
 	public Fairy(int initialGroup) {

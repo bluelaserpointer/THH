@@ -1,17 +1,17 @@
-package unit;
+package preset.unit;
 
 import java.awt.geom.Rectangle2D;
 
 import calculate.Damage;
 import core.GHQ;
 import core.GHQObject;
-import item.ItemData;
 import paint.ImageFrame;
 import paint.dot.DotPaint;
 import paint.dot.HasDotPaint;
 import physics.HasAnglePoint;
 import physics.HitInteractable;
 import physics.Point;
+import preset.item.ItemData;
 
 /**
  * A primal class for managing unit.

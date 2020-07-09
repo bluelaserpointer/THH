@@ -1,8 +1,7 @@
-package unit;
+package preset.unit;
 
 import java.util.LinkedList;
 
-import item.ItemData;
 import paint.HasPaint;
 import paint.dot.DotPaint;
 import paint.dot.DotPaintParameter;
@@ -14,6 +13,7 @@ import physics.HitInteractable;
 import physics.Point;
 import physics.RelativePoint;
 import physics.hitShape.HitShape;
+import preset.item.ItemData;
 
 public class BodyParts implements HasPaint, HasAngle, HasDotPaint, HitInteractable {
 	private Body body;
@@ -94,7 +94,7 @@ public class BodyParts implements HasPaint, HasAngle, HasDotPaint, HitInteractab
 	public void removeAction() {
 		if(action == null)
 			return;
-		body.doingActinos().remove(action);
+		body.doingActions().remove(action);
 		action = null;
 		dotPaint = baseDotPaint;
 	}

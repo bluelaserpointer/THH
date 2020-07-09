@@ -1,25 +1,25 @@
-package stage;
+package physics.stage;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import bullet.Bullet;
 import core.GHQ;
 import core.GHQObject;
 import core.GHQObjectList;
 import core.GHQObjectType;
-import effect.Effect;
-import item.ItemData;
 import physics.HasBoundingBox;
 import physics.HasPoint;
 import physics.HasHitGroup;
 import physics.HitInteractable;
 import physics.Point;
+import preset.bullet.Bullet;
+import preset.effect.Effect;
+import preset.item.ItemData;
+import preset.structure.Structure;
+import preset.unit.Unit;
 import physics.HitRule;
-import structure.Structure;
-import unit.Unit;
 import vegetation.Vegetation;
 
 public class GHQStage implements HasBoundingBox {

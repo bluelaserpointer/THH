@@ -4,7 +4,7 @@ import calculate.ConsumableEnergy;
 import core.GHQ;
 import paint.ImageFrame;
 import physics.HasPoint;
-import unit.Unit;
+import preset.unit.Unit;
 
 public class WhiteMan extends THH_BasicEnemy {
 	public WhiteMan(int initialGroup) {

@@ -1,4 +1,4 @@
-package structure;
+package preset.structure;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -15,7 +15,7 @@ import physics.HasPoint;
 public class Tile extends Structure {
 	public static int bp_ox = GHQ.NONE, bp_oy,bp_tileSize = 100;
 	public class TileHitShape extends HitShape{
-		protected static final int TILE_SIZE = 100;
+		public static final int TILE_SIZE = 100;
 		protected final int
 			X_TILES,
 			Y_TILES;

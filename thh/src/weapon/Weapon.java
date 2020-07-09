@@ -3,11 +3,11 @@ package weapon;
 import java.util.LinkedList;
 import java.util.List;
 
-import bullet.Bullet;
 import core.GHQ;
 import core.GHQObject;
 import physics.HitRule;
-import unit.Unit;
+import preset.bullet.Bullet;
+import preset.unit.Unit;
 
 /**
  * A class for performing object's attack delay.

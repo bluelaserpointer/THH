@@ -15,8 +15,8 @@ import input.key.SingleKeyListener;
 import input.key.SingleNumKeyListener;
 import input.mouse.MouseListenerEx;
 import paint.ImageFrame;
-import stage.GHQStage;
-import unit.Unit;
+import physics.stage.GHQStage;
+import preset.unit.Unit;
 import vegetation.Vegetation;
 
 public class Engine_THH1 extends Game {

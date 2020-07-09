@@ -1,10 +1,10 @@
 package vegetation;
 
 import core.GHQ;
-import item.ItemData;
 import paint.dot.DotPaint;
 import physics.HasPoint;
 import physics.Point;
+import preset.item.ItemData;
 
 public class DropItem extends Vegetation {
 	public final ItemData ITEM;

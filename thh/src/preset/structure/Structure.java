@@ -1,4 +1,4 @@
-package structure;
+package preset.structure;
 
 import core.GHQObject;
 import physics.HitInteractable;

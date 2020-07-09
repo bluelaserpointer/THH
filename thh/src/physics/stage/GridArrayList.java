@@ -1,4 +1,4 @@
-package stage;
+package physics.stage;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

@@ -1,4 +1,4 @@
-package structure;
+package preset.structure;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

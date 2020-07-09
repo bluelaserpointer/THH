@@ -1,4 +1,4 @@
-package item;
+package preset.item;
 
 import paint.dot.DotPaint;
 import paint.dot.HasDotPaint;

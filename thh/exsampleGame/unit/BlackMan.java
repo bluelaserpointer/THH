@@ -1,10 +1,10 @@
 package exsampleGame.unit;
 
-import unit.Unit;
 import core.GHQ;
 import exsampleGame.unit.EnemyWeaponLibrary;
 import paint.ImageFrame;
 import physics.HasPoint;
+import preset.unit.Unit;
 
 public class BlackMan extends THH_BasicEnemy {
 	{

@@ -1,4 +1,4 @@
-package stage;
+package physics.stage;
 
 import java.awt.Graphics2D;
 

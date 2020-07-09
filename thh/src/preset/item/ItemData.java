@@ -1,4 +1,4 @@
-package item;
+package preset.item;
 
 import java.util.Collection;
 
@@ -10,10 +10,10 @@ import core.GHQObject;
 import paint.dot.DotPaint;
 import physics.Point;
 import physics.hitShape.ImageRectShape;
+import preset.unit.BodyParts;
+import preset.unit.BodyPartsType;
+import preset.unit.Unit;
 import storage.StorageWithSpace;
-import unit.BodyParts;
-import unit.BodyPartsType;
-import unit.Unit;
 
 /**
  * A primal class for managing item data.

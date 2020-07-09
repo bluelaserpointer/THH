@@ -6,7 +6,7 @@ import core.GHQ;
 import core.GHQObject;
 import paint.rect.HasRectPaint;
 import paint.rect.RectPaint;
-import unit.Unit;
+import preset.unit.Unit;
 
 public abstract class Buff extends GHQObject implements HasRectPaint, Serializable{
 	private static final long serialVersionUID = -6546281620292643179L;
