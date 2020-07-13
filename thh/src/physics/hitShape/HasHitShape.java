@@ -20,8 +20,4 @@ public interface HasHitShape extends HasBoundingBox {
 	}
 	@Override
 	public abstract Point point();
-	@Override
-	public default boolean intersectsDot(int x, int y) {
-		return hitShape().intersectsDot(x, y);
-	}
 }

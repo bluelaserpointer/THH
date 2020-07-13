@@ -1,4 +1,4 @@
-package physics.Direction;
+package physics.direction;
 
 public enum Direction8TC30 {
 	WWD, WWA, DDW, DDS, SSD, SSA, AAS, AAW;

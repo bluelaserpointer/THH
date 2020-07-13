@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 
 import core.GHQ;
-import physics.Direction.Direction4;
+import physics.direction.Direction4;
 
 /**
  * A major class for managing object coordinate.
@@ -259,7 +259,20 @@ public abstract class Point implements Serializable {
 	public final double doubleAbsDY(Point p) {
 		return Math.abs(doubleDY(p));
 	}
+	///////////////Rectangle2D.Double
+	public final Rectangle2D.Double rectangleAtCenter(double width, double height) {
+		return new Rectangle2D.Double(doubleX() - width/2, doubleY() - height/2, width, height);
+	}
+	public final Rectangle2D.Double rectangleAtCorner(double width, double height) {
+		return new Rectangle2D.Double(doubleX(), doubleY(), width, height);
+	}
 	///////////////inRangeX&Y&XY
+	public final boolean inRangeX(int x, int xDistance) {
+		return intAbsDX(x) < xDistance;
+	}
+	public final boolean inRangeY(int y, int yDistance) {
+		return intAbsDY(y) < yDistance;
+	}
 	public final boolean inRangeX(Point point, int xDistance) {
 		return intAbsDX(point) < xDistance;
 	}
@@ -271,6 +284,9 @@ public abstract class Point implements Serializable {
 	}
 	public final boolean inRangeY(Point point, double yDistance) {
 		return doubleAbsDY(point) < yDistance;
+	}
+	public final boolean inRangeXY(int x, int y, int xDistance, int yDistance) {
+		return inRangeX(x, xDistance) && inRangeY(y, yDistance);
 	}
 	public final boolean inRangeXY(Point point, int xDistance, int yDistance) {
 		return inRangeX(point, xDistance) && inRangeY(point, yDistance);
@@ -330,7 +346,7 @@ public abstract class Point implements Serializable {
 	}
 	///////////////isBlocked
 	public boolean isBlocked() {
-		return !GHQ.stage().inStage(this) || GHQ.stage().structures.intersected_dot(this);
+		return !GHQ.stage().inStage(this) || GHQ.stage().structures.shapeIntersected_dot(this);
 	}
 	///////////////isVisible
 	public boolean isVisible(int x, int y, double viewDistance) {

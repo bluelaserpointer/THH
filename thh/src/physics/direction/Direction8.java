@@ -1,4 +1,4 @@
-package physics.Direction;
+package physics.direction;
 
 public enum Direction8 {
 	O, W, A, S, D, WA, WD, SA, SD;

@@ -7,7 +7,7 @@ import paint.dot.DotPaint;
 import paint.rect.RectPaint;
 import physics.Dynam;
 import physics.HasPoint;
-import physics.HitRule;
+import physics.HitGroup;
 import physics.Point;
 import physics.hitShape.Square;
 import preset.item.ItemData;
@@ -51,7 +51,7 @@ public abstract class THH_BasicUnit extends Unit {
 	public THH_BasicUnit(int charaSize, int initialGroup) {
 		physics().setPoint(new Dynam());
 		physics().setHitShape(new Square(this, charaSize));
-		physics().setHitRule(new HitRule(initialGroup));
+		physics().setHitRule(new HitGroup(initialGroup));
 	}
 	
 	@Override

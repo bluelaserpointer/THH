@@ -1,4 +1,4 @@
-package physics.Direction;
+package physics.direction;
 
 public interface MonoDirection {
 	public abstract boolean isNone();

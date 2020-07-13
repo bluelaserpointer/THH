@@ -1,4 +1,4 @@
-package physics.Direction;
+package physics.direction;
 
 import java.util.Random;
 

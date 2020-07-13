@@ -9,7 +9,7 @@ public interface HasPhysics extends HitInteractable, HasAnglePoint{
 		return physics().hitShape();
 	}
 	@Override
-	public default HitRule hitGroup() {
+	public default HitGroup hitGroup() {
 		return physics().hitGroup();
 	}
 	@Override

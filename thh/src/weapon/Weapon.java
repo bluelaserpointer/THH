@@ -5,7 +5,7 @@ import java.util.List;
 
 import core.GHQ;
 import core.GHQObject;
-import physics.HitRule;
+import physics.HitGroup;
 import preset.bullet.Bullet;
 import preset.unit.Unit;
 
@@ -149,7 +149,7 @@ public class Weapon {
 	 * @param standpoint
 	 * @return list of shoot bullets, or null if canFire() returns false
 	 */
-	public List<Bullet> trigger(GHQObject shooter, HitRule standpoint) {
+	public List<Bullet> trigger(GHQObject shooter, HitGroup standpoint) {
 		if(canFire()) {
 			startCool();
 			if(magazine != GHQ.MAX)
@@ -166,7 +166,7 @@ public class Weapon {
 	public final List<Bullet> trigger(Unit shooter) {
 		return trigger(shooter, shooter.hitGroup());
 	}
-	public boolean triggerSuceed(GHQObject shooter, HitRule standpoint) {
+	public boolean triggerSuceed(GHQObject shooter, HitGroup standpoint) {
 		return trigger(shooter, standpoint) != null;
 	}
 	public boolean triggerSucceed(GHQObject shooter) {
@@ -176,7 +176,7 @@ public class Weapon {
 	 * Set bullets.
 	 * @param shooter - the shooter of the bullets
 	 */
-	public List<Bullet> setBullets(GHQObject shooter, HitRule standpoint) {
+	public List<Bullet> setBullets(GHQObject shooter, HitGroup standpoint) {
 		return new LinkedList<Bullet>();
 	}
 	///////////////////

@@ -1,17 +1,17 @@
 package core;
 
-import static physics.Direction.Direction4.*;
+import static physics.direction.Direction4.*;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.LinkedList;
 
-import effect.debugEffect.DebugEffect;
 import paint.ColorFilling;
 import physics.HasPoint;
 import physics.Point;
 import physics.Route;
-import physics.Direction.Direction4;
+import physics.direction.Direction4;
+import preset.effect.debugEffect.DebugEffect;
 
 public class CornerNavigation {
 	

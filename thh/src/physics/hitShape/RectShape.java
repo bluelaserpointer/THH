@@ -1,5 +1,9 @@
 package physics.hitShape;
 
+import java.awt.Color;
+import java.awt.Stroke;
+
+import core.GHQ;
 import physics.HasPoint;
 
 public class RectShape extends HitShape {
@@ -37,7 +41,7 @@ public class RectShape extends HitShape {
 	public boolean intersects(HitShape shape) {
 		if(!(shape instanceof RectShape || shape instanceof Square || shape instanceof Circle))
 			System.out.println("unhandled type: " + this.getClass().getName() + " against " + shape.getClass().getName());
-		return super.intersects(shape);
+		return super.boundingBoxIntersects(shape);
 	}
 	
 	//tool
@@ -54,5 +58,21 @@ public class RectShape extends HitShape {
 	@Override
 	public int height() {
 		return height;
+	}
+	@Override
+	public boolean intersectsDot(int x, int y) {
+		return super.boundingBoxIntersectsDot(x, y);
+	}
+	@Override
+	public boolean intersectsLine(int x1, int y1, int x2, int y2) {
+		return super.boundingBoxIntersectsLine(x1, y1, x2, y2);
+	}
+	@Override
+	public void fill(Color color) {
+		GHQ.getG2D(color).fillRect(point().intX() - width()/2, point().intY() - height()/2, width(), height());
+	}
+	@Override
+	public void draw(Color color, Stroke stroke) {
+		GHQ.getG2D(color).drawRect(point().intX() - width()/2, point().intY() - height()/2, width(), height());
 	}
 }

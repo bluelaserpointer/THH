@@ -1,4 +1,4 @@
-package physics.Direction;
+package physics.direction;
 
 public enum DirectionVH implements MultiDirection {
 	VERT, HORZ;

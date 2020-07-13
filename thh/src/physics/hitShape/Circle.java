@@ -9,7 +9,7 @@ import core.GHQ;
 import physics.HasPoint;
 import preset.structure.Tile.TileHitShape;
 
-public class Circle extends HitShape{
+public class Circle extends HitShape {
 	private static final long serialVersionUID = -1809578801160258098L;
 	public int radius;
 	
@@ -43,7 +43,7 @@ public class Circle extends HitShape{
 	}
 	@Override
 	public boolean intersectsDot(int x, int y) {
-		return super.point().inRange(x, y, radius);
+		return point().inRange(x, y, radius);
 	}
 	@Override
 	public boolean intersectsLine(int x1, int y1, int x2, int y2) {

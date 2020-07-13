@@ -19,8 +19,8 @@ import preset.effect.Effect;
 import preset.item.ItemData;
 import preset.structure.Structure;
 import preset.unit.Unit;
-import physics.HitRule;
-import vegetation.Vegetation;
+import preset.vegetation.Vegetation;
+import physics.HitGroup;
 
 public class GHQStage implements HasBoundingBox {
 	
@@ -189,10 +189,10 @@ public class GHQStage implements HasBoundingBox {
 	/////////////////
 	//Unit
 	/////////////////
-	public final ArrayList<Unit> getUnits_standpoint(HitRule standPoint, boolean white) {
+	public final ArrayList<Unit> getUnits_standpoint(HitGroup standPoint, boolean white) {
 		final ArrayList<Unit> unitArray = new ArrayList<Unit>();
 		for(Unit unit : units) {
-			if(white == !standPoint.hitableGroup(unit.hitGroup()))
+			if(white == !standPoint.hitableWith(unit.hitGroup()))
 				unitArray.add(unit);
 		}
 		return unitArray;
@@ -203,7 +203,7 @@ public class GHQStage implements HasBoundingBox {
 	public final ArrayList<Unit> getUnits_standPoint(HasHitGroup source) {
 		return getUnits_standpoint(source, true);
 	}
-	public final Unit getNearstEnemy(HitRule standpoint, int x, int y) {
+	public final Unit getNearstEnemy(HitGroup standpoint, int x, int y) {
 		double nearstDistanceSq = GHQ.MAX;
 		Unit nearstUnit = null;
 		for(Unit enemy : getUnits_standpoint(standpoint, false)) {
@@ -217,7 +217,7 @@ public class GHQStage implements HasBoundingBox {
 		}
 		return nearstUnit;
 	}
-	public final Unit getNearstEnemy(HitRule source, Point point) {
+	public final Unit getNearstEnemy(HitGroup source, Point point) {
 		return getNearstEnemy(source, point.intX(), point.intY());
 	}
 	public final Unit getNearstEnemy(Unit unit) {
@@ -320,10 +320,10 @@ public class GHQStage implements HasBoundingBox {
 	public double visibility(int x1, int y1, int x2, int y2) {
 		double totalVisibility = 0.0;
 		for(Structure structure : structures) {
-			if(structure.intersectsLine(x1, y1, x2, y2)) {
+			if(structure.hitShape().intersectsLine(x1, y1, x2, y2)) {
 				final double visibility = structure.visibility();
 				if(visibility == Double.NEGATIVE_INFINITY)
-					return visibility;
+					return Double.NEGATIVE_INFINITY;
 				else
 					totalVisibility += visibility;
 			}

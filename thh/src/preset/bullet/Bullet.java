@@ -140,7 +140,7 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 			////////////
 			//entity collision
 			////////////
-			if(entityCollision())
+			if(entityCollision() || !point().inStage())
 				return false;
 		} while(length > 0);
 		
