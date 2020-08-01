@@ -1,5 +1,6 @@
 package physics;
 
+import core.GHQ;
 import physics.hitShape.HasHitShape;
 import physics.hitShape.HitShape;
 import physics.hitShape.RectShape;
@@ -47,5 +48,15 @@ public interface HitInteractable extends HasHitShape, HasHitGroup {
 	}
 	public default boolean intersectsRect(HitGroup targetGroup, int x, int y, int w, int h) {
 		return hitGroup().hitableWith(targetGroup) && hitShape().intersects(new RectShape(x, y, w, h));
+	}
+	//approach
+	public default void approachIfNoObstacles(double dstX, double dstY, double speed) {
+		final double originalX = doubleX(), originalY = doubleY();
+		point().approach(dstX, dstY, speed);
+		if(GHQ.stage().hitObstacle(this))
+			point().setXY(originalX, originalY);
+	}
+	public default void approachIfNoObstacles(Point dstPoint, double speed) {
+		approachIfNoObstacles(dstPoint.doubleX(), dstPoint.doubleY(), speed);
 	}
 }

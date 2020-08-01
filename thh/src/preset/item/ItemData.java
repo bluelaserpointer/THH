@@ -337,4 +337,9 @@ public class ItemData extends GHQObject implements Usable {
 		}
 		return total;
 	}
+	
+	@Override
+	public Point point() {
+		return hasOwner() ? owner.point() : super.point();
+	}
 }

@@ -66,20 +66,20 @@ public class CornerNavigation {
 			//find 4 neighbor Corners
 			Point neighbors[] = Direction4.getVertHorzClosest_int(this, corners, W, D, S, A);
 			//check 4 neighbor Corners are reachable
-			anchors.addIfNotNull(explore1(Direction4.W, (Corner)neighbors[Direction4.W_ID]));
-			anchors.addIfNotNull(explore1(Direction4.D, (Corner)neighbors[Direction4.D_ID]));
-			anchors.addIfNotNull(explore1(Direction4.S, (Corner)neighbors[Direction4.S_ID]));
-			anchors.addIfNotNull(explore1(Direction4.A, (Corner)neighbors[Direction4.A_ID]));
+			anchors.addIfNotNull(explore1(Direction4.W, (Corner)neighbors[Direction4.W.ordinal()]));
+			anchors.addIfNotNull(explore1(Direction4.D, (Corner)neighbors[Direction4.D.ordinal()]));
+			anchors.addIfNotNull(explore1(Direction4.S, (Corner)neighbors[Direction4.S.ordinal()]));
+			anchors.addIfNotNull(explore1(Direction4.A, (Corner)neighbors[Direction4.A.ordinal()]));
 			//
 		}
 		Anchor[] explore0(Anchor settedAnchors[]) {
 			//find 4 neighbor Corner
 			Point neighbors[] = Direction4.getVertHorzClosest_int(this, corners, W, D, S, A);
 			//check 4 neighbor Corner are reachable
-			settedAnchors[Direction4.W_ID] = explore1(Direction4.W, (Corner)neighbors[Direction4.W_ID]);
-			settedAnchors[Direction4.D_ID] = explore1(Direction4.D, (Corner)neighbors[Direction4.D_ID]);
-			settedAnchors[Direction4.S_ID] = explore1(Direction4.S, (Corner)neighbors[Direction4.S_ID]);
-			settedAnchors[Direction4.A_ID] = explore1(Direction4.A, (Corner)neighbors[Direction4.A_ID]);
+			settedAnchors[Direction4.W.ordinal()] = explore1(Direction4.W, (Corner)neighbors[Direction4.W.ordinal()]);
+			settedAnchors[Direction4.D.ordinal()] = explore1(Direction4.D, (Corner)neighbors[Direction4.D.ordinal()]);
+			settedAnchors[Direction4.S.ordinal()] = explore1(Direction4.S, (Corner)neighbors[Direction4.S.ordinal()]);
+			settedAnchors[Direction4.A.ordinal()] = explore1(Direction4.A, (Corner)neighbors[Direction4.A.ordinal()]);
 			//
 			return settedAnchors;
 		}

@@ -74,7 +74,6 @@ public class GHQStage implements HasBoundingBox {
 
 	/**
 	 * Add an {@link Bullet} to current stage.
-	 * Parameters of the bullet refers to {@link BulletInfo} settings.
 	 * @param bullet
 	 * @return created Bullet
 	 * @since alpha1.0
@@ -94,7 +93,6 @@ public class GHQStage implements HasBoundingBox {
 	}
 	/**
 	 * Add an {@link Effect} to current stage.
-	 * Parameters of the effect refers to {@link EffectInfo} settings.
 	 * @param effect
 	 * @return created Effect
 	 * @since alpha1.0
@@ -346,7 +344,7 @@ public class GHQStage implements HasBoundingBox {
 	 * @return true - in stage / false - in outside of stage
 	 */
 	public boolean inStage(int x, int y) {
-		return 0 < x && x < width && 0 < y && y < height;
+		return 0 <= x && x <= width && 0 <= y && y <= height;
 	}
 	public final boolean inStage(Point point) {
 		return inStage(point.intX(), point.intY());

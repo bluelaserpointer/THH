@@ -2,19 +2,11 @@ package physics;
 
 public interface HasUIBoundingBox extends HasBoundingBox {
 	@Override
-	public default int centerX() {
+	public default int cx() {
 		return point().intX() + width()/2;
 	}
 	@Override
-	public default int centerY() {
+	public default int cy() {
 		return point().intY() + height()/2;
-	}
-	@Override
-	public default int leftX() {
-		return point().intX();
-	}
-	@Override
-	public default int topY() {
-		return point().intY();
 	}
 }

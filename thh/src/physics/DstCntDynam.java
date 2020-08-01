@@ -90,21 +90,6 @@ public class DstCntDynam extends Dynam{
 			movedDistance += speed;
 		}
 	}
-	@Override
-	public void approachIfNoObstacles(HitInteractable source, double dstX,double dstY,double speed) {
-		final double DX = dstX - x,DY = dstY - y;
-		final double DISTANCE = sqrt(DX*DX + DY*DY);
-		if(DISTANCE > speed) {
-			final double RATE = speed/DISTANCE;
-			dstX = x + DX*RATE;
-			dstY = y + DY*RATE;
-		}
-		if(!GHQ.stage().hitObstacle_atNewPoint(source, (int)dstX, (int)dstY)) {
-			x = dstX;
-			y = dstY;
-			movedDistance += DISTANCE < speed ? DISTANCE : speed;
-		}
-	}
 	
 	//information
 	public double getMovedDistance() {

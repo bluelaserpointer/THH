@@ -3,6 +3,7 @@ package exsampleGame.unit;
 import core.GHQ;
 import paint.ImageFrame;
 import physics.HasPoint;
+import physics.Point;
 import weapon.Weapon;
 
 public class Marisa extends THH_BasicPlayer {
@@ -59,7 +60,7 @@ public class Marisa extends THH_BasicPlayer {
 	public final void setBullet(int kind, HasPoint user) {
 		switch(kind){
 		case MILLKY_WAY:
-			GHQ.stage().addBullet(new THH_BulletLibrary.MillkyWay(this)).split_Round(50, 8);
+			Point.split_Round(() -> new THH_BulletLibrary.MillkyWay(this), 50, 8);
 			break;
 		case NARROW_SPARK:
 			//message
@@ -70,7 +71,7 @@ public class Marisa extends THH_BasicPlayer {
 			GHQ.stage().addBullet(new THH_BulletLibrary.NarrowSpark(this));
 			break;
 		case REUSE_BOMB:
-			GHQ.stage().addBullet(new THH_BulletLibrary.ReuseBomb(this)).split_Round(50, 3);
+			Point.split_Round(() -> new THH_BulletLibrary.ReuseBomb(this), 50, 3);
 			break;
 		case MAGIC_MISSILE:
 			GHQ.stage().addBullet(new THH_BulletLibrary.MagicMissile(this));

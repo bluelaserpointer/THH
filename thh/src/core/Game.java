@@ -16,6 +16,7 @@ import physics.stage.GHQStage;
 public abstract class Game {
 	
 	protected final GUIPartsSwitcher mainScreen;
+	protected static double viewMoveStackX, viewMoveStackY;
 	
 	public Game(GUIPartsSwitcher screen) {
 		mainScreen = screen;
@@ -26,6 +27,8 @@ public abstract class Game {
 	
 	//idle
 	public abstract void idle(Graphics2D g2, int stopEventKind);
+	
+	//
 	
 	//event
 	public void mousePressed(MouseEvent e) {
@@ -52,5 +55,15 @@ public abstract class Game {
 	}
 	public String getVersion(){
 		return GHQ.NOT_NAMED;
+	}
+	
+	//tools
+	public static void addViewStack(double x, double y) {
+		viewMoveStackX += x;
+		viewMoveStackY += y;
+	}
+	public static void viewScrollFromStack() {
+		GHQ.viewMove(viewMoveStackX, viewMoveStackY);
+		viewMoveStackX = viewMoveStackY = 0;
 	}
 }

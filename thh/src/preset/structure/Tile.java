@@ -11,8 +11,9 @@ import core.GHQ;
 import physics.Point;
 import physics.hitShape.HitShape;
 import physics.HasPoint;
+import physics.HasUIBoundingBox;
 
-public class Tile extends Structure {
+public class Tile extends Structure implements HasUIBoundingBox {
 	public static final int TILE_SIZE = 25;
 	public static int bp_ox = GHQ.NONE, bp_oy,bp_tileSize = TILE_SIZE;
 	public class TileHitShape extends HitShape {

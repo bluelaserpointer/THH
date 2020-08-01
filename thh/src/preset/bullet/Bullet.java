@@ -1,7 +1,5 @@
 package preset.bullet;
 
-import static java.lang.Math.PI;
-
 import calculate.Damage;
 import core.GHQ;
 import core.GHQObject;
@@ -37,15 +35,6 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 		paintScript;
 	public boolean
 		hitShooter;
-	public void init() {
-		damage = Damage.NULL_DAMAGE;
-		limitFrame = GHQ.MAX;
-		limitRange = GHQ.MAX;
-		penetration = 0;
-		reflection = 0;
-		accel = 0.0;
-		paintScript = DotPaint.BLANK_SCRIPT;
-	}
 	public Bullet(GHQObject shooter) {
 		physics().setPoint(new DstCntDynam().setXY(shooter));
 		super.point().setMoveAngleByBaseAngle(shooter);
@@ -53,7 +42,13 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 		physics().setHitRule(shooter.hitGroup());
 		this.shooter = shooter;
 		name = getClass().getName();
-		init();
+		damage = Damage.NULL_DAMAGE;
+		limitFrame = GHQ.MAX;
+		limitRange = GHQ.MAX;
+		penetration = 0;
+		reflection = 0;
+		accel = 0.0;
+		paintScript = DotPaint.BLANK_SCRIPT;
 	}
 	public Bullet(Bullet sample) {
 		physics().setPoint(new DstCntDynam().setAll(sample));
@@ -150,6 +145,10 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 		point().addSpeed(accel, true);
 		return true;
 	}
+	@Override
+	public Bullet clone() {
+		return new Bullet(this);
+	}
 	/**
 	 * Test collision with others and return if this bullet should be deleted.
 	 * @return true - need delete, false - not need
@@ -197,71 +196,6 @@ public class Bullet extends GHQObject implements HasPoint, HasDotPaint {
 	//////////////
 	public Weapon setOriginWeapon(Weapon weapon) {
 		return originWeapon = weapon;
-	}
-	
-	//////////////
-	//clone and split
-	//////////////
-	public Bullet getOriginal() {
-		return new Bullet(this);
-	}
-	public final Bullet getClone() {
-		Bullet BULLET = getOriginal();
-		BULLET.point().setAll(point());
-		return BULLET;
-	}
-	public final Bullet addCloneToGHQ() {
-		return GHQ.stage().addBullet(getClone());
-	}
-	public void split_xMirror(double dx,double dy) {
-		this.point().addXY_allowsMoveAngle(-dx/2,dy);
-		addCloneToGHQ().point().addX_allowsMoveAngle(dx);
-	}
-	public void split_yMirror(double dx,double dy) {
-		this.point().addXY_allowsMoveAngle(dx,-dy/2);
-		addCloneToGHQ().point().addY_allowsMoveAngle(dy);
-	}
-	public void split_Round(int radius,int amount) {
-		final double D_ANGLE = 2*PI/amount;
-		for(int i = 1;i < amount;i++)
-			addCloneToGHQ().point().addXY_DA(radius, D_ANGLE*i);
-		this.point().addXY_DA(radius, 0);
-	}
-	public void clone_Round(int radius,int amount) {
-		final double D_ANGLE = 2*PI/amount;
-		for(int i = 0;i < amount;i++)
-			addCloneToGHQ().point().addXY_DA(radius, D_ANGLE*i);
-	}
-	public void split_Burst(int radius,int amount,double speed) {
-		final double D_ANGLE = 2*PI/amount;
-		for(int i = 1;i < amount;i++)
-			addCloneToGHQ().point().fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
-		this.point().fastParaAdd_DASpd(radius, 0, speed);
-	}
-	public void clone_Burst(int radius,int amount,double speed) {
-		final double D_ANGLE = 2*PI/amount;
-		for(int i = 0;i < amount;i++)
-			addCloneToGHQ().point().fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
-	}
-	public void split_NWay(int radius,double[] angles,double speed) {
-		for(int i = 1;i < angles.length;i++)
-			addCloneToGHQ().point().fastParaAdd_DASpd(radius, angles[i], speed);
-		this.point().fastParaAdd_DASpd(radius, angles[0], speed);
-	}
-	public void clone_NWay(int radius,double[] angles,double speed) {
-		for(double angle : angles)
-			addCloneToGHQ().point().fastParaAdd_DASpd(radius, angle, speed);
-	}
-	public void split_NWay(int radius,double marginAngle,double amount,double speed) {
-		this.point().spinMoveAngle(-marginAngle*(double)(amount - 1)/2.0);
-		for(int i = 1;i < amount;i++)
-			addCloneToGHQ().point().fastParaAdd_DASpd(radius, marginAngle*i, speed);
-		this.point().fastParaAdd_DSpd(radius, speed);
-	}
-	public void clone_NWay(int radius,double marginAngle,double amount,double speed) {
-		this.point().spinMoveAngle(-marginAngle*(double)(amount - 1)/2.0);
-		for(int i = 0;i < amount;i++)
-			addCloneToGHQ().point().fastParaAdd_DASpd(radius, marginAngle*i, speed);
 	}
 
 	//////////////

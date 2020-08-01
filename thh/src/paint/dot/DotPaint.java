@@ -59,7 +59,7 @@ public abstract class DotPaint extends RectPaint implements HasArea {
 	}
 	@Override
 	public void rectPaint(int x, int y, int w, int h) {
-		final double sx = w/width(), sy = h/height();
+		final double sx = (double)w/width(), sy = (double)h/height();
 		GHQ.getG2D().translate(x, y);
 		GHQ.getG2D().scale(sx, sy);
 		dotPaint(0, 0);

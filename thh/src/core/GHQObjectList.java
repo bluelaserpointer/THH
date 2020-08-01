@@ -19,6 +19,7 @@ import physics.hitShape.HasHitShape;
 public class GHQObjectList<T extends GHQObject> extends LinkedList<T> {
 	private static final long serialVersionUID = 1774337313239922412L;
 	
+	//private final UnionHitShape<T> shape = new UnionHitShape<>(this, this);
 	public void traverseIdle() {
 		final LinkedList<GHQObject> elements = new LinkedList<GHQObject>();
 		elements.addAll(this);
@@ -97,7 +98,7 @@ public class GHQObjectList<T extends GHQObject> extends LinkedList<T> {
 	}
 	public T forShapeIntersectsDot(int x, int y) {
 		for(T element : this) {
-			if(element instanceof HitInteractable && ((HitInteractable)element).boundingBoxIntersectsDot(x, y))
+			if(element instanceof HasHitShape && ((HasHitShape)element).hitShape().intersectsDot(x, y))
 				return element;
 		}
 		return null;

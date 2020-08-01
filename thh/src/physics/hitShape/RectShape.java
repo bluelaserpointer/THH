@@ -3,7 +3,6 @@ package physics.hitShape;
 import java.awt.Color;
 import java.awt.Stroke;
 
-import core.GHQ;
 import physics.HasPoint;
 
 public class RectShape extends HitShape {
@@ -69,10 +68,10 @@ public class RectShape extends HitShape {
 	}
 	@Override
 	public void fill(Color color) {
-		GHQ.getG2D(color).fillRect(point().intX() - width()/2, point().intY() - height()/2, width(), height());
+		super.boundingBoxFill(color);
 	}
 	@Override
 	public void draw(Color color, Stroke stroke) {
-		GHQ.getG2D(color).drawRect(point().intX() - width()/2, point().intY() - height()/2, width(), height());
+		super.boundingBoxDraw(color, stroke);
 	}
 }

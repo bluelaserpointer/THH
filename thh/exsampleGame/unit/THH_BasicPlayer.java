@@ -31,7 +31,7 @@ public abstract class THH_BasicPlayer extends THH_BasicUnit {
 			if (spell != GHQ.NONE && useWeapon(spell))
 				setBullet(spell,this);
 		}
-		point().approachIfNoObstacles(this, dstPoint, charaSpeed);
+		approachIfNoObstacles(dstPoint, charaSpeed);
 		// weaponChange
 		int roll = weaponChangeOrder;
 		if (roll != 0) {

@@ -4,6 +4,7 @@ import static java.lang.Math.*;
 
 import core.GHQ;
 import paint.dot.DotPaint;
+import physics.Point;
 import preset.unit.Unit;
 import weapon.Weapon;
 
@@ -41,14 +42,14 @@ public class EnemyWeaponLibrary{
 			GHQ.stage().addBullet(new THH_BulletLibrary.LightBall(user));
 			break;
 		case lightBall_ROUND:
-			GHQ.stage().addBullet(new THH_BulletLibrary.LightBall(user)).split_Burst(5, 10, 12.0);
+			Point.split_Burst(() -> new THH_BulletLibrary.LightBall(user), 5, 10, 12.0);
 			break;
 		case HEAL_SHOTGUN:
-			GHQ.stage().addBullet(new THH_BulletLibrary.HealShotgun(user)).split_Burst(10, 16, 15.0);
+			Point.split_Burst(() -> new THH_BulletLibrary.HealShotgun(user), 10, 16, 15.0);
 			break;
 		case BLACK_SLASH_BURST:
 			final double DEG10 = PI/18;
-			GHQ.stage().addBullet(new THH_BulletLibrary.BlackSlashBurst(user)).split_NWay(10, new double[] {-DEG10, 0.0, +DEG10}, 20);
+			Point.split_NWay(() -> new THH_BulletLibrary.BlackSlashBurst(user), 10, new double[] {-DEG10, 0.0, +DEG10}, 20);
 			break;
 		}
 	}

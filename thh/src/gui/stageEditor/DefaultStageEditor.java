@@ -93,7 +93,7 @@ public abstract class DefaultStageEditor extends GUIParts{
 							mouseOveredObject = GHQ.stage().structures.forMouseOver();
 						if(mouseOveredObject != null && mouseOveredObject != selectObject) {
 							mouseOveredObject.drawBoundingBox(Color.WHITE, GHQ.stroke5);
-							G2.drawOval(mouseOveredObject.centerX() - 9, mouseOveredObject.centerY() - 9,18,18);
+							G2.drawOval(mouseOveredObject.cx() - 9, mouseOveredObject.cy() - 9,18,18);
 							G2.drawOval(GHQ.mouseX() - 5,GHQ.mouseY() - 5,10,10);
 						}
 						if(selectObject != null) {
