@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import calculate.ConsumableEnergy;
 
-public class Status implements Serializable{
+public class Status implements Serializable {
 	private static final long serialVersionUID = -239346790787280009L;
 
 	protected final ArrayList<ConsumableEnergy> parameters = new ArrayList<ConsumableEnergy>();

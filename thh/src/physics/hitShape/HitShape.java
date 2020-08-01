@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Stroke;
 import java.io.Serializable;
 
-import core.GHQ;
 import physics.HasBoundingBox;
 import physics.HasPoint;
 import physics.HitInteractable;
@@ -18,7 +17,7 @@ import physics.Point;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public abstract class HitShape implements HasBoundingBox, Serializable{
+public abstract class HitShape implements HasBoundingBox, Serializable {
 	private static final long serialVersionUID = -4544439590281786292L;
 	public static final HitShape NULL_HITSHAPE = new HitShape() {
 		private static final long serialVersionUID = -4252823940204998087L;
@@ -32,6 +31,10 @@ public abstract class HitShape implements HasBoundingBox, Serializable{
 		}
 		@Override
 		public boolean intersects(HitShape shape) {
+			return false;
+		}
+		@Override
+		public boolean boundingBoxIntersectsDot(int x, int y) {
 			return false;
 		}
 		@Override
@@ -54,14 +57,20 @@ public abstract class HitShape implements HasBoundingBox, Serializable{
 
 	protected HasPoint owner;
 	public HitShape() {
-		owner = HasPoint.NULL_HAS_POINT;
+		owner = null; //if no owner has set and intersect judges are executed, NullPointerException will be thrown.
 	}
 	public HitShape(HasPoint owner) {
 		this.owner = owner;
 	}
-	public boolean intersects(HitShape shape) {
-		return point().inRangeXY(shape.point(), (width() + shape.width())/2, (height() + shape.height())/2);
+	
+	//control
+	public HitShape setOwner(HasPoint owner) {
+		this.owner = owner;
+		return this;
 	}
+	
+	//information
+	public abstract boolean intersects(HitShape shape);
 	public final boolean intersects(HasHitShape target) {
 		final HitShape SHAPE = target.hitShape();
 		return SHAPE == null ? false : intersects(SHAPE);
@@ -76,25 +85,26 @@ public abstract class HitShape implements HasBoundingBox, Serializable{
 		final HitShape SHAPE = target.hitShape();
 		return SHAPE == null ? false : intersects_atNewPoint(dx, dy, SHAPE);
 	}
-	public boolean intersectsDot(int x, int y) {
-		return point().intAbsDX(x) < width()/2 && point().intAbsDX(y) < height()/2;
-	}
-	public boolean intersectsLine(int x1, int y1, int x2, int y2) {
-		return point().getRectangle2D(width(), height()).intersectsLine(x1, y1, x2, y2);
+	public abstract boolean intersectsDot(int x, int y);
+	public abstract boolean intersectsLine(int x1, int y1, int x2, int y2);
+	public final boolean intersectsLine(Point p1, Point p2) {
+		return intersectsLine(p1.intX(), p1.intY(), p2.intX(), p2.intY());
 	}
 	
 	//tool
 	public abstract HitShape clone(HasPoint newOwner);
-	public void fill(Color color) {
-		GHQ.getG2D(color).fillRect(point().intX() - width()/2, point().intY() - height()/2, width(), height());
-	}
-	public void draw(Color color, Stroke stroke) {
-		GHQ.getG2D(color).drawRect(point().intX() - width()/2, point().intY() - height()/2, width(), height());
-	}
+	public abstract void fill(Color color);
+	public abstract void draw(Color color, Stroke stroke);
 	
 	//information
 	@Override
 	public Point point() {
 		return owner.point();
+	}
+	public HasPoint owner() {
+		return owner;
+	}
+	public boolean hasOwner() {
+		return owner() != null;
 	}
 }

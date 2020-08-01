@@ -39,7 +39,7 @@ public class BlackMan extends THH_BasicEnemy {
 				EnemyWeaponLibrary.inputBulletInfo(this,EnemyWeaponLibrary.BLACK_SLASH_BURST, bulletPaint[1], targetEnemy);
 			}
 		}
-		point().approachIfNoObstacles(this, dstPoint, charaSpeed);
+		approachIfNoObstacles(dstPoint, charaSpeed);
 	}
 	@Override
 	public void setBullet(int kind, HasPoint source) {}

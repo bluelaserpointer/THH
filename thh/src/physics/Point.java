@@ -1,5 +1,6 @@
 package physics;
 
+import static java.lang.Math.PI;
 import static java.lang.Math.atan2;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -8,9 +9,11 @@ import static java.lang.Math.sqrt;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.util.function.Supplier;
 
 import core.GHQ;
-import physics.Direction.Direction4;
+import physics.direction.Direction4;
+import preset.bullet.Bullet;
 
 /**
  * A major class for managing object coordinate.
@@ -167,7 +170,35 @@ public abstract class Point implements Serializable {
 	public Point cloneAt(double dx, double dy) {
 		return clone().addXY(dx, dy);
 	}
-	
+	//////////////
+	//split
+	//////////////
+	public static void split_xMirror(Supplier<? extends Bullet> supplier, double dx, double dy) {
+		supplier.get().point().addXY_allowsMoveAngle(-dx/2, dy);
+		supplier.get().point().addXY_allowsMoveAngle(+dx/2, dy);
+	}
+	public static void split_yMirror(Supplier<? extends Bullet> supplier, double dx, double dy) {
+		supplier.get().point().addXY_allowsMoveAngle(dx, -dy/2);
+		supplier.get().point().addXY_allowsMoveAngle(dx, +dy/2);
+	}
+	public static void split_Round(Supplier<? extends Bullet> supplier, int radius, int amount) {
+	final double D_ANGLE = 2*PI/amount;
+		for(int i = 0;i < amount;i++)
+			supplier.get().point().addXY_DA(radius, D_ANGLE*i);
+	}
+	public static void split_Burst(Supplier<? extends Bullet> supplier, int radius, int amount, double speed) {
+	final double D_ANGLE = 2*PI/amount;
+		for(int i = 0;i < amount;i++)
+			supplier.get().point().fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
+	}
+	public static void split_NWay(Supplier<? extends Bullet> supplier, int radius, double[] angles, double speed) {
+		for(int i = 0;i < angles.length;i++)
+			supplier.get().point().fastParaAdd_DASpd(radius, angles[i], speed);
+	}
+	public static void split_NWay(Supplier<? extends Bullet> supplier, int radius, double marginAngle, double amount, double speed) {
+		for(int i = 0;i < amount;i++)
+			supplier.get().point().fastParaAdd_DASpd(radius, marginAngle*i, speed);
+	}
 	///////////////
 	//information
 	///////////////
@@ -259,7 +290,20 @@ public abstract class Point implements Serializable {
 	public final double doubleAbsDY(Point p) {
 		return Math.abs(doubleDY(p));
 	}
+	///////////////Rectangle2D.Double
+	public final Rectangle2D.Double rectangleAtCenter(double width, double height) {
+		return new Rectangle2D.Double(doubleX() - width/2, doubleY() - height/2, width, height);
+	}
+	public final Rectangle2D.Double rectangleAtCorner(double width, double height) {
+		return new Rectangle2D.Double(doubleX(), doubleY(), width, height);
+	}
 	///////////////inRangeX&Y&XY
+	public final boolean inRangeX(int x, int xDistance) {
+		return intAbsDX(x) < xDistance;
+	}
+	public final boolean inRangeY(int y, int yDistance) {
+		return intAbsDY(y) < yDistance;
+	}
 	public final boolean inRangeX(Point point, int xDistance) {
 		return intAbsDX(point) < xDistance;
 	}
@@ -271,6 +315,9 @@ public abstract class Point implements Serializable {
 	}
 	public final boolean inRangeY(Point point, double yDistance) {
 		return doubleAbsDY(point) < yDistance;
+	}
+	public final boolean inRangeXY(int x, int y, int xDistance, int yDistance) {
+		return inRangeX(x, xDistance) && inRangeY(y, yDistance);
 	}
 	public final boolean inRangeXY(Point point, int xDistance, int yDistance) {
 		return inRangeX(point, xDistance) && inRangeY(point, yDistance);
@@ -330,7 +377,7 @@ public abstract class Point implements Serializable {
 	}
 	///////////////isBlocked
 	public boolean isBlocked() {
-		return !GHQ.stage().inStage(this) || GHQ.stage().structures.intersected_dot(this);
+		return !GHQ.stage().inStage(this) || GHQ.stage().structures.shapeIntersected_dot(this);
 	}
 	///////////////isVisible
 	public boolean isVisible(int x, int y, double viewDistance) {
@@ -398,7 +445,7 @@ public abstract class Point implements Serializable {
 	}
 	///////////////approach&approachIfNoObstacles
 	public void approach(double dstX, double dstY, double speed) {
-		final double DX = dstX - doubleX(),DY = dstY - doubleY();
+		final double DX = doubleDX(dstX), DY = doubleDY(dstY);
 		final double DISTANCE = sqrt(DX*DX + DY*DY);
 		if(DISTANCE <= speed)
 			setXY(dstX, dstY);
@@ -414,21 +461,6 @@ public abstract class Point implements Serializable {
 		if(target != null)
 			approach(target.point(), speed);
 	}
-	public void approachIfNoObstacles(HitInteractable source, double dstX, double dstY, double speed) {
-		final double DX = dstX - doubleX(), DY = dstY - doubleY();
-		final double DISTANCE = sqrt(DX*DX + DY*DY);
-		if(DISTANCE > speed) {
-			final double RATE = speed/DISTANCE;
-			dstX = doubleX() + DX*RATE;
-			dstY = doubleY() + DY*RATE;
-		}
-		if(!GHQ.stage().hitObstacle_atNewPoint(source, (int)dstX, (int)dstY))
-			setXY(dstX, dstY);
-	}
-	public void approachIfNoObstacles(HitInteractable source, Point dstPoint, double speed) {
-		approachIfNoObstacles(source, dstPoint.doubleX(), dstPoint.doubleY(), speed);
-	}
-
 	public void approach_rate(double dstX, double dstY, double rate) {
 		this.addXY((dstX - doubleX())*rate, (dstY - doubleY())*rate);
 	}

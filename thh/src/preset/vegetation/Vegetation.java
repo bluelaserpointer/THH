@@ -1,4 +1,4 @@
-package vegetation;
+package preset.vegetation;
 
 import core.GHQObject;
 import paint.dot.DotPaint;

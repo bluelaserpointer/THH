@@ -5,7 +5,6 @@ import static java.awt.event.KeyEvent.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 import core.GHQ;
@@ -30,7 +29,7 @@ import physics.Point;
 import preset.structure.Terrain;
 import preset.structure.Tile;
 import preset.unit.Unit;
-import vegetation.Vegetation;
+import preset.vegetation.Vegetation;
 
 /**
  * A class provides a default stage editor.
@@ -93,11 +92,8 @@ public abstract class DefaultStageEditor extends GUIParts{
 						if(mouseOveredObject == null)
 							mouseOveredObject = GHQ.stage().structures.forMouseOver();
 						if(mouseOveredObject != null && mouseOveredObject != selectObject) {
-							final Rectangle2D RECT = mouseOveredObject.boundingBox();
-							G2.setColor(Color.WHITE);
-							G2.setStroke(GHQ.stroke5);
-							G2.draw(RECT);
-							G2.drawOval((int)RECT.getX() - 9,(int)RECT.getY() - 9,18,18);
+							mouseOveredObject.drawBoundingBox(Color.WHITE, GHQ.stroke5);
+							G2.drawOval(mouseOveredObject.cx() - 9, mouseOveredObject.cy() - 9,18,18);
 							G2.drawOval(GHQ.mouseX() - 5,GHQ.mouseY() - 5,10,10);
 						}
 						if(selectObject != null) {
@@ -129,14 +125,8 @@ public abstract class DefaultStageEditor extends GUIParts{
 								((Unit)selectObject).originalName = configLabel.getText();
 							}*/
 							//draw selection guide
-							final Rectangle2D RECT = selectObject.boundingBox();
-							RECT.setRect(RECT.getX(),RECT.getY(),RECT.getWidth() + 4,RECT.getHeight() + 4);
-							G2.setColor(Color.WHITE);
-							G2.setStroke(GHQ.stroke5);
-							G2.draw(RECT);
-							G2.setColor(Color.RED);
-							G2.setStroke(GHQ.stroke3);
-							G2.draw(RECT);
+							selectObject.drawBiggerBoundingBox(Color.WHITE, GHQ.stroke5, 5);
+							selectObject.drawBiggerBoundingBox(Color.RED, GHQ.stroke3, 5);
 							break;
 						}
 					case TERRAIN:

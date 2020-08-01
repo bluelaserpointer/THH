@@ -11,11 +11,12 @@ import core.GHQ;
 import physics.Point;
 import physics.hitShape.HitShape;
 import physics.HasPoint;
+import physics.HasUIBoundingBox;
 
-public class Tile extends Structure {
-	public static int bp_ox = GHQ.NONE, bp_oy,bp_tileSize = 100;
-	public class TileHitShape extends HitShape{
-		public static final int TILE_SIZE = 100;
+public class Tile extends Structure implements HasUIBoundingBox {
+	public static final int TILE_SIZE = 25;
+	public static int bp_ox = GHQ.NONE, bp_oy,bp_tileSize = TILE_SIZE;
+	public class TileHitShape extends HitShape {
 		protected final int
 			X_TILES,
 			Y_TILES;
@@ -71,27 +72,24 @@ public class Tile extends Structure {
 		}
 		@Override
 		public void fill(Color color) {
-			final Graphics2D G2 = GHQ.getG2D();
+			final Graphics2D G2 = GHQ.getG2D(color);
+			final int x = point().intX(), y = point().intY();
 			for(int xi = 0;xi < X_TILES;xi++) {
 				for(int yi = 0;yi < Y_TILES;yi++) {
-					if(aliveTiles.get(xi + yi*X_TILES)){
-						final int PX = point().intX() + xi*TILE_SIZE, PY = point().intY() + yi*TILE_SIZE;
-						G2.setColor(color);
-						G2.fillRect(PX, PY, TILE_SIZE, TILE_SIZE);
+					if(aliveTiles.get(xi + yi*X_TILES)) {
+						G2.fillRect(x + xi*TILE_SIZE, y + yi*TILE_SIZE, TILE_SIZE, TILE_SIZE);
 					}
 				}
 			}
 		}
 		@Override
 		public void draw(Color color, Stroke stroke) {
-			final Graphics2D G2 = GHQ.getG2D();
+			final Graphics2D G2 = GHQ.getG2D(color);
+			final int x = point().intX(), y = point().intY();
 			for(int xi = 0;xi < X_TILES;xi++) {
 				for(int yi = 0;yi < Y_TILES;yi++) {
-					if(aliveTiles.get(xi + yi*X_TILES)){
-						final int PX = point().intX() + xi*TILE_SIZE, PY = point().intY() + yi*TILE_SIZE;
-						G2.setColor(color);
-						G2.setStroke(stroke);
-						G2.drawRect(PX, PY, TILE_SIZE, TILE_SIZE);
+					if(aliveTiles.get(xi + yi*X_TILES)) {
+						G2.drawRect(x + xi*TILE_SIZE, y + yi*TILE_SIZE, TILE_SIZE, TILE_SIZE);
 					}
 				}
 			}
@@ -124,7 +122,7 @@ public class Tile extends Structure {
 		physics().setHitShape(new TileHitShape(this, x_tiles, y_tiles));
 	}
 	public static Tile create(Rectangle2D rect) {
-		return new Tile((int)rect.getX(), (int)rect.getY(), (int)rect.getWidth()/100, (int)rect.getHeight()/100);
+		return new Tile((int)rect.getX(), (int)rect.getY(), (int)rect.getWidth()/TILE_SIZE, (int)rect.getHeight()/TILE_SIZE);
 	}
 	//role
 	@Override
@@ -163,7 +161,7 @@ public class Tile extends Structure {
 	}
 	public static void blueprint_clear() {
 		bp_ox = GHQ.NONE;
-		bp_tileSize = 100;
+		bp_tileSize = TILE_SIZE;
 	}
 	public static void makeGuiding(Graphics2D g2) {
 		if(bp_ox != GHQ.NONE) {

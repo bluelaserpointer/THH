@@ -1,4 +1,4 @@
-package physics.Direction;
+package physics.direction;
 
 import java.util.Random;
 
@@ -7,7 +7,6 @@ import physics.Point;
 public enum Direction4 implements MonoDirection {
 	W, D, S, A;
 	
-	public static final int W_ID = 0, D_ID = 1, S_ID = 2, A_ID = 3;
 	public boolean isVert() {
 		return this == W || this == S;
 	}
@@ -105,21 +104,6 @@ public enum Direction4 implements MonoDirection {
 			return D;
 		default:
 			return null;
-		}
-	}
-	@Override
-	public int id() {
-		switch(this) {
-		case W:
-			return W_ID;
-		case D:
-			return D_ID;
-		case S:
-			return S_ID;
-		case A:
-			return A_ID;
-		default:
-			return -1;
 		}
 	}
 	///////////////

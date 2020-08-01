@@ -1,6 +1,6 @@
 package calculate;
 
-import physics.Direction.DirectionVH;
+import physics.direction.DirectionVH;
 
 public interface HasGrid {
 	public abstract int gridSize();

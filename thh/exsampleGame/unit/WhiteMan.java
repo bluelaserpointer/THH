@@ -35,7 +35,7 @@ public class WhiteMan extends THH_BasicEnemy {
 		if(!THE_HP.isMin() && !THE_HP.isMax() && point().inRange(dstPoint, 200)){
 			THE_HP.consume(-100);
 		}
-		point().approachIfNoObstacles(this, dstPoint, charaSpeed);
+		approachIfNoObstacles(dstPoint, charaSpeed);
 	}
 	@Override
 	public void setBullet(int kind, HasPoint source) {}

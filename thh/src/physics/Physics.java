@@ -13,8 +13,8 @@ public abstract class Physics implements HitInteractable, HasAngle {
 			return Point.NULL_POINT;
 		}
 		@Override
-		public HitRule hitGroup() {
-			return HitRule.HIT_NONE;
+		public HitGroup hitGroup() {
+			return HitGroup.HIT_NONE;
 		}
 		@Override
 		public Angle angle() {
@@ -27,7 +27,7 @@ public abstract class Physics implements HitInteractable, HasAngle {
 	public Physics setHitShape(HitShape hitShape) {
 		return this;
 	}
-	public Physics setHitRule(HitRule hitGroup) {
+	public Physics setHitRule(HitGroup hitGroup) {
 		return this;
 	}
 	public Physics setPointBase(HasPoint base) {

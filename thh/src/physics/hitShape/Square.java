@@ -1,14 +1,13 @@
 package physics.hitShape;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Stroke;
 
 import core.GHQ;
 import physics.HasPoint;
 
-public class Square extends HitShape{
+public class Square extends HitShape {
 	private static final long serialVersionUID = 8168254451812660305L;
 	public static final Square SQUARE_10 = new Square(10);
 	protected int side;
@@ -46,31 +45,24 @@ public class Square extends HitShape{
 		return false;
 	}
 	@Override
-	public boolean intersectsDot(int x, int y) {
+	public boolean boundingBoxIntersectsDot(int x, int y) {
 		return point().intAbsDX(x) < side/2 && point().intAbsDY(y) < side/2;
 	}
 	@Override
+	public boolean intersectsDot(int x, int y) {
+		return super.boundingBoxIntersectsDot(x, y);
+	}
+	@Override
 	public boolean intersectsLine(int x1, int y1, int x2, int y2) {
-		return point().getRectangle2D(side, side).intersectsLine(x1, y1, x2, y2);
+		return super.boundingBoxIntersectsLine(x1, y1, x2, y2);
 	}
 	@Override
 	public void fill(Color color) {
-		final Graphics2D G2 = GHQ.getG2D();
-		final int TX = point().intX(), TY = point().intY();
-		G2.translate(TX, TY);
-		G2.setColor(color);
-		G2.fillRect(-side/2, -side/2, side, side);
-		G2.translate(-TX, -TY);
+		GHQ.getG2D(color).fillRect(point().intX() - side/2, point().intY() - side/2, side, side);
 	}
 	@Override
 	public void draw(Color color, Stroke stroke) {
-		final Graphics2D G2 = GHQ.getG2D();
-		final int TX = point().intX(), TY = point().intY();
-		G2.translate(TX, TY);
-		G2.setColor(color);
-		G2.setStroke(stroke);
-		G2.drawRect(-side/2, -side/2, side, side);
-		G2.translate(-TX, -TY);
+		GHQ.getG2D(color).drawRect(point().intX() - side/2, point().intY() - side/2, side, side);
 	}
 	
 	//tool

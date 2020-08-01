@@ -1,7 +1,5 @@
 package preset.unit;
 
-import java.awt.geom.Rectangle2D;
-
 import calculate.Damage;
 import core.GHQ;
 import core.GHQObject;
@@ -85,11 +83,6 @@ public abstract class Unit extends GHQObject implements HasAnglePoint, HasDotPai
 	/////////////
 	public String name() {
 		return "[Unit]" + GHQ.NOT_NAMED;
-	}
-	@Override
-	public Rectangle2D boundingBox() {
-		final int DEFAULT_SIZE = 80;
-		return new Rectangle2D.Double(point().intX() - DEFAULT_SIZE/2, point().intY() - DEFAULT_SIZE/2, DEFAULT_SIZE, DEFAULT_SIZE);
 	}
 	@Override
 	public boolean intersects(HitInteractable object) {

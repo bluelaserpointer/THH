@@ -94,7 +94,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	//stopEvent
 	private static int stopEventKind = NONE;
 	public static final int STOP = 0;
-	public static boolean messageStop, spellStop;
 	
 	//screen
 	private static int screenW, screenH;
@@ -640,9 +639,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final boolean isMouseInArea_Screen(int luX, int luY, int w, int h) {
 		return luX < mouseX && mouseX < luX + w && luY < mouseY && mouseY < luY + h;
 	}
-	public final boolean isMouseOnImage(Image img, int x, int y) {
-		return isMouseInArea_Stage(x, y, img.getWidth(null), img.getHeight(null));
-	}
 	//キー情報
 	public static boolean key_1,key_2,key_3,key_4;
 	public static long key_1_time,key_2_time,key_3_time,key_4_time;
@@ -1016,6 +1012,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 */
 	public static final void setClip(int x, int y, int width, int height) {
 		g2.setClip(x, y, width, height);
+	}
+	public static final void setClip() {
+		g2.setClip(0, 0, screenW(), screenH());
 	}
 	public static final void scale(double sx, double sy) {
 		g2.scale(sx, sy);

@@ -7,22 +7,22 @@ import java.io.Serializable;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class HitRule implements Serializable {
+public class HitGroup implements Serializable {
 	private static final long serialVersionUID = 4039529801782707123L;
 
 	public static final int ALL = -1, NONE = -2;
-	public static final HitRule HIT_ALL = new HitRule(ALL);
-	public static final HitRule HIT_NONE = new HitRule(NONE);
+	public static final HitGroup HIT_ALL = new HitGroup(ALL);
+	public static final HitGroup HIT_NONE = new HitGroup(NONE);
 	
 	private int group;
 	
-	public HitRule() {
+	public HitGroup() {
 		group = ALL;
 	}
-	public HitRule(int initialGroup) {
+	public HitGroup(int initialGroup) {
 		group = initialGroup;
 	}
-	public boolean hitableGroup(HitRule hitGroup) {
+	public boolean hitableWith(HitGroup hitGroup) {
 		return group != NONE && hitGroup.group != NONE && (group == ALL || hitGroup.group == ALL || group != hitGroup.group);
 	}
 	public void set(int group) {
@@ -30,5 +30,11 @@ public class HitRule implements Serializable {
 	}
 	public int get() {
 		return group;
+	}
+	public final boolean hitAll() {
+		return group == ALL;
+	}
+	public final boolean hitNone() {
+		return group == NONE;
 	}
 }

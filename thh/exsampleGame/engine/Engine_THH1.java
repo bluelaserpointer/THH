@@ -17,7 +17,7 @@ import input.mouse.MouseListenerEx;
 import paint.ImageFrame;
 import physics.stage.GHQStage;
 import preset.unit.Unit;
-import vegetation.Vegetation;
+import preset.vegetation.Vegetation;
 
 public class Engine_THH1 extends Game {
 	static {

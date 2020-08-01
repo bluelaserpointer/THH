@@ -9,7 +9,7 @@ import paint.HasPaint;
 import physics.Angle;
 import physics.Dynam;
 import physics.HasPhysics;
-import physics.HitRule;
+import physics.HitGroup;
 import physics.Physics;
 import physics.Point;
 import physics.StdPhysics;
@@ -20,7 +20,7 @@ import preset.effect.Effect;
 import preset.item.ItemData;
 import preset.structure.Structure;
 import preset.unit.Unit;
-import vegetation.Vegetation;
+import preset.vegetation.Vegetation;
 
 public class GHQObject implements HasName, HasPaint, HasPhysics  {
 	public static final GHQObject NULL_GHQ_OBJECT = new GHQObject();
@@ -44,7 +44,7 @@ public class GHQObject implements HasName, HasPaint, HasPhysics  {
 	}
 	//physics = new StdPhysics().setPoint(new Point.IntPoint(x + w/2, y + h/2)).setHitShape(new RectShape(physics, w, h));
 	protected Physics predefine_physics() {
-		return new StdPhysics(predefine_point(), predefine_angle(), Square.SQUARE_10, HitRule.HIT_ALL);
+		return new StdPhysics(predefine_point(), predefine_angle(), new Square(this, 0), HitGroup.HIT_ALL);
 	}
 	protected Point predefine_point() {
 		return new Dynam();

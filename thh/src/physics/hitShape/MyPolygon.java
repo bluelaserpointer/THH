@@ -60,12 +60,10 @@ public class MyPolygon extends HitShape{
 		}
 		return false;
 	}
-
 	@Override
 	public boolean intersectsDot(int x, int y) {
 		return polygon.contains(x - point().intX(), y - point().intY());
 	}
-
 	@Override
 	public boolean intersectsLine(int x1, int y1, int x2, int y2) {
 		final Line2D line = new Line2D.Double(x1 - point().intX(), y1 - point().intY(), x2 - point().intX(), y2 - point().intY());
@@ -79,20 +77,17 @@ public class MyPolygon extends HitShape{
 	}
 	@Override
 	public void fill(Color color) {
-		final Graphics2D G2 = GHQ.getG2D();
+		final Graphics2D G2 = GHQ.getG2D(color);
 		final int TX = point().intX(), TY = point().intY();
 		G2.translate(TX, TY);
-		G2.setColor(color);
 		G2.fill(polygon);
 		G2.translate(-TX, -TY);
 	}
 	@Override
 	public void draw(Color color, Stroke stroke) {
-		final Graphics2D G2 = GHQ.getG2D();
+		final Graphics2D G2 = GHQ.getG2D(color, stroke);
 		final int TX = point().intX(), TY = point().intY();
 		G2.translate(TX, TY);
-		G2.setColor(color);
-		G2.setStroke(stroke);
 		G2.draw(polygon);
 		G2.translate(-TX, -TY);
 	}

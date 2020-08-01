@@ -6,8 +6,8 @@ import java.awt.Stroke;
 import java.util.LinkedList;
 
 import core.GHQ;
-import effect.debugEffect.DebugEffect;
 import preset.effect.Effect;
+import preset.effect.debugEffect.DebugEffect;
 
 public class Route {
 	final LinkedList<Point> points;

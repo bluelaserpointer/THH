@@ -5,8 +5,10 @@ import java.util.LinkedList;
 
 import physics.HasBoundingBox;
 import physics.HasPoint;
+import physics.HitGroup;
 import physics.HitInteractable;
 import physics.Point;
+import physics.hitShape.HasHitShape;
 
 /**
  * Note: This class does not used for class GUIParts.
@@ -17,6 +19,7 @@ import physics.Point;
 public class GHQObjectList<T extends GHQObject> extends LinkedList<T> {
 	private static final long serialVersionUID = 1774337313239922412L;
 	
+	//private final UnionHitShape<T> shape = new UnionHitShape<>(this, this);
 	public void traverseIdle() {
 		final LinkedList<GHQObject> elements = new LinkedList<GHQObject>();
 		elements.addAll(this);
@@ -61,9 +64,16 @@ public class GHQObjectList<T extends GHQObject> extends LinkedList<T> {
 		}
 		return null;
 	}
-	public T forIntersects(HitInteractable object){
+	public T forIntersects(HitInteractable object) {
 		for(T element : this) {
 			if(element instanceof HitInteractable && ((HitInteractable)element).intersects(object))
+				return element;
+		}
+		return null;
+	}
+	public T forShapeIntersects(HasHitShape object) {
+		for(T element : this) {
+			if(element instanceof HasHitShape && ((HasHitShape)element).hitShape().intersects(object))
 				return element;
 		}
 		return null;
@@ -79,26 +89,39 @@ public class GHQObjectList<T extends GHQObject> extends LinkedList<T> {
 		object.point().addXY(-dx, -dy);
 		return null;
 	}
-	public T forIntersectsDot(int x, int y) {
+	public T forIntersectsDot(HitGroup hitgroup, int x, int y) {
 		for(T element : this) {
-			if(element instanceof HitInteractable && ((HitInteractable)element).intersectsDot(x, y))
+			if(element instanceof HasHitShape && ((HasHitShape)element).hitShape().boundingBoxIntersectsDot(x, y));
+				return element;
+		}
+		return null;
+	}
+	public T forShapeIntersectsDot(int x, int y) {
+		for(T element : this) {
+			if(element instanceof HasHitShape && ((HasHitShape)element).hitShape().intersectsDot(x, y))
+				return element;
+		}
+		return null;
+	}
+	public T forIntersectsLine(HitGroup hitgroup, int x1, int y1, int x2, int y2) {
+		for(T element : this) {
+			if(element instanceof HitInteractable && ((HitInteractable)element).intersectsLine(hitgroup, x1, y1, x2, y2))
 				return element;
 		}
 		return null;
 	}
 	public T forIntersectsLine(int x1, int y1, int x2, int y2) {
+		return forIntersectsLine(HitGroup.HIT_ALL, x1, y1, x2, y2);
+	}
+	public T forIntersectsRect(HitGroup hitgroup, int x, int y, int w, int h) {
 		for(T element : this) {
-			if(element instanceof HitInteractable && ((HitInteractable)element).intersectsLine(x1, y1, x2, y2))
+			if(element instanceof HitInteractable && ((HitInteractable)element).intersectsRect(hitgroup, x, y, w, h))
 				return element;
 		}
 		return null;
 	}
 	public T forIntersectsRect(int x, int y, int w, int h) {
-		for(T element : this) {
-			if(element instanceof HitInteractable && ((HitInteractable)element).intersectsRect(x, y, w, h))
-				return element;
-		}
-		return null;
+		return forIntersectsRect(HitGroup.HIT_ALL, x, y, w, h);
 	}
 	public boolean intersected(HitInteractable object) {
 		return forIntersects(object) != null;
@@ -106,14 +129,14 @@ public class GHQObjectList<T extends GHQObject> extends LinkedList<T> {
 	public boolean intersected_atNewPoint(HitInteractable object, double dx, double dy) {
 		return forIntersects_atNewPoint(object, dx, dy) != null;
 	}
-	public boolean intersected_dot(int x, int y) {
-		return forIntersectsDot(x, y) != null;
+	public boolean shapeIntersected_dot(int x, int y) {
+		return forShapeIntersectsDot(x, y) != null;
 	}
-	public boolean intersected_dot(Point point) {
-		return intersected_dot(point.intX(), point.intY());
+	public boolean shapeIntersected_dot(Point point) {
+		return shapeIntersected_dot(point.intX(), point.intY());
 	}
-	public boolean intersected_dot(HasPoint hasPoint) {
-		return intersected_dot(hasPoint.point());
+	public boolean shapeIntersected_dot(HasPoint hasPoint) {
+		return shapeIntersected_dot(hasPoint.point());
 	}
 	public boolean intersected_line(int x1, int y1, int x2, int y2) {
 		return forIntersectsLine(x1, y1, x2, y2) != null;

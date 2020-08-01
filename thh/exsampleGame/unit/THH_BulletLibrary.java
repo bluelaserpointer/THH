@@ -43,10 +43,6 @@ public abstract class THH_BulletLibrary extends Bullet{
 			paintScript = paint;
 		}
 		@Override
-		public FudaKouhaku getOriginal() {
-			return new FudaKouhaku((Unit)shooter);
-		}
-		@Override
 		public final void hitObject(GHQObject object) {
 			GHQ.stage().addEffect(new THH_EffectLibrary.FudaHitEF(this, true));
 		}
@@ -65,10 +61,6 @@ public abstract class THH_BulletLibrary extends Bullet{
 			limitFrame = 200;
 			paintScript = paint;
 		}
-		@Override
-		public Bullet getOriginal() {
-			return new FudaShiroKuro((Unit)shooter);
-		}
 	}
 	/////////////////
 	//Reimu - 3
@@ -86,10 +78,6 @@ public abstract class THH_BulletLibrary extends Bullet{
 			accel = -2.0;
 			paintScript = paint;
 		}
-		@Override
-		public Bullet getOriginal() {
-			return new FudaSouhaku((Unit)shooter);
-		}
 	}
 	/////////////////
 	//Marisa - 1
@@ -104,10 +92,6 @@ public abstract class THH_BulletLibrary extends Bullet{
 			setDamage(new THH_damage(40));
 			limitFrame = 200;
 			paintScript = paint;
-		}
-		@Override
-		public Bullet getOriginal() {
-			return new MillkyWay((Unit)shooter);
 		}
 	}
 	/////////////////
@@ -125,10 +109,6 @@ public abstract class THH_BulletLibrary extends Bullet{
 			reflection = 3;
 			limitFrame = 40;
 			paintScript = paint;
-		}
-		@Override
-		public Bullet getOriginal() {
-			return new NarrowSpark((Unit)shooter);
 		}
 		@Override
 		public void idle() {
@@ -164,10 +144,6 @@ public abstract class THH_BulletLibrary extends Bullet{
 			paintScript = paint;
 		}
 		@Override
-		public Bullet getOriginal() {
-			return new ReuseBomb((Unit)shooter);
-		}
-		@Override
 		public void idle() {
 			super.idle();
 			if(Math.random() < 0.2)
@@ -188,10 +164,6 @@ public abstract class THH_BulletLibrary extends Bullet{
 			limitFrame = 2000;
 			paintScript = paint;
 			point().fastParaAdd_DASpd(10, GHQ.random2(PI/36), 10.0);
-		}
-		@Override
-		public Bullet getOriginal() {
-			return new MagicMissile((Unit)shooter);
 		}
 		@Override
 		public void idle() {
@@ -218,10 +190,6 @@ public abstract class THH_BulletLibrary extends Bullet{
 			setDamage(new THH_damage(20));
 			paintScript = paint;
 		}
-		@Override
-		public Bullet getOriginal() {
-			return new LightBall((Unit)shooter);
-		}
 	}
 	/////////////////
 	//Enemy - 2
@@ -237,10 +205,6 @@ public abstract class THH_BulletLibrary extends Bullet{
 			limitRange = 150;
 			paintScript = paint;
 		}
-		@Override
-		public Bullet getOriginal() {
-			return new HealShotgun((Unit)shooter);
-		}
 	}
 	/////////////////
 	//Enemy - 2
@@ -255,10 +219,6 @@ public abstract class THH_BulletLibrary extends Bullet{
 			reflection = 1;
 			limitFrame = 200;
 			paintScript = paint;
-		}
-		@Override
-		public BlackSlashBurst getOriginal() {
-			return new BlackSlashBurst((Unit)shooter);
 		}
 	}
 }
