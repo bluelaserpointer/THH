@@ -6,9 +6,11 @@ import core.GHQ;
 import paint.ColorFilling;
 import paint.ColorFraming;
 import paint.rect.RectPaint;
+import paint.text.StringPaint;
 
 public class BasicButton extends GUIParts {
 	protected ColorFraming borderPaint;
+	protected StringPaint strPaint;
 	public BasicButton(RectPaint paintScript, ColorFraming borderPaint, int x, int y, int w, int h) {
 		super.setBGPaint(paintScript);
 		super.setBounds(x, y, w, h);
@@ -25,6 +27,19 @@ public class BasicButton extends GUIParts {
 	public BasicButton(Color baseColor, Color frameColor) {
 		super.setBGPaint(new ColorFilling(baseColor));
 		borderPaint = new ColorFraming(frameColor, GHQ.stroke1);
+	}
+	public BasicButton(StringPaint strPaint) {
+		setText(strPaint);
+	}
+	public BasicButton setText(StringPaint strPaint) {
+		this.strPaint = strPaint;
+		return this;
+	}
+	@Override
+	public void paint() {
+		super.paint();
+		if(strPaint != null)
+			strPaint.dotPaint(right(), bottom());
 	}
 	public BasicButton() {}
 }

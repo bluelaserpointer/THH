@@ -1,6 +1,6 @@
 package gui;
 
-public class AutoResizeMenu extends GUIParts{
+public class AutoResizeMenu extends GUIParts {
 	private final int DEFAULT_LINE_H;
 	private final int MARGIN;
 	private int lineAmount;
@@ -25,21 +25,23 @@ public class AutoResizeMenu extends GUIParts{
 		MARGIN = partsMargin;
 	}
 	public AutoResizeMenu addNewLine(GUIParts...guiParts) {
-		if(MARGIN == 0) {
-			final int AMOUNT = guiParts.length;
-			final int PARTS_W = super.width() / AMOUNT;
-			for(int i = 0;i < guiParts.length;i++) {
-				guiParts[i].physics().setPointBase(this);
-				guiParts[i].setBounds(PARTS_W*i, point().intY() + DEFAULT_LINE_H*lineAmount, PARTS_W, DEFAULT_LINE_H);
-				super.addLast(guiParts[i]);
-			}
-		}else {
-			final int AMOUNT = guiParts.length;
-			final int PARTS_W = width() / AMOUNT;
-			for(int i = 0;i < guiParts.length;i++) {
-				guiParts[i].physics().setPointBase(this);
-				guiParts[i].setBounds(PARTS_W*i + MARGIN, point().intY() + DEFAULT_LINE_H*lineAmount + MARGIN, PARTS_W - MARGIN*2, DEFAULT_LINE_H - MARGIN*2);
-				super.addLast(guiParts[i]);
+		if(guiParts.length > 0) {
+			if(MARGIN == 0) {
+				final int AMOUNT = guiParts.length;
+				final int PARTS_W = width() / AMOUNT;
+				for(int i = 0;i < guiParts.length;i++) {
+					guiParts[i].physics().setPointBase(this);
+					guiParts[i].setBounds(PARTS_W*i, point().intY() + DEFAULT_LINE_H*lineAmount, PARTS_W, DEFAULT_LINE_H);
+					super.addLast(guiParts[i]);
+				}
+			}else {
+				final int AMOUNT = guiParts.length;
+				final int PARTS_W = width() / AMOUNT;
+				for(int i = 0;i < guiParts.length;i++) {
+					guiParts[i].physics().setPointBase(this);
+					guiParts[i].setBounds(PARTS_W*i + MARGIN, point().intY() + DEFAULT_LINE_H*lineAmount + MARGIN, PARTS_W - MARGIN*2, DEFAULT_LINE_H - MARGIN*2);
+					super.addLast(guiParts[i]);
+				}
 			}
 		}
 		lineAmount++;

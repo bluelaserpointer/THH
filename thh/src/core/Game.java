@@ -69,14 +69,4 @@ public abstract class Game {
 	public static GHQStage stage() {
 		return nowStage;
 	}
-	
-	//tools
-	public static void addViewStack(double x, double y) {
-		viewMoveStackX += x;
-		viewMoveStackY += y;
-	}
-	public static void viewScrollFromStack() {
-		GHQ.viewMove(viewMoveStackX, viewMoveStackY);
-		viewMoveStackX = viewMoveStackY = 0;
-	}
 }

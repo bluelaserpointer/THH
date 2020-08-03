@@ -35,7 +35,6 @@ import gui.MouseHook;
 import input.key.KeyListenerEx;
 import input.keyType.KeyTypeListener;
 import input.mouse.MouseListenerEx;
-import physics.HasPoint;
 import physics.Point;
 import physics.stage.GHQStage;
 import preset.unit.Unit;
@@ -97,7 +96,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//screen
 	private static int screenW, screenH;
-	private static double viewX, viewY, viewDstX, viewDstY;
+	private static double viewX, viewY;
 	private static double stageZoomRate = 1.0;
 	
 	//frame
@@ -389,31 +388,11 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 	}
 	//control-viewPoint
-	public static void viewMove(double dx, double dy) {
-		viewX -= dx;viewY -= dy;
-		viewDstX -= dx;viewDstY -= dy;
-	}
-	public static void viewTo(double x, double y) {
-		viewDstX = viewX = -x + screenW/2;
-		viewDstY = viewY = -y + screenH/2;
-	}
-	public static void viewTo(Point point) {
-		viewTo(point.intX(), point.intY());
-	}
-	public static void viewTo(HasPoint target) {
-		viewTo(target.point());
-	}
 	public static void pureViewMove(double dx, double dy) {
 		viewX -= dx;viewY -= dy;
 	}
 	public static void pureViewTo(double x, double y) {
 		viewX = x;viewY = y;
-	}
-	public static void viewTargetTo(double x, double y) {
-		viewDstX = -x + screenW/2;viewDstY = -y + screenH/2;
-	}
-	public static void viewTargetMove(double x, double y) {
-		viewDstX -= x;viewDstY -= y;
 	}
 	public static int cameraLeft() {
 		return -camera.left();
@@ -626,9 +605,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final void setLastClickedUI(GUIParts parts) {
 		if(lastClickedUI != parts) {
-			lastClickedUI.outsideClicked();
 			lastClickedUI = parts;
 		}
+		GHQ.BASE_SCREEN_UI.checkOutsideClicked();
 	}
 	/**
 	 * Check if the mouse coordinate is in this rectangle area.
@@ -1129,7 +1108,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		drawStringGHQ(string, x, y, g2.getFont().deriveFont(fontStyle, fontSize));
 	}
 	public static final void drawStringGHQ(String string, int x, int y) {
-		g2.drawString(string, x, y);
+		if(string != null)
+			g2.drawString(string, x, y);
 	}
 	public static final void drawStringGHQ(String string, int x, int y, int lineH, int lineWordAmount) {
 		int nowIndex = 0;

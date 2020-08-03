@@ -1,13 +1,11 @@
 package physics.hitShape;
 
-import java.awt.Color;
 import java.awt.Polygon;
-import java.awt.Stroke;
 
 import core.GHQ;
 import physics.HasPoint;
 
-public class Square extends HitShape {
+public class Square extends AbstractRectShape {
 	private static final long serialVersionUID = 8168254451812660305L;
 	public static final Square SQUARE_10 = new Square(10);
 	protected int side;
@@ -22,11 +20,6 @@ public class Square extends HitShape {
 		this.side = side;
 	}
 	public Square() {}
-	//init
-	public Square setSide(int side) {
-		this.side = side;
-		return this;
-	}
 	@Override
 	public boolean intersects(HitShape shape) {
 		if(shape instanceof Square) {
@@ -44,26 +37,6 @@ public class Square extends HitShape {
 		}
 		return false;
 	}
-	@Override
-	public boolean boundingBoxIntersectsDot(int x, int y) {
-		return point().intAbsDX(x) < side/2 && point().intAbsDY(y) < side/2;
-	}
-	@Override
-	public boolean intersectsDot(int x, int y) {
-		return super.boundingBoxIntersectsDot(x, y);
-	}
-	@Override
-	public boolean intersectsLine(int x1, int y1, int x2, int y2) {
-		return super.boundingBoxIntersectsLine(x1, y1, x2, y2);
-	}
-	@Override
-	public void fill(Color color) {
-		GHQ.getG2D(color).fillRect(point().intX() - side/2, point().intY() - side/2, side, side);
-	}
-	@Override
-	public void draw(Color color, Stroke stroke) {
-		GHQ.getG2D(color).drawRect(point().intX() - side/2, point().intY() - side/2, side, side);
-	}
 	
 	//tool
 	@Override
@@ -73,14 +46,26 @@ public class Square extends HitShape {
 	
 	//information
 	public int side() {
-		return side;
+		return side != AbstractRectShape.MATCH_SCREEN_SIZE ? side : Math.min(GHQ.screenW(), GHQ.screenH());
 	}
 	@Override
 	public int width() {
-		return side;
+		return side();
 	}
 	@Override
 	public int height() {
-		return side;
+		return side();
+	}
+	public Square setSide(int side) {
+		this.side = side;
+		return this;
+	}
+	@Override
+	public Square setWidth(int w) {
+		return setSide(w);
+	}
+	@Override
+	public Square setHeight(int h) {
+		return setSide(h);
 	}
 }

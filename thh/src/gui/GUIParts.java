@@ -12,7 +12,9 @@ import core.GHQObject;
 import paint.ColorFilling;
 import paint.ImageFrame;
 import paint.rect.RectPaint;
+import physics.HasUIBoundingBox;
 import physics.Point;
+import physics.hitShape.AbstractRectShape;
 import physics.hitShape.HitShape;
 import physics.hitShape.RectShape;
 
@@ -21,7 +23,7 @@ import physics.hitShape.RectShape;
  * @author bluelaserpointer
  * @since alpha1.0
  */
-public class GUIParts extends GHQObject implements DragIO {
+public class GUIParts extends GHQObject implements DragIO, HasUIBoundingBox {
 	public static final GUIParts NULL_GUIPARTS = new GUIParts();
 	protected boolean isEnabled;
 	protected boolean isClicking;
@@ -30,7 +32,7 @@ public class GUIParts extends GHQObject implements DragIO {
 	public GUIParts() {
 		backGroundPaint = RectPaint.BLANK_SCRIPT;
 		physics().setPoint(new Point.IntPoint());
-		physics().setHitShape(new RectShape(this, GHQ.screenW(), GHQ.screenH()));
+		physics().setHitShape(new RectShape(this, AbstractRectShape.MATCH_SCREEN_SIZE, AbstractRectShape.MATCH_SCREEN_SIZE));
 	}
 	@Override
 	public GUIParts setName(String name) {
@@ -189,7 +191,21 @@ public class GUIParts extends GHQObject implements DragIO {
 		isClicking = true;
 		return true;
 	}
+	public void checkOutsideClicked() {
+		isClicking = false;
+		if(!isScreenMouseOvered())
+			outsideClicked();
+		else {
+			if(childList != null) {
+				for(GUIParts parts : childList) {
+					parts.checkOutsideClicked();
+				}
+			}
+		}
+	}
 	public void outsideClicked() {
+		if(GHQ.lastClickedUI() == this)
+			return;
 		isClicking = false;
 		if(childList != null) {
 			for(GUIParts parts : childList) {
@@ -246,6 +262,9 @@ public class GUIParts extends GHQObject implements DragIO {
 			disable();
 		else
 			enable();
+	}
+	public void clickingReleased() {
+		isClicking = false;
 	}
 	//information
 	public final boolean isEnabled() {

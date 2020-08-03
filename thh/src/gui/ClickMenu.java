@@ -50,5 +50,4 @@ public class ClickMenu<T> extends AutoResizeMenu {
 		super.outsideClicked();
 		disable();
 	}
-
 }

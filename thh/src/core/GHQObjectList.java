@@ -58,7 +58,7 @@ public class GHQObjectList<T extends GHQObject> extends LinkedList<T> {
 	public T forMouseOver() {
 		if(peek() instanceof HasBoundingBox) {
 			for(T element : this) {
-				if(((HasBoundingBox)element).isMouseOveredBoundingBox())
+				if(((HasBoundingBox)element).isCameraMouseOveredBoundingBox())
 					return element;
 			}
 		}

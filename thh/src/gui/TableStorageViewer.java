@@ -50,7 +50,7 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 		for(int xi = 0; xi < storageW; ++xi) {
 			for(int yi = 0; yi < storageH; ++yi) {
 				final int index = storage.cellIndex(xi, yi);
-				paintOfCell(index, storage.isValidIndex(index) ? storage.get(index) : null, super.point().intX() + xi*cellSize, super.point().intY() + yi*cellSize);
+				paintOfCell(index, storage.isValidIndex(index) ? storage.get(index) : null, point().intX() + xi*cellSize, point().intY() + yi*cellSize);
 			}
 		}
 	}

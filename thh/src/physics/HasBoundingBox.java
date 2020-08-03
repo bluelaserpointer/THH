@@ -27,13 +27,22 @@ public interface HasBoundingBox extends HasPoint, HasArea {
 		return cy() + height()/2;
 	}
 	public default boolean boundingBoxIntersectsDot(int x, int y) {
-		return point().inRangeXY(cx(), cy(), width()/2, height()/2);
+		return left() <= x && x <= right() && top() <= y && y <= bottom();
 	}
 	public default boolean boundingBoxIntersectsDot(Point point) {
 		return boundingBoxIntersectsDot(point.intX(), point.intY());
 	}
-	public default boolean isMouseOveredBoundingBox() {
-		return boundingBoxIntersectsDot(GHQ.mouseX(),GHQ.mouseY());
+	public default boolean isCameraMouseOveredBoundingBox() {
+		return boundingBoxIntersectsDot(GHQ.mouseX(), GHQ.mouseY());
+	}
+	public default boolean isScreenMouseOveredBoundingBox() {
+		return boundingBoxIntersectsDot(GHQ.mouseScreenX(), GHQ.mouseScreenY());
+	}
+	public default boolean isCameraMouseOvered() {
+		return boundingBoxIntersectsDot(GHQ.mouseX(), GHQ.mouseY());
+	}
+	public default boolean isScreenMouseOvered() {
+		return boundingBoxIntersectsDot(GHQ.mouseScreenX(), GHQ.mouseScreenY());
 	}
 	public default boolean boundingBoxIntersectsLine(int x1, int y1, int x2, int y2) {
 		return new Rectangle2D.Double(left(), top(), width(), height()).intersectsLine(x1, y1, x2, y2);
@@ -44,9 +53,6 @@ public interface HasBoundingBox extends HasPoint, HasArea {
 	public default boolean boundingBoxIntersects(HasBoundingBox target) {
 		return Math.abs(cx() - target.cx()) < (width() + target.width())/2
 				&& Math.abs(cy() - target.cy()) < (height() + target.height())/2;
-	}
-	public default boolean isMouseOvered() {
-		return isMouseOveredBoundingBox();
 	}
 	public default void drawBoundingBox(Color color, Stroke stroke) {
 		GHQ.getG2D(color, stroke).drawRect(left(), top(), width(), height());
