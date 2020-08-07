@@ -27,21 +27,24 @@ public class GridPainter implements HasGrid {
 	public void paintGrid(RectPaint rectPaint, int xPos, int yPos) {
 		rectPaint.rectPaint(xPos*gridSize, yPos*gridSize, gridSize, gridSize);
 	}
+	public void drawGrid_fieldCod(Graphics2D g2, int mouseX, int mouseY) {
+		drawGrid(g2, mouseX/gridSize, mouseY/gridSize);
+	}
 	//information
 	public Point getPosPoint(int xPos, int yPos) {
 		return new Point.DoublePoint(xPos*gridSize, yPos*gridSize);
 	}
 	public int screenLeftXPos() {
-		return GHQ.getScreenLeftX_stageCod()/gridSize;
+		return GHQ.fieldScreenLeft()/gridSize;
 	}
 	public int screenTopYPos() {
-		return GHQ.getScreenTopY_stageCod()/gridSize;
+		return GHQ.fieldScreenTop()/gridSize;
 	}
 	public int gridsToFillScreenWidth() {
-		return GHQ.getScreenW_stageCod()/gridSize + 2;
+		return GHQ.fieldScreenW()/gridSize + 2;
 	}
 	public int gridsToFillScreenHeight() {
-		return GHQ.getScreenH_stageCod()/gridSize + 2;
+		return GHQ.fieldScreenH()/gridSize + 2;
 	}
 	@Override
 	public int gridSize() {

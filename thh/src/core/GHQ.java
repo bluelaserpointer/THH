@@ -96,8 +96,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//screen
 	private static int screenW, screenH;
-	private static double viewX, viewY;
-	private static double stageZoomRate = 1.0;
 	
 	//frame
 	private static int systemFrame;
@@ -228,13 +226,13 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		g2.setColor(Color.WHITE);
 		g2.fill(screenRect);
-		final int TRANSLATE_X = cameraLeft(),TRANSLATE_Y = cameraTop();
+		final int TRANSLATE_X = -cameraLeft(),TRANSLATE_Y = -cameraTop();
 		g2.translate(TRANSLATE_X, TRANSLATE_Y);
 		g2.setFont(initialFont);
 		////////////////////////////////////////////////////////////////////////
 		//gameIdle
-		final int tx = (int)GHQ.getScreenCenterStageX(), ty = (int)GHQ.getScreenCenterStageY();
-		final double zoomRate = stageZoomRate;
+		final int tx = (int)GHQ.fieldScreenCenterX(), ty = (int)GHQ.fieldScreenCenterY();
+		final double zoomRate = GHQ.zoomRate();
 		if(zoomRate != 1.0) {
 			g2.translate(tx, ty);
 			GHQ.scale(zoomRate, zoomRate);
@@ -258,10 +256,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			g2.setColor(debugTextColor);
 			g2.setFont(basicFont);
 			g2.setStroke(stroke1);
-			for(int i = 100;i < screenW;i += 100)
-				g2.drawLine(i, 0, i, screenH);
-			for(int i = 100;i < screenH;i += 100)
-				g2.drawLine(0, i, screenW, i);
+			for(int i = 100;i < screenW();i += 100)
+				g2.drawLine(i, 0, i, screenH());
+			for(int i = 100;i < screenH();i += 100)
+				g2.drawLine(0, i, screenW(), i);
 			GHQ.translateForGUI(false);
 			//Origin
 			g2.setColor(debugTextColor);
@@ -305,7 +303,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			g2.drawLine(MOUSE_X - 15, MOUSE_Y, MOUSE_X + 15, MOUSE_Y);
 			g2.drawLine(MOUSE_X, MOUSE_Y - 15, MOUSE_X, MOUSE_Y + 15);
 			g2.setStroke(stroke5);
-			g2.drawString("(" + (MOUSE_X - cameraLeft()) + "," + (MOUSE_Y - cameraTop()) + ")", MOUSE_X + 20, MOUSE_Y + 40);
+			g2.drawString("(" + (MOUSE_X + cameraLeft()) + "," + (MOUSE_Y + cameraTop()) + ")", MOUSE_X + 20, MOUSE_Y + 40);
 			//unitInfo
 			stage.unitDebugPaint(g2);
 			//ruler
@@ -323,7 +321,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				}
 			}
 		}
-		g.drawImage(offImage, 0, 0, screenW, screenH, this);
+		g.drawImage(offImage, 0, 0, screenW(), screenH(), this);
 		//increase frame count
 		systemFrame++;
 		if(stopEventKind == NONE)
@@ -348,7 +346,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	//information-paint
 	public static final boolean inScreen(int x, int y) {
-		return abs(viewX - x) < screenW && abs(viewY - y) < screenH;
+		return abs(cameraX() - x) < screenW() && abs(cameraY() - y) < screenH();
 	}
 
 	//control
@@ -377,8 +375,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static GHQStage setStage(GHQStage stage) {
 		return GHQ.stage = stage;
 	}
-	public static void setStageZoomRate(double value) {
-		stageZoomRate = value;
+	public static double zoomRate() {
+		return GHQ.camera != null ? GHQ.camera.zoom : 1.0;
 	}
 	public static void showCursor(boolean show) {
 		if(show) {
@@ -387,40 +385,26 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			hq.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(hq.createImage(new MemoryImageSource(0, 0, new int[0], 0, 0)), new java.awt.Point(0, 0), null));
 		}
 	}
-	//control-viewPoint
-	public static void pureViewMove(double dx, double dy) {
-		viewX -= dx;viewY -= dy;
+	//screenCoordinateInCamera
+	public static int fieldScreenCenterX() {
+		return toFieldx(GHQ.screenW()/2);
 	}
-	public static void pureViewTo(double x, double y) {
-		viewX = x;viewY = y;
+	public static int fieldScreenCenterY() {
+		return toFieldy(GHQ.screenH()/2);
 	}
-	public static int cameraLeft() {
-		return -camera.left();
+	public static int fieldScreenLeft() {
+		return toFieldx(0);
 	}
-	public static int cameraTop() {
-		return -camera.top();
+	public static int fieldScreenTop() {
+		return toFieldy(0);
 	}
-	public static int getScreenCenterStageX() {
-		return toStageCoordinate_x(GHQ.screenW/2);
+	public static int fieldScreenW() {
+		return (int)(screenW()/zoomRate());
 	}
-	public static int getScreenCenterStageY() {
-		return toStageCoordinate_y(GHQ.screenH/2);
+	public static int fieldScreenH() {
+		return (int)(screenH()/zoomRate());
 	}
-	public static int getScreenLeftX_stageCod() {
-		return toStageCoordinate_x(0);
-	}
-	public static int getScreenTopY_stageCod() {
-		return toStageCoordinate_y(0);
-	}
-	public static int getScreenW_stageCod() {
-		return (int)(screenW/stageZoomRate);
-	}
-	public static int getScreenH_stageCod() {
-		return (int)(screenH/stageZoomRate);
-	}
-	//control-add
 
-	//control-delete
 	public static final void paintHPArc(int x, int y, int radius, int hp, int maxHP) {
 		g2.setStroke(stroke3);
 		if((double)hp/(double)maxHP > 0.75)
@@ -550,31 +534,41 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				break;
 		}
 	}
+	public static final int cameraX() {
+		return GHQ.camera != null ? GHQ.camera.x() : screenW()/2;
+	}
+	public static final int cameraY() {
+		return GHQ.camera != null ? GHQ.camera.y() : screenH()/2;
+	}
+	public static final int cameraLeft() {
+		return GHQ.camera != null ? GHQ.camera.left() : 0;
+	}
+	public static final int cameraTop() {
+		return GHQ.camera != null ? GHQ.camera.top() : 0;
+	}
 	public static final int mouseX() {
-		return toStageCoordinate_x(mouseX);
+		return toFieldx(mouseX);
 	}
 	public static final int mouseY() {
-		return toStageCoordinate_y(mouseY);
+		return toFieldy(mouseY);
 	}
-	public static final int toStageCoordinate_x(int x) {
-		//return (int)(x/stageZoomRate + screenW/2*(1 - 1/stageZoomRate)) - getViewX();
-		return (int)((x - screenW/2)/stageZoomRate) + screenW/2 - cameraLeft();
+	public static final int toFieldx(int x) {
+		return (int)((x - screenW()/2)/zoomRate()) + screenW()/2 + cameraLeft();
 	}
-	public static final int toStageCoordinate_y(int y) {
-		//return (int)(y/stageZoomRate + screenH/2*(1 - 1/stageZoomRate)) - getViewY();
-		return (int)((y - screenH/2)/stageZoomRate) + screenH/2 - cameraTop();
+	public static final int toFieldy(int y) {
+		return (int)((y - screenH()/2)/zoomRate()) + screenH()/2 + cameraTop();
 	}
-	public static final int toScreenCoordinate_x(int x) { 
-		return (int)(x*stageZoomRate - screenW/2*(stageZoomRate - 1)) + cameraLeft();
+	public static final int toScreenX(int x) { 
+		return (int)(x*zoomRate() - screenW()/2*(zoomRate() - 1)) - cameraLeft();
 	}
-	public static final int toScreenCoordinate_y(int y) {
-		return (int)(y*stageZoomRate - screenH/2*(stageZoomRate - 1)) + cameraTop();
+	public static final int toScreenY(int y) {
+		return (int)(y*zoomRate() - screenH()/2*(zoomRate() - 1)) - cameraTop();
 	}
 	public static final boolean intersectsScreen_screenCod(int x, int y, int w, int h) {
-		return Math.abs(x - screenW/2) < (screenW + w)/2 && Math.abs(y - screenH/2) < (screenH + h)/2;
+		return Math.abs(x - screenW()/2) < (screenW() + w)/2 && Math.abs(y - screenH()/2) < (screenH() + h)/2;
 	}
-	public static final boolean intersectsScreen_stageCod(int x, int y, int w, int h) {
-		return intersectsScreen_screenCod(toScreenCoordinate_x(x), toScreenCoordinate_y(y), (int)(w/stageZoomRate), (int)(h/stageZoomRate));
+	public static final boolean intersectsScreen_fieldCod(int x, int y, int w, int h) {
+		return intersectsScreen_screenCod(toScreenX(x), toScreenY(y), (int)(w/zoomRate()), (int)(h/zoomRate()));
 	}
 	public static final Point mousePoint() {
 		return new Point.IntPoint(mouseX(), mouseY());
@@ -585,8 +579,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final int mouseScreenY(){
 		return mouseY;
 	}
-	public static final boolean isMouseInArea_Stage(int x, int y, int w, int h) { //TODO: need be fixed
-		return abs(x - mouseX + viewX) < w/2 && abs(y - mouseY + viewY) < h/2;
+	public static final boolean fieldMouseInArea(int x, int y, int w, int h) {
+		return abs(x - mouseX()) <= w/2 && abs(y - mouseY()) <= h/2;
 	}
 	public static final GUIParts mouseHoveredUI() {
 		return mouseHoveredUIs.isEmpty() ? GUIParts.NULL_GUIPARTS : mouseHoveredUIs.peek();
@@ -617,8 +611,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @param h
 	 * @return true - in / false - out
 	 */
-	public static final boolean isMouseInArea_Screen(int luX, int luY, int w, int h) {
-		return luX < mouseX && mouseX < luX + w && luY < mouseY && mouseY < luY + h;
+	public static final boolean screenMouseInArea(int left, int top, int w, int h) {
+		return left <= mouseX && mouseX <= left + w && top <= mouseY && mouseY <= top + h;
 	}
 	//キー情報
 	public static boolean key_1,key_2,key_3,key_4;
@@ -964,8 +958,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 * @since alpha1.0
 	 */
 	public static final void translateForGUI(boolean forGUI) {
-		final int tx = (int)GHQ.getScreenCenterStageX(), ty = (int)GHQ.getScreenCenterStageY();
-		final double zoomRate = stageZoomRate;
+		final int tx = (int)GHQ.fieldScreenCenterX(), ty = (int)GHQ.fieldScreenCenterY();
+		final double zoomRate = zoomRate();
 		if(forGUI) {
 			if(zoomRate != 1.0) {
 				g2.translate(tx, ty);
@@ -973,9 +967,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				GHQ.scale(_zoomRate, _zoomRate);
 				g2.translate(-tx, -ty);
 			}
-			g2.translate(-viewX, -viewY);
+			g2.translate(cameraLeft(), cameraTop());
 		}else {
-			g2.translate(viewX, viewY);
+			g2.translate(-cameraLeft(), -cameraTop());
 			if(zoomRate != 1.0) {
 				g2.translate(tx, ty);
 				GHQ.scale(zoomRate, zoomRate);
@@ -1165,12 +1159,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	
 	//math & string
-	public static final int toStageX(int screenX) {
-		return screenX - cameraLeft();
-	}
-	public static final int toStageY(int screenY) {
-		return screenY - cameraTop();
-	}
 	public static final double angleFormat(double radian){ //ラジアン整理メソッド -PI~+PIに直す
 		radian %= PI*2;
 		if(radian > PI)

@@ -2,6 +2,7 @@ package core;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.function.Predicate;
 
 import physics.HasBoundingBox;
 import physics.HasPoint;
@@ -35,15 +36,44 @@ public class GHQObjectList<T extends GHQObject> extends LinkedList<T> {
 			}
 		}
 	}
+	public void traverseIdle(Predicate<GHQObject> includePredicate) {
+		//TODO: too long
+		final LinkedList<GHQObject> elements = new LinkedList<GHQObject>();
+		elements.addAll(this);
+		for(GHQObject element : elements) {
+			if(includePredicate.test(element))
+				element.idle();
+		}
+		//check delete claim
+		final Iterator<? extends GHQObject> iterator = descendingIterator();
+		while(iterator.hasNext()) {
+			final GHQObject object = iterator.next();
+			if(includePredicate.test(object) && object.hasDeleteClaimFromStage()) {
+				iterator.remove();
+			}
+		}
+	}
 	public void traversePaint() {
 		for(GHQObject element : this)
 			element.paint();
+	}
+	public void traversePaint(Predicate<GHQObject> includePredicate) {
+		for(GHQObject element : this) {
+			if(includePredicate.test(element))
+				element.paint();
+		}
 	}
 	public final void defaultTraverse() {
 		if(GHQ.isNoStopEvent())
 			traverseIdle();
 		else
 			traversePaint();
+	}
+	public final void defaultTraverse(Predicate<GHQObject> includePredicate) {
+		if(GHQ.isNoStopEvent())
+			traverseIdle(includePredicate);
+		else
+			traversePaint(includePredicate);
 	}
 	public void forceRemove(T element) {
 		remove(element);

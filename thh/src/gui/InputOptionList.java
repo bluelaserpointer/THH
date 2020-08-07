@@ -94,7 +94,7 @@ public class InputOptionList extends GUIParts{
 	@Override
 	public boolean isMouseEntered() {
 		final int H = height()*nowListLength;
-		return (label.isInputMode() || hoveredPosition != GHQ.NONE) && GHQ.isMouseInArea_Screen(intX(), intY(), width(), H);
+		return (label.isInputMode() || hoveredPosition != GHQ.NONE) && GHQ.screenMouseInArea(intX(), intY(), width(), H);
 	}
 	//control
 	public void updatePosition() {

@@ -179,7 +179,7 @@ public class GUIParts extends GHQObject implements DragIO, HasUIBoundingBox {
 		return this;
 	}
 	public boolean isMouseEntered() {
-		return GHQ.isMouseInArea_Screen(point().intX(), point().intY(), width(), height());
+		return GHQ.screenMouseInArea(point().intX(), point().intY(), width(), height());
 	}
 	/**
 	 * 

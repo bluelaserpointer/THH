@@ -16,11 +16,12 @@ import physics.HasUIBoundingBox;
 public class Tile extends Structure implements HasUIBoundingBox {
 	public static final int TILE_SIZE = 25;
 	public static int bp_ox = GHQ.NONE, bp_oy,bp_tileSize = TILE_SIZE;
-	public class TileHitShape extends HitShape {
+	public class TileHitShape extends HitShape implements HasUIBoundingBox {
 		protected final int
 			X_TILES,
 			Y_TILES;
 		protected final BitSet aliveTiles;
+		protected int lastHitTilePos;
 		public TileHitShape(HasPoint owner, int x_tiles, int y_tiles) {
 			super(owner);
 			X_TILES = x_tiles;
@@ -42,8 +43,10 @@ public class Tile extends Structure implements HasUIBoundingBox {
 				for(int yi = 0;yi < Y_TILES;yi++) {
 					if(aliveTiles.get(xi + yi*X_TILES)) {
 						Point point = new Point.IntPoint(point().intX() + xi*TILE_SIZE + TILE_SIZE/2, point().intY() + yi*TILE_SIZE + TILE_SIZE/2);
-						if(shape.point().inRangeXY(point, (TILE_SIZE + shape.width())/2, (TILE_SIZE + shape.height())/2))
+						if(shape.point().inRangeXY(point, (TILE_SIZE + shape.width())/2, (TILE_SIZE + shape.height())/2)) {
+							lastHitTilePos = xi + yi*X_TILES;
 							return true;
+						}
 					}
 				}
 			}
@@ -51,9 +54,18 @@ public class Tile extends Structure implements HasUIBoundingBox {
 		}
 		@Override
 		public boolean intersectsDot(int x, int y) {
-			x -= point().intX();
-			y -= point().intY();
-			return 0 < x && x < width() && 0 < y && y < height() && aliveTiles.get(x/TILE_SIZE + y/TILE_SIZE*X_TILES);
+			x -= left();
+			y -= top();
+			return 0 < x && x < width() && 0 < y && y < height() && aliveTiles.get(tilePos(x, y));
+		}
+		public int tilePos(int x, int y) {
+			return (x - left())/TILE_SIZE + (y - top())/TILE_SIZE*X_TILES;
+		}
+		public int tileX(int tilePos) {
+			return left() + tilePos%X_TILES*TILE_SIZE + TILE_SIZE/2;
+		}
+		public int tileY(int tilePos) {
+			return top() + tilePos/X_TILES*TILE_SIZE + TILE_SIZE/2;
 		}
 		@Override
 		public boolean intersectsLine(int x1, int y1, int x2, int y2) {
@@ -116,6 +128,9 @@ public class Tile extends Structure implements HasUIBoundingBox {
 		public int height() {
 			return Y_TILES*TILE_SIZE;
 		}
+		public BitSet aliveTiles() {
+			return aliveTiles;
+		}
 	}
 	public Tile(int ox, int oy, int x_tiles, int y_tiles) {
 		physics().setPoint(new Point.IntPoint(ox, oy));
@@ -145,7 +160,10 @@ public class Tile extends Structure implements HasUIBoundingBox {
 	public String name() {
 		return "DefaultTile";
 	}
-	
+	public int lastHitTilePos() {
+		//TODO: not safe
+		return ((TileHitShape)hitShape()).lastHitTilePos;
+	}
 	public static void blueprint_addOriginPoint(int x, int y) {
 		bp_ox = x;
 		bp_oy = y;
