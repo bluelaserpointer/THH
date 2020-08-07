@@ -169,18 +169,21 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	//mainLoop///////////////
 	private static long mili1000Stamp;
 	private static int framesCount;
-	private static double nowFPS;
+	private static double nowFPS = -1.0;
+	private static int lastFramePassedMiliseconds;
 	public final void run(){
 		//titleBGM.loop();
 		//try{
 			mili1000Stamp = GHQ.nowTime();
 			while(true){
 				//fps
-				final int PASSED_TIME = GHQ.passedTime(mili1000Stamp);
+				final long nowTime = GHQ.nowTime();
+				final int passedMiliseconds = (int)(nowTime - mili1000Stamp);
+				lastFramePassedMiliseconds = passedMiliseconds;
 				++framesCount;
-				if(PASSED_TIME >= 1000) {
-					nowFPS = (double)framesCount / (double)PASSED_TIME * 1000.0;
-					mili1000Stamp = GHQ.nowTime();
+				if(passedMiliseconds >= 1000) {
+					nowFPS = (double)framesCount / (double)passedMiliseconds * 1000.0;
+					mili1000Stamp = nowTime;
 					framesCount = 0;
 				}
 				//sleep
@@ -290,7 +293,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			//entityInfo
 			g2.drawString(stage.entityAmountInfo(), 30, 100);
 			g2.drawString("LoadTime(ms):" + loadTime_total, 30, 120);
-			g2.drawString("FPS:" + DF00_00.format(nowFPS), 30, 140);
+			g2.drawString("FPS:" + DF00_00.format(getFPS()), 30, 140);
 			g2.drawString("GameTime(ms):" + gameFrame, 30, 160);
 			//guiInfo
 			g2.drawString("PointingGUI: " + mouseHoveredUI().name(), 30, 200);
@@ -570,17 +573,11 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	public static final boolean intersectsScreen_fieldCod(int x, int y, int w, int h) {
 		return intersectsScreen_screenCod(toScreenX(x), toScreenY(y), (int)(w/zoomRate()), (int)(h/zoomRate()));
 	}
-	public static final Point mousePoint() {
-		return new Point.IntPoint(mouseX(), mouseY());
-	}
 	public static final int mouseScreenX(){
 		return mouseX;
 	}
 	public static final int mouseScreenY(){
 		return mouseY;
-	}
-	public static final boolean fieldMouseInArea(int x, int y, int w, int h) {
-		return abs(x - mouseX()) <= w/2 && abs(y - mouseY()) <= h/2;
 	}
 	public static final GUIParts mouseHoveredUI() {
 		return mouseHoveredUIs.isEmpty() ? GUIParts.NULL_GUIPARTS : mouseHoveredUIs.peek();
@@ -613,6 +610,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	 */
 	public static final boolean screenMouseInArea(int left, int top, int w, int h) {
 		return left <= mouseX && mouseX <= left + w && top <= mouseY && mouseY <= top + h;
+	}
+	public static final boolean fieldMouseInArea(int x, int y, int w, int h) {
+		return abs(x - mouseX()) <= w/2 && abs(y - mouseY()) <= h/2;
 	}
 	//キー情報
 	public static boolean key_1,key_2,key_3,key_4;
@@ -845,20 +845,17 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		return initialFrame == NONE || (System.currentTimeMillis() - initialFrame) >= limitTime;
 	}
 	public static final boolean isExpired_dynamicSeconds(int frame, double seconds) {
-		return frame == NONE || passedFrame(frame) > nowFPS*seconds;
+		return frame == NONE || passedFrame(frame) > getFPS()*seconds;
 	}
 	public static final boolean checkSpan_dynamicSeconds(double seconds) {
-		final int SPAN = (int)(nowFPS * seconds);
+		final int SPAN = (int)(getFPS() * seconds);
 		return SPAN == 0 ? true : gameFrame % SPAN == 0;
 	}
 	public static final double getFPS() {
-		return nowFPS;
+		return nowFPS == -1.0 ? 1.0/GHQ.lastFramePassedMiliseconds*1000.0 : nowFPS;
 	}
 	public static final double getSPF() {
-		return 1.0/nowFPS;
-	}
-	public static final double mulSPF(double value) {
-		return getSPF()*value;
+		return 1.0/getFPS();
 	}
 	/**
 	 * Check if there is a stopEvent.
@@ -952,15 +949,15 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//PaintTool
 	/**
-	 * Change paint coordinate for GUI/stageObjects.
+	 * Change paint coordinate for UI/stageObjects.
 	 * Note that if you don't reset changed paint coordinate, it will collapse coordinates of following paints.(like Graphics2D.rotate method)
-	 * @param forGUI true - change for GUI / false - change for objects in its stage;
+	 * @param forUI true - change for UI / false - change for objects in its stage;
 	 * @since alpha1.0
 	 */
-	public static final void translateForGUI(boolean forGUI) {
+	public static final void translateForGUI(boolean forUI) {
 		final int tx = (int)GHQ.fieldScreenCenterX(), ty = (int)GHQ.fieldScreenCenterY();
 		final double zoomRate = zoomRate();
-		if(forGUI) {
+		if(forUI) {
 			if(zoomRate != 1.0) {
 				g2.translate(tx, ty);
 				final double _zoomRate = 1/zoomRate;
