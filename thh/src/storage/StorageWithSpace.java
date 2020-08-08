@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import core.T_Verifier;
-
 /**
  * A subclass of ArrayList that able to insert "space".
  * The function add(T e) will firstly choose those empty space to insert the element.
@@ -13,7 +11,7 @@ import core.T_Verifier;
  * @since alpha1.0
  * @param <T> the type of elements in this list
  */
-public class StorageWithSpace<T> extends ArrayList<T> implements T_Verifier<T> {
+public class StorageWithSpace<T> extends ArrayList<T> {
 	private static final long serialVersionUID = -5269899299275879135L;
 	protected int amount;
 	protected T spaceElement;
@@ -252,9 +250,5 @@ public class StorageWithSpace<T> extends ArrayList<T> implements T_Verifier<T> {
 	}
 	public boolean isSpaceIndex(int index) {
 		return isValidIndex(index) && super.get(index) == spaceElement;
-	}
-	@Override
-	public T objectToT(Object object) {
-		return null;
 	}
 }

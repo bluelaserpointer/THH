@@ -5,6 +5,8 @@ import static java.awt.event.KeyEvent.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import camera.Camera;
+import camera.FixChaseCamera;
 import core.GHQ;
 import core.Game;
 import exsampleGame.unit.*;
@@ -15,6 +17,7 @@ import input.key.SingleKeyListener;
 import input.key.SingleNumKeyListener;
 import input.mouse.MouseListenerEx;
 import paint.ImageFrame;
+import physics.HasPoint;
 import physics.stage.GHQStage;
 import preset.unit.Unit;
 import preset.vegetation.Vegetation;
@@ -32,7 +35,7 @@ public class Engine_THH1 extends Game {
 	final int F_MOVE_SPD = 6;
 	
 	int formationsX[], formationsY[];
-	int formationCenterX, formationCenterY;
+	final HasPoint formation = HasPoint.generate(0, 0);
 
 	public String getVersion() {
 		return "alpha1.0.0";
@@ -80,6 +83,10 @@ public class Engine_THH1 extends Game {
 		new GHQ(new Engine_THH1(), 1000, 600);
 	}
 	@Override
+	protected Camera starterCamera() {
+		return new FixChaseCamera(formation);
+	}
+	@Override
 	public final GHQStage loadStage() {
 		return new GHQStage(5000, 5000);
 	}
@@ -111,16 +118,16 @@ public class Engine_THH1 extends Game {
 		//units
 		/////////////////////////////////
 		//formation
-		formationCenterX = GHQ.screenW()/2;formationCenterY = GHQ.screenH() - 100;
+		formation.point().setXY(GHQ.screenW()/2, GHQ.screenH() - 100);
 		formationsX = new int[2];
 		formationsY = new int[2];
 		formationsX[0] = -15;formationsY[0] = 0;
 		formationsX[1] = +15;formationsY[1] = 0;
 		//friend
 		friends = new THH_BasicUnit[2];
-		friends[0] = Unit.initialSpawn(new Marisa(FRIEND),formationCenterX + formationsX[0],formationCenterY + formationsY[0]);
+		friends[0] = Unit.initialSpawn(new Marisa(FRIEND), formation.intX() + formationsX[0], formation.intY() + formationsY[0]);
 		friends[0].HP.setMax(4000).setToMax();
-		friends[1] = Unit.initialSpawn(new Reimu(FRIEND),formationCenterX + formationsX[1],formationCenterY + formationsY[1]);
+		friends[1] = Unit.initialSpawn(new Reimu(FRIEND), formation.intX() + formationsX[1], formation.intY() + formationsY[1]);
 		friends[1].HP.setMax(4000).setToMax();
 		for(Unit friend : friends)
 			GHQ.stage().addUnit(friend);
@@ -158,9 +165,9 @@ public class Engine_THH1 extends Game {
 		//background
 		GHQ.stage().fill(new Color(112, 173, 71));
 		//center point
-		magicCircleIF.dotPaint_turn(formationCenterX, formationCenterY, (double)GHQ.nowFrame()/35.0);
+		magicCircleIF.dotPaint_turn(formation.intX(), formation.intY(), (double)GHQ.nowFrame()/35.0);
 		g2.setColor(Color.RED);
-		g2.fillOval(formationCenterX - 2, formationCenterY - 2, 5, 5);
+		g2.fillOval(formation.intX() - 2, formation.intY() - 2, 5, 5);
 		////////////////
 		final int MOUSE_X = GHQ.mouseX(), MOUSE_Y = GHQ.mouseY();
 		if(stopEventKind == GHQ.NONE) {
@@ -172,7 +179,7 @@ public class Engine_THH1 extends Game {
 			switch(nowStage) {
 			case 0:
 				for(int i = 0;i < friends.length;i++)
-					friends[i].dstPoint.setXY(friends[i].point().setXY(formationCenterX + formationsX[i], formationCenterY + formationsY[i]));
+					friends[i].dstPoint.setXY(friends[i].point().setXY(formation.intX() + formationsX[i], formation.intY() + formationsY[i]));
 				//enemy
 				for(Unit enemy : GHQ.stage().units) {
 					if(!enemy.isAlive())
@@ -194,12 +201,12 @@ public class Engine_THH1 extends Game {
 				if(s_keyL.hasEvent(VK_SHIFT)){
 					//final int DX = MOUSE_X - formationCenterX,DY = MOUSE_Y - formationCenterY;
 					//if(DX*DX + DY*DY < 5000) {
-						formationCenterX = MOUSE_X;formationCenterY = MOUSE_Y;
+						formation.point().setXY(MOUSE_X, MOUSE_Y);
 					//}else {
 						//formationCenterX += (double)DX/10.0;formationCenterY += (double)DY/10.0;
 					//}
 					for(int i = 0;i < friends.length;i++)
-						friends[i].point().setXY(formationCenterX + formationsX[i], formationCenterY + formationsY[i]);
+						friends[i].point().setXY(formation.intX() + formationsX[i], formation.intY() + formationsY[i]);
 				}
 				//shot
 				for(THH_BasicUnit chara : friends)
@@ -219,7 +226,7 @@ public class Engine_THH1 extends Game {
 		//focus
 		g2.setColor(new Color(200,120,10,100));
 		g2.setStroke(GHQ.stroke3);
-		g2.drawLine(formationCenterX,formationCenterY,MOUSE_X,MOUSE_Y);
+		g2.drawLine(formation.intX(), formation.intY(), MOUSE_X, MOUSE_Y);
 		focusIF.dotPaint(MOUSE_X, MOUSE_Y);
 		//editor
 		if(s_keyL.pullEvent(VK_F6)) {
@@ -235,33 +242,24 @@ public class Engine_THH1 extends Game {
 		if(stopEventKind == GHQ.NONE || editor.isEnabled()) { //scroll
 			//scroll by keys
 			if(s_keyL.hasEvent(VK_W)) {
-				formationCenterY -= F_MOVE_SPD;
-				GHQ.viewTargetMove(0,-F_MOVE_SPD);
-				GHQ.pureViewMove(0,-F_MOVE_SPD);
+				formation.point().addY(-F_MOVE_SPD);
 			}else if(s_keyL.hasEvent(VK_S)) {
-				formationCenterY += F_MOVE_SPD;
-				GHQ.viewTargetMove(0,F_MOVE_SPD);
-				GHQ.pureViewMove(0,F_MOVE_SPD);
+				formation.point().addY(+F_MOVE_SPD);
 			}
 			if(s_keyL.hasEvent(VK_A)) {
-				formationCenterX -= F_MOVE_SPD;
-				GHQ.viewTargetMove(-F_MOVE_SPD,0);
-				GHQ.pureViewMove(-F_MOVE_SPD,0);
+				formation.point().addX(-F_MOVE_SPD);
 			}else if(s_keyL.hasEvent(VK_D)) {
-				formationCenterX += F_MOVE_SPD;
-				GHQ.viewTargetMove(F_MOVE_SPD,0);
-				GHQ.pureViewMove(F_MOVE_SPD,0);
+				formation.point().addX(+F_MOVE_SPD);
 			}
-			//scroll by mouse
-			if(doScrollView) {
-				GHQ.viewTargetTo((MOUSE_X + formationCenterX)/2,(MOUSE_Y + formationCenterY)/2);
-				GHQ.viewApproach_rate(10);
-			}
+//			//scroll by mouse
+//			if(doScrollView) {
+//				GHQ.viewTargetTo((MOUSE_X + formation.intX())/2,(MOUSE_Y + formationCenterY)/2);
+//				GHQ.viewApproach_rate(10);
+//			}
 		}
 		//idle
 		GHQ.stage().idle();
 	}
 	
-	private boolean doScrollView = true;
 	private boolean doGravity = false;
 }

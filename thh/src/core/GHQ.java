@@ -23,6 +23,7 @@ import java.awt.geom.*;
 import javax.swing.*;
 
 import calculate.Consumables;
+import camera.Camera;
 import exsampleGame.engine.Engine_THH1;
 
 import java.io.*;
@@ -356,22 +357,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	//control-zoom
 	public static Camera camera;
 	public static void setCamera(Camera newCamera) {
-//		if(camera == newCamera)
-//			return;
-//		if(camera != null) {
-//			if(camera.zoom != 1.0) {
-//				final double _zoom = 1/camera.zoom;
-//				GHQ.g2.scale(_zoom, _zoom);
-//			}
-//			GHQ.g2.translate(-camera.x(), -camera.y());
-//		}
-//		if(newCamera != null) {
-//			newCamera.applyChanges();
-//			GHQ.g2.translate(newCamera.x(), newCamera.y());
-//			if(newCamera.zoom != 1.0) {
-//				GHQ.g2.scale(camera.zoom, camera.zoom);
-//			}
-//		}
 		camera = newCamera;
 	}
 	//control-stage

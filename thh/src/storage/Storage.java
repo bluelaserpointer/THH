@@ -3,7 +3,6 @@ package storage;
 import java.util.ArrayList;
 
 import core.GHQ;
-import core.T_Verifier;
 
 /**
  * An original class for managing various array.
@@ -11,7 +10,7 @@ import core.T_Verifier;
  * @since alpha1.0
  * @param <T> the type of elements in this list
  */
-public class Storage<T> extends ArrayList<T> implements T_Verifier<T>{
+public class Storage<T> extends ArrayList<T> {
 	private static final long serialVersionUID = -5269899299275879135L;
 	protected int amount,max_amount;
 	
@@ -88,9 +87,5 @@ public class Storage<T> extends ArrayList<T> implements T_Verifier<T>{
 	}
 	public final int getMaxSize() {
 		return max_amount;
-	}
-	@Override
-	public T objectToT(Object object) {
-		return null;
 	}
 }

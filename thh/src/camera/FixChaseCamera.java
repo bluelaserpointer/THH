@@ -1,5 +1,6 @@
-package core;
+package camera;
 
+import core.GHQ;
 import physics.HasPoint;
 import physics.Point;
 
@@ -12,6 +13,10 @@ public class FixChaseCamera extends Camera {
 	protected HasPoint chaseTarget;
 	public FixChaseCamera(HasPoint chaseTarget, Point shiftPoint) {
 		super(shiftPoint);
+		setChaseTarget(chaseTarget);
+	}
+	public FixChaseCamera(HasPoint chaseTarget) {
+		super(Point.NULL_POINT);
 		setChaseTarget(chaseTarget);
 	}
 	public void setChaseTarget(HasPoint chaseTarget) {

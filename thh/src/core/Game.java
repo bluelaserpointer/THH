@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
+import camera.Camera;
 import gui.GUIPartsSwitcher;
 import physics.Point;
 import physics.stage.GHQStage;
@@ -17,7 +18,6 @@ import physics.stage.GHQStage;
 public abstract class Game {
 	
 	protected final GUIPartsSwitcher mainScreen;
-	protected static double viewMoveStackX, viewMoveStackY;
 	protected static GHQStage nowStage;
 	
 	public Game(GUIPartsSwitcher screen) {
@@ -27,15 +27,13 @@ public abstract class Game {
 	public void loadResource() {}
 	public abstract GHQStage loadStage();
 	
-	//
+	//camera
 	protected Camera starterCamera() {
 		return new Camera(new Point.DoublePoint());
 	}
 	
 	//idle
 	public abstract void idle(Graphics2D g2, int stopEventKind);
-	
-	//
 	
 	//event
 	public void mousePressed(MouseEvent e) {

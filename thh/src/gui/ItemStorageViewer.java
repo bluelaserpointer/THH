@@ -18,6 +18,9 @@ public class ItemStorageViewer extends TableStorageViewer<ItemData> {
 	protected ClickMenu<ItemData> itemRCMenu;
 	
 	//init
+	public ItemStorageViewer() {
+		super(ItemData.class);
+	}
 	public ItemStorageViewer setRCMenu(ClickMenu<ItemData> rcMenu) {
 		super.addLast(itemRCMenu = rcMenu).disable();
 		return this;
@@ -61,16 +64,10 @@ public class ItemStorageViewer extends TableStorageViewer<ItemData> {
 		final int id = storage.indexOf(dropObject);
 		//remove owner info from item
 		if(targetUI != this)
-			objectToT(dropObject).setOwner(null);
+			super.receptingClass.cast(dropObject).setOwner(null);
 		if(swapObject == null) { //move
 			storage.remove(id);
 		} else //swap
-			storage.set(id, objectToT(swapObject));
-	}
-	@Override
-	public ItemData objectToT(Object object) {
-		if(object instanceof ItemData)
-			return (ItemData)object;
-		return null;
+			storage.set(id, super.receptingClass.cast(swapObject));
 	}
 }

@@ -3,7 +3,6 @@ package gui;
 import java.awt.event.MouseEvent;
 
 import core.GHQ;
-import core.T_Verifier;
 import paint.ImageFrame;
 import paint.dot.HasDotPaint;
 import paint.rect.RectPaint;
@@ -17,14 +16,18 @@ import storage.TableStorage;
  * @since alpha1.0
  * @param <T> the type of elements in the storage
  */
-public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts implements T_Verifier<T> {
+public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts {
 	/**
 	 * The data of this TableStorageViewer.
 	 */
 	public TableStorage<T> storage;
+	public final Class<T> receptingClass;
 	protected int cellSize = 50;
 	protected RectPaint cellPaint = RectPaint.BLANK_SCRIPT;
 	
+	public TableStorageViewer(Class<T> receptingClass) {
+		this.receptingClass = receptingClass;
+	}
 	//init
 	public TableStorageViewer<T> setTableStorage(TableStorage<T> tableStorage) {
 		storage = tableStorage;
@@ -89,7 +92,7 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 	public boolean checkDragIn(GUIParts sourceUI, Object dropObject) {
 		//only check if the position is legal
 		final int id = getMouseHoveredIndex();
-		if(storage.isValidIndex(id) && objectToTAccepts(dropObject)) {
+		if(storage.isValidIndex(id) && receptingClass.isInstance(dropObject)) {
 			final T overWrittenObject = storage.get(id);
 			//when swap, only accept if the original element is accepted by the source UI.
 			return storage.isSpaceElement(overWrittenObject) || sourceUI instanceof TableStorageViewer || sourceUI.checkDragIn(this, overWrittenObject);
@@ -104,7 +107,7 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 	@Override
 	public void dragIn(GUIParts sourceUI, Object dropObject) {
 		final int id = getMouseHoveredIndex();
-		storage.set(id, objectToT(dropObject));
+		storage.set(id, receptingClass.cast(dropObject));
 	}
 	@Override
 	public Object peekDragObject() {
@@ -117,7 +120,7 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 		if(swapObject == null) //move
 			storage.remove(id);
 		else //swap
-			storage.set(id, objectToT(swapObject));
+			storage.set(id, receptingClass.cast(swapObject));
 	}
 	
 	//information
@@ -142,6 +145,4 @@ public abstract class TableStorageViewer<T extends HasDotPaint> extends GUIParts
 		final int index = getMouseHoveredIndex();
 		return storage.isValidIndex(index) ? storage.get(index) : null;
 	}
-	@Override
-	public abstract T objectToT(Object object);
 }

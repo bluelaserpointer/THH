@@ -54,9 +54,8 @@ public class Tile extends Structure implements HasUIBoundingBox {
 		}
 		@Override
 		public boolean intersectsDot(int x, int y) {
-			x -= left();
-			y -= top();
-			return 0 < x && x < width() && 0 < y && y < height() && aliveTiles.get(tilePos(x, y));
+			final int left = left(), top = top();
+			return left < x && x < left + width() && top < y && y < top + height() && aliveTiles.get(tilePos(x, y));
 		}
 		public int tilePos(int x, int y) {
 			return (x - left())/TILE_SIZE + (y - top())/TILE_SIZE*X_TILES;

@@ -135,12 +135,15 @@ public class Weapon {
 	///////////////////
 	//fire
 	///////////////////
+	public boolean magazineReady() {
+		return magazine >= magazineConsumptionSpeed;
+	}
 	/**
 	 * Judge if the weapon is ready for next fire.
 	 * @return true - ready / false - not ready
 	 */
 	public boolean canFire() {
-		return isCoolFinished() && isReloadFinished() && magazine >= magazineConsumptionSpeed;
+		return isCoolFinished() && isReloadFinished() && magazineReady();
 	}
 	/**
 	 * Fire if canFire() returns true.<br>

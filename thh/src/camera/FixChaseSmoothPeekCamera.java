@@ -1,5 +1,6 @@
-package core;
+package camera;
 
+import core.GHQ;
 import physics.HasPoint;
 import physics.Point;
 
