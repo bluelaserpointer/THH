@@ -2,6 +2,7 @@ package exsampleGame.unit;
 
 import static java.lang.Math.*;
 
+import core.GHQ;
 import paint.ImageFrame;
 import physics.HasPoint;
 import physics.Point;
@@ -53,14 +54,17 @@ public class Reimu extends THH_BasicPlayer {
 	public final void setBullet(int kind, HasPoint user) {
 		switch(kind){
 		case FUDA_KOUHAKU:
-			Point.split_xMirror(() -> new THH_BulletLibrary.FudaKouhaku(this), 6, 2);
-			Point.split_xMirror(() -> new THH_BulletLibrary.FudaKouhaku(this), 6, 7);
+			System.out.println("reimu FUDA_KOUHAKU!");
+			Point.split_xMirror(() -> GHQ.stage().addBullet(new THH_BulletLibrary.FudaKouhaku(this)), 6, 2);
+			Point.split_xMirror(() -> GHQ.stage().addBullet(new THH_BulletLibrary.FudaKouhaku(this)), 6, 7);
 			break;
 		case FUDA_SHIROKURO:
-			Point.split_NWay(() -> new THH_BulletLibrary.FudaShiroKuro(this), 10, PI/18, 3, 40);
+			System.out.println("reimu FUDA_SHIROKURO!");
+			Point.split_NWay(() -> GHQ.stage().addBullet(new THH_BulletLibrary.FudaShiroKuro(this)), 10, PI/18, 3, 40);
 			break;
 		case FUDA_SOUHAKU:
-			Point.split_NWay(() -> new THH_BulletLibrary.FudaSouhaku(this), 25, PI/10, 8, 40);
+			System.out.println("reimu FUDA_SOUHAKU!");
+			Point.split_NWay(() -> GHQ.stage().addBullet(new THH_BulletLibrary.FudaSouhaku(this)), 25, PI/10, 8, 40);
 			break;
 		}
 	}

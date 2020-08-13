@@ -13,7 +13,6 @@ import java.util.function.Supplier;
 
 import core.GHQ;
 import physics.direction.Direction4;
-import preset.bullet.Bullet;
 
 /**
  * A major class for managing object coordinate.
@@ -173,29 +172,29 @@ public abstract class Point implements Serializable {
 	//////////////
 	//split
 	//////////////
-	public static void split_xMirror(Supplier<? extends Bullet> supplier, double dx, double dy) {
+	public static void split_xMirror(Supplier<? extends HasPoint> supplier, double dx, double dy) {
 		supplier.get().point().addXY_allowsMoveAngle(-dx/2, dy);
 		supplier.get().point().addXY_allowsMoveAngle(+dx/2, dy);
 	}
-	public static void split_yMirror(Supplier<? extends Bullet> supplier, double dx, double dy) {
+	public static void split_yMirror(Supplier<? extends HasPoint> supplier, double dx, double dy) {
 		supplier.get().point().addXY_allowsMoveAngle(dx, -dy/2);
 		supplier.get().point().addXY_allowsMoveAngle(dx, +dy/2);
 	}
-	public static void split_Round(Supplier<? extends Bullet> supplier, int radius, int amount) {
+	public static void split_Round(Supplier<? extends HasPoint> supplier, int radius, int amount) {
 	final double D_ANGLE = 2*PI/amount;
 		for(int i = 0;i < amount;i++)
 			supplier.get().point().addXY_DA(radius, D_ANGLE*i);
 	}
-	public static void split_Burst(Supplier<? extends Bullet> supplier, int radius, int amount, double speed) {
+	public static void split_Burst(Supplier<? extends HasPoint> supplier, int radius, int amount, double speed) {
 	final double D_ANGLE = 2*PI/amount;
 		for(int i = 0;i < amount;i++)
 			supplier.get().point().fastParaAdd_DASpd(radius, D_ANGLE*i, speed);
 	}
-	public static void split_NWay(Supplier<? extends Bullet> supplier, int radius, double[] angles, double speed) {
+	public static void split_NWay(Supplier<? extends HasPoint> supplier, int radius, double[] angles, double speed) {
 		for(int i = 0;i < angles.length;i++)
 			supplier.get().point().fastParaAdd_DASpd(radius, angles[i], speed);
 	}
-	public static void split_NWay(Supplier<? extends Bullet> supplier, int radius, double marginAngle, double amount, double speed) {
+	public static void split_NWay(Supplier<? extends HasPoint> supplier, int radius, double marginAngle, double amount, double speed) {
 		for(int i = 0;i < amount;i++)
 			supplier.get().point().fastParaAdd_DASpd(radius, marginAngle*i, speed);
 	}

@@ -60,9 +60,11 @@ public class Marisa extends THH_BasicPlayer {
 	public final void setBullet(int kind, HasPoint user) {
 		switch(kind){
 		case MILLKY_WAY:
-			Point.split_Round(() -> new THH_BulletLibrary.MillkyWay(this), 50, 8);
+			System.out.println("marisa MILLKY_WAY!");
+			Point.split_Round(() -> GHQ.stage().addBullet(new THH_BulletLibrary.MillkyWay(this)), 50, 8);
 			break;
 		case NARROW_SPARK:
+			System.out.println("marisa NARROW_SPARK!");
 			//message
 			//if(this == source) {
 			//	THH.addMessage(this,charaID,"KOIFU [MasterSpark]");
@@ -71,9 +73,11 @@ public class Marisa extends THH_BasicPlayer {
 			GHQ.stage().addBullet(new THH_BulletLibrary.NarrowSpark(this));
 			break;
 		case REUSE_BOMB:
-			Point.split_Round(() -> new THH_BulletLibrary.ReuseBomb(this), 50, 3);
+			System.out.println("marisa REUSE_BOMB!");
+			Point.split_Round(() -> GHQ.stage().addBullet(new THH_BulletLibrary.ReuseBomb(this)), 50, 3);
 			break;
 		case MAGIC_MISSILE:
+			System.out.println("marisa MAGIC_MISSILE!");
 			GHQ.stage().addBullet(new THH_BulletLibrary.MagicMissile(this));
 			break;
 		}

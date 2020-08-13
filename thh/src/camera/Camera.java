@@ -1,7 +1,7 @@
 package camera;
 
-import core.GHQ;
 import physics.Point;
+import physics.hitShape.RectShape;
 
 /**
  * Manages view scrolling.
@@ -12,18 +12,19 @@ public class Camera {
 	protected int cameraLeft, cameraTop;
 	protected final Point dstPoint;
 	public double zoom = 1.0;
+	protected final RectShape projectionArea = new RectShape(0, 0, RectShape.MATCH_SCREEN_SIZE, RectShape.MATCH_SCREEN_SIZE);
 	public Camera(Point dstPoint) {
 		this.dstPoint = dstPoint;
 	}
 	public void applyChanges() {
-		cameraLeft = dstPoint.intX() - GHQ.screenW()/2;
-		cameraTop = dstPoint.intY() - GHQ.screenH()/2;
+		cameraLeft = dstPoint.intX() - projectionW()/2;
+		cameraTop = dstPoint.intY() - projectionH()/2;
 	}
 	public int x() {
-		return cameraLeft + GHQ.screenW()/2;
+		return cameraLeft + projectionW()/2;
 	}
 	public int y() {
-		return cameraTop + GHQ.screenH()/2;
+		return cameraTop + projectionH()/2;
 	}
 	public int left() {
 		return cameraLeft;
@@ -32,12 +33,21 @@ public class Camera {
 		return cameraTop;
 	}
 	public int right() {
-		return cameraLeft + GHQ.screenW();
+		return cameraLeft + projectionW();
 	}
 	public int bottom() {
-		return cameraTop + GHQ.screenH();
+		return cameraTop + projectionH();
 	}
 	public Point dstPoint() {
 		return dstPoint;
+	}
+	public Point projectionLeftTopPoint() {
+		return projectionArea.point();
+	}
+	public int projectionW() {
+		return projectionArea.width();
+	}
+	public int projectionH() {
+		return projectionArea.height();
 	}
 }

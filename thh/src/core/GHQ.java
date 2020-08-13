@@ -230,7 +230,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		g2.setColor(Color.WHITE);
 		g2.fill(screenRect);
-		final int TRANSLATE_X = -cameraLeft(),TRANSLATE_Y = -cameraTop();
+		final int TRANSLATE_X = -cameraLeft() + GHQ.camera.projectionLeftTopPoint().intX(), TRANSLATE_Y = -cameraTop() + GHQ.camera.projectionLeftTopPoint().intY();
 		g2.translate(TRANSLATE_X, TRANSLATE_Y);
 		g2.setFont(initialFont);
 		////////////////////////////////////////////////////////////////////////

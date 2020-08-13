@@ -242,13 +242,17 @@ public class Engine_THH1 extends Game {
 		if(stopEventKind == GHQ.NONE || editor.isEnabled()) { //scroll
 			//scroll by keys
 			if(s_keyL.hasEvent(VK_W)) {
+				System.out.println("formation North move!");
 				formation.point().addY(-F_MOVE_SPD);
 			}else if(s_keyL.hasEvent(VK_S)) {
+				System.out.println("formation South move!");
 				formation.point().addY(+F_MOVE_SPD);
 			}
 			if(s_keyL.hasEvent(VK_A)) {
+				System.out.println("formation West move!");
 				formation.point().addX(-F_MOVE_SPD);
 			}else if(s_keyL.hasEvent(VK_D)) {
+				System.out.println("formation East move!");
 				formation.point().addX(+F_MOVE_SPD);
 			}
 //			//scroll by mouse
