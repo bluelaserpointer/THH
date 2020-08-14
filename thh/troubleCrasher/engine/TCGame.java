@@ -4,7 +4,6 @@ import java.awt.Graphics2D;
 
 import core.GHQ;
 import core.Game;
-import gui.GUIPartsSwitcher;
 import physics.stage.GHQStage;
 
 public class TCGame extends Game {
@@ -14,7 +13,7 @@ public class TCGame extends Game {
 	}
 	
 	public TCGame() {
-		super(new GUIPartsSwitcher(0, 0)); //TODO: change it!!
+		super(new GamePageSwitcher()); //TODO: change it!!
 	}
 	@Override
 	public GHQStage loadStage() {
