@@ -79,7 +79,7 @@ public class Engine_THH1 extends Game {
 	public String getTitleName() {
 		return "touhouHachidanmakusetu";
 	}
-	public static void main(String args[]){
+	public static void main(String args[]) {
 		new GHQ(new Engine_THH1(), 1000, 600);
 	}
 	@Override
