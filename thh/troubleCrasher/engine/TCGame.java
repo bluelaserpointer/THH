@@ -9,7 +9,7 @@ import physics.stage.GHQStage;
 public class TCGame extends Game {
 
 	public static void main(String args[]) {
-		new GHQ(new TCGame(), 1000, 600);
+		new GHQ(new TCGame(), 1024, 768);
 	}
 
 	public TCGame() {

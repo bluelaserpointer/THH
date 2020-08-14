@@ -11,48 +11,60 @@ import paint.rect.RectPaint;
 
 public class GamePageSwitcher extends GUIPartsSwitcher {
 	private static final int STARTSCREEN = 0, GAMESCREEN = 1, SETTINGSCREEN = 2;
-	// private final ImageFrame defaultSlotPaint, buttonPaint;
-	// private final RectPaint bgPaint;
+	private static final int PROFILE_SESSION = 0, BOX_SESSION = 1; // TODO: add new sections
+	private final ImageFrame defaultSlotPaint, buttonPaint;
+	private static final String StartScreenPic = "thhimage/WhiteBall.png";
+	private int centerW, centerH;
 
 	public GamePageSwitcher() {
 		super(3, STARTSCREEN);
-		// defaultSlotPaint = ImageFrame.create("picture/banana.png");
-		// buttonPaint = ImageFrame.create("picture/banana.png");
-		// bgPaint = new RectPaint() {
-		// private final ImageFrame
-		// bg1 = ImageFrame.create("picture/banana.png"),
-		// bg2 = ImageFrame.create("picture/banana.png");
-		// @Override
-		// public void rectPaint(int x, int y, int w, int h) {
-		// bg1.rectPaint(x, y, w, h);
-		// bg2.rectPaint(x, y, w, h);
-		// }
-		// };
-		// this.setBGPaint(bgPaint);
-		// this.appendLast(new AutoResizeMenu(0, 0, GHQ.screenW(), 70) {
-		// final GUIParts
-		// gameScrBtn =
-		// getSwitcherButton(GAMESCREEN).setBGPaint(buttonPaint).setName("inventoryScrBtn"),
-		// settingsScrBtn =
-		// getSwitcherButton(SETTINGSCREEN).setBGPaint(buttonPaint).setName("talentScrBtn");
-		// {
-		// this.addNewLine(gameScrBtn, settingsScrBtn);
-		// this.setName("START_MENU_TOP_TAB");
-		// }
-		// });
+		defaultSlotPaint = ImageFrame.create("thhimage/MillkyWay.png");
+		buttonPaint = ImageFrame.create("thhimage/veg_leaf3.png"); // 按钮图片
+		centerH = 384;
+		centerW = 512;
 
+		// Start Menu
 		set(STARTSCREEN, new GUIParts() {
-			// final ImageFrame StartScreen = ImageFrame.create("picture/banana.png");
+
 			{
+				this.setBGImage(StartScreenPic);
 				setName("STARTSCREEN");
-				setBGColor(Color.GREEN);
+				// setBGColor(Color.BLACK);
+
+				this.appendLast(new GUIParts() {
+
+					final GUIParts gameScrBtn = getSwitcherButton(GAMESCREEN).setBGPaint(buttonPaint)
+							.setName("gameScrBtn").setBounds(centerW - 150, 200, 300, 100),
+							settingsScrBtn = getSwitcherButton(SETTINGSCREEN).setBGPaint(buttonPaint)
+									.setName("settingScrBtn").setBounds(centerW - 150, 350, 300, 100);
+					// quitScrBtn = getSwitcherButton(SETTINGSCREEN).setBGPaint(buttonPaint)
+					// .setName("settingScrBtn").setBounds(512, 400, 100, 200);
+					// TODO: Add quit
+					// button
+					{
+						// this.addNewLine(gameScrBtn, settingsScrBtn);
+						this.setName("START_MENU_TOP_TAB");
+						this.appendFirst(gameScrBtn);
+						this.appendFirst(settingsScrBtn);
+
+					}
+
+				});
 
 			}
+
+			// @Override
+			// public void idle() {
+			// super.idle();
+			// // StartScreen.dotPaint_rate(200, 200, 1.2);
+			// }
 		});
-		set(GAMESCREEN, new GUIParts() {
+		// TODO: add new sections
+		set(GAMESCREEN, new GUIPartsSwitcher(2, PROFILE_SESSION) {
 			{
 				setName("GAMESCREEN");
-				setBGColor(Color.BLUE);
+				// setBGColor(Color.BLUE);
+
 			}
 		});
 		set(SETTINGSCREEN, new GUIParts() {
