@@ -33,7 +33,9 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				.setBGColor(Color.green).disable();
 		Speaker = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setBounds(477, 540, 500, 30).setBGColor(Color.yellow)
 				.disable();
-		nextButton = new GUIParts().setBGColor(Color.pink).setBounds(900, 698, 100, 50);
+		nextButton = new GUIParts() {
+			
+		}.setBGColor(Color.pink).setBounds(900, 698, 100, 50);
 		NPC_PART = new GUIParts().setName("NPC_IMAGE").setBounds(627, 220, 200, 300)
 				.setBGImage(PersonEnum.CAPTAIN.personImage);
 		SCENE_PART = new GUIParts().setName("SCENE_PART").setBounds(430, 0, 594, 520)
@@ -251,10 +253,6 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 
 			}
 		});
-
-		String[] options = { "1", "2", "3", "4" };
-
-		generateOptions(options);
 		set(SETTINGSCREEN, new GUIParts() {
 			{
 				setName("SETTINGSCREEN");
@@ -283,9 +281,9 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		this.SCENE_PART.setBGImage(img);
 	}
 
-	public void generateOptions(String[] options) {
+	public void generateOptions(List<String> options) {
 		// List<AnimatedGHQTextArea> guiOptions = new ArrayList<AnimatedGHQTextArea>();
-		for (int i = 0; i < options.length; i++) {
+		for (int i = 0; i < options.size(); i++) {
 			AnimatedGHQTextArea guiOption = new AnimatedGHQTextArea() {
 				@Override
 				public boolean clicked(MouseEvent event) {
@@ -295,7 +293,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				}
 			};
 			guiOption.setBGColor(Color.red);
-			guiOption.setText(options[i]);
+			guiOption.setText(options.get(i));
 			guiOption.setName(String.valueOf(i));
 			switch (i) {
 				case 0:
