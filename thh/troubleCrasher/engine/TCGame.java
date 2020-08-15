@@ -5,10 +5,12 @@ import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
 
+import camera.Camera;
 import core.GHQ;
 import core.Game;
 import gui.GUIPartsSwitcher;
 import gui.UIShowHideButton;
+import physics.Point;
 import physics.stage.GHQStage;
 
 import troubleCrasher.story.*;
@@ -54,6 +56,9 @@ public class TCGame extends Game {
 		if(GHQ.nowFrame() % 10 == 0) {
 			testJigsaw.setDirection(testJigsaw.direction().right());
 		}
+	}
+	protected Camera starterCamera() {
+		return null;
 	}
 
 }
