@@ -104,6 +104,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 					{
 						setName("ACTIVITY_SESSION");
 
+						this.setBounds(0, 0, 70, 768);
 						this.appendLast(new GUIParts() {
 
 							final GUIParts profileScrBtn = getSwitcherButton(PROFILE_SESSION).setBGPaint(buttonPaint)
@@ -136,6 +137,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 						set(PROFILE_SESSION, new GUIPartsSwitcher(5, NPC_1) {
 							{
 								setName("PROFILE_SESSION");
+								this.setBounds(70, 0, 360, 768);
 								this.appendLast(new GUIParts() {
 									final GUIParts NPC_1ScrBtn = getSwitcherButton(NPC_1).setBGPaint(buttonPaint)
 											.setName("NPC_1ScrBtn").setBounds(75, 20, 60, 60),
@@ -145,8 +147,6 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 													.setName("NPC_3ScrBtn").setBounds(75, 160, 60, 60),
 											NPC_4ScrBtn = getSwitcherButton(NPC_4).setBGPaint(buttonPaint)
 													.setName("NPC_4ScrBtn").setBounds(75, 230, 60, 60);
-									// setBGColor(Color.red);
-									// setBounds(70, 0, 360, 768);
 									{
 										// this.addNewLine(gameScrBtn, settingsScrBtn);
 										this.setName("PROFILE_MENU_TOP_TAB");
@@ -217,6 +217,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				// 场景画面
 				this.appendLast(new GUIParts() {
 					{
+						this.setName("场景画面");
 						this.appendLast(new GUIPartsSwitcher(4, WORK_SCENE) {
 							{
 								// setBGColor(Color.black);
