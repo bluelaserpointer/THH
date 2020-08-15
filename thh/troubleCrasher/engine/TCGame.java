@@ -8,6 +8,7 @@ import java.io.IOException;
 import camera.Camera;
 import core.GHQ;
 import core.Game;
+import gui.AnimatedGHQTextArea;
 import gui.GUIPartsSwitcher;
 import gui.UIShowHideButton;
 import physics.Point;
@@ -40,6 +41,9 @@ public class TCGame extends Game {
 //		jigsawViewer.board().setJigsaw(testJigsaw = new Jigsaw(JigsawEnum.L32).setGridPos(1, 1));
 //		GHQ.addGUIParts(jigsawViewer);
 //		GHQ.addGUIParts(new UIShowHideButton(jigsawViewer)).setBounds(750, 50, 100, 100).setBGColor(Color.LIGHT_GRAY);
+		//对话框使用例
+//		GHQ.addGUIParts(new AnimatedGHQTextArea().setText("\n111111111111111111111111111111111111111111111111111.")
+//				.setTextSpeed(3).setBounds(100, 100, 100, 100).setBGColor(Color.LIGHT_GRAY));
 	}
 	@Override
 	public String getTitleName() {
