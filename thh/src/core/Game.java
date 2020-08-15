@@ -58,6 +58,9 @@ public abstract class Game {
 	public String getTitleName() {
 		return GHQ.NOT_NAMED;
 	}
+	public String getIconPass() {
+		return null;
+	}
 	public String getVersion() {
 		return GHQ.NOT_NAMED;
 	}

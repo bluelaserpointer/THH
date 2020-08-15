@@ -27,6 +27,7 @@ public class TCGame extends Game {
 	public static Resource resource;
 	public static StoryMechanicManager storyMechanicManager;
 	public static ScriptManager scriptManager;
+	public static GamePageSwitcher gamePageSwitcher;
 
 	public static JigsawViewer jigsawViewer;
 
@@ -37,16 +38,11 @@ public class TCGame extends Game {
 	}
 
 	public TCGame() throws IOException {
-		super(new GamePageSwitcher()); // TODO: change it!!
+		super(gamePageSwitcher = new GamePageSwitcher()); // TODO: change it!!
 		
     // Scripts
-		 try {
-			ScriptManager scriptManager = new ScriptManager("1");
-//			System.out.println()
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.out.println("Initialized scriptManager");
+		scriptManager = new ScriptManager("1");
 
 		// Scripts
 		// ScriptManager scriptManager = new ScriptManager("1");
@@ -66,6 +62,10 @@ public class TCGame extends Game {
 	@Override
 	public String getTitleName() {
 		return "TroubleCrusher";
+	}
+	@Override
+	public String getIconPass() {
+		return "thhimage\\searchBox.png";
 	}
 		
 	public static Resource getResource() {

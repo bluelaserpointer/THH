@@ -30,8 +30,7 @@ public class SoundClip{
 				clip.open(in);
 			in.close();
 		}catch(Exception e){
-			//JOptionPane.showMessageDialog(null,e.toString(),"sound file loading error: " + url,JOptionPane.WARNING_MESSAGE);
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null,e.toString(),"sound file loading error: " + url,JOptionPane.WARNING_MESSAGE);
 		}
 		this.clip = clip;
 		FloatControl control = null;
