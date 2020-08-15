@@ -20,9 +20,16 @@ import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
 import troubleCrasher.jigsaw.JigsawViewer;
 
-public class TCGame extends Game {
+import troubleCrasher.resource.Resource;
 
-	private JigsawViewer jigsawViewer;
+
+public class TCGame extends Game {
+	public static Resource resource;
+	public static StoryMechanicManager storyMechanicManager;
+	public static ScriptManager scriptManager;
+
+	public static JigsawViewer jigsawViewer;
+
 	private Jigsaw testJigsaw;
 
 	public static void main(String args[]) throws IOException {
@@ -31,6 +38,15 @@ public class TCGame extends Game {
 
 	public TCGame() throws IOException {
 		super(new GamePageSwitcher()); // TODO: change it!!
+		
+    // Scripts
+		 try {
+			ScriptManager scriptManager = new ScriptManager("1");
+//			System.out.println()
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// Scripts
 		// ScriptManager scriptManager = new ScriptManager("1");
@@ -50,6 +66,22 @@ public class TCGame extends Game {
 	@Override
 	public String getTitleName() {
 		return "TroubleCrusher";
+	}
+		
+	public static Resource getResource() {
+		return resource;
+	}
+
+	public static JigsawViewer getJigsawViewer() {
+		return jigsawViewer;
+	}
+
+	public Jigsaw getTestJigsaw() {
+		return testJigsaw;
+	}
+
+	public static void setScriptManager(ScriptManager scriptManager) {
+		TCGame.scriptManager = scriptManager;
 	}
 
 	@Override
