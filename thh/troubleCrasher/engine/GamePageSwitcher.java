@@ -220,9 +220,11 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 									public boolean clicked(MouseEvent e) {
 										final boolean consumed = super.clicked(e);
 										Jigsaw hookingJigsaw = TCGame.jigsawViewer.hookingJigsaw();
-										if(hookingJigsaw != null) {
+										Jigsaw disposedJigsaw = TCGame.jigsawViewer.disposedJigsaw();
+										if(hookingJigsaw != null) { //拿进
 											TCGame.jigsawViewer.disposeHookJigsaw();
 											TCGame.resource.delHp(1);
+										} else if(disposedJigsaw != null) { //拿走
 										}
 										return consumed;
 									}
