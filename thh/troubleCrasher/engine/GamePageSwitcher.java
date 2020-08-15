@@ -97,11 +97,58 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 
 						});
 
-						set(PROFILE_SESSION, new GUIParts() {
+						set(PROFILE_SESSION, new GUIPartsSwitcher(5, NPC_1) {
 							{
 								setName("PROFILE_SESSION");
-								setBGColor(Color.red);
-								setBounds(70, 0, 360, 768);
+								this.appendLast(new GUIParts() {
+									final GUIParts NPC_1ScrBtn = getSwitcherButton(NPC_1).setBGPaint(buttonPaint)
+											.setName("NPC_1ScrBtn").setBounds(75, 20, 60, 60),
+											NPC_2ScrBtn = getSwitcherButton(NPC_2).setBGPaint(buttonPaint)
+													.setName("NPC_2ScrBtn").setBounds(75, 90, 60, 60),
+											NPC_3ScrBtn = getSwitcherButton(NPC_3).setBGPaint(buttonPaint)
+													.setName("NPC_3ScrBtn").setBounds(75, 160, 60, 60),
+											NPC_4ScrBtn = getSwitcherButton(NPC_4).setBGPaint(buttonPaint)
+													.setName("NPC_4ScrBtn").setBounds(75, 230, 60, 60);
+									// setBGColor(Color.red);
+									// setBounds(70, 0, 360, 768);
+									{
+										// this.addNewLine(gameScrBtn, settingsScrBtn);
+										this.setName("PROFILE_MENU_TOP_TAB");
+										this.appendLast(NPC_1ScrBtn);
+										this.appendLast(NPC_2ScrBtn);
+										this.appendLast(NPC_3ScrBtn);
+										this.appendLast(NPC_4ScrBtn);
+
+									}
+								});
+								set(NPC_1, new GUIParts() {
+									{
+										setName("NPC_1_PROFILE");
+										setBGColor(Color.lightGray);
+										setBounds(140, 0, 290, 768);
+									}
+								});
+								set(NPC_2, new GUIParts() {
+									{
+										setName("NPC_2_PROFILE");
+										setBGColor(Color.orange);
+										setBounds(140, 0, 290, 768);
+									}
+								});
+								set(NPC_3, new GUIParts() {
+									{
+										setName("NPC_3_PROFILE");
+										setBGColor(Color.pink);
+										setBounds(140, 0, 290, 768);
+									}
+								});
+								set(NPC_4, new GUIParts() {
+									{
+										setName("NPC_4_PROFILE");
+										setBGColor(Color.green);
+										setBounds(140, 0, 290, 768);
+									}
+								});
 							}
 						});
 
