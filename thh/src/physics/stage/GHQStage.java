@@ -374,7 +374,6 @@ public class GHQStage implements HasBoundingBox {
 	
 	//debug-information
 	public void unitDebugPaint(final Graphics2D g2) {
-		GHQ.translateForGUI(false);
 		for(Unit unit : units) {
 			final int RECT_X = unit.point().intX(), RECT_Y = unit.point().intY();
 			g2.setStroke(GHQ.stroke1);
@@ -383,7 +382,6 @@ public class GHQStage implements HasBoundingBox {
 			g2.setStroke(GHQ.stroke5);
 			g2.drawString(unit.name(), RECT_X + 62, RECT_Y - 68);
 		}
-		GHQ.translateForGUI(true);
 	}
 	public String entityAmountInfo() {
 		return "Unit:" + units.size() + " EF:" + effects.size() + " B:" + bullets.size();

@@ -230,7 +230,8 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		g2.setColor(Color.WHITE);
 		g2.fill(screenRect);
-		final int TRANSLATE_X = -cameraLeft() + GHQ.camera.projectionLeftTopPoint().intX(), TRANSLATE_Y = -cameraTop() + GHQ.camera.projectionLeftTopPoint().intY();
+		final int TRANSLATE_X = -cameraLeft() + (GHQ.camera == null ? 0 : GHQ.camera.projectionLeftTopPoint().intX()),
+				TRANSLATE_Y = -cameraTop() + (GHQ.camera == null ? 0 : GHQ.camera.projectionLeftTopPoint().intY());
 		g2.translate(TRANSLATE_X, TRANSLATE_Y);
 		g2.setFont(initialFont);
 		////////////////////////////////////////////////////////////////////////
@@ -248,14 +249,16 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			g2.translate(-tx, -ty);
 		} else
 			engine.idle(g2, stopEventKind);
-		camera.applyChanges();
+		if(GHQ.camera != null)
+			camera.applyChanges();
 		////////////////////////////////////////////////////////////////////////
 		//GUIIdle
 		g2.translate(-TRANSLATE_X, -TRANSLATE_Y);
 		//gui parts////////////////////
 		BASE_SCREEN_UI.idle();
 		//debug ////////////////////////
-		if(debugMode){
+		if(debugMode) {
+			GHQ.translateForGUI(true);
 			//grid
 			g2.setColor(debugTextColor);
 			g2.setFont(basicFont);
@@ -265,38 +268,47 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			for(int i = 100;i < screenH();i += 100)
 				g2.drawLine(0, i, screenW(), i);
 			GHQ.translateForGUI(false);
-			//Origin
-			g2.setColor(debugTextColor);
-			g2.setStroke(stroke1);
-			g2.drawOval(-35, -35, 70, 70);
-			g2.drawOval(-25, -25, 50, 50);
-			g2.drawOval(-15, -15, 30, 30);
-			//stageEdge
-			g2.setStroke(stroke3);
-			final int STAGE_W = stage.width(), STAGE_H = stage.height();
-			{ //LXRX lines
-				final int LX = 0, RX = STAGE_W;
-				for(int i = 0;i < 50;i++) {
-					final int Y = STAGE_H*i/50;
-					g2.drawLine(LX - 20, Y - 20, LX + 20, Y + 20);
-					g2.drawLine(RX - 20, Y - 20, RX + 20, Y + 20);
+			////////////////
+			//stage debug info
+			////////////////
+			if(GHQ.stage != null) {
+				//stageOrigin
+				g2.setColor(debugTextColor);
+				g2.setStroke(stroke1);
+				g2.drawOval(-35, -35, 70, 70);
+				g2.drawOval(-25, -25, 50, 50);
+				g2.drawOval(-15, -15, 30, 30);
+				//stageEdge
+				g2.setStroke(stroke3);
+				final int STAGE_W = stage.width(), STAGE_H = stage.height();
+				{ //LXRX lines
+					final int LX = 0, RX = STAGE_W;
+					for(int i = 0;i < 50;i++) {
+						final int Y = STAGE_H*i/50;
+						g2.drawLine(LX - 20, Y - 20, LX + 20, Y + 20);
+						g2.drawLine(RX - 20, Y - 20, RX + 20, Y + 20);
+					}
 				}
-			}
-			{ //LYRY lines
-				final int LY = 0, RY = STAGE_H;
-				for(int i = 0;i < 50;i++) {
-					final int X = STAGE_W*i/50;
-					g2.drawLine(X - 20, LY - 20, X + 20, LY + 20);
-					g2.drawLine(X - 20, RY - 20, X + 20, RY + 20);
+				{ //LYRY lines
+					final int LY = 0, RY = STAGE_H;
+					for(int i = 0;i < 50;i++) {
+						final int X = STAGE_W*i/50;
+						g2.drawLine(X - 20, LY - 20, X + 20, LY + 20);
+						g2.drawLine(X - 20, RY - 20, X + 20, RY + 20);
+					}
 				}
+				//unitInfo
+				stage.unitDebugPaint(g2);
+				GHQ.translateForGUI(true);
+				//entityInfo
+				g2.drawString(stage.entityAmountInfo(), 30, 100);
+				GHQ.translateForGUI(false);
 			}
-			GHQ.translateForGUI(true);
-			//entityInfo
-			g2.drawString(stage.entityAmountInfo(), 30, 100);
-			g2.drawString("LoadTime(ms):" + loadTime_total, 30, 120);
+			//specInfo
+			g2.drawString("TimePerFrame(ms):" + loadTime_total, 30, 120);
 			g2.drawString("FPS:" + DF00_00.format(getFPS()), 30, 140);
-			g2.drawString("GameTime(ms):" + gameFrame, 30, 160);
-			//guiInfo
+			g2.drawString("TotalGameTime(ms):" + gameFrame, 30, 160);
+			//uiInfo
 			g2.drawString("PointingGUI: " + mouseHoveredUI().name(), 30, 200);
 			//mouseInfo
 			g2.setColor(debugTextColor);
@@ -308,8 +320,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			g2.drawLine(MOUSE_X, MOUSE_Y - 15, MOUSE_X, MOUSE_Y + 15);
 			g2.setStroke(stroke5);
 			g2.drawString("(" + (MOUSE_X + cameraLeft()) + "," + (MOUSE_Y + cameraTop()) + ")", MOUSE_X + 20, MOUSE_Y + 40);
-			//unitInfo
-			stage.unitDebugPaint(g2);
 			//ruler
 			if(mouseDebugMode) {
 				g2.setColor(Color.RED);
