@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import troubleCrasher.engine.TCGame;
+
 // Parsing scripts
 public class ScriptManager {
 
