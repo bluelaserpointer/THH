@@ -2,6 +2,7 @@ package troubleCrasher.story;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -30,9 +31,15 @@ public class ScriptManager {
     
 	public ScriptManager() {}
 	
-	public ScriptManager(String fileName) throws IOException {
+	public ScriptManager(String fileName){
 		this.currentFile = fileName;
 		this.parseFile(fileName);
+	}
+	
+	private void setScriptManager(String fileName)
+	{
+		this.currentFile = fileName;
+		parseFile(fileName);
 	}
 	
 	public String parsePath(String name)
@@ -45,15 +52,27 @@ public class ScriptManager {
 	 * @param file Current parsing file
 	 * @throws IOException 
 	 */
-	public void parseFile(String fileName) throws IOException {
+	public void parseFile(String fileName) {
 		String filePath = parsePath(fileName);
 		
-	    FileInputStream fin = new FileInputStream(filePath);
-	    InputStreamReader reader = new InputStreamReader(fin);
-	    buffReader = new BufferedReader(reader);
-	    String currLine = "";
-	    currLine = buffReader.readLine();
-		parseLine(currLine);
+	    FileInputStream fin;
+		try {
+			fin = new FileInputStream(filePath);
+		    InputStreamReader reader = new InputStreamReader(fin);
+		    buffReader = new BufferedReader(reader);
+		    String currLine = "";
+		    try {
+				currLine = buffReader.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			parseLine(currLine);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	
 	/**
@@ -76,14 +95,14 @@ public class ScriptManager {
 				e.printStackTrace();
 			}
 		}else {
-			String[] parsedLine = currLine.split("：");
-			nextLine(parsedLine[2]);
+//			String[] parsedLine = currLine.split("：");
+			System.out.println("In else");
+			nextLine(currLine);
 		}
 	}
 	
 	public void nextLine(String currText)
 	{
-		
 		TCGame.gamePageSwitcher.setDialogue(currText);
 	}
 		
@@ -140,6 +159,7 @@ public class ScriptManager {
 				System.out.println("!!COMMENT!!: " + funcLine);
 				break;
 		}
+		System.out.println("Out of switch");
 	}
 
 	
@@ -149,7 +169,7 @@ public class ScriptManager {
 		
 		System.out.println("Jumping to " + parsedLine[2]);
 		
-		setScriptManager(new ScriptManager(parsedLine[2]));
+		setScriptManager(parsedLine[2]);
 				
 		// Scripts after optionGroup
 		parseLine(buffReader.readLine());
@@ -290,16 +310,17 @@ public class ScriptManager {
 		System.out.println("In parseOptions");
 		while(!(currLine = buffReader.readLine()).contains("#ENDOPTIONS"))
 		{
+			System.out.println(currLine);
 			if(currLine.charAt(0) == '#')
 			{
 				if(currLine.contains("#OPTION"))
 				{
-					// Add nextLine to string array
 					if(!disabled)
 					{
-						currentOptions.add(buffReader.readLine());
+						currentOptions.add(currLine);
+						System.out.println("Options added");
 					}else {
-						disabledOptions.add(buffReader.readLine());
+						disabledOptions.add(currLine);
 					}
 				}else if(currLine.contains("#IF"))
 				{
@@ -321,11 +342,14 @@ public class ScriptManager {
 		}
 		
 		// Pauses for player to send signal, indexes must be inside the existing options
+        System.out.println("Before if");
+
 		if(currentOptions.size() > 0)
 		{
-			Scanner scan = new Scanner(System.in);  //创建Scanner扫描器来封装System类的in输入流
-	        int optionIndex = scan.nextInt();
-	        chooseOption(optionIndex);
+	        System.out.println("Before generateOptions");
+	        
+			TCGame.gamePageSwitcher.generateOptions(currentOptions);
+//	        chooseOption(optionIndex);
 	        // TODO: Needs to make available and unavailable options different
 		}
 	}
@@ -336,21 +360,26 @@ public class ScriptManager {
 	 * @throws IOException
 	 * @throws InterruptedException 
 	 */
-	public void chooseOption(int index) throws IOException, InterruptedException
+	public void chooseOption(int index)
 	{
 		System.out.println("Choosing option " + index);
 		
-		setScriptManager(new ScriptManager(currentFile + "-" + index));
+		setScriptManager(currentFile + "-" + index);
 		
 		// Scripts after optionGroup
-		parseLine(buffReader.readLine());
+		try {
+			parseLine(buffReader.readLine());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
-	public void setScriptManager(ScriptManager scriptManager)
-	{
-		TCGame.setScriptManager(scriptManager);
-	}
-	
+//	public void setScriptManager(ScriptManager scriptManager)
+//	{
+//		TCGame.setScriptManager(scriptManager);
+//	}
+//	
 	
 	private void parseList(String funcLine)
 	{

@@ -2,6 +2,7 @@ package troubleCrasher.engine;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 // import org.w3c.dom.events.MouseEvent;
@@ -40,7 +41,8 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				// TODO: select option EDWARD
 				System.out.println("Button clicked");
 				try {
-					TCGame.scriptManager.parseLine(TCGame.scriptManager.buffReader.readLine());
+					String currLine = TCGame.scriptManager.buffReader.readLine();
+					TCGame.scriptManager.parseLine(currLine);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -339,8 +341,9 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				});
 			}
 		});
-		String[] options = { "1", "2", "3", "4" };
-		generateOptions(options);
+//		String[] options = { "1", "2", "3", "4" };
+//		generateOptions(Arrays.asList(options));
+		
 		set(SETTINGSCREEN, new GUIParts() {
 			{
 				setName("SETTINGSCREEN");
@@ -356,22 +359,33 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 	}
 
 	public void setDialogue(String text) {
-		this.Speaker.setText(text);
+		this.Dialogue.setText(text);
 	}
 
-	public void generateOptions(String[] options) {
+	public void generateOptions(List<String> options) {
 		// List<AnimatedGHQTextArea> guiOptions = new ArrayList<AnimatedGHQTextArea>();
-		for (int i = 0; i < options.length; i++) {
+		
+		nextButton.disable();
+		GUIParts button = nextButton;
+        System.out.println("In generateOptions");
+		for (int i = 0; i < options.size(); i++) {
 			AnimatedGHQTextArea guiOption = new AnimatedGHQTextArea() {
 				@Override
 				public boolean clicked(MouseEvent event) {
 					// TODO: select option EDWARD
 					System.out.println(Integer.valueOf(this.name()));
+					System.out.println("Before enable");
+					button.enable();
+					System.out.println("After enable");
+					
+					TCGame.scriptManager.chooseOption(Integer.valueOf(this.name())+ 1);
+					generateOptions(new ArrayList());
+
 					return super.clicked(event);
 				}
 			};
 			guiOption.setBGColor(Color.red);
-			guiOption.setText(options[i]);
+			guiOption.setText(options.get(i));
 			guiOption.setName(String.valueOf(i));
 			switch (i) {
 				case 0:
