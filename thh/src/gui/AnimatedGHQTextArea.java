@@ -21,9 +21,11 @@ public class AnimatedGHQTextArea extends GHQTextArea {
 	@Override
 	public void idle() {
 		super.idle();
-		final int passedFrame = GHQ.passedFrame(textSetFrame);
-		final int textAmount = textSpeed == 0 ? currentText.length() : Math.min(passedFrame/textSpeed , currentText.length());
-		super.textArea().setText(currentText.substring(0, textAmount));
+		if(currentText != null && !currentText.isEmpty()) {
+			final int passedFrame = GHQ.passedFrame(textSetFrame);
+			final int textAmount = textSpeed == 0 ? currentText.length() : Math.min(passedFrame/textSpeed , currentText.length());
+			super.textArea().setText(currentText.substring(0, textAmount));
+		}
 	}
 	
 }

@@ -263,7 +263,22 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 			}
 		});
 
-		// 1.
+		//init options button
+		for (int i = 0; i < appendedGUIOption.length; i++) {
+			AnimatedGHQTextArea guiOption = new AnimatedGHQTextArea() {
+				@Override
+				public boolean clicked(MouseEvent event) {
+					// TODO: selectoption EDWARD
+					// System.out.println(Integer.valueOf(this.name()));
+					TCGame.scriptManager.chooseOption(Integer.valueOf(this.name()) + 1);
+					nextButton.enable();
+					generateOptions(null);
+					return super.clicked(event);
+				}
+			};
+			guiOption.setName(String.valueOf(i));
+			appendedGUIOption[i] = guiOption;
+		}
 
 		GHQ.addGUIParts(this);
 	}
@@ -289,38 +304,19 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		this.SCENE_PART.setBGImage(Scene.sceneImage);
 	}
 
-	private final LinkedList<GUIParts> appendedGUIOption = new LinkedList<>();
-
+	private final AnimatedGHQTextArea[] appendedGUIOption = new AnimatedGHQTextArea[4];
 	public void generateOptions(List<String> options) {
-		// List<AnimatedGHQTextArea> guiOptions = new ArrayList<AnimatedGHQTextArea>();
-
-		for (GUIParts partsToDelete : appendedGUIOption) {
-			this.get(GAMESCREEN).remove(partsToDelete);
-		}
-		appendedGUIOption.clear();
-
+		for (GUIParts parts : appendedGUIOption)
+			parts.disable();
 		if (options == null) {
 			return;
 		}
 		nextButton.disable();
 		for (int i = 0; i < options.size(); i++) {
-			AnimatedGHQTextArea guiOption = new AnimatedGHQTextArea() {
-				@Override
-				public boolean clicked(MouseEvent event) {
-					// TODO: selectoption EDWARD
-					// System.out.println(Integer.valueOf(this.name()));
-					TCGame.scriptManager.chooseOption(Integer.valueOf(this.name()) + 1);
-					nextButton.enable();
-					generateOptions(null);
-					return super.clicked(event);
-				}
-			};
-
-			appendedGUIOption.add(guiOption);
-
-			guiOption.setText(options.get(i));
+			final AnimatedGHQTextArea guiOption = appendedGUIOption[i];
+			guiOption.enable();
+			guiOption.setText("       " + options.get(i));
 			guiOption.setTextColor(Color.white);
-			guiOption.setName(String.valueOf(i));
 			switch (i) {
 				case 0:
 					guiOption.setBGImage("thhimage/Option1.png");
