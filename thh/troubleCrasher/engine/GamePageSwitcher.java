@@ -18,23 +18,29 @@ import paint.rect.RectPaint;
 public class GamePageSwitcher extends GUIPartsSwitcher {
 	private static final int STARTSCREEN = 0, GAMESCREEN = 1, SETTINGSCREEN = 2;
 	private static final int PROFILE_SESSION = 0, BOX_SESSION = 1, SETTING_SESSION = 2, SAVE_SESSION = 3;
-	private static final int WORK_SCENE = 0, HOME_SCENE = 1, BAR_SCENE = 2; // DIFFERENT SCENES
-	private static final int NO_ONE = 0, NPC_1 = 1, NPC_2 = 2, NPC_3 = 3, NPC_4 = 4; // DIFFERENT NPCS
-	private final ImageFrame defaultSlotPaint, buttonPaint;
-	private GUIParts nextButton, DIALOGUE_SECTION;
+	private static final int WORK_SCENE_DAY = 0, WORK_SCENE_NIGHT = 1, BAR_SCENE = 2; // DIFFERENT SCENES
+	private static final int NO_ONE = -1, CAPTAIN = 0, FARMER = 1, DOCTOR = 2, ANNOUNCER = 3; // DIFFERENT NPCS
+	// private final ImageFrame buttonPaint;
+	private String[] SceneBG = { "thhimage/OfficeDay.png", "thhimage/OfficeNight.png", "thhimage/Bar.png" };
+	private String[] NPCImg = { "thhimage/Captain.png", "thhimage/Farmer.png", "thhimage/Doctor.png",
+			"thhimage/Announcer.png" };
+
+	private GUIParts nextButton, DIALOGUE_SECTION, NPC_PART, SCENE_PART;
 	private AnimatedGHQTextArea Dialogue, Speaker;
-	private static final String StartScreenPic = "thhimage/WhiteBall.png";
 	private int centerW, centerH;
 
 	public GamePageSwitcher() {
 		super(3, STARTSCREEN);
-		defaultSlotPaint = ImageFrame.create("thhimage/MillkyWay.png");
-		buttonPaint = ImageFrame.create("thhimage/veg_leaf3.png"); // 按钮图片
+		// buttonPaint = ImageFrame.create("thhimage/veg_leaf3.png"); // 按钮图片
 		Dialogue = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setTextSpeed(3).setBounds(477, 580, 500, 100)
 				.setBGColor(Color.green).disable();
 		Speaker = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setBounds(477, 540, 500, 30).setBGColor(Color.yellow)
 				.disable();
 		nextButton = new GUIParts().setBGColor(Color.pink).setBounds(900, 698, 100, 50);
+		System.out.println(SceneBG[WORK_SCENE_DAY]);
+		NPC_PART = new GUIParts().setName("NPC_IMAGE").setBounds(627, 220, 200, 300).setBGImage(NPCImg[CAPTAIN]);
+		SCENE_PART = new GUIParts().setName("SCENE_PART").setBounds(430, 0, 594, 520)
+				.setBGImage(SceneBG[WORK_SCENE_DAY]);
 
 		DIALOGUE_SECTION = new GUIParts().setBGColor(Color.green).setBounds(430, 520, 1024, 768).appendLast(Speaker)
 				.appendLast(Dialogue.setText(
@@ -49,7 +55,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		set(STARTSCREEN, new GUIParts() {
 
 			{
-				this.setBGImage(StartScreenPic);
+				this.setBGImage(SceneBG[WORK_SCENE_DAY]);
 				setName("STARTSCREEN");
 				// setBGColor(Color.BLACK);
 
@@ -200,132 +206,28 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				});
 
 				// 场景画面
-				this.appendLast(new GUIParts() {
-					{
-						this.appendLast(new GUIPartsSwitcher(4, WORK_SCENE) {
-							{
-								// setBGColor(Color.black);
-								setBounds(430, 0, 594, 520);
-								setName("SCENE_SESSION");
+				this.appendLast(SCENE_PART);
+				// NPC
+				this.appendFirst(NPC_PART);
 
-								this.appendLast(new GUIParts() {
+				this.appendLast(Speaker.setText("警长").enable());
 
-									final GUIParts workScrBtn = getSwitcherButton(WORK_SCENE).setBGPaint(buttonPaint)
-											.setName("workScrBtn").setBounds(430, 20, 60, 60),
-											barScrBtn = getSwitcherButton(BAR_SCENE).setBGPaint(buttonPaint)
-													.setName("barScrBtn").setBounds(430, 90, 60, 60),
-											homeScrBtn = getSwitcherButton(HOME_SCENE).setBGPaint(buttonPaint)
-													.setName("homeScrBtn").setBounds(430, 160, 60, 60);
+				this.appendLast(Dialogue.setText(
+						"1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
+						.enable());
 
-									// quitScrBtn = getSwitcherButton(SETTINGSCREEN).setBGPaint(buttonPaint)
-									// .setName("settingScrBtn").setBounds(512, 400, 100, 200);
-									// button
-									{
-										// this.addNewLine(gameScrBtn, settingsScrBtn);
-										this.setName("SCENE_MENU_SWTCHER_TAB");
-										this.appendFirst(workScrBtn);
-										this.appendFirst(barScrBtn);
-										this.appendFirst(homeScrBtn);
+				this.appendLast(nextButton);
+				// if (nextButton.clicked(e)) {
 
-									}
+				// }
+				// this.appendLast(DIALOGUE_SECTION);
+				// System.out.println(this.childList);
 
-								});
-
-								set(WORK_SCENE, new GUIParts() {
-									{
-										setName("WORK_SCENE");
-										setBGColor(Color.blue);
-										setBounds(430, 0, 594, 520);
-									}
-								});
-
-								// 设定
-								// 存档
-								// 箱子
-
-								set(BAR_SCENE, new GUIParts() {
-									{
-										setName("BAR_SCENE");
-										setBGColor(Color.orange);
-										setBounds(430, 0, 594, 520);
-									}
-								});
-
-								set(HOME_SCENE, new GUIParts() {
-									{
-										setName("HOME_SCENE");
-										setBGColor(Color.GRAY);
-										setBounds(430, 0, 594, 520);
-									}
-								});
-								// setBGColor(Color.BLUE);
-							}
-						});
-
-						// NPC
-						this.appendFirst(new GUIPartsSwitcher(5, NPC_1) {
-							{
-								setName("SCENE_SESSION");
-								setBounds(627, 220, 200, 300);
-
-								set(NO_ONE, new GUIParts() {
-									{
-										// NO MPC IN SCENE
-									}
-								});
-
-								set(NPC_1, new GUIParts() {
-									{
-										setName("NPC_1");
-										setBGColor(Color.orange);
-										setBounds(627, 220, 200, 300);
-									}
-								});
-
-								set(NPC_2, new GUIParts() {
-									{
-										setName("NPC_2");
-										setBGColor(Color.GRAY);
-										setBounds(627, 220, 200, 300);
-									}
-								});
-								set(NPC_3, new GUIParts() {
-									{
-										setName("NPC_3");
-										setBGColor(Color.pink);
-										setBounds(627, 220, 200, 300);
-									}
-								});
-								set(NPC_4, new GUIParts() {
-									{
-										setName("NPC_4");
-										setBGColor(Color.cyan);
-										setBounds(627, 220, 200, 300);
-									}
-								});
-
-								// setBGColor(Color.BLUE);
-							}
-						});
-
-						this.appendLast(Speaker.setText("警长").enable());
-
-						this.appendLast(Dialogue.setText(
-								"1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
-								.enable());
-
-						this.appendLast(nextButton);
-						// if (nextButton.clicked(e)) {
-
-						// }
-						// this.appendLast(DIALOGUE_SECTION);
-						// System.out.println(this.childList);
-
-					}
-				});
 			}
 		});
+
 		String[] options = { "1", "2", "3", "4" };
+
 		generateOptions(options);
 		set(SETTINGSCREEN, new GUIParts() {
 			{
@@ -345,6 +247,14 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 
 	public void setDialogue(String text) {
 		this.Speaker.setText(text);
+	}
+
+	public void setNPCImage(String img) {
+		this.NPC_PART.setBGImage(img);
+	}
+
+	public void setSceneImage(String img) {
+		this.SCENE_PART.setBGImage(img);
 	}
 
 	public void generateOptions(String[] options) {
