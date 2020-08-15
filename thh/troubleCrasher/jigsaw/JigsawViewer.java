@@ -10,6 +10,7 @@ import gui.GUIParts;
 public class JigsawViewer extends GUIParts {
 	private JigsawBoard board;
 	private Jigsaw hookingJigsaw = new Jigsaw(JigsawEnum.HOLLOW1);
+	private Jigsaw disposedJigsaw;
 	
 	//init
 	public JigsawViewer(JigsawBoard board) {
@@ -41,9 +42,17 @@ public class JigsawViewer extends GUIParts {
 		}
 	}
 	@Override
-	public boolean clicked(MouseEvent e) {
+	public boolean clicked(MouseEvent e) { //leftClick:place or take, rightClick:rotate the hooking jigsaw
 		final boolean consumed = super.clicked(e);
-		placeHookingJigsaw();
+		if(e.getButton() == MouseEvent.BUTTON1) {
+			if(hookingJigsaw != null) { //拿进
+				placeHookingJigsaw();
+			} else { //拿出
+				if(board().isBlocked((GHQ.mouseScreenX() - left()) / JigsawEnum.JIGSAW_GRID_SIZE, (GHQ.mouseScreenY() - top()) / JigsawEnum.JIGSAW_GRID_SIZE)) {
+					
+				}
+			}
+		}
 		return consumed;
 	}
 	
@@ -54,13 +63,25 @@ public class JigsawViewer extends GUIParts {
 	public Jigsaw hookingJigsaw() {
 		return hookingJigsaw;
 	}
+	public Jigsaw disposedJigsaw() {
+		return disposedJigsaw;
+	}
 	
 	public void hookJigsaw(Jigsaw jigsaw) {
 		this.hookingJigsaw = jigsaw;
-		hookingJigsaw.setGridPos(0, 0);
+		if(jigsaw != null)
+			hookingJigsaw.setGridPos(0, 0);
 	}
 	public void removeHookingJigsaw() {
 		this.hookJigsaw(null);
+	}
+	public void disposeHookJigsaw() {
+		disposedJigsaw = hookingJigsaw;
+		removeHookingJigsaw();
+	}
+	public void hookDisposedJigsaw() {
+		this.hookJigsaw(disposedJigsaw);
+		disposedJigsaw = null;
 	}
 	public void placeHookingJigsaw() {
 		if(hookingJigsaw == null)
