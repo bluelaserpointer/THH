@@ -6,17 +6,21 @@ import java.awt.event.MouseEvent;
 
 import core.GHQ;
 import gui.GUIParts;
+import sound.SoundClip;
 
 public class JigsawViewer extends GUIParts {
 	private JigsawBoard board;
 	private Jigsaw hookingJigsaw = new Jigsaw(JigsawEnum.HOLLOW1);
+	private final SoundClip placeSucceedSE;
 	
 	//init
 	public JigsawViewer(JigsawBoard board) {
 		this.board = board;
+		placeSucceedSE = new SoundClip("../troubleCrasher/sounds/putting_a_box.mp3");
 	}
 	public JigsawViewer(int xGrids, int yGrids) {
 		this.board = new JigsawBoard(xGrids, yGrids);
+		placeSucceedSE = new SoundClip("../troubleCrasher/sounds/putting_a_box.mp3");
 	}
 	public JigsawViewer setBoard(JigsawBoard board) {
 		this.board = board;
@@ -81,6 +85,6 @@ public class JigsawViewer extends GUIParts {
 		//TODO: sounds prohibited SE
 	}
 	public void placeSucceed() {
-		//TODO: sounds succeed SE
+		placeSucceedSE.play();
 	}
 }
