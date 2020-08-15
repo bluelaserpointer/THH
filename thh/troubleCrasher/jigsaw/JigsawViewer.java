@@ -2,12 +2,14 @@ package troubleCrasher.jigsaw;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 
 import core.GHQ;
 import gui.GUIParts;
 
 public class JigsawViewer extends GUIParts {
 	private JigsawBoard board;
+	private Jigsaw hookingJigsaw = new Jigsaw(JigsawEnum.HOLLOW1);
 	
 	//init
 	public JigsawViewer(JigsawBoard board) {
@@ -34,10 +36,51 @@ public class JigsawViewer extends GUIParts {
 				g2.drawRect(left() + xi*JigsawEnum.JIGSAW_GRID_SIZE, top() + yi*JigsawEnum.JIGSAW_GRID_SIZE, JigsawEnum.JIGSAW_GRID_SIZE, JigsawEnum.JIGSAW_GRID_SIZE);
 			}
 		}
+		if(hookingJigsaw != null) {
+			hookingJigsaw.paint(GHQ.mouseScreenX(), GHQ.mouseScreenY());
+		}
+	}
+	@Override
+	public boolean clicked(MouseEvent e) {
+		final boolean consumed = super.clicked(e);
+		placeHookingJigsaw();
+		return consumed;
 	}
 	
 	//info
 	public JigsawBoard board() {
 		return board;
+	}
+	public Jigsaw hookingJigsaw() {
+		return hookingJigsaw;
+	}
+	
+	public void hookJigsaw(Jigsaw jigsaw) {
+		this.hookingJigsaw = jigsaw;
+		hookingJigsaw.setGridPos(0, 0);
+	}
+	public void removeHookingJigsaw() {
+		this.hookJigsaw(null);
+	}
+	public void placeHookingJigsaw() {
+		if(hookingJigsaw == null)
+			return;
+		final int gridPosX = (GHQ.mouseScreenX() - left())/JigsawEnum.JIGSAW_GRID_SIZE;
+		final int gridPosY = (GHQ.mouseScreenY() - top())/JigsawEnum.JIGSAW_GRID_SIZE;
+		hookingJigsaw.setGridPos(gridPosX, gridPosY);
+		if(board().jigsawsIntersects(hookingJigsaw)) {
+			hookingJigsaw.setGridPos(0, 0);
+			placeFailed();
+		} else {
+			board().setJigsaw(hookingJigsaw);
+			placeSucceed();
+			hookingJigsaw = null;
+		}
+	}
+	public void placeFailed() {
+		//TODO: sounds prohibited SE
+	}
+	public void placeSucceed() {
+		//TODO: sounds succeed SE
 	}
 }

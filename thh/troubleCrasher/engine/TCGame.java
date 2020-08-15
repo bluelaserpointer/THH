@@ -8,6 +8,7 @@ import java.io.IOException;
 import camera.Camera;
 import core.GHQ;
 import core.Game;
+import gui.AnimatedGHQTextArea;
 import gui.GUIPartsSwitcher;
 import gui.UIShowHideButton;
 import physics.Point;
@@ -28,13 +29,15 @@ public class TCGame extends Game {
 	public static ScriptManager scriptManager;
 
 	public static JigsawViewer jigsawViewer;
+
 	private Jigsaw testJigsaw;
+
 	public static void main(String args[]) throws IOException {
-		new GHQ(new TCGame(), 1000, 600);
+		new GHQ(new TCGame(), 1024, 768);
 	}
-	
+
 	public TCGame() throws IOException {
-		super(new GUIPartsSwitcher(0, 0)); //TODO: change it!!
+		super(new GamePageSwitcher()); // TODO: change it!!
 		
     // Scripts
 		 try {
@@ -44,6 +47,9 @@ public class TCGame extends Game {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		// Scripts
+		// ScriptManager scriptManager = new ScriptManager("1");
     
 		//UI
 //		jigsawViewer = new JigsawViewer(5, 5);
@@ -52,7 +58,11 @@ public class TCGame extends Game {
 //		jigsawViewer.board().setJigsaw(testJigsaw = new Jigsaw(JigsawEnum.L32).setGridPos(1, 1));
 //		GHQ.addGUIParts(jigsawViewer);
 //		GHQ.addGUIParts(new UIShowHideButton(jigsawViewer)).setBounds(750, 50, 100, 100).setBGColor(Color.LIGHT_GRAY);
+		//对话框使用例
+//		GHQ.addGUIParts(new AnimatedGHQTextArea().setText("\n111111111111111111111111111111111111111111111111111.")
+//				.setTextSpeed(3).setBounds(100, 100, 100, 100).setBGColor(Color.LIGHT_GRAY));
 	}
+
 	@Override
 	public String getTitleName() {
 		return "TroubleCrusher";
@@ -78,13 +88,14 @@ public class TCGame extends Game {
 	public GHQStage loadStage() {
 		return null;
 	}
-	
+
 	@Override
 	public void idle(Graphics2D g2, int stopEventKind) {
-		if(GHQ.nowFrame() % 10 == 0) {
-			testJigsaw.setDirection(testJigsaw.direction().right());
-		}
+		// if(GHQ.nowFrame() % 10 == 0) {
+		// testJigsaw.setDirection(testJigsaw.direction().right());
+		// }
 	}
+
 	protected Camera starterCamera() {
 		return null;
 	}
