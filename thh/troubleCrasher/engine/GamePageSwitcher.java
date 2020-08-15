@@ -31,7 +31,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 	public GamePageSwitcher() {
 		super(3, STARTSCREEN);
 		// buttonPaint = ImageFrame.create("thhimage/veg_leaf3.png"); // 按钮图片
-		Dialogue = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setTextSpeed(3).setBounds(477, 580, 500, 100)
+		Dialogue = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setTextSpeed(1).setBounds(477, 580, 500, 100)
 				.setBGColor(Color.green).disable();
 		Speaker = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setBounds(477, 540, 500, 30).setBGColor(Color.yellow)
 				.disable();
