@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import core.GHQ;
 import core.Game;
 import gui.GUIPartsSwitcher;
+import gui.UIShowHideButton;
 import physics.stage.GHQStage;
 import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
@@ -22,11 +23,13 @@ public class TCGame extends Game {
 	public TCGame() {
 		super(new GUIPartsSwitcher(0, 0)); //TODO: change it!!
 		
-//		//UI
+		//UI
 //		jigsawViewer = new JigsawViewer(5, 5);
 //		jigsawViewer.setBGColor(Color.BLACK);
+//		jigsawViewer.setBounds(0, 0, 75*5, 75*5);
 //		jigsawViewer.board().setJigsaw(testJigsaw = new Jigsaw(JigsawEnum.L32).setGridPos(1, 1));
 //		GHQ.addGUIParts(jigsawViewer);
+//		GHQ.addGUIParts(new UIShowHideButton(jigsawViewer)).setBounds(750, 50, 100, 100).setBGColor(Color.LIGHT_GRAY);
 	}
 	@Override
 	public String getTitleName() {
