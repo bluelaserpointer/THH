@@ -17,7 +17,7 @@ public class GUIPartsSwitcher extends GUIParts{
 	@Override
 	public void idle() {
 		super.idle();
-		parts[nowIndex].idle();
+		//parts[nowIndex].idle();
 	}
 	
 	//control

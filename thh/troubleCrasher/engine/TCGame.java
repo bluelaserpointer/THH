@@ -29,7 +29,7 @@ public class TCGame extends Game {
 	public static ScriptManager scriptManager;
 	public static GamePageSwitcher gamePageSwitcher;
 
-	public static JigsawViewer jigsawViewer;
+	public static JigsawViewer jigsawViewer = new JigsawViewer(6,3);
 
 	private Jigsaw testJigsaw;
 
@@ -43,22 +43,8 @@ public class TCGame extends Game {
     // Scripts
 		System.out.println("Initialized scriptManager");
 		resource = new Resource();
-		jigsawViewer = new JigsawViewer(6,7);
 		scriptManager = new ScriptManager("1");
 
-		// Scripts
-		// ScriptManager scriptManager = new ScriptManager("1");
-    
-		//UI
-//		jigsawViewer = new JigsawViewer(5, 5);
-//		jigsawViewer.setBGColor(Color.BLACK);
-//		jigsawViewer.setBounds(0, 0, 75*5, 75*5);
-//		jigsawViewer.board().setJigsaw(testJigsaw = new Jigsaw(JigsawEnum.L32).setGridPos(1, 1));
-//		GHQ.addGUIParts(jigsawViewer);
-//		GHQ.addGUIParts(new UIShowHideButton(jigsawViewer)).setBounds(750, 50, 100, 100).setBGColor(Color.LIGHT_GRAY);
-		//对话框使用例
-//		GHQ.addGUIParts(new AnimatedGHQTextArea().setText("\n111111111111111111111111111111111111111111111111111.")
-//				.setTextSpeed(3).setBounds(100, 100, 100, 100).setBGColor(Color.LIGHT_GRAY));
 	}
 
 	@Override

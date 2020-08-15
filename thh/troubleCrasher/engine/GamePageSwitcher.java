@@ -16,6 +16,7 @@ import gui.GUIParts;
 import gui.GUIPartsSwitcher;
 import paint.ImageFrame;
 import paint.rect.RectPaint;
+import troubleCrasher.jigsaw.JigsawEnum;
 import troubleCrasher.person.PersonEnum;
 import troubleCrasher.person.SceneEnum;
 
@@ -110,40 +111,22 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				// 游戏功能栏及其展开画面
 				this.appendLast(new GUIPartsSwitcher(4, PROFILE_SESSION) {
 					{
-						setName("ACTIVITY_SESSION");
-						this.setBounds(0, 0, 70, 768);
+						setName("LEFT_MENU_AND_CONTENT");
+						this.setBounds(0, 0, 430, 768);
 						this.setBGImage("thhimage/UtilityBar.png");
 
-						this.appendLast(new GUIParts() {
-
-							final GUIParts profileScrBtn = getSwitcherButton(PROFILE_SESSION)
+						this.appendLast(getSwitcherButton(PROFILE_SESSION)
 									.setBGImage("thhimage/UtilityBar_Profile_Chosen.png").setName("profileScrBtn")
-									.setBounds(10, 10, 50, 50),
-									boxScrBtn = getSwitcherButton(BOX_SESSION)
+									.setBounds(10, 10, 50, 50));
+						this.appendLast(getSwitcherButton(BOX_SESSION)
 											.setBGImage("thhimage/UtilityBar_Resource.png").setName("boxScrBtn")
-											.setBounds(10, 80, 50, 50),
-									settingScrBtn = getSwitcherButton(SETTING_SESSION)
+											.setBounds(10, 80, 50, 50));
+						this.appendLast(getSwitcherButton(SETTING_SESSION)
 											.setBGImage("thhimage/UtilityBar_Settings.png").setName("settingScrBtn")
-											.setBounds(10, 160, 50, 50),
-									saveScrBtn = getSwitcherButton(SAVE_SESSION)
+											.setBounds(10, 160, 50, 50));
+						this.appendLast(getSwitcherButton(SAVE_SESSION)
 											.setBGImage("thhimage/UtilityBar_Save.png").setName("saveScrBtn")
-											.setBounds(10, 230, 50, 50);
-							// quitScrBtn =
-							// getSwitcherButton(SETTINGSCREEN).setBGImage("thhimage/veg_leaf2.png")
-							// .setName("settingScrBtn").setBounds(512, 400, 100, 200);
-							// TODO: Add quit
-							// button
-							{
-								// this.addNewLine(gameScrBtn, settingsScrBtn);
-								this.setName("PROFILE_MENU_TAB");
-								this.appendFirst(profileScrBtn);
-								this.appendFirst(boxScrBtn);
-								this.appendFirst(settingScrBtn);
-								this.appendFirst(saveScrBtn);
-
-							}
-
-						});
+											.setBounds(10, 230, 50, 50));
 
 						set(PROFILE_SESSION, new GUIPartsSwitcher(5, 0) {
 							{
@@ -225,8 +208,31 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 						set(BOX_SESSION, new GUIParts() {
 							{
 								setName("BOX_SESSION");
-								setBGColor(Color.yellow);
 								setBounds(70, 0, 360, 768);
+								this.addLast(TCGame.jigsawViewer).setBGColor(Color.LIGHT_GRAY).setBounds(100, 600, JigsawEnum.JIGSAW_GRID_SIZE*6, JigsawEnum.JIGSAW_GRID_SIZE*3);
+							}
+							ImageFrame heartIF = ImageFrame.create("thhimage/Heart.png");
+							ImageFrame staminaIF = ImageFrame.create("thhimage/Stamina.png");
+							ImageFrame heartGaugeIF = ImageFrame.create("thhimage/Life_Gauge.png");
+							ImageFrame staminaGaugeIF = ImageFrame.create("thhimage/Stamina_Gauge.png");
+							@Override
+							public void paint() {
+								super.paint();
+								GHQ.getG2D(Color.BLACK).setFont(GHQ.initialFont.deriveFont(25F));
+								GHQ.getG2D().drawString("金钱$      " + TCGame.resource.getMoney(), 100, 50);
+								GHQ.getG2D().drawString("行动点", 100, 100);
+								GHQ.getG2D().drawString("生命值", 100, 155);
+								for(int i = 0; i < 4; ++i) {
+									staminaGaugeIF.dotPaint(220 + i*55, 93);
+									if(i >= TCGame.resource.getStamina())
+										staminaIF.dotPaint(220 + i*55, 93);
+								}
+								for(int i = 0; i < 3; ++i) {
+									heartGaugeIF.dotPaint(220 + i*55, 145);
+									if(i >= TCGame.resource.getHp())
+										heartIF.dotPaint(220 + i*55, 145);
+								}
+								GHQ.getG2D().setFont(GHQ.initialFont);
 							}
 						});
 						set(SETTING_SESSION, new GUIParts() {

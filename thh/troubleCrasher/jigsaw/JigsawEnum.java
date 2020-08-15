@@ -12,7 +12,7 @@ public enum JigsawEnum {
 	L32(3, 2, true, true, true, true, false, false);
 	
 	public final GridBitSet gridBitSet;
-	public static final int JIGSAW_GRID_SIZE = 75;
+	public static final int JIGSAW_GRID_SIZE = 50;
 	JigsawEnum(int xTiles, int yTiles, boolean... tileBits) {
 		this.gridBitSet = new GridBitSet(xTiles, yTiles, JIGSAW_GRID_SIZE, tileBits);
 	}
