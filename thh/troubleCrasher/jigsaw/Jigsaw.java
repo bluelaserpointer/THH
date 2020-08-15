@@ -31,12 +31,10 @@ public class Jigsaw {
 	
 	//idle
 	public void paint(int left, int top) {
-		final int gridSize = gridSize();
-		this.iterateTiles((gridX, gridY) -> type.gridBitSet.paintGrid(new ColorFilling(Color.GRAY), gridX, gridY,
-				left + jigsawGridX*gridSize, top + jigsawGridY*gridSize));
+		this.iterateTiles_boardOrigin((gridX, gridY) -> type.gridBitSet.paintGrid(new ColorFilling(Color.GRAY), gridX, gridY, left, top));
 	}
 	
-	public void iterateTiles(BiConsumer<Integer, Integer> consumer) {
+	public void iterateTiles_boardOrigin(BiConsumer<Integer, Integer> consumer) {
 		final int xGrids = xGrids(), yGrids = yGrids();
 		for(int xi = 0; xi < xGrids; ++xi) {
 			for(int yi = 0; yi < yGrids; ++yi) {

@@ -17,10 +17,14 @@ public class JigsawBoard {
 	}
 	
 	public boolean jigsawsIntersects(Jigsaw jigSaw) {
+		final int jigsawGridX = jigSaw.gridX(), jigSawGridY = jigSaw.gridY();
+//		System.out.println("test at " + jigsawGridX + ", " + jigSawGridY);
+		if(!inGrids(jigsawGridX, jigSawGridY)) //left-top point is out of bounds
+			return true;
 		for(int xi = 0; xi < jigSaw.xGrids(); ++xi) {
 			for(int yi = 0; yi < jigSaw.yGrids(); ++yi) {
-				if(bits.get((jigSaw.gridX() + xi) + (jigSaw.gridY() + yi)*jigSaw.xGrids())) {
-//					System.out.println("fail at " + xi + ", " + yi);
+//				System.out.println("at " + (jigsawGridX + xi) + ", " + (jigSawGridY + yi) + " hasTile: " + jigSaw.hasTile(xi, yi) + " bits: " + bits.get(jigsawGridX + xi + xGrids()*(jigSawGridY + yi)));
+				if(jigSaw.hasTile(xi, yi) && this.isBlocked(jigsawGridX + xi, jigSawGridY + yi)) {
 					return true;
 				}
 			}
@@ -34,7 +38,10 @@ public class JigsawBoard {
 			return false;
 		for(int xi = 0; xi < jigsaw.xGrids(); ++xi) {
 			for(int yi = 0; yi < jigsaw.yGrids(); ++yi) {
-				bits.set((jigsaw.gridX() + xi) + (jigsaw.gridY() + yi)*jigsaw.xGrids());
+				if(jigsaw.hasTile(xi ,yi)) {
+//					System.out.println("set " + (jigsaw.gridX() + xi) + ", " + (jigsaw.gridY() + yi));
+					bits.set((jigsaw.gridX() + xi) + (jigsaw.gridY() + yi)*xGrids());
+				}
 			}
 		}
 		jigsaws.add(jigsaw);
@@ -44,8 +51,11 @@ public class JigsawBoard {
 		return jigsaws.remove(jigsaw);
 	}
 	
-	public boolean hasTile(int gridX, int gridY) {
-		return bits.get(gridX + gridY*xGrids());
+	public boolean inGrids(int gridX, int gridY) {
+		return 0 <= gridX && gridX < xGrids() && 0 <= gridY && gridY < yGrids();
+	}
+	public boolean isBlocked(int gridX, int gridY) {
+		return !inGrids(gridX, gridY) || bits.get(gridX + gridY*xGrids());
 	}
 	public int xGrids() {
 		return xGrids;
