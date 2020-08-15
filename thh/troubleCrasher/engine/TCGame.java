@@ -41,14 +41,8 @@ public class TCGame extends Game {
 		super(gamePageSwitcher = new GamePageSwitcher()); // TODO: change it!!
 		
     // Scripts
-		 try {
-			System.out.println("Initialized scriptManager");
-			ScriptManager scriptManager = new ScriptManager("1");
-//			System.out.println()
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.out.println("Initialized scriptManager");
+		scriptManager = new ScriptManager("1");
 
 		// Scripts
 		// ScriptManager scriptManager = new ScriptManager("1");
