@@ -27,6 +27,7 @@ public class TCGame extends Game {
 	public static Resource resource;
 	public static StoryMechanicManager storyMechanicManager;
 	public static ScriptManager scriptManager;
+	public static GamePageSwitcher gamePageSwitcher;
 
 	public static JigsawViewer jigsawViewer;
 
@@ -37,10 +38,11 @@ public class TCGame extends Game {
 	}
 
 	public TCGame() throws IOException {
-		super(new GamePageSwitcher()); // TODO: change it!!
+		super(gamePageSwitcher = new GamePageSwitcher()); // TODO: change it!!
 		
     // Scripts
 		 try {
+			System.out.println("Initialized scriptManager");
 			ScriptManager scriptManager = new ScriptManager("1");
 //			System.out.println()
 		} catch (IOException e) {
