@@ -11,9 +11,7 @@ import java.util.Scanner;
 
 import core.Game;
 import troubleCrasher.engine.TCGame;
-import troubleCrasher.resource.Resource;
 
-// Parsing scripts
 public class ScriptManager {
 
 	// STARTLINE, OPTIONS, OPTION, ADD, DELETE, IF, LIST, END
@@ -22,7 +20,6 @@ public class ScriptManager {
     public BufferedReader buffReader; 
     private String pathToScripts = "troubleCrasher/story/scripts/";
     private String currentFile = "";
-    private Resource resource = TCGame.resource;
 	private StoryMechanicManager storyMechanicManager = TCGame.storyMechanicManager;
 
     public List<String> currentOptions = new ArrayList();
@@ -159,7 +156,7 @@ public class ScriptManager {
 				System.out.println("!!COMMENT!!: " + funcLine);
 				break;
 		}
-		System.out.println("Out of switch");
+		TCGame.resource.getAll();
 	}
 
 	
@@ -179,19 +176,21 @@ public class ScriptManager {
 	{
 		String[] parsedLine = funcLine.split("#");
 		
-		String delResource = parsedLine[3];
+		System.out.println("Deleting item");
+		
+		String delresource = parsedLine[3];
 		int delQuantity = Integer.parseInt(parsedLine[4]);
 		
-		switch(delResource)
+		switch(delresource)
 		{
 			case "STAMINA":
-				return resource.delStamina(delQuantity);
+				return TCGame.resource.delStamina(delQuantity);
 			case "MONEY":
-				return resource.delMoney(delQuantity);
+				return TCGame.resource.delMoney(delQuantity);
 			case "HP":
-				return resource.delHp(delQuantity);
+				return TCGame.resource.delHp(delQuantity);
 			case "ENEMYHP":
-				return resource.delEnemeyHp(delQuantity);
+				return TCGame.resource.delEnemeyHp(delQuantity);
 			default:
 				return false;
 		}
@@ -202,6 +201,8 @@ public class ScriptManager {
 		String[] parsedLine = funcLine.split("#");
 		
 		int dc = Integer.parseInt(parsedLine[2]);
+		
+		System.out.println("Parsing DC");
 		
 		if(dc > 6)
 		{
@@ -217,14 +218,18 @@ public class ScriptManager {
 		
 		int dc = Integer.parseInt(parsedLine[2]);
 		
-		resource.setEnemyAc(dc);
+		System.out.println("Parsing AC");
+		
+		TCGame.resource.setEnemyAc(dc);
 	}
 	
 	private void parseBg(String funcLine)
 	{
 		String[] parsedLine = funcLine.split("#");
-		
+				
 		int bg = Integer.parseInt(parsedLine[2]);
+		
+		System.out.println("Parsing BG");
 		
 		// TODO: Needs to change background here.
 	}
@@ -254,7 +259,7 @@ public class ScriptManager {
 		String itemName = funcLine[5];
 		if(funcLine[3] == "HAS" && funcLine[4] == "BOX")
 		{
-			if(resource.hasBoxWithName(itemName))
+			if(TCGame.resource.hasBoxWithName(itemName))
 			{
 				return true;
 			}
@@ -347,13 +352,39 @@ public class ScriptManager {
 		if(currentOptions.size() > 0)
 		{
 	        System.out.println("Before generateOptions");
+	        	        
+	        List<String> sendOptions = new ArrayList();
 	        
-			TCGame.gamePageSwitcher.generateOptions(currentOptions);
-//	        chooseOption(optionIndex);
+ 	        for(String currOption: currentOptions)
+   	        {
+   	        	String filePath = parsePath(currentFile + "-" +  currOption.substring(7));
+   				
+   			    FileInputStream fin = new FileInputStream(filePath);
+   			    InputStreamReader reader = new InputStreamReader(fin);
+   			    buffReader = new BufferedReader(reader);
+   			    String tmp = "";
+   			    tmp = buffReader.readLine();
+   			    tmp = buffReader.readLine();
+   			    sendOptions.add(parseColon(tmp));
+   	        }
+	        
+			TCGame.gamePageSwitcher.generateOptions(sendOptions);
+			
 	        // TODO: Needs to make available and unavailable options different
 		}
 	}
 
+	private String parseColon(String currLine)
+	{
+		if(currLine.contains(":"))
+		{
+			return currLine.split(":")[1];	
+		}else {
+			return currLine.split("：")[1];
+		}
+		
+	}
+	
 	/**
 	 * Chooses option
 	 * @param index
@@ -370,16 +401,10 @@ public class ScriptManager {
 		try {
 			parseLine(buffReader.readLine());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-//	public void setScriptManager(ScriptManager scriptManager)
-//	{
-//		TCGame.setScriptManager(scriptManager);
-//	}
-//	
+
 	
 	private void parseList(String funcLine)
 	{
@@ -390,6 +415,7 @@ public class ScriptManager {
 
 	private void parseAdd(String funcLine)
 	{
+		//  TCGame.resource.
 		//	return false;
 	}
 }

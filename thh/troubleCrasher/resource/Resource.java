@@ -10,6 +10,22 @@ public class Resource {
 	
 	int enemyHp;
 	
+	int enemyAc;
+	int selfAc;
+	int selfDc;
+
+	public Resource() {};
+	
+	public void getAll()
+	{
+//		System.out.println("In getAll");
+		for(Jigsaw jigsaw:TCGame.jigsawViewer.board().jigsaws())
+		{
+			System.out.println(((Box)jigsaw).getBoxName());
+		}
+	}
+
+	
 	public int getEnemyHp() {
 		return enemyHp;
 	}
@@ -18,9 +34,6 @@ public class Resource {
 		this.enemyHp = enemyHp;
 	}
 
-	int enemyAc;
-	int selfAc;
-	int selfDc;
 
 	public int getEnemyAc() {
 		return enemyAc;
@@ -75,6 +88,10 @@ public class Resource {
 			}
 		}
 		return false;
+	}
+	
+	public void addBoxWithName(String name)
+	{
 	}
 
 
