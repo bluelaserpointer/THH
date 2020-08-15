@@ -9,7 +9,8 @@ public class GHQTextArea extends GUIParts {
 	{
 		jta.setOpaque(false);
 		jta.setLineWrap(true);
-		jta.setFont(GHQ.initialFont.deriveFont(40F));
+		if(GHQ.initialFont != null)
+			jta.setFont(GHQ.initialFont.deriveFont(40F));
 	}
 	@Override
 	public void paint() {
