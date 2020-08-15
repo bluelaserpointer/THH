@@ -230,7 +230,7 @@ public class Engine_THH1 extends Game {
 		focusIF.dotPaint(MOUSE_X, MOUSE_Y);
 		//editor
 		if(s_keyL.pullEvent(VK_F6)) {
-			editor.flit();
+			editor.flip();
 		}
 		if(!editor.isEnabled()){ //game GUI
 			GHQ.translateForGUI(true);

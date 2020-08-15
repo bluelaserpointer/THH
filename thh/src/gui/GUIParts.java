@@ -257,7 +257,7 @@ public class GUIParts extends GHQObject implements DragIO, HasUIBoundingBox {
 		}
 		return stack;
 	}
-	public void flit() {
+	public void flip() {
 		if(isEnabled)
 			disable();
 		else

@@ -10,6 +10,13 @@ public class GridBitSet extends GridPainter {
 		super(stage, gridSize);
 		bitSet = new BitSet(super.xGrids*super.yGrids);
 	}
+	public GridBitSet(int xGrids, int yGrids, int gridSize, boolean... bits) {
+		super(xGrids, yGrids, gridSize);
+		bitSet = new BitSet(xGrids*yGrids);
+		for(int i = 0; i < bits.length; ++i) {
+			bitSet.set(i, bits[i]);
+		}
+	}
 	
 	//control
 	public void set_cellPos(int xPos, int yPos, boolean bool) {

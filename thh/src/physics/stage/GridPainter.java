@@ -17,6 +17,11 @@ public class GridPainter implements HasGrid {
 		xGrids = stage.width()/gridSize + 1;
 		yGrids = stage.height()/gridSize + 1;
 	}
+	public GridPainter(int xGrids, int yGrids, int gridSize) {
+		this.gridSize = gridSize;
+		this.xGrids = xGrids;
+		this.yGrids = yGrids;
+	}
 	//control
 	public void drawGrid(Graphics2D g2, int xPos, int yPos) {
 		g2.drawRect(xPos*gridSize, yPos*gridSize, gridSize, gridSize);
@@ -26,6 +31,15 @@ public class GridPainter implements HasGrid {
 	}
 	public void paintGrid(RectPaint rectPaint, int xPos, int yPos) {
 		rectPaint.rectPaint(xPos*gridSize, yPos*gridSize, gridSize, gridSize);
+	}
+	public void drawGrid(Graphics2D g2, int xPos, int yPos, int left, int top) {
+		g2.drawRect(left + xPos*gridSize, top + yPos*gridSize, gridSize, gridSize);
+	}
+	public void fillGrid(Graphics2D g2, int xPos, int yPos, int left, int top) {
+		g2.fillRect(left + xPos*gridSize, top + yPos*gridSize, gridSize, gridSize);
+	}
+	public void paintGrid(RectPaint rectPaint, int xPos, int yPos, int left, int top) {
+		rectPaint.rectPaint(left + xPos*gridSize, top + yPos*gridSize, gridSize, gridSize);
 	}
 	public void drawGrid_fieldCod(Graphics2D g2, int mouseX, int mouseY) {
 		drawGrid(g2, mouseX/gridSize, mouseY/gridSize);
