@@ -8,7 +8,7 @@ public class Resource {
 	int stamina;	// 单纯做事情消耗
 	int money;	// 买东西
 	
-	int enemyHp;	// 战斗
+	int enemyHp = 2;	// 战斗
 	
 	int enemyAc;
 	int selfAc;
@@ -18,7 +18,6 @@ public class Resource {
 	
 	public void getAll()
 	{
-//		System.out.println("In getAll");
 		for(Jigsaw jigsaw:TCGame.jigsawViewer.board().jigsaws())
 		{
 			System.out.println(((Box)jigsaw).getBoxName());
@@ -92,6 +91,21 @@ public class Resource {
 	
 	public void addBoxWithName(String name)
 	{
+		switch(name)
+		{
+			case "伤口":
+				// TODO: rand
+//				1*1
+//				1*2
+//				1*3 + 1
+				// TODO: 
+				break;
+			case "A":
+				break;
+			case "B":
+				break;
+		}
+		
 	}
 
 
@@ -127,7 +141,7 @@ public class Resource {
 	public boolean delStamina(int quantity)
 	{
 		int res = this.stamina - quantity;
-		if(res < 0)
+		if(res <= 0)
 		{
 			return false;
 		}else {
@@ -139,7 +153,7 @@ public class Resource {
 	public boolean delMoney(int quantity)
 	{
 		int res = this.money - quantity;
-		if(res < 0)
+		if(res <= 0)
 		{
 			return false;
 		}else {
@@ -151,8 +165,10 @@ public class Resource {
 	public boolean delHp(int quantity)
 	{
 		int res = this.hp - quantity;
-		if(res < 0)
+		if(res <= 0)
 		{
+			this.setHp(0);
+			// TODO: 判断玩家是否死亡
 			return false;
 		}else {
 			this.setHp(res);
@@ -163,7 +179,8 @@ public class Resource {
 	public boolean delEnemeyHp(int quantity)
 	{
 		int res = this.enemyHp - quantity;
-		if(res < 0)
+		System.out.println(this.enemyHp + " - " + quantity + " = " + res);
+		if(res <= 0)
 		{
 			this.setEnemyHp(0);
 			return false;
