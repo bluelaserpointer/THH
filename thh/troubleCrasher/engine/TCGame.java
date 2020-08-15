@@ -63,6 +63,10 @@ public class TCGame extends Game {
 	public String getTitleName() {
 		return "TroubleCrusher";
 	}
+	@Override
+	public String getIconPass() {
+		return "thhimage\\searchBox.png";
+	}
 		
 	public static Resource getResource() {
 		return resource;

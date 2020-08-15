@@ -3,6 +3,7 @@ package troubleCrasher.engine;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 // import org.w3c.dom.events.MouseEvent;
@@ -38,6 +39,8 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				.disable();
 		nextButton = new GUIParts() {
 			public boolean clicked(MouseEvent event) {
+				if(!this.isEnabled)
+					return super.clicked(event);
 				// TODO: select option EDWARD
 				System.out.println("Button clicked");
 				try {
@@ -362,28 +365,38 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		this.Dialogue.setText(text);
 	}
 
+	public void showNextButton() {
+		nextButton.setBGColor(Color.WHITE);
+	}
+	private final LinkedList<GUIParts> appendedGUIOption = new LinkedList<>();
 	public void generateOptions(List<String> options) {
 		// List<AnimatedGHQTextArea> guiOptions = new ArrayList<AnimatedGHQTextArea>();
+
+		for(GUIParts partsToDelete : appendedGUIOption) {
+			this.get(GAMESCREEN).remove(partsToDelete);
+		}
+		appendedGUIOption.clear();
 		
+		if(options == null) { //just delete, don't add new button
+			return;
+		}
 		nextButton.disable();
-		GUIParts button = nextButton;
-        System.out.println("In generateOptions");
+        System.out.println("In generateOptions ");
 		for (int i = 0; i < options.size(); i++) {
 			AnimatedGHQTextArea guiOption = new AnimatedGHQTextArea() {
 				@Override
 				public boolean clicked(MouseEvent event) {
 					// TODO: select option EDWARD
 					System.out.println(Integer.valueOf(this.name()));
-					System.out.println("Before enable");
-					button.enable();
-					System.out.println("After enable");
+					nextButton.enable();
 					
 					TCGame.scriptManager.chooseOption(Integer.valueOf(this.name())+ 1);
-					generateOptions(new ArrayList());
+					generateOptions(null);
 
 					return super.clicked(event);
 				}
 			};
+			appendedGUIOption.add(guiOption);
 			guiOption.setBGColor(Color.red);
 			guiOption.setText(options.get(i));
 			guiOption.setName(String.valueOf(i));
