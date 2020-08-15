@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 import core.Game;
 import troubleCrasher.engine.TCGame;
+import troubleCrasher.person.*;
 
 public class ScriptManager {
 
@@ -100,9 +101,27 @@ public class ScriptManager {
 	
 	public void nextLine(String currText)
 	{
-		TCGame.gamePageSwitcher.setDialogue(currText);
+		PersonEnum person = findPersonWithName(parseColonHead(currText));
+		TCGame.gamePageSwitcher.setDialogue(parseColonContent(currText), person);
 	}
-		
+	
+	
+	public PersonEnum findPersonWithName(String name)
+	{
+		System.out.println("In findPersonWithName");
+		for(PersonEnum person: PersonEnum.values())
+		{
+			System.out.println(person.name);
+			if(person.name.contentEquals(name))
+			{
+				System.out.println("Match");
+				return person;
+			}
+		}
+		return null;
+	}
+	
+	
 	/**
 	 * Parses function
 	 * @param funcLine
@@ -365,7 +384,7 @@ public class ScriptManager {
    			    String tmp = "";
    			    tmp = buffReader.readLine();
    			    tmp = buffReader.readLine();
-   			    sendOptions.add(parseColon(tmp));
+   			    sendOptions.add(parseColonContent(tmp));
    	        }
 	        
 			TCGame.gamePageSwitcher.generateOptions(sendOptions);
@@ -374,13 +393,24 @@ public class ScriptManager {
 		}
 	}
 
-	private String parseColon(String currLine)
+	private String parseColonContent(String currLine)
 	{
 		if(currLine.contains(":"))
 		{
 			return currLine.split(":")[1];	
 		}else {
 			return currLine.split("：")[1];
+		}
+		
+	}
+	
+	private String parseColonHead(String currLine)
+	{
+		if(currLine.contains(":"))
+		{
+			return currLine.split(":")[0];	
+		}else {
+			return currLine.split("：")[0];
 		}
 		
 	}

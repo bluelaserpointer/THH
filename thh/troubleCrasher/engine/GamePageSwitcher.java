@@ -150,7 +150,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								setName("PROFILE_SESSION");
 								this.setBounds(70, 0, 70, 768);
 								// 一个人物一个框
-								for (int i = 0; i < PersonEnum.values().length; i++) {
+								for (int i = 0; i < PersonEnum.values().length - 2; i++) {
 									final GUIParts NPC_Button = getSwitcherButton(i)
 											.setBGImage("thhimage/veg_leaf2.png").setName("NPC_1ScrBtn")
 											.setBounds(75, 20 + i * 70, 60, 60);
@@ -287,6 +287,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 
 	// 改变说话人物图片以及对话，讲话的人
 	public void setDialogue(String text, PersonEnum Speaker) {
+		System.out.println(Speaker.name);
 		this.Dialogue.setText(text);
 		this.Speaker.setText(Speaker.name);
 		this.NPC_PART.setBGImage(Speaker.personImage);
