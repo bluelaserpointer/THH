@@ -42,9 +42,17 @@ public class JigsawViewer extends GUIParts {
 		}
 	}
 	@Override
-	public boolean clicked(MouseEvent e) {
+	public boolean clicked(MouseEvent e) { //leftClick:place or take, rightClick:rotate the hooking jigsaw
 		final boolean consumed = super.clicked(e);
-		placeHookingJigsaw();
+		if(e.getButton() == MouseEvent.BUTTON1) {
+			if(hookingJigsaw != null) { //拿进
+				placeHookingJigsaw();
+			} else { //拿出
+				if(board().isBlocked((GHQ.mouseScreenX() - left()) / JigsawEnum.JIGSAW_GRID_SIZE, (GHQ.mouseScreenY() - top()) / JigsawEnum.JIGSAW_GRID_SIZE)) {
+					
+				}
+			}
+		}
 		return consumed;
 	}
 	
