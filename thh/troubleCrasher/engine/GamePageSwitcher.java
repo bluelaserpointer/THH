@@ -36,9 +36,9 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		Speaker = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setBounds(477, 540, 500, 30).setBGColor(Color.yellow)
 				.disable();
 		nextButton = new GUIParts() {
-			
+
 			public boolean clicked(MouseEvent event) {
-				if(!this.isEnabled)
+				if (!this.isEnabled)
 					return super.clicked(event);
 				// TODO: select option EDWARD
 				System.out.println("Button clicked");
@@ -285,33 +285,33 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		this.Speaker.setText(speaker);
 	}
 
-	public void setDialogue(String text) {
+	// 改变说话人物图片以及对话，讲话的人
+	public void setDialogue(String text, PersonEnum Speaker) {
 		this.Dialogue.setText(text);
+		this.Speaker.setText(Speaker.name);
+		this.NPC_PART.setBGImage(Speaker.personImage);
 	}
 
 	public void setNPCImage(String img) {
 		this.NPC_PART.setBGImage(img);
 	}
 
-	public void setSceneImage(String img) {
-		this.SCENE_PART.setBGImage(img);
+	// 调换场景图片
+	public void setSceneImage(SceneEnum Scene) {
+		this.SCENE_PART.setBGImage(Scene.sceneImage);
 	}
 
-	
 	private final LinkedList<GUIParts> appendedGUIOption = new LinkedList<>();
-	
+
 	public void generateOptions(List<String> options) {
 		// List<AnimatedGHQTextArea> guiOptions = new ArrayList<AnimatedGHQTextArea>();
-		
-		
-		for(GUIParts partsToDelete: appendedGUIOption)
-		{
+
+		for (GUIParts partsToDelete : appendedGUIOption) {
 			this.get(GAMESCREEN).remove(partsToDelete);
 		}
 		appendedGUIOption.clear();
-		
-		if(options == null)
-		{
+
+		if (options == null) {
 			return;
 		}
 		nextButton.disable();
@@ -320,16 +320,16 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				@Override
 				public boolean clicked(MouseEvent event) {
 					// TODO: selectoption EDWARD
-//					System.out.println(Integer.valueOf(this.name()));
+					// System.out.println(Integer.valueOf(this.name()));
 					TCGame.scriptManager.chooseOption(Integer.valueOf(this.name()) + 1);
 					nextButton.enable();
 					generateOptions(null);
 					return super.clicked(event);
 				}
 			};
-			
+
 			appendedGUIOption.add(guiOption);
-			
+
 			guiOption.setBGColor(Color.red);
 			guiOption.setText(options.get(i));
 			guiOption.setName(String.valueOf(i));
