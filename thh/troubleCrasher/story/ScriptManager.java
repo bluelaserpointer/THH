@@ -54,7 +54,6 @@ public class ScriptManager {
 	    String currLine = "";
 	    currLine = buffReader.readLine();
 		parseLine(currLine);
-
 	}
 	
 	/**
@@ -97,7 +96,7 @@ public class ScriptManager {
 	public void parseFunc(String funcLine) throws IOException, InterruptedException
 	{		
 		String[] parsedLine = funcLine.split("#");
-		// System.out.println("In parseFunc");
+		System.out.println("In parseFunc");
 		switch(parsedLine[1])
 		{
 			case "OPTIONS":
@@ -218,7 +217,7 @@ public class ScriptManager {
 	private void parseIf(String funcLine) throws IOException, InterruptedException {
 		String[] parsedLine = funcLine.split("#");
 		// Mocking result (true or false)
-		// System.out.println("In parseIf fulFill: " + funcLine);
+		System.out.println("In parseIf fulFill: " + funcLine);
 		
 		Scanner scan = new Scanner(System.in);  //创建Scanner扫描器来封装System类的in输入流
         int fulfill = scan.nextInt();
@@ -288,7 +287,7 @@ public class ScriptManager {
 		String currLine = "";
 		optionsInit();
 		
-		// System.out.println("In parseOptions");
+		System.out.println("In parseOptions");
 		while(!(currLine = buffReader.readLine()).contains("#ENDOPTIONS"))
 		{
 			if(currLine.charAt(0) == '#')
