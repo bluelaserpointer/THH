@@ -1,31 +1,80 @@
 package troubleCrasher.resource;
 
-import java.util.LinkedList;
-
-import troubleCrasher.jigsaw.JigsawBoard;
+import troubleCrasher.engine.TCGame;
+import troubleCrasher.jigsaw.Jigsaw;
 
 public class Resource {
-	LinkedList<JigsawBoard> jigsawBoardList = new LinkedList();
 	int hp;
 	int stamina;
 	int money;
 	
+	int enemyHp;
 	
-	public Resource(LinkedList<JigsawBoard> jigsawBoardList, int hp, int stamina, int money) {
-		this.jigsawBoardList = jigsawBoardList;
+	public int getEnemyHp() {
+		return enemyHp;
+	}
+
+	public void setEnemyHp(int enemyHp) {
+		this.enemyHp = enemyHp;
+	}
+
+	int enemyAc;
+	int selfAc;
+	int selfDc;
+
+	public int getEnemyAc() {
+		return enemyAc;
+	}
+
+	public void setEnemyAc(int enemyAc) {
+		this.enemyAc = enemyAc;
+	}
+
+	public int getSelfAc() {
+		return selfAc;
+	}
+
+	public void setSelfAc(int selfAc) {
+		this.selfAc = selfAc;
+	}
+
+	public int getSelfDc() {
+		return selfDc;
+	}
+
+	public void setSelfDc(int selfDc) {
+		this.selfDc = selfDc;
+	}
+
+		
+	public Resource(int hp, int stamina, int money) {
 		this.hp = hp;
 		this.stamina = stamina;
 		this.money = money;
 	}
 
-
-	public LinkedList<JigsawBoard> getJigsawBoardList() {
-		return jigsawBoardList;
+	public boolean hasBox(Box box)
+	{
+		for(Jigsaw jigsaw:TCGame.jigsawViewer.board().jigsaws())
+		{
+			if(jigsaw.equals(box))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
-
-
-	public void setJigsawBoardList(LinkedList<JigsawBoard> jigsawBoardList) {
-		this.jigsawBoardList = jigsawBoardList;
+	
+	public boolean hasBoxWithName(String name)
+	{
+		for(Jigsaw jigsaw:TCGame.jigsawViewer.board().jigsaws())
+		{
+			if(((Box)jigsaw).getBoxName().equals(name))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 
@@ -58,5 +107,53 @@ public class Resource {
 		this.money = money;
 	}
 	
+	public boolean delStamina(int quantity)
+	{
+		int res = this.stamina - quantity;
+		if(res < 0)
+		{
+			return false;
+		}else {
+			this.setStamina(res);
+			return true;
+		}
+	}
+	
+	public boolean delMoney(int quantity)
+	{
+		int res = this.money - quantity;
+		if(res < 0)
+		{
+			return false;
+		}else {
+			this.setMoney(res);
+			return true;
+		}
+	}
+	
+	public boolean delHp(int quantity)
+	{
+		int res = this.hp - quantity;
+		if(res < 0)
+		{
+			return false;
+		}else {
+			this.setHp(res);
+			return true;
+		}
+	}
+	
+	public boolean delEnemeyHp(int quantity)
+	{
+		int res = this.enemyHp - quantity;
+		if(res < 0)
+		{
+			this.setEnemyHp(0);
+			return false;
+		}else {
+			this.setEnemyHp(res);
+			return true;
+		}
+	}
 
 }

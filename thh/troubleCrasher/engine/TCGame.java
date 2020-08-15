@@ -19,9 +19,15 @@ import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
 import troubleCrasher.jigsaw.JigsawViewer;
 
+import troubleCrasher.resource.Resource;
+
+
 public class TCGame extends Game {
-	
-	private JigsawViewer jigsawViewer;
+	public static Resource resource;
+	public static StoryMechanicManager storyMechanicManager;
+	public static ScriptManager scriptManager;
+
+	public static JigsawViewer jigsawViewer;
 	private Jigsaw testJigsaw;
 	public static void main(String args[]) throws IOException {
 		new GHQ(new TCGame(), 1000, 600);
@@ -31,7 +37,13 @@ public class TCGame extends Game {
 		super(new GUIPartsSwitcher(0, 0)); //TODO: change it!!
 		
     // Scripts
-		// ScriptManager scriptManager = new ScriptManager("1");
+		 try {
+			ScriptManager scriptManager = new ScriptManager("1");
+//			System.out.println()
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     
 		//UI
 //		jigsawViewer = new JigsawViewer(5, 5);
@@ -46,6 +58,22 @@ public class TCGame extends Game {
 		return "TroubleCrusher";
 	}
 		
+	public static Resource getResource() {
+		return resource;
+	}
+
+	public static JigsawViewer getJigsawViewer() {
+		return jigsawViewer;
+	}
+
+	public Jigsaw getTestJigsaw() {
+		return testJigsaw;
+	}
+
+	public static void setScriptManager(ScriptManager scriptManager) {
+		TCGame.scriptManager = scriptManager;
+	}
+
 	@Override
 	public GHQStage loadStage() {
 		return null;
