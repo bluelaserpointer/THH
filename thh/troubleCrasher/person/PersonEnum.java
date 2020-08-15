@@ -1,13 +1,15 @@
 package troubleCrasher.person;
 
 public enum PersonEnum {
-	BANKER("银行家", "thhimage/Focus.png", "没胡子。", null),
+	BANKER("银行家", "thhimage/Focus.png", "没胡子。", "thhimage/Unknown_Icon.png"),
 
-	CAPTAIN("警长", "thhimage/Captain.png", "代填", null), FARMER("农夫", "thhimage/Farmer.png", "代填", null),
-	DOCTOR("医生", "thhimage/Doctor.png", "代填", null), ANNOUNCER("播报员", "thhimage/Announcer.png", "代填", null),
-	NARRATAGE("旁白", "thhimage/Doctor.png", "代填", null),
-	YOUNGMAN("年轻人", "thhimage/Doctor.png", "代填", null);
-	
+	CAPTAIN("警长", "thhimage/Captain.png", "代填", "thhimage/Captain_Icon.png"),
+	FARMER("农夫", "thhimage/Farmer.png", "代填", "thhimage/Unknown_Icon.png"),
+	DOCTOR("医生", "thhimage/Doctor.png", "代填", "thhimage/Unknown_Icon.png"),
+	ANNOUNCER("播报员", "thhimage/Announcer.png", "代填", "thhimage/Unknown_Icon.png"),
+	NARRATAGE("旁白", "thhimage/Doctor.png", "代填", "thhimage/Unknown_Icon.png"),
+	YOUNGMAN("年轻人", "thhimage/Doctor.png", "代填", "thhimage/Unknown_Icon.png");
+
 	public final String name;
 	public final String personImage;
 	public final String description;
@@ -19,6 +21,5 @@ public enum PersonEnum {
 		this.description = description;
 		this.personIcon = personIcon;
 	}
-	
 
 }
