@@ -6,6 +6,7 @@ import java.util.List;
 
 // import org.w3c.dom.events.MouseEvent;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 import core.GHQ;
 import gui.AnimatedGHQTextArea;
@@ -34,7 +35,19 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				.setBGColor(Color.green).disable();
 		Speaker = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setBounds(477, 540, 500, 30).setBGColor(Color.yellow)
 				.disable();
-		nextButton = new GUIParts().setBGColor(Color.pink).setBounds(900, 698, 100, 50);
+		nextButton = new GUIParts() {
+			public boolean clicked(MouseEvent event) {
+				// TODO: select option EDWARD
+				System.out.println("Button clicked");
+				try {
+					TCGame.scriptManager.parseLine(TCGame.scriptManager.buffReader.readLine());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return super.clicked(event);
+			}
+		}.setBGColor(Color.pink).setBounds(900, 698, 100, 50);
 
 		DIALOGUE_SECTION = new GUIParts().setBGColor(Color.green).setBounds(430, 520, 1024, 768).appendLast(Speaker)
 				.appendLast(Dialogue.setText(
@@ -317,11 +330,9 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								.enable());
 
 						this.appendLast(nextButton);
-						// if (nextButton.clicked(e)) {
-
-						// }
-						// this.appendLast(DIALOGUE_SECTION);
-						// System.out.println(this.childList);
+						 
+						this.appendLast(DIALOGUE_SECTION);
+						System.out.println(this.childList);
 
 					}
 				});
@@ -335,8 +346,6 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				setBGColor(Color.red);
 			}
 		});
-
-		// 1.
 
 		GHQ.addGUIParts(this);
 	}
@@ -355,7 +364,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 			AnimatedGHQTextArea guiOption = new AnimatedGHQTextArea() {
 				@Override
 				public boolean clicked(MouseEvent event) {
-					// TODO: selectoption EDWARD
+					// TODO: select option EDWARD
 					System.out.println(Integer.valueOf(this.name()));
 					return super.clicked(event);
 				}

@@ -45,18 +45,8 @@ public class ScriptManager {
 	    
 	    buffReader = new BufferedReader(reader);
 	    String currLine = "";
-	    while((currLine = buffReader.readLine())!=null){
-	    	try {
-				parseLine(currLine);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    }
-	    buffReader.close();
+	    currLine = buffReader.readLine();
+		parseLine(currLine);
 	}
 	
 	/**
@@ -65,30 +55,31 @@ public class ScriptManager {
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
-	public void parseLine(String currLine) throws IOException, InterruptedException {
+	public void parseLine(String currLine){
 		System.out.println(currLine);
 		if(currLine.charAt(0) == '#')
 		{
-			parseFunc(currLine);
-		}
-		if((currLine = buffReader.readLine()) != null)
-		{
-			waitLine();
-			parseLine(currLine);
+			try {
+				parseFunc(currLine);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else {
+			String[] parsedLine = currLine.split("：");
+			nextLine(parsedLine[2]);
 		}
 	}
 	
-	/**
-	 * Simply waits for user signal, such as touching screen
-	 * @throws InterruptedException 
-	 */
-	private void waitLine() throws InterruptedException
+	public void nextLine(String currText)
 	{
-		Thread.currentThread();
-		Thread.sleep(0);
+		
+		TCGame.gamePageSwitcher.setDialogue(currText);
 	}
-	
-	
+		
 	/**
 	 * Parses function
 	 * @param funcLine
@@ -128,7 +119,7 @@ public class ScriptManager {
 				break;
 		}
 	}
-	
+
 	
 	/**
 	 * Parses if statements
