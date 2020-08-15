@@ -2,10 +2,12 @@ package troubleCrasher.engine;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 // import org.w3c.dom.events.MouseEvent;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 import core.GHQ;
 import gui.AnimatedGHQTextArea;
@@ -35,6 +37,20 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				.disable();
 		nextButton = new GUIParts() {
 			
+			public boolean clicked(MouseEvent event) {
+				if(!this.isEnabled)
+					return super.clicked(event);
+				// TODO: select option EDWARD
+				System.out.println("Button clicked");
+				try {
+					TCGame.scriptManager.parseLine(TCGame.scriptManager.buffReader.readLine());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return super.clicked(event);
+			}
+
 		}.setBGColor(Color.pink).setBounds(900, 698, 100, 50);
 		NPC_PART = new GUIParts().setName("NPC_IMAGE").setBounds(627, 220, 200, 300)
 				.setBGImage(PersonEnum.CAPTAIN.personImage);
@@ -270,7 +286,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 	}
 
 	public void setDialogue(String text) {
-		this.Speaker.setText(text);
+		this.Dialogue.setText(text);
 	}
 
 	public void setNPCImage(String img) {
@@ -281,17 +297,39 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		this.SCENE_PART.setBGImage(img);
 	}
 
+	
+	private final LinkedList<GUIParts> appendedGUIOption = new LinkedList<>();
+	
 	public void generateOptions(List<String> options) {
 		// List<AnimatedGHQTextArea> guiOptions = new ArrayList<AnimatedGHQTextArea>();
+		
+		
+		for(GUIParts partsToDelete: appendedGUIOption)
+		{
+			this.get(GAMESCREEN).remove(partsToDelete);
+		}
+		appendedGUIOption.clear();
+		
+		if(options == null)
+		{
+			return;
+		}
+		nextButton.disable();
 		for (int i = 0; i < options.size(); i++) {
 			AnimatedGHQTextArea guiOption = new AnimatedGHQTextArea() {
 				@Override
 				public boolean clicked(MouseEvent event) {
 					// TODO: selectoption EDWARD
-					System.out.println(Integer.valueOf(this.name()));
+//					System.out.println(Integer.valueOf(this.name()));
+					TCGame.scriptManager.chooseOption(Integer.valueOf(this.name()) + 1);
+					nextButton.enable();
+					generateOptions(null);
 					return super.clicked(event);
 				}
 			};
+			
+			appendedGUIOption.add(guiOption);
+			
 			guiOption.setBGColor(Color.red);
 			guiOption.setText(options.get(i));
 			guiOption.setName(String.valueOf(i));
