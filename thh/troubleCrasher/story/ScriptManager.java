@@ -22,10 +22,11 @@ public class ScriptManager {
     private String pathToScripts = "troubleCrasher/story/scripts/";
     private String currentFile = "";
 	private StoryMechanicManager storyMechanicManager = TCGame.storyMechanicManager;
-
+	
+	private int rounds = 0;
+	
     public List<String> currentOptions = new ArrayList();
     public List<String> disabledOptions = new ArrayList();
-
     
 	public ScriptManager() {}
 	
@@ -72,7 +73,7 @@ public class ScriptManager {
 		}
 
 	}
-	
+
 	/**
 	 * Main method for looping through the lines
 	 * @param line Current parsing line
@@ -93,7 +94,7 @@ public class ScriptManager {
 				e.printStackTrace();
 			}
 		}else {
-//			String[] parsedLine = currLine.split("：");
+			//	String[] parsedLine = currLine.split("：");
 			System.out.println("In else");
 			nextLine(currLine);
 		}
@@ -104,8 +105,7 @@ public class ScriptManager {
 		PersonEnum person = findPersonWithName(parseColonHead(currText));
 		TCGame.gamePageSwitcher.setDialogue(parseColonContent(currText), person);
 	}
-	
-	
+
 	public PersonEnum findPersonWithName(String name)
 	{
 		System.out.println("In findPersonWithName");
@@ -120,7 +120,6 @@ public class ScriptManager {
 		}
 		return null;
 	}
-	
 	
 	/**
 	 * Parses function
@@ -152,8 +151,8 @@ public class ScriptManager {
 			case "DC":
 				parseDc(funcLine);
 				break;
-			case "AC":
-				parseAc(funcLine);
+			case "ATK":
+				parseAtk(funcLine);
 				break;
 				
 			// TODO: Haven't started yet
@@ -178,7 +177,6 @@ public class ScriptManager {
 		TCGame.resource.getAll();
 	}
 
-	
 	private void parseJump(String funcLine) throws IOException, InterruptedException
 	{
 		String[] parsedLine = funcLine.split("#");
@@ -231,15 +229,120 @@ public class ScriptManager {
 		}
 	}
 	
-	private void parseAc(String funcLine)
+	private int rand(int min, int max)
+	{
+		return (int)(Math.random()*(max-min+1)+min);
+	}
+	
+	private void parseAtk(String funcLine)
 	{
 		String[] parsedLine = funcLine.split("#");
 		
-		int dc = Integer.parseInt(parsedLine[2]);
+		int d = Integer.parseInt(parsedLine[3]);
+		int ac = Integer.parseInt(parsedLine[5]);
+		int type;
+		switch(parsedLine[6])
+		{
+			case "警长":
+				type = 1;
+				break;
+			case "年轻人":
+				type = 2;
+				break;
+			case "敌人":
+				type = 3;
+				break;
+			default:
+				type = 3;
+				break;
+		}
+				
+//		#ATK#D#20#AC#10#警长
+				
+		// true hit, false miss
+		// 1: critical, 2: normal, 3: miss
+		rounds++;
 		
-		System.out.println("Parsing AC");
+		boolean hit = rand(1, 20) > ac;
+		int textIdx;
+		int randIdx;
+		boolean enemyDeath = false;
+		boolean playerDeath = false;
+		if(hit)
+		{
+			int damage = parseDmg(d);
+			// 1, 2, 3
+			textIdx = parseDmgTextIdx(damage, d);
+			
+			// 1: Player attacks, 2: YoungMan attacks, 3: Enemy attacks
+			if(type == 1)
+			{
+				if(rounds > 1)
+					randIdx = rand(2,4);
+				else
+					randIdx = 1;
+				
+				enemyDeath = (TCGame.resource.delEnemeyHp(damage) == false);
+			}else if(type == 2) {
+				randIdx = 1;
+				
+				enemyDeath = (TCGame.resource.delEnemeyHp(damage) == false);
+			}else {
+				randIdx = 1;
+				TCGame.resource.addBoxWithName("伤口");
+			}
+		}else {
+			textIdx = 3;
+			if(type == 1)
+			{
+				if(rounds > 1)
+					randIdx = rand(2,5);
+				else
+					randIdx = 1;
+				
+			}else if(type == 2)
+			{
+				randIdx = 1;
+			}else {
+				randIdx = 1;
+			}
+		}
 		
-		TCGame.resource.setEnemyAc(dc);
+		
+//		4-1-1-1 234
+//			2-1 234
+//			3-1 2345
+//			4-12
+//			
+//		4-2-1-1
+//			2-1
+//			3-1
+//			
+//		4-3-1-1
+//			2-1
+//			3-1
+
+		System.out.println(currentFile + "-" + textIdx + "-" + randIdx);
+		System.out.println(enemyDeath);
+		if(enemyDeath)
+			setScriptManager(4 + "-" + 1 + "-" + 4 + "-" + rand(1, 2));
+		else
+			setScriptManager(currentFile + "-" + textIdx + "-" + randIdx);
+	}
+		
+	private int parseDmg(int dmg)
+	{
+		return rand(1, dmg);
+	}
+	
+	private int parseDmgTextIdx(int dmg, int max)
+	{
+		if(dmg >= max/2)
+		{
+			return 1;
+		}else {
+			return 2;
+		}
 	}
 	
 	private void parseBg(String funcLine)
@@ -263,8 +366,6 @@ public class ScriptManager {
 		// Mocking result (true or false)
 		System.out.println("In parseIf fulFill: " + funcLine);
 		
-		Scanner scan = new Scanner(System.in);  //创建Scanner扫描器来封装System类的in输入流
-        int fulfill = scan.nextInt();
 		if(!fulfill(parsedLine))
 			skipIf(Integer.parseInt(parsedLine[2]));
 	}
@@ -297,10 +398,12 @@ public class ScriptManager {
 	}
 	
 	private boolean parseDisable(String funcLine) throws NumberFormatException, IOException {
-		String[] parsedLine = funcLine.split("#");
-		Scanner scan = new Scanner(System.in);  //创建Scanner扫描器来封装System类的in输入流
-        int fulfill = scan.nextInt();
-		return fulfill(parsedLine);
+//		String[] parsedLine = funcLine.split("#");
+//		Scanner scan = new Scanner(System.in);  //创建Scanner扫描器来封装System类的in输入流
+//        int fulfill = scan.nextInt();
+		System.out.println("TODO: Disabled");
+//		return fulfill(parsedLine);
+		return false;
 	}
 	
 	/**
