@@ -53,9 +53,9 @@ public class TCGame extends Game {
 	
 	@Override
 	public void idle(Graphics2D g2, int stopEventKind) {
-		if(GHQ.nowFrame() % 10 == 0) {
-			testJigsaw.setDirection(testJigsaw.direction().right());
-		}
+//		if(GHQ.nowFrame() % 10 == 0) {
+//			testJigsaw.setDirection(testJigsaw.direction().right());
+//		}
 	}
 	protected Camera starterCamera() {
 		return null;
