@@ -21,17 +21,18 @@ import troubleCrasher.jigsaw.JigsawEnum;
 import troubleCrasher.jigsaw.JigsawViewer;
 
 public class TCGame extends Game {
-	
+
 	private JigsawViewer jigsawViewer;
 	private Jigsaw testJigsaw;
+
 	public static void main(String args[]) throws IOException {
-		new GHQ(new TCGame(), 1000, 600);
+		new GHQ(new TCGame(), 1024, 768);
 	}
-	
+
 	public TCGame() throws IOException {
-		super(new GUIPartsSwitcher(0, 0)); //TODO: change it!!
-		
-    // Scripts
+		super(new GamePageSwitcher()); // TODO: change it!!
+
+		// Scripts
 		// ScriptManager scriptManager = new ScriptManager("1");
     
 		//UI
@@ -45,22 +46,24 @@ public class TCGame extends Game {
 //		GHQ.addGUIParts(new AnimatedGHQTextArea().setText("\n111111111111111111111111111111111111111111111111111.")
 //				.setTextSpeed(3).setBounds(100, 100, 100, 100).setBGColor(Color.LIGHT_GRAY));
 	}
+
 	@Override
 	public String getTitleName() {
 		return "TroubleCrusher";
 	}
-		
+
 	@Override
 	public GHQStage loadStage() {
 		return null;
 	}
-	
+
 	@Override
 	public void idle(Graphics2D g2, int stopEventKind) {
-//		if(GHQ.nowFrame() % 10 == 0) {
-//			testJigsaw.setDirection(testJigsaw.direction().right());
-//		}
+		// if(GHQ.nowFrame() % 10 == 0) {
+		// testJigsaw.setDirection(testJigsaw.direction().right());
+		// }
 	}
+
 	protected Camera starterCamera() {
 		return null;
 	}
