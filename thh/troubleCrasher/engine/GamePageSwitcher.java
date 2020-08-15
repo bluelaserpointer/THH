@@ -1,8 +1,14 @@
 package troubleCrasher.engine;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+
+// import org.w3c.dom.events.MouseEvent;
+import java.awt.event.MouseEvent;
 
 import core.GHQ;
+import gui.AnimatedGHQTextArea;
 import gui.AutoResizeMenu;
 import gui.GUIParts;
 import gui.GUIPartsSwitcher;
@@ -15,6 +21,8 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 	private static final int WORK_SCENE = 0, HOME_SCENE = 1, BAR_SCENE = 2; // DIFFERENT SCENES
 	private static final int NO_ONE = 0, NPC_1 = 1, NPC_2 = 2, NPC_3 = 3, NPC_4 = 4; // DIFFERENT NPCS
 	private final ImageFrame defaultSlotPaint, buttonPaint;
+	private GUIParts nextButton, DIALOGUE_SECTION;
+	private AnimatedGHQTextArea Dialogue, Speaker;
 	private static final String StartScreenPic = "thhimage/WhiteBall.png";
 	private int centerW, centerH;
 
@@ -22,6 +30,18 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		super(3, STARTSCREEN);
 		defaultSlotPaint = ImageFrame.create("thhimage/MillkyWay.png");
 		buttonPaint = ImageFrame.create("thhimage/veg_leaf3.png"); // 按钮图片
+		Dialogue = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setTextSpeed(3).setBounds(477, 580, 500, 100)
+				.setBGColor(Color.green).disable();
+		Speaker = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setBounds(477, 540, 500, 30).setBGColor(Color.yellow)
+				.disable();
+		nextButton = new GUIParts().setBGColor(Color.pink).setBounds(900, 698, 100, 50);
+
+		DIALOGUE_SECTION = new GUIParts().setBGColor(Color.green).setBounds(430, 520, 1024, 768).appendLast(Speaker)
+				.appendLast(Dialogue.setText(
+						"1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
+						.enable())
+				.appendLast(nextButton);
+
 		centerH = 384;
 		centerW = 512;
 
@@ -92,6 +112,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								this.appendFirst(boxScrBtn);
 								this.appendFirst(settingScrBtn);
 								this.appendFirst(saveScrBtn);
+								this.setBounds(0, 0, 70, 768);
 
 							}
 
@@ -118,7 +139,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 										this.appendLast(NPC_2ScrBtn);
 										this.appendLast(NPC_3ScrBtn);
 										this.appendLast(NPC_4ScrBtn);
-
+										this.setBounds(70, 0, 70, 768);
 									}
 								});
 								set(NPC_1, new GUIParts() {
@@ -183,6 +204,8 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 					{
 						this.appendLast(new GUIPartsSwitcher(4, WORK_SCENE) {
 							{
+								// setBGColor(Color.black);
+								setBounds(430, 0, 594, 520);
 								setName("SCENE_SESSION");
 
 								this.appendLast(new GUIParts() {
@@ -243,6 +266,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 						this.appendFirst(new GUIPartsSwitcher(5, NPC_1) {
 							{
 								setName("SCENE_SESSION");
+								setBounds(627, 220, 200, 300);
 
 								set(NO_ONE, new GUIParts() {
 									{
@@ -284,12 +308,25 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 							}
 						});
 
+						this.appendLast(Speaker.setText("警长").enable());
+
+						this.appendLast(Dialogue.setText(
+								"1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
+								.enable());
+
+						this.appendLast(nextButton);
+						// if (nextButton.clicked(e)) {
+
+						// }
+						// this.appendLast(DIALOGUE_SECTION);
+						// System.out.println(this.childList);
+
 					}
 				});
-
 			}
 		});
-
+		String[] options = { "1", "2", "3", "4" };
+		generateOptions(options);
 		set(SETTINGSCREEN, new GUIParts() {
 			{
 				setName("SETTINGSCREEN");
@@ -297,7 +334,53 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 			}
 		});
 
+		// 1.
+
 		GHQ.addGUIParts(this);
+	}
+
+	public void setSpeaker(String speaker) {
+		this.Speaker.setText(speaker);
+	}
+
+	public void setDialogue(String text) {
+		this.Speaker.setText(text);
+	}
+
+	public void generateOptions(String[] options) {
+		// List<AnimatedGHQTextArea> guiOptions = new ArrayList<AnimatedGHQTextArea>();
+		for (int i = 0; i < options.length; i++) {
+			AnimatedGHQTextArea guiOption = new AnimatedGHQTextArea() {
+				@Override
+				public boolean clicked(MouseEvent event) {
+					// TODO: selectoption EDWARD
+					System.out.println(Integer.valueOf(this.name()));
+					return super.clicked(event);
+				}
+			};
+			guiOption.setBGColor(Color.red);
+			guiOption.setText(options[i]);
+			guiOption.setName(String.valueOf(i));
+			switch (i) {
+				case 0:
+					guiOption.setBounds(477, 690, 200, 20);
+					break;
+				case 1:
+					guiOption.setBounds(690, 690, 200, 20);
+					break;
+				case 2:
+					guiOption.setBounds(477, 720, 200, 20);
+					break;
+				case 3:
+					guiOption.setBounds(690, 720, 200, 20);
+					break;
+				default:
+					break;
+			}
+			// System.out.println(this);
+			this.get(GAMESCREEN).appendFirst(guiOption);
+			// this.childList.get(0).getChildren().get(GAMESCREEN).appendLast(guiOption);
+		}
 	}
 
 }
