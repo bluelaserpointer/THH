@@ -18,7 +18,7 @@ public class ScriptManager {
     private String pathToScripts = "troubleCrasher/story/scripts/";
     private String currentFile = "";
     
-    public List<String> currentOptions = new ArrayList();
+    public List<String> currentOptions = new ArrayList<>();
 	
 	public ScriptManager() {}
 	
@@ -42,6 +42,7 @@ public class ScriptManager {
 		
 	    FileInputStream fin = new FileInputStream(filePath);
 	    InputStreamReader reader = new InputStreamReader(fin);
+	    
 	    buffReader = new BufferedReader(reader);
 	    String currLine = "";
 	    while((currLine = buffReader.readLine())!=null){

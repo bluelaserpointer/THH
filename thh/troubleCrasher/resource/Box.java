@@ -4,7 +4,7 @@ import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
 
 
-public class Box extends Jigsaw {
+public abstract class Box extends Jigsaw {
 	private String boxName;
 	
 	public Box(String boxName, JigsawEnum type) {
@@ -12,8 +12,7 @@ public class Box extends Jigsaw {
 		this.boxName = boxName;
 	}
 	
-	public void setBoxName(String boxName)
-	{
+	public void setBoxName(String boxName) {
 		this.boxName = boxName;
 	}
 	
@@ -21,4 +20,5 @@ public class Box extends Jigsaw {
 		return this.boxName;
 	}
 	
+	public abstract void use();
 }
