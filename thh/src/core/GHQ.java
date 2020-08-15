@@ -124,6 +124,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	private static boolean loadComplete;
 	public final MediaTracker tracker;
+	public static JFrame jFrame;
 	public GHQ(Game engine, int screenW, int screenH) {
 		targetImageObserver = this;
 		GHQ.engine = engine;
@@ -131,9 +132,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		screenRect = new Rectangle2D.Double(0, 0, screenW, screenH);
 		hq = this;
 		//window setup
-		final JFrame myFrame = new JFrame(engine.getTitleName());
-		myFrame.add(this,BorderLayout.CENTER);
-		myFrame.addWindowListener(new WindowAdapter(){
+		jFrame = new JFrame(engine.getTitleName());
+		jFrame.add(this,BorderLayout.CENTER);
+		jFrame.addWindowListener(new WindowAdapter(){
 			@Override
 			public void windowClosing(WindowEvent e){
 				System.exit(0);
@@ -150,12 +151,14 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		addMouseMotionListener(this);
 		addMouseListener(this);
 		addMouseWheelListener(this);
-		myFrame.addKeyListener(this);
-		myFrame.setBackground(Color.BLACK);
-		myFrame.setBounds(250, 20, screenW + 6, screenH + 28);
-		myFrame.setResizable(false);
-		myFrame.setVisible(true);
-		myFrame.setFocusTraversalKeysEnabled(false);
+		jFrame.addKeyListener(this);
+		jFrame.setBackground(Color.BLACK);
+		jFrame.setBounds(250, 20, screenW + 6, screenH + 28);
+		jFrame.setResizable(false);
+		jFrame.setVisible(true);
+		jFrame.setFocusTraversalKeysEnabled(false);
+
+		GHQ.setWindowIcon(engine.getIconPass());
 		//load assets
 		tracker = new MediaTracker(this);
 		//setup
@@ -165,6 +168,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		basicFont = createFont("font/upcibi.ttf").deriveFont(25.0f);
 		commentFont = createFont("font/HGRGM.TTC").deriveFont(Font.PLAIN, 15.0f);
 		new Thread(this).start();
+	}
+	public static void setWindowIcon(String path) {
+		if(path != null && jFrame != null)
+			jFrame.setIconImage(new ImageIcon(path).getImage());
 	}
 
 	//mainLoop///////////////
