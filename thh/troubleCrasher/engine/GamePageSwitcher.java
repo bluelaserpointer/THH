@@ -16,6 +16,7 @@ import gui.GUIParts;
 import gui.GUIPartsSwitcher;
 import paint.ImageFrame;
 import paint.rect.RectPaint;
+import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
 import troubleCrasher.person.PersonEnum;
 import troubleCrasher.person.SceneEnum;
@@ -210,6 +211,32 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								setName("BOX_SESSION");
 								setBounds(70, 0, 360, 768);
 								this.addLast(TCGame.jigsawViewer).setBGColor(Color.LIGHT_GRAY).setBounds(100, 600, JigsawEnum.JIGSAW_GRID_SIZE*6, JigsawEnum.JIGSAW_GRID_SIZE*3);
+								this.addLast(new GUIParts() {
+									{
+										this.setBGColor(Color.BLACK);
+										this.setBounds(100, 400, 300, 200);
+									}
+									@Override
+									public boolean clicked(MouseEvent e) {
+										final boolean consumed = super.clicked(e);
+										Jigsaw hookingJigsaw = TCGame.jigsawViewer.hookingJigsaw();
+										if(hookingJigsaw != null) {
+											TCGame.jigsawViewer.disposeHookJigsaw();
+											TCGame.resource.delHp(1);
+										}
+										return consumed;
+									}
+									@Override
+									public void paint() {
+										super.paint();
+										GHQ.getG2D(Color.WHITE);
+										GHQ.drawStringGHQ("承受", cx() - 30, cy() + 10, 30F);
+										Jigsaw disposedJigsaw = TCGame.jigsawViewer.disposedJigsaw();
+										if(disposedJigsaw != null) {
+											disposedJigsaw.paint(left(), top());
+										}
+									}
+								});
 							}
 							ImageFrame heartIF = ImageFrame.create("thhimage/Heart.png");
 							ImageFrame staminaIF = ImageFrame.create("thhimage/Stamina.png");
@@ -224,12 +251,12 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								GHQ.getG2D().drawString("生命值", 100, 155);
 								for(int i = 0; i < 4; ++i) {
 									staminaGaugeIF.dotPaint(220 + i*55, 93);
-									if(i >= TCGame.resource.getStamina())
+									if(i < TCGame.resource.getStamina())
 										staminaIF.dotPaint(220 + i*55, 93);
 								}
 								for(int i = 0; i < 3; ++i) {
 									heartGaugeIF.dotPaint(220 + i*55, 145);
-									if(i >= TCGame.resource.getHp())
+									if(i < TCGame.resource.getHp())
 										heartIF.dotPaint(220 + i*55, 145);
 								}
 								GHQ.getG2D().setFont(GHQ.initialFont);
@@ -238,20 +265,16 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 						set(SETTING_SESSION, new GUIParts() {
 							{
 								setName("SETTING_SESSION");
-								setBGColor(Color.MAGENTA);
 								setBounds(70, 0, 360, 768);
 							}
 						});
 						set(SAVE_SESSION, new GUIParts() {
 							{
 								setName("SAVE_SESSION");
-								// setBGColor(Color.pink);
 								setBGImage("thhimage/SaveBar.png");
 								setBounds(70, 0, 360, 768);
 							}
 						});
-
-						// setBGColor(Color.BLUE);
 					}
 				});
 
