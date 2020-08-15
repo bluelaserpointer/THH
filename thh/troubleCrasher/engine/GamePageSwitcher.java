@@ -87,12 +87,13 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 							// button
 							{
 								// this.addNewLine(gameScrBtn, settingsScrBtn);
-								this.setName("START_MENU_TOP_TAB");
+								this.setName("GAME_MENU_TOP_TAB");
+								this.setBGColor(Color.RED);
+								this.setBounds(0, 0, 75, 1024);
 								this.appendFirst(profileScrBtn);
 								this.appendFirst(boxScrBtn);
 								this.appendFirst(settingScrBtn);
 								this.appendFirst(saveScrBtn);
-
 							}
 
 						});
