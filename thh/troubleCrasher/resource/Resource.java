@@ -4,11 +4,11 @@ import troubleCrasher.engine.TCGame;
 import troubleCrasher.jigsaw.Jigsaw;
 
 public class Resource {
-	int hp;
-	int stamina;
-	int money;
+	int hp;	// 3HP仅仅是盒子机制
+	int stamina;	// 单纯做事情消耗
+	int money;	// 买东西
 	
-	int enemyHp;
+	int enemyHp;	// 战斗
 	
 	int enemyAc;
 	int selfAc;
