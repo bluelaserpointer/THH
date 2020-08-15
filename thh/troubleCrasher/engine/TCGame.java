@@ -3,10 +3,12 @@ package troubleCrasher.engine;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import camera.Camera;
 import core.GHQ;
 import core.Game;
 import gui.GUIPartsSwitcher;
 import gui.UIShowHideButton;
+import physics.Point;
 import physics.stage.GHQStage;
 import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
@@ -44,6 +46,9 @@ public class TCGame extends Game {
 		if(GHQ.nowFrame() % 10 == 0) {
 			testJigsaw.setDirection(testJigsaw.direction().right());
 		}
+	}
+	protected Camera starterCamera() {
+		return null;
 	}
 
 }
