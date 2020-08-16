@@ -61,10 +61,10 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		NPC_PART = new GUIParts().setName("NPC_IMAGE").setBounds(627, 220, 200, 300)
 				.setBGImage(PersonEnum.CAPTAIN.personImage);
 		SCENE_PART = new GUIParts().setName("SCENE_PART").setBounds(430, 0, 594, 520);
+		final ImageFrame arrowIF = ImageFrame.create("thhimage/Main_Menu_Arrow.png");
 
 		// Start Menu
 		set(STARTSCREEN, new GUIParts() {
-			final ImageFrame arrowIF = ImageFrame.create("thhimage/Main_Menu_Arrow.png");
 			{
 				this.setBGImage("thhimage/Main_Menu_BG.png");
 				setName("STARTSCREEN");
@@ -249,8 +249,32 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		});
 		set(SETTINGSCREEN, new GUIParts() {
 			{
-				setName("SETTINGSCREEN");
-				setBGColor(COLOR_BROWN);
+				setName("SAVE_SESSION");
+				setBGImage("thhimage/SaveBar.png");
+				setBounds(70, 0, 360, 768);
+				this.appendLast(new GUIParts() {
+					final GUIParts savegameScrBtn = getSwitcherButton(GAMESCREEN)
+							.setBGImage("thhimage/SaveBar_SaveButton.png").setName("newgameScrBtn")
+							.setBounds(210, 160, 80, 30),
+							loadgameScrBtn = getSwitcherButton(SETTINGSCREEN)
+									.setBGImage("thhimage/SaveBar_LoadButton.png").setName("loadgameScrBtn")
+									.setBounds(210, 220, 80, 30);
+					{
+						this.setName("SAVE_LOAD_TABS");
+						this.appendFirst(savegameScrBtn);
+						this.appendFirst(loadgameScrBtn);
+					}
+					@Override
+					public void paint() {
+						super.paint();
+						if(savegameScrBtn.isScreenMouseOvered()) {
+							arrowIF.dotPaint(savegameScrBtn.left() - 100, savegameScrBtn.cy());
+						}
+						if(loadgameScrBtn.isScreenMouseOvered()) {
+							arrowIF.dotPaint(loadgameScrBtn.left() - 100, loadgameScrBtn.cy());
+						}
+					}
+				});
 			}
 		});
 
