@@ -32,7 +32,7 @@ public class HealingEffect extends DotPaint {
 	public int width() {
 		return 200;
 	}
-
+	
 	@Override
 	public int height() {
 		return 200;

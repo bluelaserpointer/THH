@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import core.Game;
+import troubleCrasher.effect.DiceEffect;
 import troubleCrasher.engine.TCGame;
 import troubleCrasher.person.*;
 
@@ -32,6 +33,7 @@ public class ScriptManager {
 	public List<Boolean> optionStatus = new ArrayList();
 
 	public List<String> neededBox = new ArrayList();
+	public List<Integer> neededBoxIdx = new ArrayList();
     
 	public ScriptManager() {}
 	
@@ -325,6 +327,8 @@ public class ScriptManager {
 		
 		// TODO: 骰子
 		int diceHit = rand(1, 20);
+		roleDice(diceHit, 1000);
+		
 		boolean hit = diceHit > ac;
 		
 		int textIdx;
@@ -438,6 +442,8 @@ public class ScriptManager {
 	{
 		// TODO: 骰子
 		int diceDmg = rand(1, dmg);
+		roleDice(diceDmg, 1000);
+
 		return diceDmg;
 	}
 	
@@ -557,6 +563,7 @@ public class ScriptManager {
 		if(funcLine[3].equals("HAS"))
 		{
 			this.neededBox.add(itemName);
+			this.neededBoxIdx.add(this.neededBoxIdx.size());
 			System.out.println("*****In has box");
 			
 			if(TCGame.resource.hasBoxWithName(itemName))
@@ -568,6 +575,7 @@ public class ScriptManager {
 		}else if(funcLine[3].equals("SELECT"))
 		{
 			this.neededBox.add(itemName);
+			this.neededBoxIdx.add(this.neededBoxIdx.size());
 			System.out.println("*****In select box");
 			
 			//	TCGame.resource.setCurrentItemName("左轮手枪");
@@ -607,6 +615,7 @@ public class ScriptManager {
 	private void optionsInit()
 	{
 		this.neededBox = new ArrayList();
+		this.neededBoxIdx = new ArrayList();
 		this.sendOptions.clear();
 		this.optionStatus.clear();
 	}
@@ -719,9 +728,7 @@ public class ScriptManager {
 	 * @throws InterruptedException 
 	 */
 	public void chooseOption(int index)
-	{
-		// System.out.println("Choosing option " + index);
-		
+	{		
 		setScriptManager(currentFile + "-" + index);
 		
 		// Scripts after optionGroup
@@ -753,5 +760,17 @@ public class ScriptManager {
 			e.printStackTrace();
 		}
 		return "";
+	}
+	
+	private void roleDice(int res, int times)
+	{
+//		DiceEffect diceEffect = new DiceEffect();
+//
+//		int i = 0;
+//		
+//		while(i < times)
+//		{
+//			diceEffect.dotPaint(500, 500);
+//		}
 	}
 }

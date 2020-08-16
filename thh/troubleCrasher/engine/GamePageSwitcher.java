@@ -121,17 +121,17 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				this.appendLast(new GUIParts() {
 					final GUIParts newgameScrBtn = getSwitcherButton(GAMESCREEN)
 							.setBGImage("thhimage/Main_Menu_NewGame.png").setName("newgameScrBtn")
-							.setBounds(730, 320, 230, 50),
+							.setBounds(760, 310, 150, 50),
 							loadgameScrBtn = getSwitcherButton(SETTINGSCREEN)
 									.setBGImage("thhimage/Main_Menu_LoadGame.png").setName("loadgameScrBtn")
-									.setBounds(720, 410, 250, 50),
+									.setBounds(735, 390, 200, 50),
 							settingsScrBtn = getSwitcherButton(SETTINGSCREEN)
 									.setBGImage("thhimage/Main_Menu_Setting.png").setName("settingScrBtn")
-									.setBounds(745, 500, 200, 50),
+									.setBounds(735, 470, 200, 50),
 							exitGameBtn = new GUIParts(){
 								{
 									setBGImage("thhimage/ExitGameButton.png");
-									setBounds(730,590,250,50);
+									setBounds(735,550,200,50);
 								}
 								@Override
 								public boolean clicked(MouseEvent e) {
