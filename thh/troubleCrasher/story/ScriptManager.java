@@ -91,7 +91,6 @@ public class ScriptManager {
 			}
 		}else {
 			nextLine(currLine);
-//			flag = true;
 		}
 		
 		
@@ -232,7 +231,6 @@ public class ScriptManager {
 		
 		setScriptManager(parsedLine[2]);
 				
-		// Scripts after optionGroup
 		parseLine(readLine(buffReader));
 	}
 	
@@ -398,6 +396,31 @@ public class ScriptManager {
 //		4-3-1-1
 //			2-1
 //			3-1
+		
+		if(hit)
+		{
+			String name = "";
+			switch(type)
+			{
+				case 1:
+					name = "GUN_SHOT";
+					break;
+				case 2:
+					name = "PUNCH";
+					break;
+				case 3:
+					name = "USING_BOTTLE";
+					break;
+				case 5:
+					name = "WOLF_CLAW";
+					break;
+				default:
+					name = "USING_BOTTLE";
+					break;
+			}
+			TCGame.setSoundEffect(name);
+		}
+		
 
 		System.out.println(currentFile + "-" + textIdx + "-" + randIdx);
 		if(enemyDeath)
