@@ -1,5 +1,7 @@
 package troubleCrasher.engine;
 
+import java.awt.event.MouseEvent;
+
 import core.GHQ;
 import gui.GUIParts;
 import paint.ImageFrame;
@@ -11,12 +13,16 @@ public class GameOverPage extends GUIParts {
 	private String text;
 	public GameOverPage(GamePageSwitcher gamePageSwitcher) {
 		this.setBGImage("thhimage/Game_Over_BG.png");
-//		toStartScreenBtn = new GUIParts();
 		toStartScreenBtn = gamePageSwitcher.getSwitcherButton(GamePageSwitcher.STARTSCREEN);
-//		toLoadScreenBtn = new GUIParts();
 		toLoadScreenBtn = gamePageSwitcher.getSwitcherButton(GamePageSwitcher.SETTINGSCREEN);
-//		endGameScreenBtn = new GUIParts();
-		endGameScreenBtn = new GUIParts();
+		endGameScreenBtn = new GUIParts() {
+			@Override
+			public boolean clicked(MouseEvent e) {
+				final boolean consumed = super.clicked(e);
+				System.exit(0);
+				return consumed;
+			}
+		};
 		
 		toStartScreenBtn.setBGImage("thhimage/BackToMainMenu.png"); //TODO: change it
 		toLoadScreenBtn.setBGImage("thhimage/SaveBar_LoadButton.png");
