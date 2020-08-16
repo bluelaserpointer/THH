@@ -67,16 +67,20 @@ public class JigsawViewer extends GUIParts {
 	}
 	
 	public void hookJigsaw(Jigsaw jigsaw) {
+		System.out.println("hook");
 		this.hookingJigsaw = jigsaw;
 		if(jigsaw != null)
 			hookingJigsaw.setGridPos(0, 0);
+		else
+			System.out.println("removed");
 	}
 	public void removeHookingJigsaw() {
 		this.hookJigsaw(null);
 	}
 	public void disposeHookJigsaw() {
 		disposedJigsaw = hookingJigsaw;
-		removeHookingJigsaw();
+		hookingJigsaw = null;
+//		removeHookingJigsaw();
 	}
 	public void hookDisposedJigsaw() {
 		this.hookJigsaw(disposedJigsaw);
