@@ -124,6 +124,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		set(GAMESCREEN, new GUIParts() {
 			{
 				setName("GAMESCREEN");
+				this.setBGColor(Color.GRAY);
 				// 游戏功能栏及其展开画面
 				this.appendLast(new GUIPartsSwitcher(4, PROFILE_SESSION) {
 					{
@@ -225,6 +226,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 						set(SETTING_SESSION, new GUIParts() {
 							{
 								setName("SETTING_SESSION");
+								this.setBGImage("thhimage/settingScreenDemo.png");
 								setBounds(70, 0, 360, 768);
 							}
 						});

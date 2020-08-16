@@ -501,9 +501,10 @@ public class ScriptManager {
 		if(currLine.contains(":"))
 		{
 			return currLine.split(":")[1];	
-		}else {
+		} else if (currLine.contains("：")) {
 			return currLine.split("：")[1];
-		}
+		} 
+		return "";
 		
 	}
 	
@@ -512,10 +513,10 @@ public class ScriptManager {
 		if(currLine.contains(":"))
 		{
 			return currLine.split(":")[0];	
-		}else {
+		}else if (currLine.contains("：")) {
 			return currLine.split("：")[0];
 		}
-		
+		return "";
 	}
 	
 	/**
