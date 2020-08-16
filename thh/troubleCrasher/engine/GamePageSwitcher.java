@@ -186,6 +186,35 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 										}
 									}
 								});
+								this.appendLast(new GUIParts() {
+									{
+										this.setBGColor(COLOR_GOLD);
+										this.setBounds(100, 280, 100, 100);
+									}
+								});
+								this.appendLast(new GUIParts() {
+									
+									final GUIParts inspectScrBtn = getSwitcherButton(GAMESCREEN)
+											.setBGImage("thhimage/InspectButton.png").setName("inspectScrBtn")
+											.setBounds(280, 290, 50, 30),
+											placeScrBtn = getSwitcherButton(SETTINGSCREEN)
+													.setBGImage("thhimage/PlaceButton.png").setName("placeScrBtn")
+													.setBounds(280, 340, 50, 30);
+									{
+										this.appendFirst(inspectScrBtn);
+										this.appendFirst(placeScrBtn);
+									}
+									@Override
+									public void paint() {
+										super.paint();
+										if(inspectScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(inspectScrBtn.left() - 60, inspectScrBtn.cy()-10, 40,20);
+										}
+										if(placeScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(placeScrBtn.left() - 60, placeScrBtn.cy()-10, 40,20);
+										}
+									}
+								});
 							}
 							ImageFrame heartIF = ImageFrame.create("thhimage/Heart.png");
 							ImageFrame staminaIF = ImageFrame.create("thhimage/Stamina.png");
