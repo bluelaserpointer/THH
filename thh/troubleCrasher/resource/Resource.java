@@ -4,9 +4,9 @@ import troubleCrasher.engine.TCGame;
 import troubleCrasher.jigsaw.Jigsaw;
 
 public class Resource {
-	int hp;	// 3HP仅仅是盒子机制
+	int hp;			// 3HP仅仅是盒子机制
 	int stamina;	// 单纯做事情消耗
-	int money;	// 买东西
+	int money;		// 买东西
 	
 	int enemyHp = 30;	// 战斗
 	
@@ -89,32 +89,30 @@ public class Resource {
 	
 	public boolean hasBoxWithName(String name)
 	{
-		for(Jigsaw jigsaw:TCGame.jigsawViewer.board().jigsaws())
+		
+		if(name.equals("一瓶啤酒"))
 		{
-			if(((Box)jigsaw).getBoxName().equals(name))
-			{
-				return true;
-			}
+			return false;
+		}else if(name.equals("左轮手枪"))
+		{
+			return true;
+		}else {
+			return true;
 		}
-		return false;
+		
+//		
+//		for(Jigsaw jigsaw:TCGame.jigsawViewer.board().jigsaws())
+//		{
+//			if(((Box)jigsaw).getBoxName().equals(name))
+//			{
+//				return true;
+//			}
+//		}
+//		return false;
 	}
 	
 	public void addBoxWithName(String name)
 	{
-		switch(name)
-		{
-			case "伤口":
-				// TODO: rand
-//				1*1
-//				1*2
-//				1*3 + 1
-				// TODO: 
-				break;
-			case "A":
-				break;
-			case "B":
-				break;
-		}
 		
 	}
 
