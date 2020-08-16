@@ -46,7 +46,7 @@ public class TCGame extends Game {
 		// Scripts
 		System.out.println("Initialized scriptManager");
 		resource = new Resource();
-		scriptManager = new ScriptManager("4");
+		scriptManager = new ScriptManager("1");
 		// TCGame.setSoundBgm(SceneEnum.WORK_DAY.bgmName);
 	}
 

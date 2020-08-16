@@ -14,16 +14,15 @@ public class Resource {
 	int selfAc;
 	int selfDc;
 	
+	private boolean isCrack;
+
+	
 	String currentItemName = "";
 
 	public Resource() {
 		this.stamina = 1;
 		this.hp = 3;
 		this.enemyHp = 30;
-		
-		Box box = new Box("一瓶啤酒", true);
-		
-		TCGame.jigsawViewer.setWaitingJigsaw(box);
 	};
 	
 	public void getAll()
@@ -106,21 +105,19 @@ public class Resource {
 		}else {
 			return true;
 		}
-		
-//		
-//		for(Jigsaw jigsaw:TCGame.jigsawViewer.board().jigsaws())
-//		{
-//			if(((Box)jigsaw).getBoxName().equals(name))
-//			{
-//				return true;
-//			}
-//		}
-//		return false;
 	}
 	
-	public void addBoxWithName(String name, boolean reuse)
+	public void addBoxWithName(String name)
 	{
-		TCGame.jigsawViewer.setWaitingJigsaw(new Box(name, reuse));
+		System.out.println("In addBoxWithName!!!!!!!!!!!!!!!!");
+		TCGame.jigsawViewer.setWaitingJigsaw(new Box(name));
+		for(Jigsaw jigsaw:TCGame.jigsawViewer.board().jigsaws())
+		{
+			if(((Box)jigsaw).getBoxName().equals(name))
+			{
+				System.out.println("Found box " + name);
+			}
+		}	
 	}
 	
 
@@ -205,4 +202,11 @@ public class Resource {
 		}
 	}
 
+	public boolean isCrack() {
+		return isCrack;
+	}
+
+	public void setCrack(boolean isCrack) {
+		this.isCrack = isCrack;
+	}
 }
