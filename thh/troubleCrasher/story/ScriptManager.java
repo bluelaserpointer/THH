@@ -26,6 +26,10 @@ public class ScriptManager {
     private String currentFile = "";
 	private StoryMechanicManager storyMechanicManager = TCGame.storyMechanicManager;
 	private SceneEnum sceneEnum;
+	
+	public boolean inBattle = false;
+	public boolean usable = true;
+
 	private int rounds = 0;
 	
 	private int currBg = 0;
@@ -205,6 +209,8 @@ public class ScriptManager {
 			case "ATK":
 				parseAtk(funcLine);
 				break;
+			case "BATTLE":
+				parseBattle();
 				
 			// TODO: Haven't started yet
 			case "LIST":
@@ -213,8 +219,11 @@ public class ScriptManager {
 			case "ADD":
 				parseAdd(funcLine);
 				break;
+			case "HASBOX":
+				parseHasBox();
+				break;
 			case "STARTLINE":
-				nextLine(readLine(buffReader));
+				parseStartLine();
 				break;
 			case "ENDLINE":
 				break;	
@@ -230,6 +239,17 @@ public class ScriptManager {
 		TCGame.resource.getAll();
 	}
 
+	private void parseStartLine()
+	{
+		this.usable = true;
+		nextLine(readLine(buffReader));			
+	}
+	
+	private void parseHasBox()
+	{
+		this.usable = false;
+	}
+	
 	private void parseJump(String funcLine) throws IOException, InterruptedException
 	{
 		String[] parsedLine = funcLine.split("#");
@@ -285,6 +305,11 @@ public class ScriptManager {
 	{
 		System.out.println("Generating rand: " + min + " " + max);
 		return (int)(Math.random()*(max-min+1)+min);
+	}
+	
+	private void parseBattle()
+	{
+		this.inBattle = true;
 	}
 	
 	private void parseAtk(String funcLine)
@@ -551,7 +576,7 @@ public class ScriptManager {
 		//		#IF#HAS#BOX#123
 		//		#IF#SELECT#BOX#123
 		
-		String itemName = funcLine[4];
+		String itemName = funcLine[5];
 		System.out.println(itemName);
 		System.out.println("---------");
 		for(String str: funcLine)
@@ -637,6 +662,7 @@ public class ScriptManager {
 	 */
 	private void parseOptions()
 	{
+		this.usable = true;
 		boolean disabled = false;
 		
 		String currLine = "";

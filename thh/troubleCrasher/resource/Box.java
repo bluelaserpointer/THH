@@ -23,14 +23,22 @@ public class Box extends Jigsaw {
 		return boxEnum.boxName;
 	}
 	public boolean usable() {
-		switch(boxEnum.tag) {
-			case WEAPON:
-			case HEAL:
-				return true;
-			case SCRIPT:
-				return TCGame.scriptManager.boxNeeded(getBoxName());
-			case WOUND:
-				return false;
+		if(TCGame.scriptManager.usable)
+		{
+			System.out.println("----------------------------------------");
+			System.out.println(boxEnum.tag);
+			boolean res = false;
+			switch(boxEnum.tag) {
+				case WEAPON:
+					res = TCGame.scriptManager.inBattle;
+				case HEAL:
+					res = true;
+				case SCRIPT:
+					res = TCGame.scriptManager.boxNeeded(getBoxName());
+				case WOUND:
+					res = false;
+			}
+			return res;
 		}
 		return false;
 	}
