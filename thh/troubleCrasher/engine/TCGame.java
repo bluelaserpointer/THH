@@ -2,6 +2,7 @@ package troubleCrasher.engine;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -41,12 +42,10 @@ public class TCGame extends Game {
 
 	public TCGame() throws IOException {
 		super(gamePageSwitcher = new GamePageSwitcher()); 
-		// TODO: change it!!
 		
 		// Scripts
 		System.out.println("Initialized scriptManager");
 		resource = new Resource();
-		jigsawViewer = new JigsawViewer(6,7);
 		scriptManager = new ScriptManager("4");
 		// TCGame.setSoundBgm(SceneEnum.WORK_DAY.bgmName);
 	}
@@ -111,6 +110,17 @@ public class TCGame extends Game {
 		// if(GHQ.nowFrame() % 10 == 0) {
 		// testJigsaw.setDirection(testJigsaw.direction().right());
 		// }
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent e) {
+		super.mousePressed(e);
+		if(e.getButton() == MouseEvent.BUTTON3) {
+			final Jigsaw hookingJigsaw = TCGame.jigsawViewer.hookingJigsaw();
+			if(hookingJigsaw != null) {
+				hookingJigsaw.setDirection(hookingJigsaw.direction().right());
+			}
+		}
 	}
 
 	protected Camera starterCamera() {
