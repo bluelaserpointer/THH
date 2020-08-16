@@ -23,8 +23,10 @@ public class ScriptManager {
     private String pathToScripts = "troubleCrasher/story/scripts/";
     private String currentFile = "";
 	private StoryMechanicManager storyMechanicManager = TCGame.storyMechanicManager;
-	
+	private SceneEnum sceneEnum;
 	private int rounds = 0;
+	
+	private int currBg = 0;
 	
     public List<String> currentOptions = new ArrayList();
     public List<String> disabledOptions = new ArrayList();
@@ -457,6 +459,45 @@ public class ScriptManager {
 		
 		System.out.println("Parsing BG");
 		
+		//1：办公室
+		//2：小山坡
+		//3：酒馆
+		//4：银行
+		//5：小山坡进入战斗
+		
+		if(bg == 5)
+		{
+			TCGame.setSoundBgm("BATTLE");
+		}else {
+			SceneEnum sceneEnum = null;
+			switch(bg)
+			{
+				case 1:
+					sceneEnum = SceneEnum.WORK_DAY;
+					break;
+				case 2:
+					sceneEnum = SceneEnum.MOUNTAIN_DAY;
+					break;
+				case 3:
+					sceneEnum = SceneEnum.BAR;
+					break;
+				case 4:
+					sceneEnum = SceneEnum.BANK;
+					break;
+				default:
+					sceneEnum = SceneEnum.WORK_DAY;
+					break;	
+			}
+			
+			System.out.println(sceneEnum);
+			
+			if(bg == currBg)
+			{
+				TCGame.gamePageSwitcher.setSceneImage(sceneEnum);
+			}else {
+				TCGame.gamePageSwitcher.setSceneImageMusic(sceneEnum);
+			}
+		}
 		// TODO: Needs to change background here.
 	}
 		
