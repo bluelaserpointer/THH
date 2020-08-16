@@ -11,7 +11,7 @@ public class Box extends Jigsaw {
 	private boolean reuse;	
 	
 	static JigsawEnum decideJigsawShape(String boxName) {
-		return JigsawEnum.BAR2;
+		return JigsawEnum.SQ1;
 	}
 	
 	public Box(String boxName, boolean reuse) {
@@ -27,7 +27,6 @@ public class Box extends Jigsaw {
 	public void setTag(String tag) {
 		this.tag = tag;
 	}
-
 	
 	public void setBoxName(String boxName)
 	{
@@ -38,4 +37,27 @@ public class Box extends Jigsaw {
 		return this.boxName;
 	}
 	
+	public boolean reusable() {
+		
+		String tag;
+		Box box;
+		
+		switch(this.tag)
+		{
+			case "WEAPON":
+				if(this.reuse)
+				{
+					return true;
+				}else {
+					return false;
+				}
+			case "HEAL":
+				return false;
+			case "SCRIPT":
+				return TCGame.scriptManager.boxNeeded(this.boxName);
+			default:
+				break;
+		}
+		return reuse;	
+	}
 }

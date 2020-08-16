@@ -30,8 +30,8 @@ public class ScriptManager {
 	
 	public List<String> sendOptions = new ArrayList();
 	public List<Boolean> optionStatus = new ArrayList();
-//    public List<String> currentOptions = new ArrayList();
-//    public List<String> disabledOptions = new ArrayList();
+
+	public List<String> neededBox = new ArrayList();
     
 	public ScriptManager() {}
 	
@@ -371,7 +371,7 @@ public class ScriptManager {
 			}else {
 				textIdx = 1;
 				randIdx = rand(1,3);
-				TCGame.resource.addBoxWithName("伤口");
+				TCGame.resource.addBoxWithName("伤口", false);
 			}
 		}else {
 			textIdx = 3;
@@ -522,6 +522,11 @@ public class ScriptManager {
 		return !fulfill(parsedLine);
 	}
 	
+	public boolean boxNeeded(String name)
+	{
+		return this.neededBox.indexOf(name) >= 0;
+	}
+	
 	/**
 	 * Checks if the statement is fulfilled
 	 * @param funcLine
@@ -540,33 +545,34 @@ public class ScriptManager {
 			System.out.println(str);
 		}
 		System.out.println("---------");
-		if(funcLine[5].equals("WEAPON"))
+		
+		
+		if(funcLine[3].equals("HAS"))
 		{
-			if(funcLine[3].equals("HAS"))
+			this.neededBox.add(itemName);
+			System.out.println("*****In has box");
+			
+			if(TCGame.resource.hasBoxWithName(itemName))
 			{
-				System.out.println("*****In has box");
-				
-				if(TCGame.resource.hasBoxWithName(itemName))
-				{
-					System.out.println("*****Has item");
-					return true;
-				}
-				
-			}else if(funcLine[3].equals("SELECT"))
-			{
-				System.out.println("*****In select box");
-				
-				//	TCGame.resource.setCurrentItemName("左轮手枪");
-				System.out.println(TCGame.resource.getCurrentItemName());
-				if(TCGame.resource.getCurrentItemName().equals(itemName))
-				{
-					System.out.println("*****Item selected");
-					return true;
-				}
-			}else
-			{
-				System.out.println("HAS SOMETHING ELSE");
+				System.out.println("*****Has item");
+				return true;
 			}
+			
+		}else if(funcLine[3].equals("SELECT"))
+		{
+			this.neededBox.add(itemName);
+			System.out.println("*****In select box");
+			
+			//	TCGame.resource.setCurrentItemName("左轮手枪");
+			System.out.println(TCGame.resource.getCurrentItemName());
+			if(TCGame.resource.getCurrentItemName().equals(itemName))
+			{
+				System.out.println("*****Item selected");
+				return true;
+			}
+		}else
+		{
+			System.out.println("HAS SOMETHING ELSE");
 		}
 		return false;
 	}

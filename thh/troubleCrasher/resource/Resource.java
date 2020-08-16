@@ -21,7 +21,6 @@ public class Resource {
 		this.hp = 3;
 		this.enemyHp = 30;
 		
-//		Box box = new Box("左轮手枪", true);
 		Box box = new Box("一瓶啤酒", true);
 		
 		TCGame.jigsawViewer.setWaitingJigsaw(box);
@@ -38,7 +37,7 @@ public class Resource {
 	public String getCurrentItemName() {
 		return currentItemName;
 	}
-
+	
 	public void setCurrentItemName(String currentItemName) {
 		this.currentItemName = currentItemName;
 	}
@@ -119,11 +118,11 @@ public class Resource {
 //		return false;
 	}
 	
-	public void addBoxWithName(String name)
+	public void addBoxWithName(String name, boolean reuse)
 	{
-		
+		TCGame.jigsawViewer.setWaitingJigsaw(new Box(name, reuse));
 	}
-
+	
 
 	public int getHp() {
 		return hp;
