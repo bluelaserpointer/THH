@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 
 import core.GHQ;
 import gui.GUIParts;
+import troubleCrasher.engine.GamePageSwitcher;
 
 public class JigsawViewer extends GUIParts {
 	private JigsawBoard board;
@@ -31,7 +32,7 @@ public class JigsawViewer extends GUIParts {
 		for(Jigsaw jigsaw : board.jigsaws()) {
 			jigsaw.paint(left(), top());
 		}
-		final Graphics2D g2 = GHQ.getG2D(Color.WHITE, GHQ.stroke3);
+		final Graphics2D g2 = GHQ.getG2D(GamePageSwitcher.COLOR_GOLD, GHQ.stroke3);
 		for(int xi = 0; xi < board.xGrids; ++xi) {
 			for(int yi = 0; yi < board.yGrids; ++yi) {
 				g2.drawRect(left() + xi*JigsawEnum.JIGSAW_GRID_SIZE, top() + yi*JigsawEnum.JIGSAW_GRID_SIZE, JigsawEnum.JIGSAW_GRID_SIZE, JigsawEnum.JIGSAW_GRID_SIZE);

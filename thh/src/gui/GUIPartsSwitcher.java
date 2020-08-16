@@ -3,6 +3,8 @@ package gui;
 import java.awt.event.MouseEvent;
 import java.util.Stack;
 
+import paint.ImageFrame;
+
 public class GUIPartsSwitcher extends GUIParts{
 
 	private int defaultIndex, nowIndex;
@@ -47,6 +49,40 @@ public class GUIPartsSwitcher extends GUIParts{
 				super.clicked(e);
 				switchTo(index);
 				return true;
+			}
+		}.setName(name() + "->SwitcherOf" + index);
+	}
+	public GUIParts getSwitcherButton_selectChangeImage(int index, String unselectedImgUrl, String selectedImgUrl) {
+		return new GUIParts() {
+			final ImageFrame unselectedIF = ImageFrame.create(unselectedImgUrl);
+			final ImageFrame selectedIF = ImageFrame.create(selectedImgUrl);
+			@Override
+			public boolean clicked(MouseEvent e) {
+				super.clicked(e);
+				switchTo(index);
+				return true;
+			}
+			@Override
+			public void paint() {
+				super.paint();
+				(GUIPartsSwitcher.this.nowIndexIs(index) ? selectedIF : unselectedIF).rectPaint(left(), top(), width(), height());
+			}
+		}.setName(name() + "->SwitcherOf" + index);
+	}
+	public GUIParts getSwitcherButton_hoverChangeImage(int index, String unhoveredImgUrl, String hoveredImgUrl) {
+		return new GUIParts() {
+			final ImageFrame unhoveredIF = ImageFrame.create(unhoveredImgUrl);
+			final ImageFrame hoveredIF = ImageFrame.create(hoveredImgUrl);
+			@Override
+			public boolean clicked(MouseEvent e) {
+				super.clicked(e);
+				switchTo(index);
+				return true;
+			}
+			@Override
+			public void paint() {
+				super.paint();
+				(this.isScreenMouseOveredBoundingBox() ? hoveredIF : unhoveredIF).rectPaint(left(), top(), width(), height());
 			}
 		}.setName(name() + "->SwitcherOf" + index);
 	}
@@ -117,5 +153,8 @@ public class GUIPartsSwitcher extends GUIParts{
 	//information
 	public int nowIndex() {
 		return nowIndex;
+	}
+	public boolean nowIndexIs(int index) {
+		return nowIndex == index;
 	}
 }
