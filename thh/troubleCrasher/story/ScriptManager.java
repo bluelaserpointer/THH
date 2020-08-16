@@ -764,12 +764,13 @@ public class ScriptManager {
 	
 	private void roleDice(int res, int times)
 	{
-		DiceEffect diceEffect = new DiceEffect();
-
-		int i = 0;
-		while(i < times)
-		{
-			diceEffect.dotPaint(500, 500);
-		}
+//		DiceEffect diceEffect = new DiceEffect();
+//
+//		int i = 0;
+//		
+//		while(i < times)
+//		{
+//			diceEffect.dotPaint(500, 500);
+//		}
 	}
 }
