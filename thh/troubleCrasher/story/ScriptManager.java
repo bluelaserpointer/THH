@@ -537,7 +537,7 @@ public class ScriptManager {
 		}
 		System.out.println("----------");
 		
-		return this.neededBox.indexOf(name) >= 0;
+		return this.neededBox.indexOf(name) < 0;
 	}
 	
 	/**
