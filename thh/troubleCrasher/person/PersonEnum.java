@@ -22,5 +22,4 @@ public enum PersonEnum {
 		this.description = description;
 		this.personIcon = personIcon;
 	}
-
 }
