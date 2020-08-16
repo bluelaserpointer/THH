@@ -709,5 +709,9 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 			// this.childList.get(0).getChildren().get(GAMESCREEN).appendLast(guiOption);
 		}
 	}
+	
+	public void gameOver() {
+		this.switchTo(GAMEOVERSCREEN);
+	}
 
 }

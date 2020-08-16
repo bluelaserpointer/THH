@@ -181,6 +181,7 @@ public class Resource {
 		{
 			this.setHp(0);
 			// TODO: 判断玩家是否死亡
+			TCGame.gamePageSwitcher.gameOver();
 			return false;
 		}else {
 			this.setHp(res);
