@@ -28,7 +28,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 	public GamePageSwitcher() {
 		super(4, GAMEOVERSCREEN);
 		Dialogue = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setTextSpeed(1).setBounds(477, 580, 500, 100)
-				.setBGColor(Color.getHSBColor(45, 21, 91)).disable();
+				.disable();
 		Speaker = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setBounds(477, 540, 500, 30)
 				.setBGImage("thhimage/Name_Tag.png").disable();
 
@@ -312,15 +312,19 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				});
 
 				// 场景画面
-				this.appendLast(SCENE_PART);
 				// NPC
 				this.appendFirst(NPC_PART);
+				
+				this.appendLast(new GUIParts() {{
+					setBounds(430,520,594,248);
+					setBGImage("thhimage/DialogueBG.png");
 
-				this.appendLast(Speaker.setText("警长").enable());
+					this.appendLast(Speaker.setText("警长").enable());
 
-				this.appendLast(Dialogue.setText("点击开始游戏").enable());
+					this.appendLast(Dialogue.setText("点击开始游戏").enable());
 
-				this.appendLast(nextButton);
+					this.appendLast(nextButton);
+				}});
 				// if (nextButton.clicked(e)) {
 
 				// }
