@@ -15,13 +15,17 @@ import paint.ImageFrame;
 import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
 import troubleCrasher.person.PersonEnum;
+import troubleCrasher.person.ResolutionEnum;
 import troubleCrasher.person.SceneEnum;
+import troubleCrasher.person.VolumeEnum;
 import troubleCrasher.resource.Box;
 
 public class GamePageSwitcher extends GUIPartsSwitcher {
 	public static final int STARTSCREEN = 0, GAMESCREEN = 1, SETTINGSCREEN = 2,GAMEOVERSCREEN = 3;
 	private static final int PROFILE_SESSION = 0, BOX_SESSION = 1, SETTING_SESSION = 2, SAVE_SESSION = 3;
+	private static final int CHOOSE_SETTINGS = 0, DISPLAY_SETTINGS = 1, MUSIC_SETTINGS=2, EXIT_SETTINGS =3;
 	public static final Color COLOR_BROWN = new Color(35, 12, 2), COLOR_GOLD = new Color(220, 207, 152);
+	
 
 	private GUIParts nextButton, NPC_PART, SCENE_PART;
 	private AnimatedGHQTextArea Dialogue, Speaker;
@@ -276,41 +280,130 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								GHQ.getG2D().setFont(GHQ.initialFont);
 							}
 						});
-						set(SETTING_SESSION, new GUIParts() {
+						set(SETTING_SESSION, new GUIPartsSwitcher(4,CHOOSE_SETTINGS) {
 							{
 								setName("SETTING_SESSION");
-								this.setBGImage("thhimage/Settings_Bar.png");
+//								this.setBGImage("thhimage/Settings_Bar.png");
 								setBounds(70, 0, 360, 768);
-								this.appendLast(new GUIParts() {
-									final GUIParts displayScrBtn = getSwitcherButton(GAMESCREEN)
-											.setBGImage("thhimage/Settings_Bar_DisplayButton.png").setName("displayScrBtn")
-											.setBounds(200, 140, 100, 30),
-											musicScrBtn = getSwitcherButton(SETTINGSCREEN)
-													.setBGImage("thhimage/Settings_Bar_MusicButton.png").setName("musicScrBtn")
-													.setBounds(200, 200, 100, 30),
-													exitScrBtn = getSwitcherButton(SETTINGSCREEN)
-															.setBGImage("thhimage/Settings_Bar_ExitButton.png").setName("exitScrBtn")
-															.setBounds(200, 260, 100, 30);
+								set(CHOOSE_SETTINGS,new GUIParts() {
 									{
-										this.setName("SAVE_LOAD_TABS");
-										this.appendFirst(displayScrBtn);
-										this.appendFirst(musicScrBtn);
-										this.appendFirst(exitScrBtn);
-									}
-									@Override
-									public void paint() {
-										super.paint();
-										if(displayScrBtn.isScreenMouseOvered()) {
-											arrowIF.rectPaint(displayScrBtn.left() - 60, displayScrBtn.cy()-10, 40,20);
-										}
-										if(musicScrBtn.isScreenMouseOvered()) {
-											arrowIF.rectPaint(musicScrBtn.left() - 60, musicScrBtn.cy()-10, 40,20);
-										}
-										if(exitScrBtn.isScreenMouseOvered()) {
-											arrowIF.rectPaint(exitScrBtn.left() - 60, exitScrBtn.cy()-10, 40,20);
-										}
+										this.setBGImage("thhimage/Settings_Bar.png");
+										setBounds(70, 0, 360, 768);
+										this.appendLast(new GUIParts() {
+											final GUIParts displayScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+													.setBGImage("thhimage/Settings_Bar_DisplayButton.png").setName("displayScrBtn")
+													.setBounds(200, 140, 100, 30),
+													musicScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+															.setBGImage("thhimage/Settings_Bar_MusicButton.png").setName("musicScrBtn")
+															.setBounds(200, 200, 100, 30),
+															exitScrBtn = getSwitcherButton(EXIT_SETTINGS)
+																	.setBGImage("thhimage/Settings_Bar_ExitButton.png").setName("exitScrBtn")
+																	.setBounds(200, 260, 100, 30);
+											{
+												this.setName("SAVE_LOAD_TABS");
+												this.appendFirst(displayScrBtn);
+												this.appendFirst(musicScrBtn);
+												this.appendFirst(exitScrBtn);
+											}
+											@Override
+											public void paint() {
+												super.paint();
+												if(displayScrBtn.isScreenMouseOvered()) {
+													arrowIF.rectPaint(displayScrBtn.left() - 60, displayScrBtn.cy()-10, 40,20);
+												}
+												if(musicScrBtn.isScreenMouseOvered()) {
+													arrowIF.rectPaint(musicScrBtn.left() - 60, musicScrBtn.cy()-10, 40,20);
+												}
+												if(exitScrBtn.isScreenMouseOvered()) {
+													arrowIF.rectPaint(exitScrBtn.left() - 60, exitScrBtn.cy()-10, 40,20);
+												}
+											}
+										});
 									}
 								});
+								set(DISPLAY_SETTINGS,new GUIParts() {
+									{
+										setBounds(70, 0, 360, 768);
+										this.setBGImage("thhimage/Display_Settings.png");
+										this.appendLast(new GUIParts() {
+											final GUIParts resLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+													.setBGImage("thhimage/LeftButton.png").setName("resLeftScrBtn")
+													.setBounds(210, 190, 20, 30),
+													resRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+															.setBGImage("thhimage/RightButton.png").setName("resRightScrBtn")
+															.setBounds(360, 190, 20, 30),
+													resolution = new GUIParts().setBGImage(ResolutionEnum.LARGE.ResolutionImage).setBounds(250,190,100,20).setName("Resolution"),
+													AllScrLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+															.setBGImage("thhimage/LeftButton.png").setName("AllScrLeftScrBtn")
+															.setBounds(210, 240, 20, 30),
+													allScreen = new GUIParts().setBGImage("thhimage/OpenButton.png").setBounds(280,250,40,20),
+													AllScrRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+																	.setBGImage("thhimage/RightButton.png").setName("AllScrRightScrBtn")
+																	.setBounds(360, 240, 20, 30),
+													returnBtn = getSwitcherButton(CHOOSE_SETTINGS).setBounds(370,710,20,20).setBGImage("thhimage/CancelButton.png");
+											{
+												this.setName("SAVE_LOAD_TABS");
+												this.appendFirst(resLeftScrBtn);
+												this.appendFirst(resRightScrBtn);
+												this.appendFirst(resolution);
+												this.appendFirst(AllScrLeftScrBtn);
+												this.appendFirst(allScreen);
+												this.appendFirst(AllScrRightScrBtn);
+												this.appendFirst(returnBtn);
+											}
+										});
+									}
+								});
+								set(MUSIC_SETTINGS,new GUIParts() {
+									{
+										setBounds(70, 0, 360, 768);
+										this.setBGImage("thhimage/Music_Settings.png");
+										this.appendLast(new GUIParts() {
+											final GUIParts volLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+													.setBGImage("thhimage/LeftButton.png").setName("resLeftScrBtn")
+													.setBounds(230, 190, 20, 30),
+													volRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+															.setBGImage("thhimage/RightButton.png").setName("resRightScrBtn")
+															.setBounds(360, 190, 20, 30),
+													volume = new GUIParts().setBGImage(VolumeEnum.LEVEL_5.volumeImage).setBounds(250,190,100,20).setName("Resolution"),
+													effectLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+															.setBGImage("thhimage/LeftButton.png").setName("AllScrLeftScrBtn")
+															.setBounds(230, 240, 20, 30),
+													effect = new GUIParts().setBGImage("thhimage/OpenButton.png").setBounds(280,250,40,20),
+													effectScrRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+																	.setBGImage("thhimage/RightButton.png").setName("AllScrRightScrBtn")
+																	.setBounds(360, 240, 20, 30),
+																	bgmLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+																	.setBGImage("thhimage/LeftButton.png").setName("AllScrLeftScrBtn")
+																	.setBounds(230, 290, 20, 30),
+															bgm = new GUIParts().setBGImage("thhimage/OpenButton.png").setBounds(280,290,40,20),
+															bgmScrRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+																			.setBGImage("thhimage/RightButton.png").setName("AllScrRightScrBtn")
+																			.setBounds(360, 290, 20, 30),
+													returnBtn = getSwitcherButton(CHOOSE_SETTINGS).setBounds(370,710,20,20).setBGImage("thhimage/CancelButton.png");
+											{
+												this.setName("SAVE_LOAD_TABS");
+												this.appendFirst(volLeftScrBtn);
+												this.appendFirst(volRightScrBtn);
+												this.appendFirst(volume);
+												this.appendFirst(effectLeftScrBtn);
+												this.appendFirst(effect);
+												this.appendFirst(effectScrRightScrBtn);
+												this.appendFirst(bgmLeftScrBtn);
+												this.appendFirst(bgm);
+												this.appendFirst(bgmScrRightScrBtn);
+												this.appendFirst(returnBtn);
+											}
+										});
+									}
+								});
+								set(EXIT_SETTINGS,new GUIParts() {
+									{
+
+										setBounds(70, 0, 360, 768);
+									}
+								});
+								
 							}
 						});
 						set(SAVE_SESSION, new GUIParts() {
