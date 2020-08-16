@@ -24,12 +24,12 @@ import troubleCrasher.resource.Box;
 
 public class GamePageSwitcher extends GUIPartsSwitcher {
 	public static final int STARTSCREEN = 0, GAMESCREEN = 1, SETTINGSCREEN = 2,GAMEOVERSCREEN = 3;
-	private static final int PROFILE_SESSION = 0, BOX_SESSION = 1, SETTING_SESSION = 2, SAVE_SESSION = 3;
+	public static final int PROFILE_SESSION = 0, BOX_SESSION = 1, SETTING_SESSION = 2, SAVE_SESSION = 3;
 	private static final int CHOOSE_SETTINGS = 0, DISPLAY_SETTINGS = 1, MUSIC_SETTINGS=2;
 	public static final Color COLOR_BROWN = new Color(35, 12, 2), COLOR_GOLD = new Color(220, 207, 152);
-	
+	public static GUIPartsSwitcher leftTab;
 
-	private GUIParts nextButton, NPC_PART, SCENE_PART;
+	public static GUIParts nextButton, NPC_PART, SCENE_PART;
 	private AnimatedGHQTextArea Dialogue, Speaker;
 
 	public GamePageSwitcher() {
@@ -46,6 +46,9 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 			public boolean clicked(MouseEvent event) {
 				if (!this.isEnabled)
 					return super.clicked(event);
+				if(name().equals("先挪开物品")) {
+					return super.clicked(event);
+				}
 				// TODO: select option EDWARD
 				System.out.println("Button clicked");
 				TCGame.scriptManager.parseLine(TCGame.scriptManager.readLine(TCGame.scriptManager.buffReader));
@@ -54,6 +57,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 
 			{
 				setBounds(900, 698, 100, 40);
+				setName("NEXT>");
 			}
 
 			@Override
@@ -61,7 +65,14 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				super.paint();
 				nextBar.rectPaint(left(), top(), width(), height());
 				GHQ.getG2D(Color.WHITE);
-				GHQ.drawStringGHQ("NEXT>" , left() + 10, top() + 30, 25F);
+				GHQ.drawStringGHQ(this.name() , left() + 10, top() + 30, 25F);
+			}
+			
+			@Override
+			public GUIParts enable() {
+				super.enable();
+				setName("NEXT>");
+				return this;
 			}
 
 		};
@@ -178,7 +189,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				setName("GAMESCREEN");
 				this.setBGColor(Color.GRAY);
 				// 游戏功能栏及其展开画面
-				this.appendLast(new GUIPartsSwitcher(4, PROFILE_SESSION) {
+				this.appendLast(leftTab = new GUIPartsSwitcher(4, PROFILE_SESSION) {
 					{
 						setName("LEFT_MENU_AND_CONTENT");
 						this.setBounds(0, 0, 430, 768);
