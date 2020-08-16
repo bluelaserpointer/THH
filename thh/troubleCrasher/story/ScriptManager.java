@@ -91,7 +91,6 @@ public class ScriptManager {
 			}
 		}else {
 			nextLine(currLine);
-//			flag = true;
 		}
 		
 		
@@ -232,7 +231,6 @@ public class ScriptManager {
 		
 		setScriptManager(parsedLine[2]);
 				
-		// Scripts after optionGroup
 		parseLine(readLine(buffReader));
 	}
 	
@@ -278,6 +276,7 @@ public class ScriptManager {
 	
 	private int rand(int min, int max)
 	{
+		System.out.println("Generating rand: " + min + " " + max);
 		return (int)(Math.random()*(max-min+1)+min);
 	}
 	
@@ -288,22 +287,33 @@ public class ScriptManager {
 		int d = Integer.parseInt(parsedLine[3]);
 		int ac = Integer.parseInt(parsedLine[5]);
 		int type;
-		switch(parsedLine[6])
+		String person = parsedLine[6];
+		switch(person)
 		{
 			case "警长":
-				type = 1;
+				if(TCGame.resource.getCurrentItemName().equals("左轮手枪"))
+				{
+					type = 1;
+				}else {
+					type = 3;
+				}
 				break;
 			case "年轻人":
 				type = 2;
 				break;
 			case "敌人":
-				type = 3;
+				type = 5;
 				break;
 			default:
 				type = 3;
 				break;
 		}
-				
+		
+		System.out.println("---------------");
+		System.out.println(TCGame.resource.getCurrentItemName());
+		System.out.println(type);
+		type = 3;
+		System.out.println("---------------");	
 //		#ATK#D#20#AC#10#警长
 				
 		// true hit, false miss
@@ -318,16 +328,29 @@ public class ScriptManager {
 		if(hit)
 		{
 			int damage = parseDmg(d);
-			// 1, 2, 3
+			// 1, 2
 			textIdx = parseDmgTextIdx(damage, d);
 			
 			// 1: Player attacks, 2: YoungMan attacks, 3: Enemy attacks
-			if(type == 1)
+			if(person.equals("警长"))
 			{
-				if(rounds > 1)
-					randIdx = rand(2,4);
+				// Gun
+				if(type == 1)
+				{
+					if(rounds > 1)
+					{
+						randIdx = rand(2,4);
+					}
+					else
+					{
+						randIdx = 1;
+					}
+				}
 				else
-					randIdx = 1;
+				{
+					// Beer
+					randIdx = rand(1,3);
+				}
 				
 				enemyDeath = (TCGame.resource.delEnemeyHp(damage) == false);
 			}else if(type == 2) {
@@ -335,23 +358,31 @@ public class ScriptManager {
 				
 				enemyDeath = (TCGame.resource.delEnemeyHp(damage) == false);
 			}else {
-				randIdx = 1;
+				textIdx = 1;
+				randIdx = rand(1,3);
 				TCGame.resource.addBoxWithName("伤口");
 			}
 		}else {
 			textIdx = 3;
-			if(type == 1)
+			if(person.equals("警长"))
 			{
-				if(rounds > 1)
-					randIdx = rand(2,5);
-				else
-					randIdx = 1;
+				if(type == 1)
+				{
+					// Gun
+					if(rounds > 1)
+						randIdx = rand(2,5);
+					else
+						randIdx = 1;
+				}else {
+					// Beer
+					randIdx = rand(1,3);
+				}
 				
 			}else if(type == 2)
 			{
 				randIdx = 1;
 			}else {
-				randIdx = 1;
+				randIdx = rand(1,3);
 			}
 		}
 		
@@ -365,10 +396,40 @@ public class ScriptManager {
 //		4-3-1-1
 //			2-1
 //			3-1
+		
+		if(hit)
+		{
+			String name = "";
+			switch(type)
+			{
+				case 1:
+					name = "GUN_SHOT";
+					break;
+				case 2:
+					name = "PUNCH";
+					break;
+				case 3:
+					name = "USING_BOTTLE";
+					break;
+				case 5:
+					name = "WOLF_CLAW";
+					break;
+				default:
+					name = "USING_BOTTLE";
+					break;
+			}
+			TCGame.setSoundEffect(name);
+		}
+		
 
 		System.out.println(currentFile + "-" + textIdx + "-" + randIdx);
 		if(enemyDeath)
-			setScriptManager(4 + "-" + 1 + "-" + 4 + "-" + rand(1, 2));
+		{
+			if(type == 1)
+				setScriptManager(4 + "-" + 1 + "-" + 4 + "-" + rand(1, 2));
+			else
+				setScriptManager(4 + "-" + 3 + "-" + 4 + "-" + 1);
+		}
 		else
 			setScriptManager(currentFile + "-" + textIdx + "-" + randIdx);
 	}
@@ -413,6 +474,11 @@ public class ScriptManager {
 			skipIf(Integer.parseInt(parsedLine[2]));
 	}
 	
+	private boolean parseDisable(String funcLine){
+		String[] parsedLine = funcLine.split("#");
+		return !fulfill(parsedLine);
+	}
+	
 	/**
 	 * Checks if the statement is fulfilled
 	 * @param funcLine
@@ -423,21 +489,42 @@ public class ScriptManager {
 		//		#IF#HAS#BOX#123
 		//		#IF#SELECT#BOX#123
 		
-		String itemName = funcLine[5];
-		if(funcLine[3] == "HAS" && funcLine[4] == "BOX")
+		String itemName = funcLine[4];
+		System.out.println(itemName);
+		System.out.println("---------");
+		for(String str: funcLine)
 		{
-			if(TCGame.resource.hasBoxWithName(itemName))
-				return true;
-			
-		}else if(funcLine[3] == "SELECT" && funcLine[4] == "BOX")
+			System.out.println(str);
+		}
+		System.out.println("---------");
+		if(funcLine[5].equals("WEAPON"))
 		{
-			
-			if(TCGame.resource.getCurrentItemName() == itemName)
-				return true;
-			
-		}else
-		{
-			System.out.println("HAS SOMETHING ELSE");
+			if(funcLine[3].equals("HAS"))
+			{
+				System.out.println("*****In has box");
+				
+				if(TCGame.resource.hasBoxWithName(itemName))
+				{
+					System.out.println("*****Has item");
+					return true;
+				}
+				
+			}else if(funcLine[3].equals("SELECT"))
+			{
+				System.out.println("*****In select box");
+				
+				TCGame.resource.setCurrentItemName("左轮手枪");
+				System.out.println(TCGame.resource.getCurrentItemName());
+				if(TCGame.resource.getCurrentItemName().equals(itemName))
+				{
+					System.out.println("*****Item selected");
+					return true;
+				}
+						
+			}else
+			{
+				System.out.println("HAS SOMETHING ELSE");
+			}
 		}
 		return false;
 	}
@@ -450,14 +537,6 @@ public class ScriptManager {
 		return mock == 1;
 	}
 	
-	private boolean parseDisable(String funcLine){
-//		String[] parsedLine = funcLine.split("#");
-//		Scanner scan = new Scanner(System.in);  //创建Scanner扫描器来封装System类的in输入流
-//        int fulfill = scan.nextInt();
-		System.out.println("TODO: Disabled");
-//		return fulfill(parsedLine);
-		return false;
-	}
 	
 	/**
 	 * Skips the statements within if
@@ -500,9 +579,11 @@ public class ScriptManager {
 				{
 					if(!disabled)
 					{
+						System.out.println("Enabled option added: " + currLine);
 						currentOptions.add(currLine);
 						System.out.println("Options added");
 					}else {
+						System.out.println("Disabled option added: " + currLine);
 						disabledOptions.add(currLine);
 					}
 				}else if(currLine.contains("#IF"))
@@ -514,11 +595,13 @@ public class ScriptManager {
 				}else if(currLine.contains("#ENDDISABLE"))
 				{
 					disabled = false;
+				}else {
+					disabled = false;
 				}
 				
 				continue;
 			}
-			if(currLine == "#END")
+			if(currLine.equals("#END"))
 			{
 				continue;
 			}
@@ -546,6 +629,7 @@ public class ScriptManager {
    			    optionStatus.add(true);
    	        }
  	        
+// 	       System.out.println("-----------"); 
  	       for(String currOption: disabledOptions)
   	        {
   	        	String filePath = parsePath(currentFile + "-" +  currOption.substring(7));
@@ -556,8 +640,12 @@ public class ScriptManager {
   			    tmp = readLine(tmpReader);
   			    tmp = readLine(tmpReader);
   			    sendOptions.add(parseColonContent(tmp));
-  			  optionStatus.add(false);
+  			    
+//  			    System.out.println(parseColonContent(tmp));
+  			    
+  			    optionStatus.add(false);
   	        }
+// 	       System.out.println("-----------");
 	        
 // 	        optionsGroup.txt
 // 	        
@@ -588,7 +676,7 @@ public class ScriptManager {
 			TCGame.gamePageSwitcher.generateOptions(sendOptions, optionStatus);
 		}
 	}
-	
+
 	public void currentItemChange()
 	{
 		this.setScriptManager(currentFile);

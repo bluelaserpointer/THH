@@ -18,7 +18,7 @@ import troubleCrasher.person.PersonEnum;
 import troubleCrasher.person.SceneEnum;
 
 public class GamePageSwitcher extends GUIPartsSwitcher {
-	private static final int STARTSCREEN = 0, GAMESCREEN = 1, SETTINGSCREEN = 2;
+	public static final int STARTSCREEN = 0, GAMESCREEN = 1, SETTINGSCREEN = 2,GAMEOVERSCREEN = 3;
 	private static final int PROFILE_SESSION = 0, BOX_SESSION = 1, SETTING_SESSION = 2, SAVE_SESSION = 3;
 	public static final Color COLOR_BROWN = new Color(35, 12, 2), COLOR_GOLD = new Color(220, 207, 152);
 
@@ -26,9 +26,9 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 	private AnimatedGHQTextArea Dialogue, Speaker;
 
 	public GamePageSwitcher() {
-		super(3, STARTSCREEN);
+		super(4, GAMEOVERSCREEN);
 		Dialogue = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setTextSpeed(1).setBounds(477, 580, 500, 100)
-				.setBGColor(Color.getHSBColor(45, 21, 91)).disable();
+				.disable();
 		Speaker = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setBounds(477, 540, 500, 30)
 				.setBGImage("thhimage/Name_Tag.png").disable();
 
@@ -60,19 +60,11 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		};
 		NPC_PART = new GUIParts().setName("NPC_IMAGE").setBounds(627, 220, 200, 300)
 				.setBGImage(PersonEnum.CAPTAIN.personImage);
-		SCENE_PART = new GUIParts().setName("SCENE_PART").setBounds(430, 0, 594, 520)
-				.setBGImage(SceneEnum.WORK_DAY.sceneImage);
-
-		// DIALOGUE_SECTION = new GUIParts().setBGColor(Color.green).setBounds(430, 520,
-		// 1024, 768).appendLast(Speaker)
-		// .appendLast(Dialogue.setText(
-		// "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
-		// .enable())
-		// .appendLast(nextButton);
+		SCENE_PART = new GUIParts().setName("SCENE_PART").setBounds(430, 0, 594, 520);
+		final ImageFrame arrowIF = ImageFrame.create("thhimage/Main_Menu_Arrow.png");
 
 		// Start Menu
 		set(STARTSCREEN, new GUIParts() {
-			final ImageFrame arrowIF = ImageFrame.create("thhimage/Main_Menu_Arrow.png");
 			{
 				this.setBGImage("thhimage/Main_Menu_BG.png");
 				setName("STARTSCREEN");
@@ -124,7 +116,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				this.appendLast(new GUIPartsSwitcher(4, PROFILE_SESSION) {
 					{
 						setName("LEFT_MENU_AND_CONTENT");
-						this.setBounds(0, 0, 430, 768);
+						this.setBounds(0, 0, 70, 768);
 						this.setBGImage("thhimage/UtilityBar.png");
 
 						this.appendLast(
@@ -142,8 +134,9 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 							{
 								setName("PROFILE_SESSION");
 								this.setBounds(70, 0, 70, 768);
+								setBGImage("thhimage/Character_Bar.png");
 								// 一个人物一个框
-								for (int i = 0; i < PersonEnum.values().length - 3; i++) {
+								for (int i = 0; i < PersonEnum.values().length - 4; i++) {
 									final GUIParts NPC_Button = getSwitcherButton(i)
 											.setBGImage(PersonEnum.values()[i].personIcon).setName("NPC_1ScrBtn")
 											.setBounds(75, 20 + i * 70, 60, 60);
@@ -193,6 +186,35 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 										}
 									}
 								});
+								this.appendLast(new GUIParts() {
+									{
+										this.setBGColor(COLOR_GOLD);
+										this.setBounds(100, 280, 100, 100);
+									}
+								});
+								this.appendLast(new GUIParts() {
+									
+									final GUIParts inspectScrBtn = getSwitcherButton(GAMESCREEN)
+											.setBGImage("thhimage/InspectButton.png").setName("inspectScrBtn")
+											.setBounds(280, 290, 50, 30),
+											placeScrBtn = getSwitcherButton(SETTINGSCREEN)
+													.setBGImage("thhimage/PlaceButton.png").setName("placeScrBtn")
+													.setBounds(280, 340, 50, 30);
+									{
+										this.appendFirst(inspectScrBtn);
+										this.appendFirst(placeScrBtn);
+									}
+									@Override
+									public void paint() {
+										super.paint();
+										if(inspectScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(inspectScrBtn.left() - 60, inspectScrBtn.cy()-10, 40,20);
+										}
+										if(placeScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(placeScrBtn.left() - 60, placeScrBtn.cy()-10, 40,20);
+										}
+									}
+								});
 							}
 							ImageFrame heartIF = ImageFrame.create("thhimage/Heart.png");
 							ImageFrame staminaIF = ImageFrame.create("thhimage/Stamina.png");
@@ -222,8 +244,38 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 						set(SETTING_SESSION, new GUIParts() {
 							{
 								setName("SETTING_SESSION");
-								this.setBGImage("thhimage/settingScreenDemo.png");
+								this.setBGImage("thhimage/Settings_Bar.png");
 								setBounds(70, 0, 360, 768);
+								this.appendLast(new GUIParts() {
+									final GUIParts displayScrBtn = getSwitcherButton(GAMESCREEN)
+											.setBGImage("thhimage/Settings_Bar_DisplayButton.png").setName("displayScrBtn")
+											.setBounds(200, 140, 100, 30),
+											musicScrBtn = getSwitcherButton(SETTINGSCREEN)
+													.setBGImage("thhimage/Settings_Bar_MusicButton.png").setName("musicScrBtn")
+													.setBounds(200, 200, 100, 30),
+													exitScrBtn = getSwitcherButton(SETTINGSCREEN)
+															.setBGImage("thhimage/Settings_Bar_ExitButton.png").setName("exitScrBtn")
+															.setBounds(200, 260, 100, 30);
+									{
+										this.setName("SAVE_LOAD_TABS");
+										this.appendFirst(displayScrBtn);
+										this.appendFirst(musicScrBtn);
+										this.appendFirst(exitScrBtn);
+									}
+									@Override
+									public void paint() {
+										super.paint();
+										if(displayScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(displayScrBtn.left() - 60, displayScrBtn.cy()-10, 40,20);
+										}
+										if(musicScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(musicScrBtn.left() - 60, musicScrBtn.cy()-10, 40,20);
+										}
+										if(exitScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(exitScrBtn.left() - 60, exitScrBtn.cy()-10, 40,20);
+										}
+									}
+								});
 							}
 						});
 						set(SAVE_SESSION, new GUIParts() {
@@ -231,21 +283,48 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								setName("SAVE_SESSION");
 								setBGImage("thhimage/SaveBar.png");
 								setBounds(70, 0, 360, 768);
+								this.appendLast(new GUIParts() {
+									final GUIParts savegameScrBtn = getSwitcherButton(GAMESCREEN)
+											.setBGImage("thhimage/SaveBar_SaveButton.png").setName("newgameScrBtn")
+											.setBounds(210, 160, 80, 30),
+											loadgameScrBtn = getSwitcherButton(SETTINGSCREEN)
+													.setBGImage("thhimage/SaveBar_LoadButton.png").setName("loadgameScrBtn")
+													.setBounds(210, 220, 80, 30);
+									{
+										this.setName("SAVE_LOAD_TABS");
+										this.appendFirst(savegameScrBtn);
+										this.appendFirst(loadgameScrBtn);
+									}
+									@Override
+									public void paint() {
+										super.paint();
+										if(savegameScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(savegameScrBtn.left() - 60, savegameScrBtn.cy()-10, 40,20);
+										}
+										if(loadgameScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(loadgameScrBtn.left() - 60, loadgameScrBtn.cy()-10, 40,20);
+										}
+									}
+								});
 							}
 						});
 					}
 				});
 
 				// 场景画面
-				this.appendLast(SCENE_PART);
 				// NPC
 				this.appendFirst(NPC_PART);
+				
+				this.appendLast(new GUIParts() {{
+					setBounds(430,520,594,248);
+					setBGImage("thhimage/DialogueBG.png");
 
-				this.appendLast(Speaker.setText("警长").enable());
+					this.appendLast(Speaker.setText("警长").enable());
 
-				this.appendLast(Dialogue.setText("点击开始游戏").enable());
+					this.appendLast(Dialogue.setText("点击开始游戏").enable());
 
-				this.appendLast(nextButton);
+					this.appendLast(nextButton);
+				}});
 				// if (nextButton.clicked(e)) {
 
 				// }
@@ -260,6 +339,9 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				setBGColor(COLOR_BROWN);
 			}
 		});
+		
+		set(GAMEOVERSCREEN,new GameOverPage(this) {
+		});
 
 		//init options button
 		for (int i = 0; i < appendedGUIOption.length; i++) {
@@ -270,7 +352,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 					// System.out.println(Integer.valueOf(this.name()));
 					TCGame.scriptManager.chooseOption(Integer.valueOf(this.name()) + 1);
 					nextButton.enable();
-					generateOptions(null);
+					generateOptions(null, null);
 					return super.clicked(event);
 				}
 			};

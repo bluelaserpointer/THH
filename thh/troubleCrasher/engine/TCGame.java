@@ -13,13 +13,13 @@ import gui.GUIPartsSwitcher;
 import gui.UIShowHideButton;
 import physics.Point;
 import physics.stage.GHQStage;
-
+import sound.SoundClip;
 import troubleCrasher.story.*;
 
 import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
 import troubleCrasher.jigsaw.JigsawViewer;
-
+import troubleCrasher.person.SoundEnum;
 import troubleCrasher.resource.Resource;
 
 
@@ -32,6 +32,7 @@ public class TCGame extends Game {
 	public static JigsawViewer jigsawViewer = new JigsawViewer(6,3);
 
 	private Jigsaw testJigsaw;
+	
 
 	public static void main(String args[]) throws IOException {
 		new GHQ(new TCGame(), 1024, 768);
@@ -71,6 +72,31 @@ public class TCGame extends Game {
 
 	public static void setScriptManager(ScriptManager scriptManager) {
 		TCGame.scriptManager = scriptManager;
+	}
+	
+	public static void setSoundEffect(String name)
+	{
+		for(SoundEnum sound: SoundEnum.values())
+		{
+			if(sound.name.equals(name))
+			{
+				sound.soundClip.play();
+			}
+		}
+	}
+	
+	public static void setSoundBgm(String name)
+	{
+		SoundEnum tmp = null;
+		for(SoundEnum sound: SoundEnum.values())
+		{
+			sound.soundClip.stop();
+			if(sound.name.equals(name))
+			{
+				tmp = sound;
+			}
+		}
+		tmp.soundClip.loop();
 	}
 
 	@Override
