@@ -32,6 +32,7 @@ public class ScriptManager {
 	public List<Boolean> optionStatus = new ArrayList();
 
 	public List<String> neededBox = new ArrayList();
+	public List<Integer> neededBoxIdx = new ArrayList();
     
 	public ScriptManager() {}
 	
@@ -557,6 +558,7 @@ public class ScriptManager {
 		if(funcLine[3].equals("HAS"))
 		{
 			this.neededBox.add(itemName);
+			this.neededBoxIdx.add(this.neededBoxIdx.size());
 			System.out.println("*****In has box");
 			
 			if(TCGame.resource.hasBoxWithName(itemName))
@@ -568,6 +570,7 @@ public class ScriptManager {
 		}else if(funcLine[3].equals("SELECT"))
 		{
 			this.neededBox.add(itemName);
+			this.neededBoxIdx.add(this.neededBoxIdx.size());
 			System.out.println("*****In select box");
 			
 			//	TCGame.resource.setCurrentItemName("左轮手枪");
@@ -607,6 +610,7 @@ public class ScriptManager {
 	private void optionsInit()
 	{
 		this.neededBox = new ArrayList();
+		this.neededBoxIdx = new ArrayList();
 		this.sendOptions.clear();
 		this.optionStatus.clear();
 	}
