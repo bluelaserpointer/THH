@@ -89,7 +89,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 						TCGame.resource.setCurrentItemName(box.getBoxName());
 						TCGame.scriptManager.currentItemChange();
 						System.out.println(TCGame.resource.getCurrentItemName());
-						if(box.reusable()) {
+						if(box.usable()) {
 							TCGame.jigsawViewer.removeHookingJigsaw();
 						} else {
 							TCGame.jigsawViewer.placeJigsawToLastLocation(TCGame.jigsawViewer.hookingJigsaw());

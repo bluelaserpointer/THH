@@ -13,6 +13,7 @@ import core.Game;
 import troubleCrasher.effect.DiceEffect;
 import troubleCrasher.engine.TCGame;
 import troubleCrasher.person.*;
+import troubleCrasher.resource.BoxEnum;
 
 public class ScriptManager {
 
@@ -375,7 +376,7 @@ public class ScriptManager {
 			}else {
 				textIdx = 1;
 				randIdx = rand(1,3);
-				TCGame.resource.addBoxWithName("伤口");
+				TCGame.resource.addBoxWithName(BoxEnum.WOUND_SMALL);
 			}
 		}else {
 			textIdx = 3;
@@ -747,7 +748,7 @@ public class ScriptManager {
 	{
 		String[] parsedLine = funcLine.split("#");
 		System.out.println(parsedLine[4]);
-		TCGame.resource.addBoxWithName(parsedLine[4]);
+		TCGame.resource.addBoxWithName(BoxEnum.findByName(parsedLine[4]));
 		nextLine("旁白：你获得了“" + parsedLine[4] + "”的盒子。");
 	}
 	

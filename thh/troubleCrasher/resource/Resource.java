@@ -107,17 +107,17 @@ public class Resource {
 		}
 	}
 	
-	public void addBoxWithName(String name)
+	public void addBoxWithName(BoxEnum boxType)
 	{
 		System.out.println("In addBoxWithName!!!!!!!!!!!!!!!!");
-		TCGame.jigsawViewer.setWaitingJigsaw(new Box(name));
-		for(Jigsaw jigsaw:TCGame.jigsawViewer.board().jigsaws())
-		{
-			if(((Box)jigsaw).getBoxName().equals(name))
-			{
-				System.out.println("Found box " + name);
-			}
-		}	
+		TCGame.jigsawViewer.setWaitingJigsaw(new Box(boxType));
+//		for(Jigsaw jigsaw : TCGame.jigsawViewer.board().jigsaws())
+//		{
+//			if(((Box)jigsaw).getBoxName().equals(name))
+//			{
+//				System.out.println("Found box " + name);
+//			}
+//		}	
 	}
 	
 

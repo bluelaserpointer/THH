@@ -5,7 +5,7 @@ import paint.ImageFrame;
 public enum BoxEnum {
 	WINE("一瓶啤酒", BoxTagEnum.WEAPON, "thhimage/PiJiu.png"),
 	REBOLVER("左轮手枪", BoxTagEnum.WEAPON, true, "thhimage/ShouQiang.png"),
-	BANDAGE("医疗绷带", BoxTagEnum.HEAL, "thhimage/BangDai.png"),
+	BANDAGE("治疗绷带", BoxTagEnum.HEAL, "thhimage/BangDai.png"),
 	WOUND_SMALL("伤口", BoxTagEnum.WOUND, "thhimage/ShouShnagXiangZi.png"),
 	//scripts
 	SHI_ZU_TIE_JIANG("失足的铁匠", "thhimage/TieJiangXiangZi.png"),
@@ -35,5 +35,13 @@ public enum BoxEnum {
 		this.tag = tag;
 		this.reuse = reuse;
 		image = ImageFrame.create(imageUrl);
+	}
+	public static BoxEnum findByName(String name) {
+		for(BoxEnum boxEnum : BoxEnum.values()) {
+			if(boxEnum.boxName.equals(name))
+				return boxEnum;
+		}
+		System.out.println("not found: " + name);
+		return null;
 	}
 }
