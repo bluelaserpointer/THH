@@ -8,7 +8,7 @@ public class Resource {
 	int stamina;	// 单纯做事情消耗
 	int money;	// 买东西
 	
-	int enemyHp = 2;	// 战斗
+	int enemyHp = 30;	// 战斗
 	
 	int enemyAc;
 	int selfAc;
