@@ -339,7 +339,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 													AllScrRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
 																	.setBGImage("thhimage/RightButton.png").setName("AllScrRightScrBtn")
 																	.setBounds(360, 240, 20, 30),
-													returnBtn = getSwitcherButton(CHOOSE_SETTINGS).setBounds(370,710,20,20).setBGImage("thhimage/CancelButton.png");
+													returnBtn = getSwitcherButton(CHOOSE_SETTINGS).setBounds(370,710,30,30).setBGImage("thhimage/CancelButton.png");
 											{
 												this.setName("SAVE_LOAD_TABS");
 												this.appendFirst(resLeftScrBtn);
@@ -360,26 +360,26 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 										this.appendLast(new GUIParts() {
 											final GUIParts volLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
 													.setBGImage("thhimage/LeftButton.png").setName("resLeftScrBtn")
-													.setBounds(230, 190, 20, 30),
+													.setBounds(230, 170, 20, 30),
 													volRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
 															.setBGImage("thhimage/RightButton.png").setName("resRightScrBtn")
-															.setBounds(360, 190, 20, 30),
-													volume = new GUIParts().setBGImage(VolumeEnum.LEVEL_5.volumeImage).setBounds(250,190,100,20).setName("Resolution"),
+															.setBounds(360, 170, 20, 30),
+													volume = new GUIParts().setBGImage(VolumeEnum.LEVEL_5.volumeImage).setBounds(255,170,100,20).setName("Resolution"),
 													effectLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
 															.setBGImage("thhimage/LeftButton.png").setName("AllScrLeftScrBtn")
-															.setBounds(230, 240, 20, 30),
-													effect = new GUIParts().setBGImage("thhimage/OpenButton.png").setBounds(280,250,40,20),
+															.setBounds(230, 215, 20, 30),
+													effect = new GUIParts().setBGImage("thhimage/OpenButton.png").setBounds(280,215,40,20),
 													effectScrRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
 																	.setBGImage("thhimage/RightButton.png").setName("AllScrRightScrBtn")
-																	.setBounds(360, 240, 20, 30),
+																	.setBounds(360, 215, 20, 30),
 																	bgmLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
 																	.setBGImage("thhimage/LeftButton.png").setName("AllScrLeftScrBtn")
-																	.setBounds(230, 290, 20, 30),
-															bgm = new GUIParts().setBGImage("thhimage/OpenButton.png").setBounds(280,290,40,20),
+																	.setBounds(230, 260, 20, 30),
+															bgm = new GUIParts().setBGImage("thhimage/OpenButton.png").setBounds(280,260,40,20),
 															bgmScrRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
 																			.setBGImage("thhimage/RightButton.png").setName("AllScrRightScrBtn")
-																			.setBounds(360, 290, 20, 30),
-													returnBtn = getSwitcherButton(CHOOSE_SETTINGS).setBounds(370,710,20,20).setBGImage("thhimage/CancelButton.png");
+																			.setBounds(360, 260, 20, 30),
+													returnBtn = getSwitcherButton(CHOOSE_SETTINGS).setBounds(370,710,30,30).setBGImage("thhimage/CancelButton.png");
 											{
 												this.setName("SAVE_LOAD_TABS");
 												this.appendFirst(volLeftScrBtn);
