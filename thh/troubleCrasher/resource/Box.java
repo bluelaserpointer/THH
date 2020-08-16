@@ -9,9 +9,13 @@ public class Box extends Jigsaw {
 	private String boxName;
 	private String tag;
 	private boolean reuse;
+	public final BoxEnum boxEnum;
 	
 	static JigsawEnum decideJigsawShape(String boxName) {
 		return JigsawEnum.SQ1;
+	}
+	public Box(BoxEnum boxEnum) {
+		this.boxEnum = boxEnum;
 	}
 	
 	public Box(String boxName) {
@@ -20,7 +24,7 @@ public class Box extends Jigsaw {
 		
 		switch(boxName)
 		{
-			case "一瓶啤酒":
+			case :
 				this.setTag("WEAPON");
 				this.reuse = false;
 				break;
@@ -45,6 +49,27 @@ public class Box extends Jigsaw {
 				break;
 			
 		}
+	}
+	
+	public String imageUrl(String boxName) {
+		switch(boxName) {
+		case "一瓶啤酒":
+			return "thhimage/XXX.png";
+		case "左轮手枪":
+			return "thhimage/XXX.png";
+		case "医疗绷带":
+			return "thhimage/XXX.png";
+		case "伤口":
+			return "thhimage/XXX.png";
+		case "失足的铁匠":
+			return "thhimage/XXX.png";
+		case "小镇银行大劫案":
+			return "thhimage/XXX.png";
+		case "强酸与烈火":
+			return "thhimage/XXX.png";
+		case "酗酒的后果":
+			return "thhimage/XXX.png";
+	}
 	}
 	
 	public String getTag() {
