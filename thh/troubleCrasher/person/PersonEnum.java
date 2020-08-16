@@ -9,7 +9,7 @@ public enum PersonEnum {
 	FARMER("农夫", "thhimage/Farmer.png", "代填", "thhimage/Unknown_Icon.png"),
 	DOCTOR("医生", "thhimage/Doctor.png", "代填", "thhimage/Unknown_Icon.png"),
 	ANNOUNCER("播报员", "thhimage/Announcer.png", "代填", "thhimage/Unknown_Icon.png"),
-	NARRATAGE("旁白", "", "代填", "thhimage/Unknown_Icon.png");
+	NARRATAGE("旁白", null, "代填", "thhimage/Unknown_Icon.png");
 
 	public final String name;
 	public final String personImage;
