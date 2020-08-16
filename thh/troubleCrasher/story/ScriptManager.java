@@ -314,7 +314,6 @@ public class ScriptManager {
 		System.out.println("---------------");
 		System.out.println(TCGame.resource.getCurrentItemName());
 		System.out.println(type);
-		type = 3;
 		System.out.println("---------------");	
 //		#ATK#D#20#AC#10#警长
 				
@@ -420,6 +419,8 @@ public class ScriptManager {
 					name = "USING_BOTTLE";
 					break;
 			}
+			System.out.println("Plays effect......");
+			System.out.println(name);
 			TCGame.setSoundEffect(name);
 		}
 		
@@ -493,11 +494,13 @@ public class ScriptManager {
 			
 			if(bg == currBg)
 			{
-				TCGame.gamePageSwitcher.setSceneImage(sceneEnum);
+				TCGame.setSoundBgm(sceneEnum.bgmName);
 			}else {
 				TCGame.gamePageSwitcher.setSceneImageMusic(sceneEnum);
 			}
 		}
+		
+		currBg = bg;
 		// TODO: Needs to change background here.
 	}
 		
