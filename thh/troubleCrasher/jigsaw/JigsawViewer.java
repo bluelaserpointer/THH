@@ -1,17 +1,15 @@
 package troubleCrasher.jigsaw;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 
 import core.GHQ;
 import gui.GUIParts;
 import troubleCrasher.engine.GamePageSwitcher;
-import troubleCrasher.engine.TCGame;
 
 public class JigsawViewer extends GUIParts {
 	private JigsawBoard board;
-	private Jigsaw hookingJigsaw = new Jigsaw(JigsawEnum.HOLLOW1);
+	private Jigsaw hookingJigsaw = new Jigsaw(JigsawEnum.L32);
 	private Jigsaw disposedJigsaw;
 	
 	//init
@@ -31,13 +29,6 @@ public class JigsawViewer extends GUIParts {
 	@Override
 	public void paint() {
 		super.paint();
-		if(GHQ.nowFrame() == 200) {
-			System.out.println(TCGame.jigsawViewer.hookingJigsaw() == null);
-			disposedJigsaw = hookingJigsaw;
-			System.out.println(disposedJigsaw == this.disposedJigsaw());
-			hookingJigsaw = null;
-			System.out.println(TCGame.jigsawViewer.disposedJigsaw() == null);
-		}
 		for(Jigsaw jigsaw : board.jigsaws()) {
 			jigsaw.paint(left(), top());
 		}
@@ -76,12 +67,9 @@ public class JigsawViewer extends GUIParts {
 	}
 	
 	public void hookJigsaw(Jigsaw jigsaw) {
-		System.out.println("hook");
 		this.hookingJigsaw = jigsaw;
 		if(jigsaw != null)
 			hookingJigsaw.setGridPos(0, 0);
-		else
-			System.out.println("removed");
 	}
 	public void removeHookingJigsaw() {
 		this.hookJigsaw(null);
@@ -89,7 +77,6 @@ public class JigsawViewer extends GUIParts {
 	public void disposeHookJigsaw() {
 		disposedJigsaw = hookingJigsaw;
 		hookingJigsaw = null;
-//		removeHookingJigsaw();
 	}
 	public void hookDisposedJigsaw() {
 		this.hookJigsaw(disposedJigsaw);
