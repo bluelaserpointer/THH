@@ -60,7 +60,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		};
 		NPC_PART = new GUIParts().setName("NPC_IMAGE").setBounds(627, 220, 200, 300)
 				.setBGImage(PersonEnum.CAPTAIN.personImage);
-		SCENE_PART = new GUIParts().setName("SCENE_PART").setBounds(430, 0, 594, 520);
+		SCENE_PART = new GUIParts().setName("SCENE_PART").setBounds(430, 0, 594, 520).setBGImage(SceneEnum.WORK_DAY.sceneImage);
 		final ImageFrame arrowIF = ImageFrame.create("thhimage/Main_Menu_Arrow.png");
 
 		// Start Menu
