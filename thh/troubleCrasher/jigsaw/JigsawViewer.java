@@ -9,8 +9,9 @@ import troubleCrasher.engine.GamePageSwitcher;
 
 public class JigsawViewer extends GUIParts {
 	private JigsawBoard board;
-	private Jigsaw hookingJigsaw = new Jigsaw(JigsawEnum.L32);
+	private Jigsaw hookingJigsaw;
 	private Jigsaw disposedJigsaw;
+	private Jigsaw waitingJigsaw;
 	
 	//init
 	public JigsawViewer(JigsawBoard board) {
@@ -51,6 +52,9 @@ public class JigsawViewer extends GUIParts {
 			} else { //拿出
 				removeJigsawAndHook();
 			}
+		} else if(e.getButton() == MouseEvent.BUTTON3) { //旋转
+			if(hookingJigsaw != null)
+				hookingJigsaw.setDirection(hookingJigsaw.direction().right());
 		}
 		return consumed;
 	}
@@ -70,6 +74,12 @@ public class JigsawViewer extends GUIParts {
 		this.hookingJigsaw = jigsaw;
 		if(jigsaw != null)
 			hookingJigsaw.setGridPos(0, 0);
+	}
+	public Jigsaw waitingJigsaw() {
+		return waitingJigsaw;
+	}
+	public void setWaitingJigsaw(Jigsaw jigsaw) {
+		this.waitingJigsaw = jigsaw;
 	}
 	public void removeHookingJigsaw() {
 		this.hookJigsaw(null);
