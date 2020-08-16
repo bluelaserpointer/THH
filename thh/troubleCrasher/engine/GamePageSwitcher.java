@@ -61,14 +61,6 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		NPC_PART = new GUIParts().setName("NPC_IMAGE").setBounds(627, 220, 200, 300)
 				.setBGImage(PersonEnum.CAPTAIN.personImage);
 		SCENE_PART = new GUIParts().setName("SCENE_PART").setBounds(430, 0, 594, 520)
-				.setBGImage(SceneEnum.WORK_DAY.sceneImage);
-
-		// DIALOGUE_SECTION = new GUIParts().setBGColor(Color.green).setBounds(430, 520,
-		// 1024, 768).appendLast(Speaker)
-		// .appendLast(Dialogue.setText(
-		// "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
-		// .enable())
-		// .appendLast(nextButton);
 
 		// Start Menu
 		set(STARTSCREEN, new GUIParts() {
@@ -124,7 +116,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				this.appendLast(new GUIPartsSwitcher(4, PROFILE_SESSION) {
 					{
 						setName("LEFT_MENU_AND_CONTENT");
-						this.setBounds(0, 0, 430, 768);
+						this.setBounds(0, 70, 430, 768);
 						this.setBGImage("thhimage/UtilityBar.png");
 
 						this.appendLast(
@@ -142,6 +134,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 							{
 								setName("PROFILE_SESSION");
 								this.setBounds(70, 0, 70, 768);
+								setBGImage("thhimage/Character_Bar.png");
 								// 一个人物一个框
 								for (int i = 0; i < PersonEnum.values().length - 3; i++) {
 									final GUIParts NPC_Button = getSwitcherButton(i)
