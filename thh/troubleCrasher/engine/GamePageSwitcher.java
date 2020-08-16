@@ -136,7 +136,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								this.setBounds(70, 0, 70, 768);
 								setBGImage("thhimage/Character_Bar.png");
 								// 一个人物一个框
-								for (int i = 0; i < PersonEnum.values().length - 3; i++) {
+								for (int i = 0; i < PersonEnum.values().length - 4; i++) {
 									final GUIParts NPC_Button = getSwitcherButton(i)
 											.setBGImage(PersonEnum.values()[i].personIcon).setName("NPC_1ScrBtn")
 											.setBounds(75, 20 + i * 70, 60, 60);
@@ -183,6 +183,35 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 										Jigsaw disposedJigsaw = TCGame.jigsawViewer.disposedJigsaw();
 										if (disposedJigsaw != null) {
 											disposedJigsaw.paint(left(), top());
+										}
+									}
+								});
+								this.appendLast(new GUIParts() {
+									{
+										this.setBGColor(COLOR_GOLD);
+										this.setBounds(100, 280, 100, 100);
+									}
+								});
+								this.appendLast(new GUIParts() {
+									
+									final GUIParts inspectScrBtn = getSwitcherButton(GAMESCREEN)
+											.setBGImage("thhimage/InspectButton.png").setName("inspectScrBtn")
+											.setBounds(280, 290, 50, 30),
+											placeScrBtn = getSwitcherButton(SETTINGSCREEN)
+													.setBGImage("thhimage/PlaceButton.png").setName("placeScrBtn")
+													.setBounds(280, 340, 50, 30);
+									{
+										this.appendFirst(inspectScrBtn);
+										this.appendFirst(placeScrBtn);
+									}
+									@Override
+									public void paint() {
+										super.paint();
+										if(inspectScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(inspectScrBtn.left() - 60, inspectScrBtn.cy()-10, 40,20);
+										}
+										if(placeScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(placeScrBtn.left() - 60, placeScrBtn.cy()-10, 40,20);
 										}
 									}
 								});
