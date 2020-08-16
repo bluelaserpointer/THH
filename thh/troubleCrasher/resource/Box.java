@@ -16,6 +16,11 @@ public class Box extends Jigsaw {
 		this.boxEnum = boxEnum;
 	}
 	
+	@Override
+	public void paint(int left, int top) {
+		boxEnum.image.rectPaint(left,top,50,50);
+	}
+	
 	public BoxTagEnum getTag() {
 		return boxEnum.tag;
 	}
