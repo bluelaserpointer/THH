@@ -1,8 +1,6 @@
 package troubleCrasher.engine;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 // import org.w3c.dom.events.MouseEvent;
@@ -11,11 +9,9 @@ import java.io.IOException;
 
 import core.GHQ;
 import gui.AnimatedGHQTextArea;
-import gui.AutoResizeMenu;
 import gui.GUIParts;
 import gui.GUIPartsSwitcher;
 import paint.ImageFrame;
-import paint.rect.RectPaint;
 import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
 import troubleCrasher.person.PersonEnum;
@@ -24,15 +20,13 @@ import troubleCrasher.person.SceneEnum;
 public class GamePageSwitcher extends GUIPartsSwitcher {
 	private static final int STARTSCREEN = 0, GAMESCREEN = 1, SETTINGSCREEN = 2;
 	private static final int PROFILE_SESSION = 0, BOX_SESSION = 1, SETTING_SESSION = 2, SAVE_SESSION = 3;
-	private static final int NO_ONE = -1, CAPTAIN = 0, FARMER = 1, DOCTOR = 2, ANNOUNCER = 3; // DIFFERENT NPCS
-	// private final ImageFrame buttonPaint;
+	public static final Color COLOR_BROWN = new Color(35, 12, 2), COLOR_GOLD = new Color(220, 207, 152);
 
 	private GUIParts nextButton, NPC_PART, SCENE_PART;
 	private AnimatedGHQTextArea Dialogue, Speaker;
 
 	public GamePageSwitcher() {
 		super(3, STARTSCREEN);
-		// buttonPaint = ImageFrame.create("thhimage/veg_leaf3.png"); // 按钮图片
 		Dialogue = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setTextSpeed(1).setBounds(477, 580, 500, 100)
 				.setBGColor(Color.getHSBColor(45, 21, 91)).disable();
 		Speaker = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setBounds(477, 540, 500, 30)
@@ -41,7 +35,6 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		nextButton = new GUIParts() {
 
 			ImageFrame nextBar = ImageFrame.create("thhimage/Next_Bar.png");
-			ImageFrame nextBarArrow = ImageFrame.create("thhimage/Arrow_Right.png");
 
 			public boolean clicked(MouseEvent event) {
 				if (!this.isEnabled)
@@ -60,30 +53,22 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 			public void paint() {
 				super.paint();
 				nextBar.rectPaint(left(), top(), width(), height());
-				nextBarArrow.rectPaint(left() + 10, top() + 10, width() - 20, height() - 20);
+				GHQ.getG2D(Color.WHITE);
+				GHQ.drawStringGHQ("NEXT>" , left() + 10, top() + 30, 25F);
 			}
 
 		};
 		NPC_PART = new GUIParts().setName("NPC_IMAGE").setBounds(627, 220, 200, 300)
 				.setBGImage(PersonEnum.CAPTAIN.personImage);
-		SCENE_PART = new GUIParts().setName("SCENE_PART").setBounds(430, 0, 594, 520)
-				.setBGImage(SceneEnum.WORK_DAY.sceneImage);
-
-		// DIALOGUE_SECTION = new GUIParts().setBGColor(Color.green).setBounds(430, 520,
-		// 1024, 768).appendLast(Speaker)
-		// .appendLast(Dialogue.setText(
-		// "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
-		// .enable())
-		// .appendLast(nextButton);
+		SCENE_PART = new GUIParts().setName("SCENE_PART").setBounds(430, 0, 594, 520);
+		final ImageFrame arrowIF = ImageFrame.create("thhimage/Main_Menu_Arrow.png");
 
 		// Start Menu
 		set(STARTSCREEN, new GUIParts() {
 			{
 				this.setBGImage("thhimage/Main_Menu_BG.png");
 				setName("STARTSCREEN");
-
 				this.appendLast(new GUIParts() {
-
 					final GUIParts newgameScrBtn = getSwitcherButton(GAMESCREEN)
 							.setBGImage("thhimage/Main_Menu_NewGame.png").setName("newgameScrBtn")
 							.setBounds(730, 320, 230, 50),
@@ -93,17 +78,24 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 							settingsScrBtn = getSwitcherButton(SETTINGSCREEN)
 									.setBGImage("thhimage/Main_Menu_Setting.png").setName("settingScrBtn")
 									.setBounds(745, 500, 200, 50);
-
-					// quitScrBtn =
-					// getSwitcherButton(SETTINGSCREEN).setBGImage("thhimage/veg_leaf2.png")
-					// .setName("settingScrBtn").setBounds(512, 400, 100, 200);
-					// TODO: Add quit
-					// button
 					{
 						this.setName("START_MENU_TABS");
 						this.appendFirst(newgameScrBtn);
 						this.appendFirst(settingsScrBtn);
 						this.appendFirst(loadgameScrBtn);
+					}
+					@Override
+					public void paint() {
+						super.paint();
+						if(newgameScrBtn.isScreenMouseOvered()) {
+							arrowIF.dotPaint(newgameScrBtn.left() - 100, newgameScrBtn.cy());
+						}
+						if(loadgameScrBtn.isScreenMouseOvered()) {
+							arrowIF.dotPaint(loadgameScrBtn.left() - 100, loadgameScrBtn.cy());
+						}
+						if(settingsScrBtn.isScreenMouseOvered()) {
+							arrowIF.dotPaint(settingsScrBtn.left() - 100, settingsScrBtn.cy());
+						}
 					}
 				});
 			}
@@ -119,28 +111,30 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		set(GAMESCREEN, new GUIParts() {
 			{
 				setName("GAMESCREEN");
+				this.setBGColor(Color.GRAY);
 				// 游戏功能栏及其展开画面
 				this.appendLast(new GUIPartsSwitcher(4, PROFILE_SESSION) {
 					{
 						setName("LEFT_MENU_AND_CONTENT");
-						this.setBounds(0, 0, 430, 768);
+						this.setBounds(0, 0, 70, 768);
 						this.setBGImage("thhimage/UtilityBar.png");
 
 						this.appendLast(
-								getSwitcherButton(PROFILE_SESSION).setBGImage("thhimage/UtilityBar_Profile_Chosen.png")
+								getSwitcherButton_selectChangeImage(PROFILE_SESSION, "thhimage/UtilityBar_Profile.png", "thhimage/UtilityBar_Profile_Chosen.png")
 										.setName("profileScrBtn").setBounds(10, 10, 50, 50));
-						this.appendLast(getSwitcherButton(BOX_SESSION).setBGImage("thhimage/UtilityBar_Resource.png")
+						this.appendLast(getSwitcherButton_selectChangeImage(BOX_SESSION, "thhimage/UtilityBar_Resource.png", "thhimage/UtilityBar_Resource_Chosen.png")
 								.setName("boxScrBtn").setBounds(10, 80, 50, 50));
 						this.appendLast(
-								getSwitcherButton(SETTING_SESSION).setBGImage("thhimage/UtilityBar_Settings.png")
+								getSwitcherButton_selectChangeImage(SETTING_SESSION, "thhimage/UtilityBar_Settings.png", "thhimage/UtilityBar_Settings_Chosen.png")
 										.setName("settingScrBtn").setBounds(10, 160, 50, 50));
-						this.appendLast(getSwitcherButton(SAVE_SESSION).setBGImage("thhimage/UtilityBar_Save.png")
+						this.appendLast(getSwitcherButton_selectChangeImage(SAVE_SESSION, "thhimage/UtilityBar_Save.png", "thhimage/UtilityBar_Save_Chosen.png")
 								.setName("saveScrBtn").setBounds(10, 230, 50, 50));
 
 						set(PROFILE_SESSION, new GUIPartsSwitcher(5, 0) {
 							{
 								setName("PROFILE_SESSION");
 								this.setBounds(70, 0, 70, 768);
+								setBGImage("thhimage/Character_Bar.png");
 								// 一个人物一个框
 								for (int i = 0; i < PersonEnum.values().length - 3; i++) {
 									final GUIParts NPC_Button = getSwitcherButton(i)
@@ -148,7 +142,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 											.setBounds(75, 20 + i * 70, 60, 60);
 									this.appendLast(NPC_Button);
 									final GUIParts NPC_Profile = new GUIParts().setName("NPC_PROFILE")
-											.setBGColor(Color.pink).setBounds(140, 0, 290, 768);
+											.setBGColor(COLOR_BROWN).setBounds(140, 0, 290, 768);
 									set(i, NPC_Profile);
 								}
 
@@ -159,7 +153,8 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 							{
 								setName("BOX_SESSION");
 								setBounds(70, 0, 360, 768);
-								this.addLast(TCGame.jigsawViewer).setBGColor(Color.LIGHT_GRAY).setBounds(100, 600,
+								setBGColor(COLOR_BROWN);
+								this.addLast(TCGame.jigsawViewer).setBGColor(COLOR_BROWN).setBounds(100, 600,
 										JigsawEnum.JIGSAW_GRID_SIZE * 6, JigsawEnum.JIGSAW_GRID_SIZE * 3);
 								this.addLast(new GUIParts() {
 									{
@@ -200,7 +195,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 							@Override
 							public void paint() {
 								super.paint();
-								GHQ.getG2D(Color.BLACK).setFont(GHQ.initialFont.deriveFont(25F));
+								GHQ.getG2D(COLOR_GOLD).setFont(GHQ.initialFont.deriveFont(25F));
 								GHQ.getG2D().drawString("金钱$      " + TCGame.resource.getMoney(), 100, 50);
 								GHQ.getG2D().drawString("行动点", 100, 100);
 								GHQ.getG2D().drawString("生命值", 100, 155);
@@ -220,7 +215,38 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 						set(SETTING_SESSION, new GUIParts() {
 							{
 								setName("SETTING_SESSION");
+								this.setBGImage("thhimage/Settings_Bar.png");
 								setBounds(70, 0, 360, 768);
+								this.appendLast(new GUIParts() {
+									final GUIParts displayScrBtn = getSwitcherButton(GAMESCREEN)
+											.setBGImage("thhimage/Settings_Bar_DisplayButton.png").setName("displayScrBtn")
+											.setBounds(200, 140, 100, 30),
+											musicScrBtn = getSwitcherButton(SETTINGSCREEN)
+													.setBGImage("thhimage/Settings_Bar_MusicButton.png").setName("musicScrBtn")
+													.setBounds(200, 200, 100, 30),
+													exitScrBtn = getSwitcherButton(SETTINGSCREEN)
+															.setBGImage("thhimage/Settings_Bar_ExitButton.png").setName("exitScrBtn")
+															.setBounds(200, 260, 100, 30);
+									{
+										this.setName("SAVE_LOAD_TABS");
+										this.appendFirst(displayScrBtn);
+										this.appendFirst(musicScrBtn);
+										this.appendFirst(exitScrBtn);
+									}
+									@Override
+									public void paint() {
+										super.paint();
+										if(displayScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(displayScrBtn.left() - 60, displayScrBtn.cy()-10, 40,20);
+										}
+										if(musicScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(musicScrBtn.left() - 60, musicScrBtn.cy()-10, 40,20);
+										}
+										if(exitScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(exitScrBtn.left() - 60, exitScrBtn.cy()-10, 40,20);
+										}
+									}
+								});
 							}
 						});
 						set(SAVE_SESSION, new GUIParts() {
@@ -228,6 +254,29 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								setName("SAVE_SESSION");
 								setBGImage("thhimage/SaveBar.png");
 								setBounds(70, 0, 360, 768);
+								this.appendLast(new GUIParts() {
+									final GUIParts savegameScrBtn = getSwitcherButton(GAMESCREEN)
+											.setBGImage("thhimage/SaveBar_SaveButton.png").setName("newgameScrBtn")
+											.setBounds(210, 160, 80, 30),
+											loadgameScrBtn = getSwitcherButton(SETTINGSCREEN)
+													.setBGImage("thhimage/SaveBar_LoadButton.png").setName("loadgameScrBtn")
+													.setBounds(210, 220, 80, 30);
+									{
+										this.setName("SAVE_LOAD_TABS");
+										this.appendFirst(savegameScrBtn);
+										this.appendFirst(loadgameScrBtn);
+									}
+									@Override
+									public void paint() {
+										super.paint();
+										if(savegameScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(savegameScrBtn.left() - 60, savegameScrBtn.cy()-10, 40,20);
+										}
+										if(loadgameScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(loadgameScrBtn.left() - 60, loadgameScrBtn.cy()-10, 40,20);
+										}
+									}
+								});
 							}
 						});
 					}
@@ -254,7 +303,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		set(SETTINGSCREEN, new GUIParts() {
 			{
 				setName("SETTINGSCREEN");
-				setBGColor(Color.red);
+				setBGColor(COLOR_BROWN);
 			}
 		});
 
