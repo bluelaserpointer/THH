@@ -29,7 +29,7 @@ public class TCGame extends Game {
 	public static ScriptManager scriptManager;
 	public static GamePageSwitcher gamePageSwitcher;
 
-	public static JigsawViewer jigsawViewer = new JigsawViewer(6,3);
+	public static JigsawViewer jigsawViewer;
 
 	private Jigsaw testJigsaw;
 	
