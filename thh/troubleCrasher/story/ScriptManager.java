@@ -728,7 +728,9 @@ public class ScriptManager {
 	 * @throws InterruptedException 
 	 */
 	public void chooseOption(int index)
-	{		
+	{	
+		
+		
 		setScriptManager(currentFile + "-" + index);
 		
 		// Scripts after optionGroup
