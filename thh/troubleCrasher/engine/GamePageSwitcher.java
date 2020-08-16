@@ -67,7 +67,9 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 					final Jigsaw hookingJigsaw = TCGame.jigsawViewer.hookingJigsaw();
 					if(hookingJigsaw != null) {
 						final Box box = (Box)hookingJigsaw;
+						System.out.println(TCGame.resource.getCurrentItemName());
 						TCGame.resource.setCurrentItemName(box.getBoxName());
+						System.out.println(TCGame.resource.getCurrentItemName());
 						TCGame.jigsawViewer.removeHookingJigsaw();
 					}
 				}
@@ -82,7 +84,14 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 					final Jigsaw hookingJigsaw = TCGame.jigsawViewer.hookingJigsaw();
 					if(hookingJigsaw != null) {
 						final Box box = (Box)hookingJigsaw;
+						System.out.println("----------------------");
+						System.out.println(TCGame.resource.getCurrentItemName());
+						TCGame.resource.setCurrentItemName("Random");
+						System.out.println(TCGame.resource.getCurrentItemName());
 						TCGame.resource.setCurrentItemName(box.getBoxName());
+						TCGame.scriptManager.currentItemChange();
+						System.out.println(TCGame.resource.getCurrentItemName());
+						System.out.println("----------------------");
 						TCGame.jigsawViewer.removeHookingJigsaw();
 					}
 				}
@@ -374,7 +383,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 			AnimatedGHQTextArea guiOption = new AnimatedGHQTextArea() {
 				@Override
 				public boolean clicked(MouseEvent event) {
-					if(!this.name().startsWith("invalid")) {
+					if(!this.name().startsWith("invalid")) {						
 						TCGame.scriptManager.chooseOption(Integer.valueOf(this.name()) + 1);
 						nextButton.enable();
 						generateOptions(null, null);
@@ -417,10 +426,12 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 	}
 
 	private final AnimatedGHQTextArea[] appendedGUIOption = new AnimatedGHQTextArea[4];
+	
 	public void generateOptions(List<String> options, List<Boolean> optionStatus) {
 		for (GUIParts parts : appendedGUIOption)
 			parts.disable();
 		if (options == null) {
+			nextButton.enable();
 			return;
 		}
 		nextButton.disable();

@@ -17,8 +17,12 @@ public class Resource {
 	String currentItemName = "";
 
 	public Resource() {
-		System.out.println("In resource");
-		Box box = new Box("左轮手枪");
+		this.stamina = 1;
+		this.hp = 3;
+		this.enemyHp = 30;
+		
+		Box box = new Box("一瓶啤酒", true);
+		
 		TCGame.jigsawViewer.setWaitingJigsaw(box);
 	};
 	
@@ -29,12 +33,11 @@ public class Resource {
 			System.out.println(((Box)jigsaw).getBoxName());
 		}
 	}
-
 	
 	public String getCurrentItemName() {
 		return currentItemName;
 	}
-
+	
 	public void setCurrentItemName(String currentItemName) {
 		this.currentItemName = currentItemName;
 	}
@@ -115,11 +118,11 @@ public class Resource {
 //		return false;
 	}
 	
-	public void addBoxWithName(String name)
+	public void addBoxWithName(String name, boolean reuse)
 	{
-		
+		TCGame.jigsawViewer.setWaitingJigsaw(new Box(name, reuse));
 	}
-
+	
 
 	public int getHp() {
 		return hp;
