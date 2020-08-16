@@ -1,4 +1,5 @@
 #STARTLINE
+旁白：你一把推开了门进入了充满诡异气氛的酒馆。
 #BG#2
 #OPTIONS
 #OPTION1

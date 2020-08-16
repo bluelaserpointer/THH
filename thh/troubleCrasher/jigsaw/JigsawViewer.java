@@ -1,6 +1,5 @@
 package troubleCrasher.jigsaw;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 
@@ -10,12 +9,13 @@ import troubleCrasher.engine.GamePageSwitcher;
 
 public class JigsawViewer extends GUIParts {
 	private JigsawBoard board;
-	private Jigsaw hookingJigsaw = new Jigsaw(JigsawEnum.HOLLOW1);
+	private Jigsaw hookingJigsaw = new Jigsaw(JigsawEnum.L32);
 	private Jigsaw disposedJigsaw;
 	
 	//init
 	public JigsawViewer(JigsawBoard board) {
 		this.board = board;
+		hookingJigsaw = null;
 	}
 	public JigsawViewer(int xGrids, int yGrids) {
 		this.board = new JigsawBoard(xGrids, yGrids);
@@ -76,7 +76,7 @@ public class JigsawViewer extends GUIParts {
 	}
 	public void disposeHookJigsaw() {
 		disposedJigsaw = hookingJigsaw;
-		removeHookingJigsaw();
+		hookingJigsaw = null;
 	}
 	public void hookDisposedJigsaw() {
 		this.hookJigsaw(disposedJigsaw);

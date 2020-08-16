@@ -29,7 +29,7 @@ public class TCGame extends Game {
 	public static ScriptManager scriptManager;
 	public static GamePageSwitcher gamePageSwitcher;
 
-	public static JigsawViewer jigsawViewer = new JigsawViewer(6,3);
+	public static JigsawViewer jigsawViewer = new JigsawViewer(6, 3);
 
 	private Jigsaw testJigsaw;
 	
@@ -44,9 +44,7 @@ public class TCGame extends Game {
     // Scripts
 		System.out.println("Initialized scriptManager");
 		resource = new Resource();
-		jigsawViewer = new JigsawViewer(6,7);
-		scriptManager = new ScriptManager("4");
-
+		scriptManager = new ScriptManager("3");
 	}
 
 	@Override

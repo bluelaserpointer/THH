@@ -169,6 +169,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 										Jigsaw disposedJigsaw = TCGame.jigsawViewer.disposedJigsaw();
 										if (hookingJigsaw != null) { // 拿进
 											TCGame.jigsawViewer.disposeHookJigsaw();
+//											TCGame.jigsawViewer.removeHookingJigsaw();
 											TCGame.resource.delHp(1);
 										} else if (disposedJigsaw != null) { // 拿走
 										}
@@ -351,9 +352,11 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				public boolean clicked(MouseEvent event) {
 					// TODO: selectoption EDWARD
 					// System.out.println(Integer.valueOf(this.name()));
-					TCGame.scriptManager.chooseOption(Integer.valueOf(this.name()) + 1);
-					nextButton.enable();
-					generateOptions(null, null);
+					if(!this.name().startsWith("invalid")) {
+						TCGame.scriptManager.chooseOption(Integer.valueOf(this.name()) + 1);
+						nextButton.enable();
+						generateOptions(null, null);
+					}
 					return super.clicked(event);
 				}
 			};
@@ -370,6 +373,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 
 	// 改变说话人物图片以及对话，讲话的人
 	public void setDialogue(String text, PersonEnum Speaker) {
+		System.out.println(text);
 		System.out.println(Speaker.name);
 		this.Dialogue.setText(text);
 		this.Speaker.setText(Speaker.name);
@@ -384,6 +388,11 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 	public void setSceneImage(SceneEnum Scene) {
 		this.SCENE_PART.setBGImage(Scene.sceneImage);
 	}
+	
+	public void setSceneImageMusic(SceneEnum Scene) {
+		this.SCENE_PART.setBGImage(Scene.sceneImage);
+		TCGame.setSoundBgm(Scene.bgmName);
+	}
 
 	private final AnimatedGHQTextArea[] appendedGUIOption = new AnimatedGHQTextArea[4];
 	public void generateOptions(List<String> options, List<Boolean> optionStatus) {
@@ -397,7 +406,14 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 			final AnimatedGHQTextArea guiOption = appendedGUIOption[i];
 			guiOption.enable();
 			guiOption.setText("       " + options.get(i));
-			guiOption.setTextColor(Color.white);
+			guiOption.setTextColor(optionStatus.get(i) ? Color.WHITE : Color.GRAY);
+			if(!optionStatus.get(i)) {
+				if(!guiOption.name().startsWith("invalid"))
+					guiOption.setName("invalid" + guiOption.name());
+			} else {
+				if(guiOption.name().startsWith("invalid"))
+					guiOption.setName(guiOption.name().substring(7));
+			}
 			switch (i) {
 				case 0:
 					guiOption.setBGImage("thhimage/Option1.png");
