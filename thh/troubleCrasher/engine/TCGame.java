@@ -2,6 +2,7 @@ package troubleCrasher.engine;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -19,6 +20,7 @@ import troubleCrasher.story.*;
 import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
 import troubleCrasher.jigsaw.JigsawViewer;
+import troubleCrasher.person.SceneEnum;
 import troubleCrasher.person.SoundEnum;
 import troubleCrasher.resource.Resource;
 
@@ -39,12 +41,13 @@ public class TCGame extends Game {
 	}
 
 	public TCGame() throws IOException {
-		super(gamePageSwitcher = new GamePageSwitcher()); // TODO: change it!!
+		super(gamePageSwitcher = new GamePageSwitcher()); 
 		
-    // Scripts
+		// Scripts
 		System.out.println("Initialized scriptManager");
 		resource = new Resource();
-		scriptManager = new ScriptManager("3");
+		scriptManager = new ScriptManager("4");
+		// TCGame.setSoundBgm(SceneEnum.WORK_DAY.bgmName);
 	}
 
 	@Override
@@ -107,6 +110,17 @@ public class TCGame extends Game {
 		// if(GHQ.nowFrame() % 10 == 0) {
 		// testJigsaw.setDirection(testJigsaw.direction().right());
 		// }
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent e) {
+		super.mousePressed(e);
+		if(e.getButton() == MouseEvent.BUTTON3) {
+			final Jigsaw hookingJigsaw = TCGame.jigsawViewer.hookingJigsaw();
+			if(hookingJigsaw != null) {
+				hookingJigsaw.setDirection(hookingJigsaw.direction().right());
+			}
+		}
 	}
 
 	protected Camera starterCamera() {

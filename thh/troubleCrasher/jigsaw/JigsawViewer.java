@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 
 import core.GHQ;
 import gui.GUIParts;
+import physics.direction.Direction4;
 import troubleCrasher.engine.GamePageSwitcher;
 
 public class JigsawViewer extends GUIParts {
@@ -12,6 +13,8 @@ public class JigsawViewer extends GUIParts {
 	private Jigsaw hookingJigsaw;
 	private Jigsaw disposedJigsaw;
 	private Jigsaw waitingJigsaw;
+	private int lastPlacedGridX, lastPlacedGridY;
+	private Direction4 lastPlacedDirection;
 	
 	//init
 	public JigsawViewer(JigsawBoard board) {
@@ -52,9 +55,7 @@ public class JigsawViewer extends GUIParts {
 			} else { //拿出
 				removeJigsawAndHook();
 			}
-		} else if(e.getButton() == MouseEvent.BUTTON3) { //旋转
-			if(hookingJigsaw != null)
-				hookingJigsaw.setDirection(hookingJigsaw.direction().right());
+		} else if(e.getButton() == MouseEvent.BUTTON3) { //旋转-TCPage会做
 		}
 		return consumed;
 	}
@@ -103,9 +104,17 @@ public class JigsawViewer extends GUIParts {
 			placeFailed();
 		} else {
 			board().setJigsaw(hookingJigsaw);
+			this.lastPlacedGridX = gridPosX;
+			this.lastPlacedGridY = gridPosY;
+			this.lastPlacedDirection = hookingJigsaw.direction();
 			placeSucceed();
 			hookingJigsaw = null;
 		}
+	}
+	public void placeJigsawToLastLocation(Jigsaw jigsaw) {
+		jigsaw.setGridPos(lastPlacedGridX, lastPlacedGridY);
+		jigsaw.setDirection(lastPlacedDirection);
+		board().setJigsaw(jigsaw);
 	}
 	public void removeJigsawAndHook() {
 		final int gridPosX = (GHQ.mouseScreenX() - left())/JigsawEnum.JIGSAW_GRID_SIZE;

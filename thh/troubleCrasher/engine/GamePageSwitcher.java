@@ -34,7 +34,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		super(4, GAMEOVERSCREEN);
 		Dialogue = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setTextSpeed(1).setBounds(477, 580, 500, 100)
 				.disable();
-		Speaker = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setBounds(477, 540, 500, 30)
+		Speaker = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setTextColor(Color.WHITE).setBounds(477, 540, 500, 30)
 				.setBGImage("thhimage/Name_Tag.png").disable();
 
 		nextButton = new GUIParts() {
@@ -67,11 +67,15 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 			@Override
 			public boolean clicked(MouseEvent e) {
 				final boolean consumed = super.clicked(e);
-				final Jigsaw hookingJigsaw = TCGame.jigsawViewer.hookingJigsaw();
-				if(hookingJigsaw != null) {
-					final Box box = (Box)hookingJigsaw;
-					TCGame.resource.setCurrentItemName(box.getBoxName());
-					TCGame.jigsawViewer.removeHookingJigsaw();
+				if(e.getButton() == MouseEvent.BUTTON1) {
+					final Jigsaw hookingJigsaw = TCGame.jigsawViewer.hookingJigsaw();
+					if(hookingJigsaw != null) {
+						final Box box = (Box)hookingJigsaw;
+						System.out.println(TCGame.resource.getCurrentItemName());
+						TCGame.resource.setCurrentItemName(box.getBoxName());
+						System.out.println(TCGame.resource.getCurrentItemName());
+						TCGame.jigsawViewer.removeHookingJigsaw();
+					}
 				}
 				return consumed;
 			}
@@ -80,11 +84,20 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 			@Override
 			public boolean clicked(MouseEvent e) {
 				final boolean consumed = super.clicked(e);
-				final Jigsaw hookingJigsaw = TCGame.jigsawViewer.hookingJigsaw();
-				if(hookingJigsaw != null) {
-					final Box box = (Box)hookingJigsaw;
-					TCGame.resource.setCurrentItemName(box.getBoxName());
-					TCGame.jigsawViewer.removeHookingJigsaw();
+				if(e.getButton() == MouseEvent.BUTTON1) {
+					final Jigsaw hookingJigsaw = TCGame.jigsawViewer.hookingJigsaw();
+					if(hookingJigsaw != null) {
+						final Box box = (Box)hookingJigsaw;
+						System.out.println("----------------------");
+						System.out.println(TCGame.resource.getCurrentItemName());
+						TCGame.resource.setCurrentItemName("Random");
+						System.out.println(TCGame.resource.getCurrentItemName());
+						TCGame.resource.setCurrentItemName(box.getBoxName());
+						TCGame.scriptManager.currentItemChange();
+						System.out.println(TCGame.resource.getCurrentItemName());
+						System.out.println("----------------------");
+						TCGame.jigsawViewer.removeHookingJigsaw();
+					}
 				}
 				return consumed;
 			}
@@ -193,14 +206,15 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 									@Override
 									public boolean clicked(MouseEvent e) {
 										final boolean consumed = super.clicked(e);
-										Jigsaw hookingJigsaw = TCGame.jigsawViewer.hookingJigsaw();
-										Jigsaw disposedJigsaw = TCGame.jigsawViewer.disposedJigsaw();
-										if (hookingJigsaw != null) { // 拿进
-											TCGame.jigsawViewer.disposeHookJigsaw();
-//											TCGame.jigsawViewer.removeHookingJigsaw();
-											TCGame.resource.delHp(1);
-										} else if (disposedJigsaw != null) { // 拿走
-											TCGame.jigsawViewer.hookDisposedJigsaw();
+											if(e.getButton() == MouseEvent.BUTTON1) {
+											Jigsaw hookingJigsaw = TCGame.jigsawViewer.hookingJigsaw();
+											Jigsaw disposedJigsaw = TCGame.jigsawViewer.disposedJigsaw();
+											if (hookingJigsaw != null) { // 拿进
+												TCGame.jigsawViewer.disposeHookJigsaw();
+												TCGame.resource.delHp(1);
+											} else if (disposedJigsaw != null) { // 拿走
+												TCGame.jigsawViewer.hookDisposedJigsaw();
+											}
 										}
 										return consumed;
 									}
@@ -426,8 +440,8 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 
 				// 场景画面
 				// NPC
-				this.appendFirst(SCENE_PART);
-				this.appendFirst(NPC_PART);
+				this.addLast(SCENE_PART);
+				this.addLast(NPC_PART);
 				
 				this.appendLast(new GUIParts() {{
 					setBounds(430,520,594,248);
@@ -462,9 +476,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 			AnimatedGHQTextArea guiOption = new AnimatedGHQTextArea() {
 				@Override
 				public boolean clicked(MouseEvent event) {
-					// TODO: selectoption EDWARD
-					// System.out.println(Integer.valueOf(this.name()));
-					if(!this.name().startsWith("invalid")) {
+					if(!this.name().startsWith("invalid")) {						
 						TCGame.scriptManager.chooseOption(Integer.valueOf(this.name()) + 1);
 						nextButton.enable();
 						generateOptions(null, null);
@@ -480,7 +492,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 	}
 
 	public void setSpeaker(String speaker) {
-		this.Speaker.setText(speaker);
+		this.Speaker.setText("   " + speaker);
 	}
 
 	// 改变说话人物图片以及对话，讲话的人
@@ -488,7 +500,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		System.out.println(text);
 		System.out.println(Speaker.name);
 		this.Dialogue.setText(text);
-		this.Speaker.setText(Speaker.name);
+		this.Speaker.setText("   " + Speaker.name);
 		this.NPC_PART.setBGImage(Speaker.personImage);
 	}
 
@@ -507,10 +519,12 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 	}
 
 	private final AnimatedGHQTextArea[] appendedGUIOption = new AnimatedGHQTextArea[4];
+	
 	public void generateOptions(List<String> options, List<Boolean> optionStatus) {
 		for (GUIParts parts : appendedGUIOption)
 			parts.disable();
 		if (options == null) {
+			nextButton.enable();
 			return;
 		}
 		nextButton.disable();

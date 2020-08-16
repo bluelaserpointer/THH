@@ -28,8 +28,10 @@ public class ScriptManager {
 	
 	private int currBg = 0;
 	
-    public List<String> currentOptions = new ArrayList();
-    public List<String> disabledOptions = new ArrayList();
+	public List<String> sendOptions = new ArrayList();
+	public List<Boolean> optionStatus = new ArrayList();
+
+	public List<String> neededBox = new ArrayList();
     
 	public ScriptManager() {}
 	
@@ -314,15 +316,17 @@ public class ScriptManager {
 		System.out.println("---------------");
 		System.out.println(TCGame.resource.getCurrentItemName());
 		System.out.println(type);
-		type = 3;
 		System.out.println("---------------");	
-//		#ATK#D#20#AC#10#警长
+		// #ATK#D#20#AC#10#警长
 				
 		// true hit, false miss
 		// 1: critical, 2: normal, 3: miss
 		rounds++;
 		
-		boolean hit = rand(1, 20) > ac;
+		// TODO: 骰子
+		int diceHit = rand(1, 20);
+		boolean hit = diceHit > ac;
+		
 		int textIdx;
 		int randIdx;
 		boolean enemyDeath = false;
@@ -331,38 +335,43 @@ public class ScriptManager {
 		{
 			int damage = parseDmg(d);
 			// 1, 2
-			textIdx = parseDmgTextIdx(damage, d);
-			
+
 			// 1: Player attacks, 2: YoungMan attacks, 3: Enemy attacks
-			if(person.equals("警长"))
+			if(person.equals("警长") || type == 2)
 			{
-				// Gun
-				if(type == 1)
+				textIdx = parseDmgTextIdx(damage, d);
+				
+				if(person.equals("警长"))
 				{
-					if(rounds > 1)
+					// Gun
+					if(type == 1)
 					{
-						randIdx = rand(2,4);
+						if(rounds > 1)
+						{
+							randIdx = rand(2,4);
+						}
+						else
+						{
+							randIdx = 1;
+						}
 					}
 					else
 					{
-						randIdx = 1;
+						// Beer
+						randIdx = rand(1,3);
 					}
-				}
-				else
+					
+					enemyDeath = (TCGame.resource.delEnemeyHp(damage) == false);
+				}else
 				{
-					// Beer
-					randIdx = rand(1,3);
+					randIdx = 1;
+					
+					enemyDeath = (TCGame.resource.delEnemeyHp(damage) == false);	
 				}
-				
-				enemyDeath = (TCGame.resource.delEnemeyHp(damage) == false);
-			}else if(type == 2) {
-				randIdx = 1;
-				
-				enemyDeath = (TCGame.resource.delEnemeyHp(damage) == false);
 			}else {
 				textIdx = 1;
 				randIdx = rand(1,3);
-				TCGame.resource.addBoxWithName("伤口");
+				TCGame.resource.addBoxWithName("伤口", false);
 			}
 		}else {
 			textIdx = 3;
@@ -387,21 +396,10 @@ public class ScriptManager {
 				randIdx = rand(1,3);
 			}
 		}
-		
-//		4-1-1-1 234
-//			2-1 234
-//			3-1 2345
-//			4-12
-//		4-2-1-1
-//			2-1
-//			3-1
-//		4-3-1-1
-//			2-1
-//			3-1
-		
+			
 		if(hit)
 		{
-			String name = "";
+			String name;
 			switch(type)
 			{
 				case 1:
@@ -438,7 +436,9 @@ public class ScriptManager {
 		
 	private int parseDmg(int dmg)
 	{
-		return rand(1, dmg);
+		// TODO: 骰子
+		int diceDmg = rand(1, dmg);
+		return diceDmg;
 	}
 	
 	private int parseDmgTextIdx(int dmg, int max)
@@ -493,11 +493,13 @@ public class ScriptManager {
 			
 			if(bg == currBg)
 			{
-				TCGame.gamePageSwitcher.setSceneImage(sceneEnum);
+				TCGame.setSoundBgm(sceneEnum.bgmName);
 			}else {
 				TCGame.gamePageSwitcher.setSceneImageMusic(sceneEnum);
 			}
 		}
+		
+		currBg = bg;
 		// TODO: Needs to change background here.
 	}
 		
@@ -520,6 +522,11 @@ public class ScriptManager {
 		return !fulfill(parsedLine);
 	}
 	
+	public boolean boxNeeded(String name)
+	{
+		return this.neededBox.indexOf(name) >= 0;
+	}
+	
 	/**
 	 * Checks if the statement is fulfilled
 	 * @param funcLine
@@ -538,34 +545,34 @@ public class ScriptManager {
 			System.out.println(str);
 		}
 		System.out.println("---------");
-		if(funcLine[5].equals("WEAPON"))
+		
+		
+		if(funcLine[3].equals("HAS"))
 		{
-			if(funcLine[3].equals("HAS"))
+			this.neededBox.add(itemName);
+			System.out.println("*****In has box");
+			
+			if(TCGame.resource.hasBoxWithName(itemName))
 			{
-				System.out.println("*****In has box");
-				
-				if(TCGame.resource.hasBoxWithName(itemName))
-				{
-					System.out.println("*****Has item");
-					return true;
-				}
-				
-			}else if(funcLine[3].equals("SELECT"))
-			{
-				System.out.println("*****In select box");
-				
-				TCGame.resource.setCurrentItemName("左轮手枪");
-				System.out.println(TCGame.resource.getCurrentItemName());
-				if(TCGame.resource.getCurrentItemName().equals(itemName))
-				{
-					System.out.println("*****Item selected");
-					return true;
-				}
-						
-			}else
-			{
-				System.out.println("HAS SOMETHING ELSE");
+				System.out.println("*****Has item");
+				return true;
 			}
+			
+		}else if(funcLine[3].equals("SELECT"))
+		{
+			this.neededBox.add(itemName);
+			System.out.println("*****In select box");
+			
+			//	TCGame.resource.setCurrentItemName("左轮手枪");
+			System.out.println(TCGame.resource.getCurrentItemName());
+			if(TCGame.resource.getCurrentItemName().equals(itemName))
+			{
+				System.out.println("*****Item selected");
+				return true;
+			}
+		}else
+		{
+			System.out.println("HAS SOMETHING ELSE");
 		}
 		return false;
 	}
@@ -592,8 +599,17 @@ public class ScriptManager {
 
 	private void optionsInit()
 	{
-		this.currentOptions.clear();
-		this.disabledOptions.clear();
+		this.sendOptions.clear();
+		this.optionStatus.clear();
+	}
+	
+	private String parseOptionFile(String currLine) {
+		String filePath = parsePath(currentFile + "-" +  currLine.substring(7));
+	    InputStreamReader reader = generateReader(filePath);
+	    BufferedReader tmpReader = new BufferedReader(reader);
+	    String tmp = "";
+	    tmp = readLine(tmpReader);
+	    return tmp = parseColonContent(readLine(tmpReader));
 	}
 	
 	/**
@@ -618,15 +634,8 @@ public class ScriptManager {
 			{
 				if(currLine.contains("#OPTION"))
 				{
-					if(!disabled)
-					{
-						System.out.println("Enabled option added: " + currLine);
-						currentOptions.add(currLine);
-						System.out.println("Options added");
-					}else {
-						System.out.println("Disabled option added: " + currLine);
-						disabledOptions.add(currLine);
-					}
+					sendOptions.add(parseOptionFile(currLine));
+					optionStatus.add(!disabled);
 				}else if(currLine.contains("#IF"))
 				{
 					parseIf(currLine);
@@ -648,78 +657,12 @@ public class ScriptManager {
 			}
 		}
 		
-		// Pauses for player to send signal, indexes must be inside the existing options
-        System.out.println("Before generating option buttons");
-        System.out.println(currLine);
-		if(currentOptions.size() > 0 || disabledOptions.size() > 0)
-		{
-        	        
-	        List<String> sendOptions = new ArrayList();
-	        List<Boolean> optionStatus = new ArrayList();
-	        
- 	        for(String currOption: currentOptions)
-   	        {
-   	        	String filePath = parsePath(currentFile + "-" +  currOption.substring(7));
-   				
-   			    InputStreamReader reader = generateReader(filePath);
-   			    BufferedReader tmpReader = new BufferedReader(reader);
-   			    String tmp = "";
-   			    tmp = readLine(tmpReader);
-   			    tmp = readLine(tmpReader);
-   			    sendOptions.add(parseColonContent(tmp));
-   			    optionStatus.add(true);
-   	        }
- 	        
-// 	       System.out.println("-----------"); 
- 	       for(String currOption: disabledOptions)
-  	        {
-  	        	String filePath = parsePath(currentFile + "-" +  currOption.substring(7));
-  				
-  			    InputStreamReader reader = generateReader(filePath);
-  			    BufferedReader tmpReader = new BufferedReader(reader);
-  			    String tmp = "";
-  			    tmp = readLine(tmpReader);
-  			    tmp = readLine(tmpReader);
-  			    sendOptions.add(parseColonContent(tmp));
-  			    
-//  			    System.out.println(parseColonContent(tmp));
-  			    
-  			    optionStatus.add(false);
-  	        }
-// 	       System.out.println("-----------");
-	        
-// 	        optionsGroup.txt
-// 	        
-// 	        static flag = true;
-// 	        if(flag == true)
-// 	        {
-// 	        	旁白
-// 	        }
-//        	
-// 	        opt1
-// 	        opt2
-// 	        endline
-// 	        
-// 	        chooseOption() {
-// 	        	flag = false;
-// 	        }
-// 	        
-// 	        useBox(Box box){
-// 	        	
-// 	        	use... => () {
-// 	        		currItem = box;
-// 	        	}
-// 	        	
-// 	        	setScriptManager(currFile);
-// 	        }
- 	        
- 	     
 			TCGame.gamePageSwitcher.generateOptions(sendOptions, optionStatus);
-		}
 	}
 
 	public void currentItemChange()
 	{
+		TCGame.gamePageSwitcher.generateOptions(null, null);
 		this.setScriptManager(currentFile);
 	}
 	
