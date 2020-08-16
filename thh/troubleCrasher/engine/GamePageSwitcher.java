@@ -23,7 +23,7 @@ import troubleCrasher.resource.Box;
 public class GamePageSwitcher extends GUIPartsSwitcher {
 	public static final int STARTSCREEN = 0, GAMESCREEN = 1, SETTINGSCREEN = 2,GAMEOVERSCREEN = 3;
 	private static final int PROFILE_SESSION = 0, BOX_SESSION = 1, SETTING_SESSION = 2, SAVE_SESSION = 3;
-	private static final int CHOOSE_SETTINGS = 0, DISPLAY_SETTINGS = 1, MUSIC_SETTINGS=2, EXIT_SETTINGS =3;
+	private static final int CHOOSE_SETTINGS = 0, DISPLAY_SETTINGS = 1, MUSIC_SETTINGS=2;
 	public static final Color COLOR_BROWN = new Color(35, 12, 2), COLOR_GOLD = new Color(220, 207, 152);
 	
 
@@ -280,7 +280,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								GHQ.getG2D().setFont(GHQ.initialFont);
 							}
 						});
-						set(SETTING_SESSION, new GUIPartsSwitcher(4,CHOOSE_SETTINGS) {
+						set(SETTING_SESSION, new GUIPartsSwitcher(3,CHOOSE_SETTINGS) {
 							{
 								setName("SETTING_SESSION");
 //								this.setBGImage("thhimage/Settings_Bar.png");
@@ -296,9 +296,19 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 													musicScrBtn = getSwitcherButton(MUSIC_SETTINGS)
 															.setBGImage("thhimage/Settings_Bar_MusicButton.png").setName("musicScrBtn")
 															.setBounds(200, 200, 100, 30),
-															exitScrBtn = getSwitcherButton(EXIT_SETTINGS)
-																	.setBGImage("thhimage/Settings_Bar_ExitButton.png").setName("exitScrBtn")
-																	.setBounds(200, 260, 100, 30);
+															exitScrBtn = new GUIParts() {
+												{
+													setBGImage("thhimage/Settings_Bar_ExitButton.png").setName("exitScrBtn");
+													setBounds(200, 260, 100, 30);
+												}
+												@Override
+												public boolean clicked(MouseEvent e) {
+													final boolean consumed = super.clicked(e);
+													System.exit(0);
+													return consumed;
+												}
+											};
+																	
 											{
 												this.setName("SAVE_LOAD_TABS");
 												this.appendFirst(displayScrBtn);
@@ -395,12 +405,6 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 												this.appendFirst(returnBtn);
 											}
 										});
-									}
-								});
-								set(EXIT_SETTINGS,new GUIParts() {
-									{
-
-										setBounds(70, 0, 360, 768);
 									}
 								});
 								
