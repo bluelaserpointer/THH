@@ -12,6 +12,7 @@ import gui.AnimatedGHQTextArea;
 import gui.GUIParts;
 import gui.GUIPartsSwitcher;
 import paint.ImageFrame;
+import paint.rect.RectPaint;
 import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
 import troubleCrasher.person.PersonEnum;
@@ -445,8 +446,8 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 
 				// 场景画面
 				// NPC
-				this.addLast(SCENE_PART);
 				this.addLast(NPC_PART);
+				this.addLast(SCENE_PART);
 				
 				this.appendLast(new GUIParts() {{
 					setBounds(430,520,594,248);
@@ -496,17 +497,16 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		GHQ.addGUIParts(this);
 	}
 
-	public void setSpeaker(String speaker) {
-		this.Speaker.setText("   " + speaker);
-	}
-
 	// 改变说话人物图片以及对话，讲话的人
 	public void setDialogue(String text, PersonEnum Speaker) {
 		System.out.println(text);
 		System.out.println(Speaker.name);
 		this.Dialogue.setText(text);
 		this.Speaker.setText("   " + Speaker.name);
-		this.NPC_PART.setBGImage(Speaker.personImage);
+		if(Speaker.personImage != null)
+			this.NPC_PART.setBGImage(Speaker.personImage);
+		else
+			this.NPC_PART.setBGPaint(RectPaint.BLANK_SCRIPT);
 	}
 
 	public void setNPCImage(String img) {
