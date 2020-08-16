@@ -18,7 +18,7 @@ import troubleCrasher.person.PersonEnum;
 import troubleCrasher.person.SceneEnum;
 
 public class GamePageSwitcher extends GUIPartsSwitcher {
-	private static final int STARTSCREEN = 0, GAMESCREEN = 1, SETTINGSCREEN = 2;
+	private static final int STARTSCREEN = 0, GAMESCREEN = 1, SETTINGSCREEN = 2,GAMEOVERSCREEN = 3;
 	private static final int PROFILE_SESSION = 0, BOX_SESSION = 1, SETTING_SESSION = 2, SAVE_SESSION = 3;
 	public static final Color COLOR_BROWN = new Color(35, 12, 2), COLOR_GOLD = new Color(220, 207, 152);
 
@@ -26,7 +26,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 	private AnimatedGHQTextArea Dialogue, Speaker;
 
 	public GamePageSwitcher() {
-		super(3, STARTSCREEN);
+		super(4, STARTSCREEN);
 		Dialogue = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setTextSpeed(1).setBounds(477, 580, 500, 100)
 				.setBGColor(Color.getHSBColor(45, 21, 91)).disable();
 		Speaker = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setBounds(477, 540, 500, 30)
@@ -334,6 +334,9 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				setName("SETTINGSCREEN");
 				setBGColor(COLOR_BROWN);
 			}
+		});
+		
+		set(GAMEOVERSCREEN,new GameOverPage() {
 		});
 
 		//init options button
