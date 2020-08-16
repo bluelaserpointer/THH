@@ -119,12 +119,25 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 									.setBounds(720, 410, 250, 50),
 							settingsScrBtn = getSwitcherButton(SETTINGSCREEN)
 									.setBGImage("thhimage/Main_Menu_Setting.png").setName("settingScrBtn")
-									.setBounds(745, 500, 200, 50);
+									.setBounds(745, 500, 200, 50),
+							exitGameBtn = new GUIParts(){
+								{
+									setBGImage("thhimage/ExitGameButton.png");
+									setBounds(730,590,250,50);
+								}
+								@Override
+								public boolean clicked(MouseEvent e) {
+									final boolean consumed = super.clicked(e);
+									System.exit(0);
+									return consumed;
+								}
+							};
 					{
 						this.setName("START_MENU_TABS");
 						this.appendFirst(newgameScrBtn);
 						this.appendFirst(settingsScrBtn);
 						this.appendFirst(loadgameScrBtn);
+						this.appendFirst(exitGameBtn);
 					}
 					@Override
 					public void paint() {
@@ -137,6 +150,8 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 						}
 						if(settingsScrBtn.isScreenMouseOvered()) {
 							arrowIF.dotPaint(settingsScrBtn.left() - 100, settingsScrBtn.cy());
+						}if(exitGameBtn.isScreenMouseOvered()) {
+							arrowIF.dotPaint(exitGameBtn.left() - 100, exitGameBtn.cy());
 						}
 					}
 				});
