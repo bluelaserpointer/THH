@@ -28,8 +28,10 @@ public class ScriptManager {
 	
 	private int currBg = 0;
 	
-    public List<String> currentOptions = new ArrayList();
-    public List<String> disabledOptions = new ArrayList();
+	public List<String> sendOptions = new ArrayList();
+	public List<Boolean> optionStatus = new ArrayList();
+//    public List<String> currentOptions = new ArrayList();
+//    public List<String> disabledOptions = new ArrayList();
     
 	public ScriptManager() {}
 	
@@ -554,14 +556,13 @@ public class ScriptManager {
 			{
 				System.out.println("*****In select box");
 				
-				TCGame.resource.setCurrentItemName("左轮手枪");
+				//	TCGame.resource.setCurrentItemName("左轮手枪");
 				System.out.println(TCGame.resource.getCurrentItemName());
 				if(TCGame.resource.getCurrentItemName().equals(itemName))
 				{
 					System.out.println("*****Item selected");
 					return true;
 				}
-						
 			}else
 			{
 				System.out.println("HAS SOMETHING ELSE");
@@ -592,8 +593,17 @@ public class ScriptManager {
 
 	private void optionsInit()
 	{
-		this.currentOptions.clear();
-		this.disabledOptions.clear();
+		this.sendOptions.clear();
+		this.optionStatus.clear();
+	}
+	
+	private String parseOptionFile(String currLine) {
+		String filePath = parsePath(currentFile + "-" +  currLine.substring(7));
+	    InputStreamReader reader = generateReader(filePath);
+	    BufferedReader tmpReader = new BufferedReader(reader);
+	    String tmp = "";
+	    tmp = readLine(tmpReader);
+	    return tmp = parseColonContent(readLine(tmpReader));
 	}
 	
 	/**
@@ -618,15 +628,8 @@ public class ScriptManager {
 			{
 				if(currLine.contains("#OPTION"))
 				{
-					if(!disabled)
-					{
-						System.out.println("Enabled option added: " + currLine);
-						currentOptions.add(currLine);
-						System.out.println("Options added");
-					}else {
-						System.out.println("Disabled option added: " + currLine);
-						disabledOptions.add(currLine);
-					}
+					sendOptions.add(parseOptionFile(currLine));
+					optionStatus.add(!disabled);
 				}else if(currLine.contains("#IF"))
 				{
 					parseIf(currLine);
@@ -648,78 +651,12 @@ public class ScriptManager {
 			}
 		}
 		
-		// Pauses for player to send signal, indexes must be inside the existing options
-        System.out.println("Before generating option buttons");
-        System.out.println(currLine);
-		if(currentOptions.size() > 0 || disabledOptions.size() > 0)
-		{
-        	        
-	        List<String> sendOptions = new ArrayList();
-	        List<Boolean> optionStatus = new ArrayList();
-	        
- 	        for(String currOption: currentOptions)
-   	        {
-   	        	String filePath = parsePath(currentFile + "-" +  currOption.substring(7));
-   				
-   			    InputStreamReader reader = generateReader(filePath);
-   			    BufferedReader tmpReader = new BufferedReader(reader);
-   			    String tmp = "";
-   			    tmp = readLine(tmpReader);
-   			    tmp = readLine(tmpReader);
-   			    sendOptions.add(parseColonContent(tmp));
-   			    optionStatus.add(true);
-   	        }
- 	        
-// 	       System.out.println("-----------"); 
- 	       for(String currOption: disabledOptions)
-  	        {
-  	        	String filePath = parsePath(currentFile + "-" +  currOption.substring(7));
-  				
-  			    InputStreamReader reader = generateReader(filePath);
-  			    BufferedReader tmpReader = new BufferedReader(reader);
-  			    String tmp = "";
-  			    tmp = readLine(tmpReader);
-  			    tmp = readLine(tmpReader);
-  			    sendOptions.add(parseColonContent(tmp));
-  			    
-//  			    System.out.println(parseColonContent(tmp));
-  			    
-  			    optionStatus.add(false);
-  	        }
-// 	       System.out.println("-----------");
-	        
-// 	        optionsGroup.txt
-// 	        
-// 	        static flag = true;
-// 	        if(flag == true)
-// 	        {
-// 	        	旁白
-// 	        }
-//        	
-// 	        opt1
-// 	        opt2
-// 	        endline
-// 	        
-// 	        chooseOption() {
-// 	        	flag = false;
-// 	        }
-// 	        
-// 	        useBox(Box box){
-// 	        	
-// 	        	use... => () {
-// 	        		currItem = box;
-// 	        	}
-// 	        	
-// 	        	setScriptManager(currFile);
-// 	        }
- 	        
- 	     
 			TCGame.gamePageSwitcher.generateOptions(sendOptions, optionStatus);
-		}
 	}
 
 	public void currentItemChange()
 	{
+		TCGame.gamePageSwitcher.generateOptions(null, null);
 		this.setScriptManager(currentFile);
 	}
 	

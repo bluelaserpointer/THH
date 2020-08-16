@@ -21,7 +21,8 @@ public class Resource {
 		this.hp = 3;
 		this.enemyHp = 30;
 		
-		Box box = new Box("左轮手枪", true);
+//		Box box = new Box("左轮手枪", true);
+		Box box = new Box("一瓶啤酒", true);
 		
 		TCGame.jigsawViewer.setWaitingJigsaw(box);
 	};
