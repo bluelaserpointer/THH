@@ -300,7 +300,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 	}
 
 	private final AnimatedGHQTextArea[] appendedGUIOption = new AnimatedGHQTextArea[4];
-	public void generateOptions(List<String> options) {
+	public void generateOptions(List<String> options, List<Boolean> optionStatus) {
 		for (GUIParts parts : appendedGUIOption)
 			parts.disable();
 		if (options == null) {
