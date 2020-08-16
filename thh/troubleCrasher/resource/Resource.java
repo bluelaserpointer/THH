@@ -13,6 +13,8 @@ public class Resource {
 	int enemyAc;
 	int selfAc;
 	int selfDc;
+	
+	String currentItemName = "";
 
 	public Resource() {};
 	
@@ -25,6 +27,14 @@ public class Resource {
 	}
 
 	
+	public String getCurrentItemName() {
+		return currentItemName;
+	}
+
+	public void setCurrentItemName(String currentItemName) {
+		this.currentItemName = currentItemName;
+	}
+
 	public int getEnemyHp() {
 		return enemyHp;
 	}
