@@ -60,7 +60,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		};
 		NPC_PART = new GUIParts().setName("NPC_IMAGE").setBounds(627, 220, 200, 300)
 				.setBGImage(PersonEnum.CAPTAIN.personImage);
-		SCENE_PART = new GUIParts().setName("SCENE_PART").setBounds(430, 0, 594, 520);
+		SCENE_PART = new GUIParts().setName("SCENE_PART").setBounds(430, 0, 594, 520).setBGImage(SceneEnum.WORK_DAY.sceneImage);
 		final ImageFrame arrowIF = ImageFrame.create("thhimage/Main_Menu_Arrow.png");
 
 		// Start Menu
@@ -116,7 +116,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				this.appendLast(new GUIPartsSwitcher(4, PROFILE_SESSION) {
 					{
 						setName("LEFT_MENU_AND_CONTENT");
-						this.setBounds(0, 0, 70, 768);
+						this.setBounds(0, 0, 430, 768);
 						this.setBGImage("thhimage/UtilityBar.png");
 
 						this.appendLast(
@@ -313,6 +313,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 
 				// 场景画面
 				// NPC
+				this.appendFirst(SCENE_PART);
 				this.appendFirst(NPC_PART);
 				
 				this.appendLast(new GUIParts() {{
