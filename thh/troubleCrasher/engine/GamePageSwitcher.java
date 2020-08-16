@@ -348,7 +348,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 					// System.out.println(Integer.valueOf(this.name()));
 					TCGame.scriptManager.chooseOption(Integer.valueOf(this.name()) + 1);
 					nextButton.enable();
-					generateOptions(null,null);
+					generateOptions(null, null);
 					return super.clicked(event);
 				}
 			};
