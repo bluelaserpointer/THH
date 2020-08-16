@@ -3,15 +3,15 @@ package troubleCrasher.resource;
 import paint.ImageFrame;
 
 public enum BoxEnum {
-	WINE("一瓶啤酒", BoxTagEnum.WEAPON),
-	REBOLVER("左轮手枪", BoxTagEnum.WEAPON, true),
-	BANDAGE("医疗绷带", BoxTagEnum.HEAL),
-	WOUND_SMALL("伤口", BoxTagEnum.WOUND),
+	WINE("一瓶啤酒", BoxTagEnum.WEAPON, "thhimage/PiJiu.png"),
+	REBOLVER("左轮手枪", BoxTagEnum.WEAPON, true, "thhimage/ShouQiang.png"),
+	BANDAGE("医疗绷带", BoxTagEnum.HEAL, "thhimage/BangDai.png"),
+	WOUND_SMALL("伤口", BoxTagEnum.WOUND, "thhimage/ShouShnagXiangZi.png"),
 	//scripts
-	SHI_ZU_TIE_JIANG("失足的铁匠"),
-	YING_HANG_QIANG_JIE("小镇银行大劫案"),
-	QIANG_SUAN_LIE_HUO("强酸与烈火"),
-	XU_JIU_HOU_GUO("酗酒的后果"),
+	SHI_ZU_TIE_JIANG("失足的铁匠", "thhimage/TieJiangXiangZi.png"),
+	YING_HANG_QIANG_JIE("小镇银行大劫案", "thhimage/QiangJieXiangZi.png"),
+	QIANG_SUAN_LIE_HUO("强酸与烈火", "thhimage/SuanHuoXiangZi.png"),
+	XU_JIU_HOU_GUO("酗酒的后果", "thhimage/HouGuoXiangZi.png"),
 	;
 
 	public final String boxName;
