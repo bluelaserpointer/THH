@@ -45,8 +45,7 @@ public class TCGame extends Game {
 		System.out.println("Initialized scriptManager");
 		resource = new Resource();
 		jigsawViewer = new JigsawViewer(6,7);
-		scriptManager = new ScriptManager("4");
-
+		scriptManager = new ScriptManager("3");
 	}
 
 	@Override

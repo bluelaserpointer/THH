@@ -362,6 +362,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 
 	// 改变说话人物图片以及对话，讲话的人
 	public void setDialogue(String text, PersonEnum Speaker) {
+		System.out.println(text);
 		System.out.println(Speaker.name);
 		this.Dialogue.setText(text);
 		this.Speaker.setText(Speaker.name);
@@ -375,6 +376,11 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 	// 调换场景图片
 	public void setSceneImage(SceneEnum Scene) {
 		this.SCENE_PART.setBGImage(Scene.sceneImage);
+	}
+	
+	public void setSceneImageMusic(SceneEnum Scene) {
+		this.SCENE_PART.setBGImage(Scene.sceneImage);
+		TCGame.setSoundBgm(Scene.bgmName);
 	}
 
 	private final AnimatedGHQTextArea[] appendedGUIOption = new AnimatedGHQTextArea[4];
