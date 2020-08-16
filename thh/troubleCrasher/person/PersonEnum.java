@@ -7,7 +7,7 @@ public enum PersonEnum {
 	FARMER("农夫", "thhimage/Farmer.png", "代填", "thhimage/Unknown_Icon.png"),
 	DOCTOR("医生", "thhimage/Doctor.png", "代填", "thhimage/Unknown_Icon.png"),
 	ANNOUNCER("播报员", "thhimage/Announcer.png", "代填", "thhimage/Unknown_Icon.png"),
-	NARRATAGE("旁白", "thhimage/Doctor.png", "代填", "thhimage/Unknown_Icon.png"),
+	NARRATAGE("旁白", "", "代填", "thhimage/Unknown_Icon.png"),
 	YOUNGMAN("年轻人", "thhimage/YoungMan.png", "代填", "thhimage/Unknown_Icon.png"),
 	PRIEST("神父", "thhimage/Priest.png", "代填", "thhimage/Unknown_Icon.png"),
 	BARMANAGER("酒馆老板", "thhimage/BarManager.png", "代填", "thhimage/Unknown_Icon.png");
