@@ -321,7 +321,10 @@ public class ScriptManager {
 		// 1: critical, 2: normal, 3: miss
 		rounds++;
 		
-		boolean hit = rand(1, 20) > ac;
+		// TODO: 骰子
+		int diceHit = rand(1, 20);
+		boolean hit = diceHit > ac;
+		
 		int textIdx;
 		int randIdx;
 		boolean enemyDeath = false;
@@ -330,34 +333,39 @@ public class ScriptManager {
 		{
 			int damage = parseDmg(d);
 			// 1, 2
-			textIdx = parseDmgTextIdx(damage, d);
-			
+
 			// 1: Player attacks, 2: YoungMan attacks, 3: Enemy attacks
-			if(person.equals("警长"))
+			if(person.equals("警长") || type == 2)
 			{
-				// Gun
-				if(type == 1)
+				textIdx = parseDmgTextIdx(damage, d);
+				
+				if(person.equals("警长"))
 				{
-					if(rounds > 1)
+					// Gun
+					if(type == 1)
 					{
-						randIdx = rand(2,4);
+						if(rounds > 1)
+						{
+							randIdx = rand(2,4);
+						}
+						else
+						{
+							randIdx = 1;
+						}
 					}
 					else
 					{
-						randIdx = 1;
+						// Beer
+						randIdx = rand(1,3);
 					}
-				}
-				else
+					
+					enemyDeath = (TCGame.resource.delEnemeyHp(damage) == false);
+				}else
 				{
-					// Beer
-					randIdx = rand(1,3);
+					randIdx = 1;
+					
+					enemyDeath = (TCGame.resource.delEnemeyHp(damage) == false);	
 				}
-				
-				enemyDeath = (TCGame.resource.delEnemeyHp(damage) == false);
-			}else if(type == 2) {
-				randIdx = 1;
-				
-				enemyDeath = (TCGame.resource.delEnemeyHp(damage) == false);
 			}else {
 				textIdx = 1;
 				randIdx = rand(1,3);
@@ -386,21 +394,10 @@ public class ScriptManager {
 				randIdx = rand(1,3);
 			}
 		}
-		
-//		4-1-1-1 234
-//			2-1 234
-//			3-1 2345
-//			4-12
-//		4-2-1-1
-//			2-1
-//			3-1
-//		4-3-1-1
-//			2-1
-//			3-1
-		
+			
 		if(hit)
 		{
-			String name = "";
+			String name;
 			switch(type)
 			{
 				case 1:
@@ -419,8 +416,6 @@ public class ScriptManager {
 					name = "USING_BOTTLE";
 					break;
 			}
-			System.out.println("Plays effect......");
-			System.out.println(name);
 			TCGame.setSoundEffect(name);
 		}
 		
@@ -439,7 +434,9 @@ public class ScriptManager {
 		
 	private int parseDmg(int dmg)
 	{
-		return rand(1, dmg);
+		// TODO: 骰子
+		int diceDmg = rand(1, dmg);
+		return diceDmg;
 	}
 	
 	private int parseDmgTextIdx(int dmg, int max)

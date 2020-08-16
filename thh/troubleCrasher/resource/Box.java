@@ -8,15 +8,16 @@ import troubleCrasher.jigsaw.JigsawEnum;
 public class Box extends Jigsaw {
 	private String boxName;
 	private String tag;
-	
+	private boolean reuse;	
 	
 	static JigsawEnum decideJigsawShape(String boxName) {
 		return JigsawEnum.BAR2;
 	}
 	
-	public Box(String boxName) {
+	public Box(String boxName, boolean reuse) {
 		super(decideJigsawShape(boxName));
 		this.boxName = boxName;
+		this.reuse = reuse;
 	}
 	
 	public String getTag() {
