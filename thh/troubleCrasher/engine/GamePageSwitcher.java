@@ -12,6 +12,7 @@ import gui.AnimatedGHQTextArea;
 import gui.GUIParts;
 import gui.GUIPartsSwitcher;
 import paint.ImageFrame;
+import paint.dot.DotPaint;
 import paint.rect.RectPaint;
 import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
@@ -80,6 +81,13 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 					}
 				}
 				return consumed;
+			}
+			@Override
+			public void paint() {
+				if(super.backGroundPaint instanceof ImageFrame) {
+					final ImageFrame paint = (ImageFrame)super.backGroundPaint;
+					paint.dotPaint_rate(cx(), bottom() - (int)(paint.height()*0.6)/2, 0.6);
+				}
 			}
 		}.setName("NPC_IMAGE").setBounds(627, 220, 200, 300).setBGImage(PersonEnum.CAPTAIN.personImage);
 		SCENE_PART = new GUIParts() {
