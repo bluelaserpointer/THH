@@ -215,8 +215,38 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 						set(SETTING_SESSION, new GUIParts() {
 							{
 								setName("SETTING_SESSION");
-								this.setBGImage("thhimage/settingScreenDemo.png");
+								this.setBGImage("thhimage/Settings_Bar.png");
 								setBounds(70, 0, 360, 768);
+								this.appendLast(new GUIParts() {
+									final GUIParts displayScrBtn = getSwitcherButton(GAMESCREEN)
+											.setBGImage("thhimage/Settings_Bar_DisplayButton.png").setName("displayScrBtn")
+											.setBounds(200, 140, 100, 30),
+											musicScrBtn = getSwitcherButton(SETTINGSCREEN)
+													.setBGImage("thhimage/Settings_Bar_MusicButton.png").setName("musicScrBtn")
+													.setBounds(200, 200, 100, 30),
+													exitScrBtn = getSwitcherButton(SETTINGSCREEN)
+															.setBGImage("thhimage/Settings_Bar_ExitButton.png").setName("exitScrBtn")
+															.setBounds(200, 260, 100, 30);
+									{
+										this.setName("SAVE_LOAD_TABS");
+										this.appendFirst(displayScrBtn);
+										this.appendFirst(musicScrBtn);
+										this.appendFirst(exitScrBtn);
+									}
+									@Override
+									public void paint() {
+										super.paint();
+										if(displayScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(displayScrBtn.left() - 60, displayScrBtn.cy()-10, 40,20);
+										}
+										if(musicScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(musicScrBtn.left() - 60, musicScrBtn.cy()-10, 40,20);
+										}
+										if(exitScrBtn.isScreenMouseOvered()) {
+											arrowIF.rectPaint(exitScrBtn.left() - 60, exitScrBtn.cy()-10, 40,20);
+										}
+									}
+								});
 							}
 						});
 						set(SAVE_SESSION, new GUIParts() {
