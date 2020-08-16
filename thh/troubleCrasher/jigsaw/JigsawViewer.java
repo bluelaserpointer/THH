@@ -52,9 +52,7 @@ public class JigsawViewer extends GUIParts {
 			} else { //拿出
 				removeJigsawAndHook();
 			}
-		} else if(e.getButton() == MouseEvent.BUTTON3) { //旋转
-			if(hookingJigsaw != null)
-				hookingJigsaw.setDirection(hookingJigsaw.direction().right());
+		} else if(e.getButton() == MouseEvent.BUTTON3) { //旋转-TCPage会做
 		}
 		return consumed;
 	}
