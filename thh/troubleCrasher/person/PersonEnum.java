@@ -8,8 +8,9 @@ public enum PersonEnum {
 	DOCTOR("医生", "thhimage/Doctor.png", "代填", "thhimage/Unknown_Icon.png"),
 	ANNOUNCER("播报员", "thhimage/Announcer.png", "代填", "thhimage/Unknown_Icon.png"),
 	NARRATAGE("旁白", "thhimage/Doctor.png", "代填", "thhimage/Unknown_Icon.png"),
-	YOUNGMAN("年轻人", "thhimage/Doctor.png", "代填", "thhimage/Unknown_Icon.png"),
-	BARMANAGER("酒馆老板", "thhimage/Doctor.png", "代填", "thhimage/Unknown_Icon.png");
+	YOUNGMAN("年轻人", "thhimage/YoungMan.png", "代填", "thhimage/Unknown_Icon.png"),
+	PRIEST("神父", "thhimage/Priest.png", "代填", "thhimage/Unknown_Icon.png"),
+	BARMANAGER("酒馆老板", "thhimage/BarManager.png", "代填", "thhimage/Unknown_Icon.png");
 	
 	public final String name;
 	public final String personImage;

@@ -136,7 +136,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								this.setBounds(70, 0, 70, 768);
 								setBGImage("thhimage/Character_Bar.png");
 								// 一个人物一个框
-								for (int i = 0; i < PersonEnum.values().length - 3; i++) {
+								for (int i = 0; i < PersonEnum.values().length - 4; i++) {
 									final GUIParts NPC_Button = getSwitcherButton(i)
 											.setBGImage(PersonEnum.values()[i].personIcon).setName("NPC_1ScrBtn")
 											.setBounds(75, 20 + i * 70, 60, 60);
