@@ -371,7 +371,7 @@ public class ScriptManager {
 			}else {
 				textIdx = 1;
 				randIdx = rand(1,3);
-				TCGame.resource.addBoxWithName("伤口", false);
+				TCGame.resource.addBoxWithName("伤口");
 			}
 		}else {
 			textIdx = 3;
@@ -524,6 +524,13 @@ public class ScriptManager {
 	
 	public boolean boxNeeded(String name)
 	{
+		System.out.println("-----IN BOX NEEDED-----");
+		for(int i = 0; i < this.neededBox.size(); i++)
+		{
+			System.out.println(this.neededBox.get(i));	
+		}
+		System.out.println("----------");
+		
 		return this.neededBox.indexOf(name) >= 0;
 	}
 	
@@ -599,6 +606,7 @@ public class ScriptManager {
 
 	private void optionsInit()
 	{
+		this.neededBox = new ArrayList();
 		this.sendOptions.clear();
 		this.optionStatus.clear();
 	}
@@ -730,8 +738,10 @@ public class ScriptManager {
 
 	private void parseAdd(String funcLine)
 	{
-		
-		nextLine(readLine(buffReader));
+		String[] parsedLine = funcLine.split("#");
+		System.out.println(parsedLine[4]);
+		TCGame.resource.addBoxWithName(parsedLine[4]);
+		nextLine("旁白：你获得了“" + parsedLine[4] + "”的盒子。");
 	}
 	
 	public String readLine(BufferedReader reader)
