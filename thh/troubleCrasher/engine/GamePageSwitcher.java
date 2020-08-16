@@ -24,16 +24,17 @@ import troubleCrasher.resource.Box;
 
 public class GamePageSwitcher extends GUIPartsSwitcher {
 	public static final int STARTSCREEN = 0, GAMESCREEN = 1, SETTINGSCREEN = 2,GAMEOVERSCREEN = 3;
-	private static final int PROFILE_SESSION = 0, BOX_SESSION = 1, SETTING_SESSION = 2, SAVE_SESSION = 3;
+	public static final int PROFILE_SESSION = 0, BOX_SESSION = 1, SETTING_SESSION = 2, SAVE_SESSION = 3;
+	private static final int SAVE_MAINMENU=0,SAVE_SAVEMENU=1,LOAD_SAVEMENU=2;
 	private static final int CHOOSE_SETTINGS = 0, DISPLAY_SETTINGS = 1, MUSIC_SETTINGS=2;
 	public static final Color COLOR_BROWN = new Color(35, 12, 2), COLOR_GOLD = new Color(220, 207, 152);
-	
+	public static GUIPartsSwitcher leftTab;
 
-	private GUIParts nextButton, NPC_PART, SCENE_PART;
+	public static GUIParts nextButton, NPC_PART, SCENE_PART;
 	private AnimatedGHQTextArea Dialogue, Speaker;
 
 	public GamePageSwitcher() {
-		super(4, GAMEOVERSCREEN);
+		super(4, STARTSCREEN);
 		Dialogue = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setTextSpeed(1).setBounds(477, 580, 500, 100)
 				.disable();
 		Speaker = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setTextColor(Color.WHITE).setBounds(477, 540, 500, 30)
@@ -46,6 +47,9 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 			public boolean clicked(MouseEvent event) {
 				if (!this.isEnabled)
 					return super.clicked(event);
+				if(name().equals("先挪开物品")) {
+					return super.clicked(event);
+				}
 				// TODO: select option EDWARD
 				System.out.println("Button clicked");
 				TCGame.scriptManager.parseLine(TCGame.scriptManager.readLine(TCGame.scriptManager.buffReader));
@@ -54,6 +58,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 
 			{
 				setBounds(900, 698, 100, 40);
+				setName("NEXT>");
 			}
 
 			@Override
@@ -61,7 +66,14 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				super.paint();
 				nextBar.rectPaint(left(), top(), width(), height());
 				GHQ.getG2D(Color.WHITE);
-				GHQ.drawStringGHQ("NEXT>" , left() + 10, top() + 30, 25F);
+				GHQ.drawStringGHQ(this.name() , left() + 10, top() + 30, 25F);
+			}
+			
+			@Override
+			public GUIParts enable() {
+				super.enable();
+				setName("NEXT>");
+				return this;
 			}
 
 		};
@@ -178,7 +190,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				setName("GAMESCREEN");
 				this.setBGColor(Color.GRAY);
 				// 游戏功能栏及其展开画面
-				this.appendLast(new GUIPartsSwitcher(4, PROFILE_SESSION) {
+				this.appendLast(leftTab = new GUIPartsSwitcher(4, PROFILE_SESSION) {
 					{
 						setName("LEFT_MENU_AND_CONTENT");
 						this.setBounds(0, 0, 430, 768);
@@ -357,6 +369,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								});
 								set(DISPLAY_SETTINGS,new GUIParts() {
 									{
+										
 										setBounds(70, 0, 360, 768);
 										this.setBGImage("thhimage/Display_Settings.png");
 										this.appendLast(new GUIParts() {
@@ -434,34 +447,131 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								
 							}
 						});
-						set(SAVE_SESSION, new GUIParts() {
+						set(SAVE_SESSION, new GUIPartsSwitcher(3,SAVE_MAINMENU) {
 							{
 								setName("SAVE_SESSION");
-								setBGImage("thhimage/SaveBar.png");
+//								setBGImage("thhimage/SaveBar.png");
 								setBounds(70, 0, 360, 768);
-								this.appendLast(new GUIParts() {
-									final GUIParts savegameScrBtn = getSwitcherButton(GAMESCREEN)
-											.setBGImage("thhimage/SaveBar_SaveButton.png").setName("newgameScrBtn")
-											.setBounds(210, 160, 80, 30),
-											loadgameScrBtn = getSwitcherButton(SETTINGSCREEN)
-													.setBGImage("thhimage/SaveBar_LoadButton.png").setName("loadgameScrBtn")
-													.setBounds(210, 220, 80, 30);
+								set(SAVE_MAINMENU, new GUIParts() {
 									{
-										this.setName("SAVE_LOAD_TABS");
-										this.appendFirst(savegameScrBtn);
-										this.appendFirst(loadgameScrBtn);
-									}
-									@Override
-									public void paint() {
-										super.paint();
-										if(savegameScrBtn.isScreenMouseOvered()) {
-											arrowIF.rectPaint(savegameScrBtn.left() - 60, savegameScrBtn.cy()-10, 40,20);
-										}
-										if(loadgameScrBtn.isScreenMouseOvered()) {
-											arrowIF.rectPaint(loadgameScrBtn.left() - 60, loadgameScrBtn.cy()-10, 40,20);
-										}
+
+										setBGImage("thhimage/SaveBar.png");
+										setBounds(70, 0, 360, 768);
+										this.appendLast(new GUIParts() {
+											final GUIParts savegameScrBtn = getSwitcherButton(SAVE_SAVEMENU)
+													.setBGImage("thhimage/SaveBar_SaveButton.png").setName("newgameScrBtn")
+													.setBounds(220, 160, 60, 30),
+													loadgameScrBtn = getSwitcherButton(LOAD_SAVEMENU)
+															.setBGImage("thhimage/SaveBar_LoadButton.png").setName("loadgameScrBtn")
+															.setBounds(220, 220, 60, 30);
+											{
+												this.setName("SAVE_LOAD_TABS");
+												this.appendFirst(savegameScrBtn);
+												this.appendFirst(loadgameScrBtn);
+											}
+											@Override
+											public void paint() {
+												super.paint();
+												if(savegameScrBtn.isScreenMouseOvered()) {
+													arrowIF.rectPaint(savegameScrBtn.left() - 60, savegameScrBtn.cy()-10, 40,20);
+												}
+												if(loadgameScrBtn.isScreenMouseOvered()) {
+													arrowIF.rectPaint(loadgameScrBtn.left() - 60, loadgameScrBtn.cy()-10, 40,20);
+												}
+											}
+										});
 									}
 								});
+								set(SAVE_SAVEMENU,new GUIParts() {
+									{
+										setBGImage("thhimage/SaveBar_Load.png");
+										setBounds(70, 0, 360, 768);
+										
+										this.appendLast(new GUIParts() {
+//											final GUIParts volLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+//													.setBGImage("thhimage/LeftButton.png").setName("resLeftScrBtn")
+//													.setBounds(230, 170, 20, 30),
+//													volRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+//															.setBGImage("thhimage/RightButton.png").setName("resRightScrBtn")
+//															.setBounds(360, 170, 20, 30),
+//													volume = new GUIParts().setBGImage(VolumeEnum.LEVEL_5.volumeImage).setBounds(255,170,100,20).setName("Resolution"),
+//													effectLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+//															.setBGImage("thhimage/LeftButton.png").setName("AllScrLeftScrBtn")
+//															.setBounds(230, 215, 20, 30),
+//													effect = new GUIParts().setBGImage("thhimage/OpenButton.png").setBounds(280,215,40,20),
+//													effectScrRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+//																	.setBGImage("thhimage/RightButton.png").setName("AllScrRightScrBtn")
+//																	.setBounds(360, 215, 20, 30),
+//																	bgmLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+//																	.setBGImage("thhimage/LeftButton.png").setName("AllScrLeftScrBtn")
+//																	.setBounds(230, 260, 20, 30),
+//															bgm = new GUIParts().setBGImage("thhimage/OpenButton.png").setBounds(280,260,40,20),
+//															bgmScrRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+//																			.setBGImage("thhimage/RightButton.png").setName("AllScrRightScrBtn")
+//																			.setBounds(360, 260, 20, 30),
+												final GUIParts returnBtn = getSwitcherButton(SAVE_MAINMENU).setBounds(370,710,30,30).setBGImage("thhimage/CancelButton.png");
+											{
+//												this.setName("SAVE_LOAD_TABS");
+//												this.appendFirst(volLeftScrBtn);
+//												this.appendFirst(volRightScrBtn);
+//												this.appendFirst(volume);
+//												this.appendFirst(effectLeftScrBtn);
+//												this.appendFirst(effect);
+//												this.appendFirst(effectScrRightScrBtn);
+//												this.appendFirst(bgmLeftScrBtn);
+//												this.appendFirst(bgm);
+//												this.appendFirst(bgmScrRightScrBtn);
+												this.appendFirst(returnBtn);
+											}
+										});
+										
+									}
+								});
+								set(LOAD_SAVEMENU,new GUIParts() {
+									{
+										setBGImage("thhimage/SaveBar_Load.png");
+										setBounds(70, 0, 360, 768);
+										this.appendLast(new GUIParts() {
+//											final GUIParts volLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+//													.setBGImage("thhimage/LeftButton.png").setName("resLeftScrBtn")
+//													.setBounds(230, 170, 20, 30),
+//													volRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+//															.setBGImage("thhimage/RightButton.png").setName("resRightScrBtn")
+//															.setBounds(360, 170, 20, 30),
+//													volume = new GUIParts().setBGImage(VolumeEnum.LEVEL_5.volumeImage).setBounds(255,170,100,20).setName("Resolution"),
+//													effectLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+//															.setBGImage("thhimage/LeftButton.png").setName("AllScrLeftScrBtn")
+//															.setBounds(230, 215, 20, 30),
+//													effect = new GUIParts().setBGImage("thhimage/OpenButton.png").setBounds(280,215,40,20),
+//													effectScrRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+//																	.setBGImage("thhimage/RightButton.png").setName("AllScrRightScrBtn")
+//																	.setBounds(360, 215, 20, 30),
+//																	bgmLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+//																	.setBGImage("thhimage/LeftButton.png").setName("AllScrLeftScrBtn")
+//																	.setBounds(230, 260, 20, 30),
+//															bgm = new GUIParts().setBGImage("thhimage/OpenButton.png").setBounds(280,260,40,20),
+//															bgmScrRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+//																			.setBGImage("thhimage/RightButton.png").setName("AllScrRightScrBtn")
+//																			.setBounds(360, 260, 20, 30),
+												final GUIParts returnBtn = getSwitcherButton(SAVE_MAINMENU).setBounds(370,710,30,30).setBGImage("thhimage/CancelButton.png");
+											{
+//												this.setName("SAVE_LOAD_TABS");
+//												this.appendFirst(volLeftScrBtn);
+//												this.appendFirst(volRightScrBtn);
+//												this.appendFirst(volume);
+//												this.appendFirst(effectLeftScrBtn);
+//												this.appendFirst(effect);
+//												this.appendFirst(effectScrRightScrBtn);
+//												this.appendFirst(bgmLeftScrBtn);
+//												this.appendFirst(bgm);
+//												this.appendFirst(bgmScrRightScrBtn);
+												this.appendFirst(returnBtn);
+											}
+										});
+									}
+								});
+								
+								
 							}
 						});
 					}
