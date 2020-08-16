@@ -134,6 +134,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 							{
 								setName("PROFILE_SESSION");
 								this.setBounds(70, 0, 70, 768);
+								setBGImage("thhimage/Character_Bar.png");
 								// 一个人物一个框
 								for (int i = 0; i < PersonEnum.values().length - 3; i++) {
 									final GUIParts NPC_Button = getSwitcherButton(i)
