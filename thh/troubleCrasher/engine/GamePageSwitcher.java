@@ -12,16 +12,21 @@ import gui.AnimatedGHQTextArea;
 import gui.GUIParts;
 import gui.GUIPartsSwitcher;
 import paint.ImageFrame;
+import paint.rect.RectPaint;
 import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
 import troubleCrasher.person.PersonEnum;
+import troubleCrasher.person.ResolutionEnum;
 import troubleCrasher.person.SceneEnum;
+import troubleCrasher.person.VolumeEnum;
 import troubleCrasher.resource.Box;
 
 public class GamePageSwitcher extends GUIPartsSwitcher {
 	public static final int STARTSCREEN = 0, GAMESCREEN = 1, SETTINGSCREEN = 2,GAMEOVERSCREEN = 3;
 	private static final int PROFILE_SESSION = 0, BOX_SESSION = 1, SETTING_SESSION = 2, SAVE_SESSION = 3;
+	private static final int CHOOSE_SETTINGS = 0, DISPLAY_SETTINGS = 1, MUSIC_SETTINGS=2;
 	public static final Color COLOR_BROWN = new Color(35, 12, 2), COLOR_GOLD = new Color(220, 207, 152);
+	
 
 	private GUIParts nextButton, NPC_PART, SCENE_PART;
 	private AnimatedGHQTextArea Dialogue, Speaker;
@@ -114,12 +119,25 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 									.setBounds(720, 410, 250, 50),
 							settingsScrBtn = getSwitcherButton(SETTINGSCREEN)
 									.setBGImage("thhimage/Main_Menu_Setting.png").setName("settingScrBtn")
-									.setBounds(745, 500, 200, 50);
+									.setBounds(745, 500, 200, 50),
+							exitGameBtn = new GUIParts(){
+								{
+									setBGImage("thhimage/ExitGameButton.png");
+									setBounds(730,590,250,50);
+								}
+								@Override
+								public boolean clicked(MouseEvent e) {
+									final boolean consumed = super.clicked(e);
+									System.exit(0);
+									return consumed;
+								}
+							};
 					{
 						this.setName("START_MENU_TABS");
 						this.appendFirst(newgameScrBtn);
 						this.appendFirst(settingsScrBtn);
 						this.appendFirst(loadgameScrBtn);
+						this.appendFirst(exitGameBtn);
 					}
 					@Override
 					public void paint() {
@@ -132,6 +150,8 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 						}
 						if(settingsScrBtn.isScreenMouseOvered()) {
 							arrowIF.dotPaint(settingsScrBtn.left() - 100, settingsScrBtn.cy());
+						}if(exitGameBtn.isScreenMouseOvered()) {
+							arrowIF.dotPaint(exitGameBtn.left() - 100, exitGameBtn.cy());
 						}
 					}
 				});
@@ -195,7 +215,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 										JigsawEnum.JIGSAW_GRID_SIZE * 6, JigsawEnum.JIGSAW_GRID_SIZE * 3);
 								this.addLast(new GUIParts() {
 									{
-										this.setBGColor(Color.BLACK);
+										this.setBGImage("thhImage/darkArea.png");
 										this.setBounds(100, 400, 300, 200);
 									}
 
@@ -214,13 +234,14 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 										}
 										return consumed;
 									}
-
+									ImageFrame crackingIF = ImageFrame.create("thhimage/cracking.png");
 									@Override
 									public void paint() {
 										super.paint();
+										crackingIF.rectPaint(left(), top(), width(), height());
 										GHQ.getG2D(Color.WHITE);
 										GHQ.drawStringGHQ("承受", cx() - 30, cy() + 10, 30F);
-										Jigsaw disposedJigsaw = TCGame.jigsawViewer.disposedJigsaw();
+										final Jigsaw disposedJigsaw = TCGame.jigsawViewer.disposedJigsaw();
 										if (disposedJigsaw != null) {
 											disposedJigsaw.paint(left(), top());
 										}
@@ -275,41 +296,134 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								GHQ.getG2D().setFont(GHQ.initialFont);
 							}
 						});
-						set(SETTING_SESSION, new GUIParts() {
+						set(SETTING_SESSION, new GUIPartsSwitcher(3,CHOOSE_SETTINGS) {
 							{
 								setName("SETTING_SESSION");
-								this.setBGImage("thhimage/Settings_Bar.png");
+//								this.setBGImage("thhimage/Settings_Bar.png");
 								setBounds(70, 0, 360, 768);
-								this.appendLast(new GUIParts() {
-									final GUIParts displayScrBtn = getSwitcherButton(GAMESCREEN)
-											.setBGImage("thhimage/Settings_Bar_DisplayButton.png").setName("displayScrBtn")
-											.setBounds(200, 140, 100, 30),
-											musicScrBtn = getSwitcherButton(SETTINGSCREEN)
-													.setBGImage("thhimage/Settings_Bar_MusicButton.png").setName("musicScrBtn")
-													.setBounds(200, 200, 100, 30),
-													exitScrBtn = getSwitcherButton(SETTINGSCREEN)
-															.setBGImage("thhimage/Settings_Bar_ExitButton.png").setName("exitScrBtn")
-															.setBounds(200, 260, 100, 30);
+								set(CHOOSE_SETTINGS,new GUIParts() {
 									{
-										this.setName("SAVE_LOAD_TABS");
-										this.appendFirst(displayScrBtn);
-										this.appendFirst(musicScrBtn);
-										this.appendFirst(exitScrBtn);
-									}
-									@Override
-									public void paint() {
-										super.paint();
-										if(displayScrBtn.isScreenMouseOvered()) {
-											arrowIF.rectPaint(displayScrBtn.left() - 60, displayScrBtn.cy()-10, 40,20);
-										}
-										if(musicScrBtn.isScreenMouseOvered()) {
-											arrowIF.rectPaint(musicScrBtn.left() - 60, musicScrBtn.cy()-10, 40,20);
-										}
-										if(exitScrBtn.isScreenMouseOvered()) {
-											arrowIF.rectPaint(exitScrBtn.left() - 60, exitScrBtn.cy()-10, 40,20);
-										}
+										this.setBGImage("thhimage/Settings_Bar.png");
+										setBounds(70, 0, 360, 768);
+										this.appendLast(new GUIParts() {
+											final GUIParts displayScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+													.setBGImage("thhimage/Settings_Bar_DisplayButton.png").setName("displayScrBtn")
+													.setBounds(200, 140, 100, 30),
+													musicScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+															.setBGImage("thhimage/Settings_Bar_MusicButton.png").setName("musicScrBtn")
+															.setBounds(200, 200, 100, 30),
+															exitScrBtn = new GUIParts() {
+												{
+													setBGImage("thhimage/Settings_Bar_ExitButton.png").setName("exitScrBtn");
+													setBounds(200, 260, 100, 30);
+												}
+												@Override
+												public boolean clicked(MouseEvent e) {
+													final boolean consumed = super.clicked(e);
+													System.exit(0);
+													return consumed;
+												}
+											};
+																	
+											{
+												this.setName("SAVE_LOAD_TABS");
+												this.appendFirst(displayScrBtn);
+												this.appendFirst(musicScrBtn);
+												this.appendFirst(exitScrBtn);
+											}
+											@Override
+											public void paint() {
+												super.paint();
+												if(displayScrBtn.isScreenMouseOvered()) {
+													arrowIF.rectPaint(displayScrBtn.left() - 60, displayScrBtn.cy()-10, 40,20);
+												}
+												if(musicScrBtn.isScreenMouseOvered()) {
+													arrowIF.rectPaint(musicScrBtn.left() - 60, musicScrBtn.cy()-10, 40,20);
+												}
+												if(exitScrBtn.isScreenMouseOvered()) {
+													arrowIF.rectPaint(exitScrBtn.left() - 60, exitScrBtn.cy()-10, 40,20);
+												}
+											}
+										});
 									}
 								});
+								set(DISPLAY_SETTINGS,new GUIParts() {
+									{
+										setBounds(70, 0, 360, 768);
+										this.setBGImage("thhimage/Display_Settings.png");
+										this.appendLast(new GUIParts() {
+											final GUIParts resLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+													.setBGImage("thhimage/LeftButton.png").setName("resLeftScrBtn")
+													.setBounds(210, 190, 20, 30),
+													resRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+															.setBGImage("thhimage/RightButton.png").setName("resRightScrBtn")
+															.setBounds(360, 190, 20, 30),
+													resolution = new GUIParts().setBGImage(ResolutionEnum.LARGE.ResolutionImage).setBounds(250,190,100,20).setName("Resolution"),
+													AllScrLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+															.setBGImage("thhimage/LeftButton.png").setName("AllScrLeftScrBtn")
+															.setBounds(210, 240, 20, 30),
+													allScreen = new GUIParts().setBGImage("thhimage/OpenButton.png").setBounds(280,250,40,20),
+													AllScrRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+																	.setBGImage("thhimage/RightButton.png").setName("AllScrRightScrBtn")
+																	.setBounds(360, 240, 20, 30),
+													returnBtn = getSwitcherButton(CHOOSE_SETTINGS).setBounds(370,710,30,30).setBGImage("thhimage/CancelButton.png");
+											{
+												this.setName("SAVE_LOAD_TABS");
+												this.appendFirst(resLeftScrBtn);
+												this.appendFirst(resRightScrBtn);
+												this.appendFirst(resolution);
+												this.appendFirst(AllScrLeftScrBtn);
+												this.appendFirst(allScreen);
+												this.appendFirst(AllScrRightScrBtn);
+												this.appendFirst(returnBtn);
+											}
+										});
+									}
+								});
+								set(MUSIC_SETTINGS,new GUIParts() {
+									{
+										setBounds(70, 0, 360, 768);
+										this.setBGImage("thhimage/Music_Settings.png");
+										this.appendLast(new GUIParts() {
+											final GUIParts volLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+													.setBGImage("thhimage/LeftButton.png").setName("resLeftScrBtn")
+													.setBounds(230, 170, 20, 30),
+													volRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+															.setBGImage("thhimage/RightButton.png").setName("resRightScrBtn")
+															.setBounds(360, 170, 20, 30),
+													volume = new GUIParts().setBGImage(VolumeEnum.LEVEL_5.volumeImage).setBounds(255,170,100,20).setName("Resolution"),
+													effectLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+															.setBGImage("thhimage/LeftButton.png").setName("AllScrLeftScrBtn")
+															.setBounds(230, 215, 20, 30),
+													effect = new GUIParts().setBGImage("thhimage/OpenButton.png").setBounds(280,215,40,20),
+													effectScrRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+																	.setBGImage("thhimage/RightButton.png").setName("AllScrRightScrBtn")
+																	.setBounds(360, 215, 20, 30),
+																	bgmLeftScrBtn = getSwitcherButton(DISPLAY_SETTINGS)
+																	.setBGImage("thhimage/LeftButton.png").setName("AllScrLeftScrBtn")
+																	.setBounds(230, 260, 20, 30),
+															bgm = new GUIParts().setBGImage("thhimage/OpenButton.png").setBounds(280,260,40,20),
+															bgmScrRightScrBtn = getSwitcherButton(MUSIC_SETTINGS)
+																			.setBGImage("thhimage/RightButton.png").setName("AllScrRightScrBtn")
+																			.setBounds(360, 260, 20, 30),
+													returnBtn = getSwitcherButton(CHOOSE_SETTINGS).setBounds(370,710,30,30).setBGImage("thhimage/CancelButton.png");
+											{
+												this.setName("SAVE_LOAD_TABS");
+												this.appendFirst(volLeftScrBtn);
+												this.appendFirst(volRightScrBtn);
+												this.appendFirst(volume);
+												this.appendFirst(effectLeftScrBtn);
+												this.appendFirst(effect);
+												this.appendFirst(effectScrRightScrBtn);
+												this.appendFirst(bgmLeftScrBtn);
+												this.appendFirst(bgm);
+												this.appendFirst(bgmScrRightScrBtn);
+												this.appendFirst(returnBtn);
+											}
+										});
+									}
+								});
+								
 							}
 						});
 						set(SAVE_SESSION, new GUIParts() {
@@ -347,8 +461,8 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 
 				// 场景画面
 				// NPC
-				this.addLast(SCENE_PART);
 				this.addLast(NPC_PART);
+				this.addLast(SCENE_PART);
 				
 				this.appendLast(new GUIParts() {{
 					setBounds(430,520,594,248);
@@ -398,17 +512,16 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		GHQ.addGUIParts(this);
 	}
 
-	public void setSpeaker(String speaker) {
-		this.Speaker.setText("   " + speaker);
-	}
-
 	// 改变说话人物图片以及对话，讲话的人
 	public void setDialogue(String text, PersonEnum Speaker) {
 		System.out.println(text);
 		System.out.println(Speaker.name);
 		this.Dialogue.setText(text);
 		this.Speaker.setText("   " + Speaker.name);
-		this.NPC_PART.setBGImage(Speaker.personImage);
+		if(Speaker.personImage != null)
+			this.NPC_PART.setBGImage(Speaker.personImage);
+		else
+			this.NPC_PART.setBGPaint(RectPaint.BLANK_SCRIPT);
 	}
 
 	public void setNPCImage(String img) {
