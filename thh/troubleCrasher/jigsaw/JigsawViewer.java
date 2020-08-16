@@ -7,6 +7,7 @@ import core.GHQ;
 import gui.GUIParts;
 import physics.direction.Direction4;
 import troubleCrasher.engine.GamePageSwitcher;
+import troubleCrasher.engine.TCGame;
 
 public class JigsawViewer extends GUIParts {
 	private JigsawBoard board;
@@ -81,6 +82,12 @@ public class JigsawViewer extends GUIParts {
 	}
 	public void setWaitingJigsaw(Jigsaw jigsaw) {
 		this.waitingJigsaw = jigsaw;
+		if(jigsaw != null) {
+			TCGame.gamePageSwitcher.leftTab.switchTo(GamePageSwitcher.BOX_SESSION);
+			TCGame.gamePageSwitcher.nextButton.setName("先挪开物品");
+		} else {
+			TCGame.gamePageSwitcher.nextButton.setName("NEXT>");
+		}
 	}
 	public void removeHookingJigsaw() {
 		this.hookJigsaw(null);
