@@ -19,6 +19,7 @@ import troubleCrasher.story.*;
 import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
 import troubleCrasher.jigsaw.JigsawViewer;
+import troubleCrasher.person.SceneEnum;
 import troubleCrasher.person.SoundEnum;
 import troubleCrasher.resource.Resource;
 
@@ -46,7 +47,8 @@ public class TCGame extends Game {
 		System.out.println("Initialized scriptManager");
 		resource = new Resource();
 		jigsawViewer = new JigsawViewer(6,7);
-		scriptManager = new ScriptManager("1");
+		scriptManager = new ScriptManager("4");
+		// TCGame.setSoundBgm(SceneEnum.WORK_DAY.bgmName);
 	}
 
 	@Override

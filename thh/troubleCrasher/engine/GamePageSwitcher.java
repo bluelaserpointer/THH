@@ -369,8 +369,6 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 			AnimatedGHQTextArea guiOption = new AnimatedGHQTextArea() {
 				@Override
 				public boolean clicked(MouseEvent event) {
-					// TODO: selectoption EDWARD
-					// System.out.println(Integer.valueOf(this.name()));
 					if(!this.name().startsWith("invalid")) {
 						TCGame.scriptManager.chooseOption(Integer.valueOf(this.name()) + 1);
 						nextButton.enable();

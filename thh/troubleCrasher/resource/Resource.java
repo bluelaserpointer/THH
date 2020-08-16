@@ -16,7 +16,11 @@ public class Resource {
 	
 	String currentItemName = "";
 
-	public Resource() {};
+	public Resource() {
+		System.out.println("In resource");
+		Box box = new Box("左轮手枪");
+		TCGame.jigsawViewer.setWaitingJigsaw(box);
+	};
 	
 	public void getAll()
 	{

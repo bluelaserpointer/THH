@@ -315,7 +315,7 @@ public class ScriptManager {
 		System.out.println(TCGame.resource.getCurrentItemName());
 		System.out.println(type);
 		System.out.println("---------------");	
-//		#ATK#D#20#AC#10#警长
+		// #ATK#D#20#AC#10#警长
 				
 		// true hit, false miss
 		// 1: critical, 2: normal, 3: miss
