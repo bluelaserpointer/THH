@@ -14,6 +14,7 @@ public enum SceneEnum {
     public final String name;
     public final String sceneImage;
     public final String bgmName;
+    
     // public final String description;
     
 	//1：办公室
