@@ -49,9 +49,7 @@ public class JigsawViewer extends GUIParts {
 			if(hookingJigsaw != null) { //拿进
 				placeHookingJigsaw();
 			} else { //拿出
-				if(board().isBlocked((GHQ.mouseScreenX() - left()) / JigsawEnum.JIGSAW_GRID_SIZE, (GHQ.mouseScreenY() - top()) / JigsawEnum.JIGSAW_GRID_SIZE)) {
-					
-				}
+				removeJigsawAndHook();
 			}
 		}
 		return consumed;
@@ -97,6 +95,17 @@ public class JigsawViewer extends GUIParts {
 			board().setJigsaw(hookingJigsaw);
 			placeSucceed();
 			hookingJigsaw = null;
+		}
+	}
+	public void removeJigsawAndHook() {
+		final int gridPosX = (GHQ.mouseScreenX() - left())/JigsawEnum.JIGSAW_GRID_SIZE;
+		final int gridPosY = (GHQ.mouseScreenY() - top())/JigsawEnum.JIGSAW_GRID_SIZE;
+		if(board().isBlocked(gridPosX, gridPosY)) {
+			Jigsaw jigsaw = board().getJigsaw(gridPosX, gridPosY);
+			if(jigsaw != null) {
+				board().removeJigsaw(jigsaw);
+				this.hookJigsaw(jigsaw);
+			}
 		}
 	}
 	public void placeFailed() {

@@ -48,9 +48,26 @@ public class JigsawBoard {
 		return true;
 	}
 	public boolean removeJigsaw(Jigsaw jigsaw) {
+		for(int xi = 0; xi < jigsaw.xGrids(); ++xi) {
+			for(int yi = 0; yi < jigsaw.yGrids(); ++yi) {
+				if(jigsaw.hasTile(xi ,yi)) {
+//					System.out.println("set " + (jigsaw.gridX() + xi) + ", " + (jigsaw.gridY() + yi));
+					bits.clear((jigsaw.gridX() + xi) + (jigsaw.gridY() + yi)*xGrids());
+				}
+			}
+		}
 		return jigsaws.remove(jigsaw);
 	}
-	
+	public Jigsaw getJigsaw(int gridX, int gridY) {
+		if(!bits.get(gridX + gridY*xGrids()))
+			return null;
+		for(Jigsaw jigsaw : jigsaws) {
+			if(jigsaw.hasTile(gridX - jigsaw.gridX(), gridY - jigsaw.gridY())) {
+				return jigsaw;
+			}
+		}
+		return null;
+	}
 	public boolean inGrids(int gridX, int gridY) {
 		return 0 <= gridX && gridX < xGrids() && 0 <= gridY && gridY < yGrids();
 	}

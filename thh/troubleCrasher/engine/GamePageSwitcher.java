@@ -18,7 +18,7 @@ import troubleCrasher.person.PersonEnum;
 import troubleCrasher.person.SceneEnum;
 
 public class GamePageSwitcher extends GUIPartsSwitcher {
-	private static final int STARTSCREEN = 0, GAMESCREEN = 1, SETTINGSCREEN = 2;
+	public static final int STARTSCREEN = 0, GAMESCREEN = 1, SETTINGSCREEN = 2,GAMEOVERSCREEN = 3;
 	private static final int PROFILE_SESSION = 0, BOX_SESSION = 1, SETTING_SESSION = 2, SAVE_SESSION = 3;
 	public static final Color COLOR_BROWN = new Color(35, 12, 2), COLOR_GOLD = new Color(220, 207, 152);
 
@@ -26,9 +26,9 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 	private AnimatedGHQTextArea Dialogue, Speaker;
 
 	public GamePageSwitcher() {
-		super(3, STARTSCREEN);
+		super(4, GAMEOVERSCREEN);
 		Dialogue = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setTextSpeed(1).setBounds(477, 580, 500, 100)
-				.setBGColor(Color.getHSBColor(45, 21, 91)).disable();
+				.disable();
 		Speaker = (AnimatedGHQTextArea) new AnimatedGHQTextArea().setBounds(477, 540, 500, 30)
 				.setBGImage("thhimage/Name_Tag.png").disable();
 
@@ -60,7 +60,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		};
 		NPC_PART = new GUIParts().setName("NPC_IMAGE").setBounds(627, 220, 200, 300)
 				.setBGImage(PersonEnum.CAPTAIN.personImage);
-		SCENE_PART = new GUIParts().setName("SCENE_PART").setBounds(430, 0, 594, 520);
+		SCENE_PART = new GUIParts().setName("SCENE_PART").setBounds(430, 0, 594, 520).setBGImage(SceneEnum.WORK_DAY.sceneImage);
 		final ImageFrame arrowIF = ImageFrame.create("thhimage/Main_Menu_Arrow.png");
 
 		// Start Menu
@@ -116,7 +116,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				this.appendLast(new GUIPartsSwitcher(4, PROFILE_SESSION) {
 					{
 						setName("LEFT_MENU_AND_CONTENT");
-						this.setBounds(0, 0, 70, 768);
+						this.setBounds(0, 0, 430, 768);
 						this.setBGImage("thhimage/UtilityBar.png");
 
 						this.appendLast(
@@ -312,15 +312,20 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				});
 
 				// 场景画面
-				this.appendLast(SCENE_PART);
 				// NPC
+				this.appendFirst(SCENE_PART);
 				this.appendFirst(NPC_PART);
+				
+				this.appendLast(new GUIParts() {{
+					setBounds(430,520,594,248);
+					setBGImage("thhimage/DialogueBG.png");
 
-				this.appendLast(Speaker.setText("警长").enable());
+					this.appendLast(Speaker.setText("警长").enable());
 
-				this.appendLast(Dialogue.setText("点击开始游戏").enable());
+					this.appendLast(Dialogue.setText("点击开始游戏").enable());
 
-				this.appendLast(nextButton);
+					this.appendLast(nextButton);
+				}});
 				// if (nextButton.clicked(e)) {
 
 				// }
@@ -334,6 +339,9 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				setName("SETTINGSCREEN");
 				setBGColor(COLOR_BROWN);
 			}
+		});
+		
+		set(GAMEOVERSCREEN,new GameOverPage(this) {
 		});
 
 		//init options button
