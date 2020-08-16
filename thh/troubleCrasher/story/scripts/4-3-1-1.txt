@@ -1,0 +1,4 @@
+#STARTLINE
+旁白：狼咬了你一口。
+#JUMP#4
+#ENDLINE

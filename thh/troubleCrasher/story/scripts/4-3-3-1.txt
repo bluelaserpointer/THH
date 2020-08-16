@@ -1,0 +1,4 @@
+#STARTLINE
+旁白：狼摆出了熊猫脸。
+#JUMP#4
+#ENDLINE
