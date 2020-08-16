@@ -224,6 +224,29 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								setName("SAVE_SESSION");
 								setBGImage("thhimage/SaveBar.png");
 								setBounds(70, 0, 360, 768);
+								this.appendLast(new GUIParts() {
+									final GUIParts savegameScrBtn = getSwitcherButton(GAMESCREEN)
+											.setBGImage("thhimage/SaveBar_SaveButton.png").setName("newgameScrBtn")
+											.setBounds(210, 160, 80, 30),
+											loadgameScrBtn = getSwitcherButton(SETTINGSCREEN)
+													.setBGImage("thhimage/SaveBar_LoadButton.png").setName("loadgameScrBtn")
+													.setBounds(210, 220, 80, 30);
+									{
+										this.setName("SAVE_LOAD_TABS");
+										this.appendFirst(savegameScrBtn);
+										this.appendFirst(loadgameScrBtn);
+									}
+									@Override
+									public void paint() {
+										super.paint();
+										if(savegameScrBtn.isScreenMouseOvered()) {
+											arrowIF.dotPaint(savegameScrBtn.left() - 100, savegameScrBtn.cy());
+										}
+										if(loadgameScrBtn.isScreenMouseOvered()) {
+											arrowIF.dotPaint(loadgameScrBtn.left() - 100, loadgameScrBtn.cy());
+										}
+									}
+								});
 							}
 						});
 					}
@@ -249,32 +272,8 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 		});
 		set(SETTINGSCREEN, new GUIParts() {
 			{
-				setName("SAVE_SESSION");
-				setBGImage("thhimage/SaveBar.png");
-				setBounds(70, 0, 360, 768);
-				this.appendLast(new GUIParts() {
-					final GUIParts savegameScrBtn = getSwitcherButton(GAMESCREEN)
-							.setBGImage("thhimage/SaveBar_SaveButton.png").setName("newgameScrBtn")
-							.setBounds(210, 160, 80, 30),
-							loadgameScrBtn = getSwitcherButton(SETTINGSCREEN)
-									.setBGImage("thhimage/SaveBar_LoadButton.png").setName("loadgameScrBtn")
-									.setBounds(210, 220, 80, 30);
-					{
-						this.setName("SAVE_LOAD_TABS");
-						this.appendFirst(savegameScrBtn);
-						this.appendFirst(loadgameScrBtn);
-					}
-					@Override
-					public void paint() {
-						super.paint();
-						if(savegameScrBtn.isScreenMouseOvered()) {
-							arrowIF.dotPaint(savegameScrBtn.left() - 100, savegameScrBtn.cy());
-						}
-						if(loadgameScrBtn.isScreenMouseOvered()) {
-							arrowIF.dotPaint(loadgameScrBtn.left() - 100, loadgameScrBtn.cy());
-						}
-					}
-				});
+				setName("SETTINGSCREEN");
+				setBGColor(COLOR_BROWN);
 			}
 		});
 
