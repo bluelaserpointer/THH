@@ -16,6 +16,7 @@ import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
 import troubleCrasher.person.PersonEnum;
 import troubleCrasher.person.SceneEnum;
+import troubleCrasher.resource.Box;
 
 public class GamePageSwitcher extends GUIPartsSwitcher {
 	public static final int STARTSCREEN = 0, GAMESCREEN = 1, SETTINGSCREEN = 2,GAMEOVERSCREEN = 3;
@@ -58,9 +59,32 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 			}
 
 		};
-		NPC_PART = new GUIParts().setName("NPC_IMAGE").setBounds(627, 220, 200, 300)
-				.setBGImage(PersonEnum.CAPTAIN.personImage);
-		SCENE_PART = new GUIParts().setName("SCENE_PART").setBounds(430, 0, 594, 520).setBGImage(SceneEnum.WORK_DAY.sceneImage);
+		NPC_PART = new GUIParts() {
+			@Override
+			public boolean clicked(MouseEvent e) {
+				final boolean consumed = super.clicked(e);
+				final Jigsaw hookingJigsaw = TCGame.jigsawViewer.hookingJigsaw();
+				if(hookingJigsaw != null) {
+					final Box box = (Box)hookingJigsaw;
+					TCGame.resource.setCurrentItemName(box.getBoxName());
+					TCGame.jigsawViewer.removeHookingJigsaw();
+				}
+				return consumed;
+			}
+		}.setName("NPC_IMAGE").setBounds(627, 220, 200, 300).setBGImage(PersonEnum.CAPTAIN.personImage);
+		SCENE_PART = new GUIParts() {
+			@Override
+			public boolean clicked(MouseEvent e) {
+				final boolean consumed = super.clicked(e);
+				final Jigsaw hookingJigsaw = TCGame.jigsawViewer.hookingJigsaw();
+				if(hookingJigsaw != null) {
+					final Box box = (Box)hookingJigsaw;
+					TCGame.resource.setCurrentItemName(box.getBoxName());
+					TCGame.jigsawViewer.removeHookingJigsaw();
+				}
+				return consumed;
+			}
+		}.setName("SCENE_PART").setBounds(430, 0, 594, 520).setBGImage(SceneEnum.WORK_DAY.sceneImage);
 		final ImageFrame arrowIF = ImageFrame.create("thhimage/Main_Menu_Arrow.png");
 
 		// Start Menu
@@ -172,6 +196,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 //											TCGame.jigsawViewer.removeHookingJigsaw();
 											TCGame.resource.delHp(1);
 										} else if (disposedJigsaw != null) { // 拿走
+											TCGame.jigsawViewer.hookDisposedJigsaw();
 										}
 										return consumed;
 									}
@@ -189,30 +214,24 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								});
 								this.appendLast(new GUIParts() {
 									{
+										this.setName("waitingBox");
 										this.setBGColor(COLOR_GOLD);
-										this.setBounds(100, 280, 100, 100);
+										this.setBounds(100, 280, 300, 100);
 									}
-								});
-								this.appendLast(new GUIParts() {
-									
-									final GUIParts inspectScrBtn = getSwitcherButton(GAMESCREEN)
-											.setBGImage("thhimage/InspectButton.png").setName("inspectScrBtn")
-											.setBounds(280, 290, 50, 30),
-											placeScrBtn = getSwitcherButton(SETTINGSCREEN)
-													.setBGImage("thhimage/PlaceButton.png").setName("placeScrBtn")
-													.setBounds(280, 340, 50, 30);
-									{
-										this.appendFirst(inspectScrBtn);
-										this.appendFirst(placeScrBtn);
+									@Override
+									public boolean clicked(MouseEvent e) {
+										final boolean consumed =  super.clicked(e);
+										if(TCGame.jigsawViewer.hookingJigsaw() == null) { //只允许拿走
+											TCGame.jigsawViewer.hookJigsaw(TCGame.jigsawViewer.waitingJigsaw());
+											TCGame.jigsawViewer.setWaitingJigsaw(null);
+										}
+										return consumed;
 									}
 									@Override
 									public void paint() {
 										super.paint();
-										if(inspectScrBtn.isScreenMouseOvered()) {
-											arrowIF.rectPaint(inspectScrBtn.left() - 60, inspectScrBtn.cy()-10, 40,20);
-										}
-										if(placeScrBtn.isScreenMouseOvered()) {
-											arrowIF.rectPaint(placeScrBtn.left() - 60, placeScrBtn.cy()-10, 40,20);
+										if(TCGame.jigsawViewer.waitingJigsaw() != null) {
+											TCGame.jigsawViewer.waitingJigsaw().paint(left(), top());
 										}
 									}
 								});
