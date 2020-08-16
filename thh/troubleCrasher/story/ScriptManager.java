@@ -208,6 +208,8 @@ public class ScriptManager {
 				parseAdd(funcLine);
 				break;
 			case "STARTLINE":
+				nextLine(readLine(buffReader));
+				break;
 			case "ENDLINE":
 				break;	
 			default:
@@ -357,11 +359,9 @@ public class ScriptManager {
 //			2-1 234
 //			3-1 2345
 //			4-12
-//			
 //		4-2-1-1
 //			2-1
 //			3-1
-//			
 //		4-3-1-1
 //			2-1
 //			3-1
@@ -417,16 +417,26 @@ public class ScriptManager {
 	 * Checks if the statement is fulfilled
 	 * @param funcLine
 	 * @return
-	 */
+	 */	
 	private boolean fulfill(String[] funcLine) {
+		
+		//		#IF#HAS#BOX#123
+		//		#IF#SELECT#BOX#123
+		
 		String itemName = funcLine[5];
 		if(funcLine[3] == "HAS" && funcLine[4] == "BOX")
 		{
 			if(TCGame.resource.hasBoxWithName(itemName))
-			{
 				return true;
-			}
-		}else {
+			
+		}else if(funcLine[3] == "SELECT" && funcLine[4] == "BOX")
+		{
+			
+			if(TCGame.resource.getCurrentItemName() == itemName)
+				return true;
+			
+		}else
+		{
 			System.out.println("HAS SOMETHING ELSE");
 		}
 		return false;
@@ -511,16 +521,17 @@ public class ScriptManager {
 			if(currLine == "#END")
 			{
 				continue;
-			}	
+			}
 		}
 		
 		// Pauses for player to send signal, indexes must be inside the existing options
         System.out.println("Before generating option buttons");
         System.out.println(currLine);
-		if(currentOptions.size() > 0)
+		if(currentOptions.size() > 0 || disabledOptions.size() > 0)
 		{
         	        
 	        List<String> sendOptions = new ArrayList();
+	        List<Boolean> optionStatus = new ArrayList();
 	        
  	        for(String currOption: currentOptions)
    	        {
@@ -532,12 +543,55 @@ public class ScriptManager {
    			    tmp = readLine(tmpReader);
    			    tmp = readLine(tmpReader);
    			    sendOptions.add(parseColonContent(tmp));
+   			    optionStatus.add(true);
    	        }
+ 	        
+ 	       for(String currOption: disabledOptions)
+  	        {
+  	        	String filePath = parsePath(currentFile + "-" +  currOption.substring(7));
+  				
+  			    InputStreamReader reader = generateReader(filePath);
+  			    BufferedReader tmpReader = new BufferedReader(reader);
+  			    String tmp = "";
+  			    tmp = readLine(tmpReader);
+  			    tmp = readLine(tmpReader);
+  			    sendOptions.add(parseColonContent(tmp));
+  			  optionStatus.add(false);
+  	        }
 	        
-			TCGame.gamePageSwitcher.generateOptions(sendOptions);
-			
-	        // TODO: Needs to make available and unavailable options different
+// 	        optionsGroup.txt
+// 	        
+// 	        static flag = true;
+// 	        if(flag == true)
+// 	        {
+// 	        	旁白
+// 	        }
+//        	
+// 	        opt1
+// 	        opt2
+// 	        endline
+// 	        
+// 	        chooseOption() {
+// 	        	flag = false;
+// 	        }
+// 	        
+// 	        useBox(Box box){
+// 	        	
+// 	        	use... => () {
+// 	        		currItem = box;
+// 	        	}
+// 	        	
+// 	        	setScriptManager(currFile);
+// 	        }
+ 	        
+ 	     
+			TCGame.gamePageSwitcher.generateOptions(sendOptions, optionStatus);
 		}
+	}
+	
+	public void currentItemChange()
+	{
+		this.setScriptManager(currentFile);
 	}
 	
 	private InputStreamReader generateReader(String filePath)
@@ -591,7 +645,6 @@ public class ScriptManager {
 		
 		// Scripts after optionGroup
 		parseLine(readLine(buffReader));
-		
 	}
 
 	
