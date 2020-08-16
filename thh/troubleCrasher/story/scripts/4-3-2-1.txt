@@ -1,0 +1,4 @@
+#STARTLINE
+旁白：狼踢了你一脚。
+#JUMP#4
+#ENDLINE
