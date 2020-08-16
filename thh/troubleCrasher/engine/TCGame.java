@@ -19,6 +19,7 @@ import troubleCrasher.story.*;
 import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
 import troubleCrasher.jigsaw.JigsawViewer;
+import troubleCrasher.person.SceneEnum;
 import troubleCrasher.person.SoundEnum;
 import troubleCrasher.resource.Resource;
 
@@ -39,12 +40,15 @@ public class TCGame extends Game {
 	}
 
 	public TCGame() throws IOException {
-		super(gamePageSwitcher = new GamePageSwitcher()); // TODO: change it!!
+		super(gamePageSwitcher = new GamePageSwitcher()); 
+		// TODO: change it!!
 		
-    // Scripts
+		// Scripts
 		System.out.println("Initialized scriptManager");
 		resource = new Resource();
-		scriptManager = new ScriptManager("3");
+		jigsawViewer = new JigsawViewer(6,7);
+		scriptManager = new ScriptManager("4");
+		// TCGame.setSoundBgm(SceneEnum.WORK_DAY.bgmName);
 	}
 
 	@Override
