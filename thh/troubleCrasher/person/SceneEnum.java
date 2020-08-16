@@ -2,9 +2,9 @@ package troubleCrasher.person;
 
 public enum SceneEnum {
     WORK_DAY("WORK_DAY", "thhimage/OfficeDay.png", "INDOOR"),
-    BAR("BAR", "thhimage/Bar.png", "INDOOR"),
 	MOUNTAIN_DAY("MOUNTAIN_DAY", "thhimage/MountainDay.png", "OUTDOOR"),
 	BANK("BANK", "thhimage/Bank.png", "INDOOR"),
+    BAR("BAR", "thhimage/Bar.png", "BAR"),
 	
 	MOUNTAIN_NIGHT("MOUNTAIN_NIGHT", "thhimage/MountainNight.png", "OUTDOOR"),
 	MOUNTAIN_NOON("MOUNTAIN_NOON", "thhimage/MountainNoon.png", "OUTDOOR"),

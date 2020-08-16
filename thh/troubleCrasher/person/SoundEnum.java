@@ -12,6 +12,7 @@ public enum SoundEnum {
     WOLF_CLAW("WOLF_CLAW", "../thhmusic/WolfClaw.mp3"),
     
     
+    BAR("BAR", "../thhmusic/Bar.mp3"),
     INDOOR("INDOOR", "../thhmusic/Indoor.mp3"),
     OUTDOOR("OUTDOOR", "../thhmusic/Outdoor.mp3"),
     BATTLE("BATTLE", "../thhmusic/Battle.mp3");
