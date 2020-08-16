@@ -18,7 +18,8 @@ public class ScriptManager {
 	// STARTLINE, OPTIONS, OPTION, ADD, DELETE, IF, LIST, END
 	// public int type;
 	
-    public BufferedReader buffReader; 
+    public BufferedReader buffReader;
+    public BufferedReader switchBuffReader;
     private String pathToScripts = "troubleCrasher/story/scripts/";
     private String currentFile = "";
 	private StoryMechanicManager storyMechanicManager = TCGame.storyMechanicManager;
@@ -53,25 +54,13 @@ public class ScriptManager {
 	 */
 	public void parseFile(String fileName) {
 		String filePath = parsePath(fileName);
-		
-	    FileInputStream fin;
-		try {
-			fin = new FileInputStream(filePath);
-		    InputStreamReader reader = new InputStreamReader(fin);
-		    buffReader = new BufferedReader(reader);
-		    String currLine = "";
-		    try {
-				currLine = buffReader.readLine();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			parseLine(currLine);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		System.out.println(fileName);
+		InputStreamReader reader = generateReader(filePath);
+	    buffReader = new BufferedReader(reader);
+	    String currLine = "";
+		currLine = readLine(buffReader);
+		parseLine(currLine);
+	
 	}
 
 	/**
@@ -81,11 +70,18 @@ public class ScriptManager {
 	 * @throws InterruptedException 
 	 */
 	public void parseLine(String currLine){
+		System.out.println("In parseLine1");
 		System.out.println(currLine);
+//		boolean flag = false;
+//		if(currLine == "#ENDLINE" || currLine == null)
+//		{
+//			return;
+//		}
 		if(currLine.charAt(0) == '#')
 		{
 			try {
 				parseFunc(currLine);
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -94,9 +90,61 @@ public class ScriptManager {
 				e.printStackTrace();
 			}
 		}else {
-			//	String[] parsedLine = currLine.split("：");
-			System.out.println("In else");
 			nextLine(currLine);
+//			flag = true;
+		}
+		
+		
+//		if(!flag)
+//		{
+//			currLine = readLine(buffReader);
+//			parseLine(currLine);
+//		}
+		
+		// System.out.println("After parseFunc");
+//		System.out.println("In parseLine2");
+//		System.out.println(currLine);
+//		currLine = readLine(buffReader);
+//		System.out.println(currLine);
+//		System.out.println(this.currentFile);
+//		try {
+//			if((currLine).charAt(0) != '#')
+//			{
+////				currLine = readLine();
+//				
+//				nextLine(currLine);
+//			}else {
+//				if(isSkippableFunc(currLine))
+//				{
+////					currLine = readLine();
+////					nextLine(currLine);	
+//					try {
+//						parseFunc(currLine);
+//					} catch (InterruptedException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+	}
+	
+	private boolean isSkippableFunc(String currText)
+	{
+		String[] parsedLine = currText.split("#");
+		
+		switch(parsedLine[1])
+		{
+			case "OPTIONS":
+			case "BG":
+			case "IF":
+				return true;
+			default:
+				return false;
 		}
 	}
 	
@@ -108,13 +156,10 @@ public class ScriptManager {
 
 	public PersonEnum findPersonWithName(String name)
 	{
-		System.out.println("In findPersonWithName");
 		for(PersonEnum person: PersonEnum.values())
 		{
-			System.out.println(person.name);
 			if(person.name.contentEquals(name))
 			{
-				System.out.println("Match");
 				return person;
 			}
 		}
@@ -130,7 +175,7 @@ public class ScriptManager {
 	public void parseFunc(String funcLine) throws IOException, InterruptedException
 	{		
 		String[] parsedLine = funcLine.split("#");
-		System.out.println("In parseFunc");
+		System.out.println("In parseFunc " + parsedLine[1]);
 		switch(parsedLine[1])
 		{
 			case "OPTIONS":
@@ -186,7 +231,7 @@ public class ScriptManager {
 		setScriptManager(parsedLine[2]);
 				
 		// Scripts after optionGroup
-		parseLine(buffReader.readLine());
+		parseLine(readLine(buffReader));
 	}
 	
 	private boolean parseDelete(String funcLine)
@@ -308,7 +353,6 @@ public class ScriptManager {
 			}
 		}
 		
-		
 //		4-1-1-1 234
 //			2-1 234
 //			3-1 2345
@@ -323,7 +367,6 @@ public class ScriptManager {
 //			3-1
 
 		System.out.println(currentFile + "-" + textIdx + "-" + randIdx);
-		System.out.println(enemyDeath);
 		if(enemyDeath)
 			setScriptManager(4 + "-" + 1 + "-" + 4 + "-" + rand(1, 2));
 		else
@@ -361,7 +404,7 @@ public class ScriptManager {
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
-	private void parseIf(String funcLine) throws IOException, InterruptedException {
+	private void parseIf(String funcLine){
 		String[] parsedLine = funcLine.split("#");
 		// Mocking result (true or false)
 		System.out.println("In parseIf fulFill: " + funcLine);
@@ -397,7 +440,7 @@ public class ScriptManager {
 		return mock == 1;
 	}
 	
-	private boolean parseDisable(String funcLine) throws NumberFormatException, IOException {
+	private boolean parseDisable(String funcLine){
 //		String[] parsedLine = funcLine.split("#");
 //		Scanner scan = new Scanner(System.in);  //创建Scanner扫描器来封装System类的in输入流
 //        int fulfill = scan.nextInt();
@@ -410,11 +453,11 @@ public class ScriptManager {
 	 * Skips the statements within if
 	 * @throws IOException
 	 */
-	private void skipIf(int index) throws IOException
+	private void skipIf(int index)
 	{
 		String currLine = "";
 		String matchIf = "#ENDIF#" + index;
-		while(!(currLine = buffReader.readLine()).contains(matchIf)){}
+		while(!(currLine = readLine(buffReader)).contains(matchIf)){}
 	}
 
 	private void optionsInit()
@@ -428,15 +471,18 @@ public class ScriptManager {
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
-	private void parseOptions() throws IOException, InterruptedException {
+	private void parseOptions()
+	{
 		boolean disabled = false;
 		
 		String currLine = "";
 		optionsInit();
 		
 		System.out.println("In parseOptions");
-		while(!(currLine = buffReader.readLine()).contains("#ENDOPTIONS"))
+
+		while(!(currLine = readLine(buffReader)).contains("#ENDOPTIONS"))
 		{
+			System.out.println("while loop");
 			System.out.println(currLine);
 			if(currLine.charAt(0) == '#')
 			{
@@ -469,24 +515,22 @@ public class ScriptManager {
 		}
 		
 		// Pauses for player to send signal, indexes must be inside the existing options
-        System.out.println("Before if");
-
+        System.out.println("Before generating option buttons");
+        System.out.println(currLine);
 		if(currentOptions.size() > 0)
 		{
-	        System.out.println("Before generateOptions");
-	        	        
+        	        
 	        List<String> sendOptions = new ArrayList();
 	        
  	        for(String currOption: currentOptions)
    	        {
    	        	String filePath = parsePath(currentFile + "-" +  currOption.substring(7));
    				
-   			    FileInputStream fin = new FileInputStream(filePath);
-   			    InputStreamReader reader = new InputStreamReader(fin);
-   			    buffReader = new BufferedReader(reader);
+   			    InputStreamReader reader = generateReader(filePath);
+   			    BufferedReader tmpReader = new BufferedReader(reader);
    			    String tmp = "";
-   			    tmp = buffReader.readLine();
-   			    tmp = buffReader.readLine();
+   			    tmp = readLine(tmpReader);
+   			    tmp = readLine(tmpReader);
    			    sendOptions.add(parseColonContent(tmp));
    	        }
 	        
@@ -495,9 +539,24 @@ public class ScriptManager {
 	        // TODO: Needs to make available and unavailable options different
 		}
 	}
+	
+	private InputStreamReader generateReader(String filePath)
+	{
+		FileInputStream fin;
+		try {
+			fin = new FileInputStream(filePath);
+		    InputStreamReader reader = new InputStreamReader(fin);
+		    return reader;
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	private String parseColonContent(String currLine)
 	{
+		// System.out.println(currLine);
 		if(currLine.contains(":"))
 		{
 			return currLine.split(":")[1];	
@@ -527,16 +586,13 @@ public class ScriptManager {
 	 */
 	public void chooseOption(int index)
 	{
-		System.out.println("Choosing option " + index);
+		// System.out.println("Choosing option " + index);
 		
 		setScriptManager(currentFile + "-" + index);
 		
 		// Scripts after optionGroup
-		try {
-			parseLine(buffReader.readLine());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		parseLine(readLine(buffReader));
+		
 	}
 
 	
@@ -549,7 +605,18 @@ public class ScriptManager {
 
 	private void parseAdd(String funcLine)
 	{
-		//  TCGame.resource.
-		//	return false;
+		
+		nextLine(readLine(buffReader));
+	}
+	
+	public String readLine(BufferedReader reader)
+	{
+		try {
+			return reader.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
 	}
 }

@@ -48,12 +48,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 					return super.clicked(event);
 				// TODO: select option EDWARD
 				System.out.println("Button clicked");
-				try {
-					TCGame.scriptManager.parseLine(TCGame.scriptManager.buffReader.readLine());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				TCGame.scriptManager.parseLine(TCGame.scriptManager.readLine(TCGame.scriptManager.buffReader));
 				return super.clicked(event);
 			}
 
@@ -148,7 +143,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 								setName("PROFILE_SESSION");
 								this.setBounds(70, 0, 70, 768);
 								// 一个人物一个框
-								for (int i = 0; i < PersonEnum.values().length - 2; i++) {
+								for (int i = 0; i < PersonEnum.values().length - 3; i++) {
 									final GUIParts NPC_Button = getSwitcherButton(i)
 											.setBGImage(PersonEnum.values()[i].personIcon).setName("NPC_1ScrBtn")
 											.setBounds(75, 20 + i * 70, 60, 60);
