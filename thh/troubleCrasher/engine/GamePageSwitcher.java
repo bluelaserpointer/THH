@@ -240,10 +240,10 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 									public void paint() {
 										super.paint();
 										if(savegameScrBtn.isScreenMouseOvered()) {
-											arrowIF.dotPaint(savegameScrBtn.left() - 100, savegameScrBtn.cy());
+											arrowIF.rectPaint(savegameScrBtn.left() - 60, savegameScrBtn.cy()-10, 40,20);
 										}
 										if(loadgameScrBtn.isScreenMouseOvered()) {
-											arrowIF.dotPaint(loadgameScrBtn.left() - 100, loadgameScrBtn.cy());
+											arrowIF.rectPaint(loadgameScrBtn.left() - 60, loadgameScrBtn.cy()-10, 40,20);
 										}
 									}
 								});
