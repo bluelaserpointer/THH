@@ -195,7 +195,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 										JigsawEnum.JIGSAW_GRID_SIZE * 6, JigsawEnum.JIGSAW_GRID_SIZE * 3);
 								this.addLast(new GUIParts() {
 									{
-										this.setBGColor(Color.BLACK);
+										this.setBGImage("thhImage/darkArea.png");
 										this.setBounds(100, 400, 300, 200);
 									}
 
@@ -214,13 +214,14 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 										}
 										return consumed;
 									}
-
+									ImageFrame crackingIF = ImageFrame.create("thhimage/cracking.png");
 									@Override
 									public void paint() {
 										super.paint();
+										crackingIF.rectPaint(left(), top(), width(), height());
 										GHQ.getG2D(Color.WHITE);
 										GHQ.drawStringGHQ("承受", cx() - 30, cy() + 10, 30F);
-										Jigsaw disposedJigsaw = TCGame.jigsawViewer.disposedJigsaw();
+										final Jigsaw disposedJigsaw = TCGame.jigsawViewer.disposedJigsaw();
 										if (disposedJigsaw != null) {
 											disposedJigsaw.paint(left(), top());
 										}
