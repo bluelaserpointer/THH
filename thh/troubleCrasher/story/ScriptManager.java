@@ -72,6 +72,11 @@ public class ScriptManager {
 	public void parseLine(String currLine){
 		System.out.println("In parseLine1");
 		System.out.println(currLine);
+//		boolean flag = false;
+//		if(currLine == "#ENDLINE" || currLine == null)
+//		{
+//			return;
+//		}
 		if(currLine.charAt(0) == '#')
 		{
 			try {
@@ -86,8 +91,15 @@ public class ScriptManager {
 			}
 		}else {
 			nextLine(currLine);
+//			flag = true;
 		}
 		
+		
+//		if(!flag)
+//		{
+//			currLine = readLine(buffReader);
+//			parseLine(currLine);
+//		}
 		
 		// System.out.println("After parseFunc");
 //		System.out.println("In parseLine2");
@@ -118,6 +130,7 @@ public class ScriptManager {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
+		
 	}
 	
 	private boolean isSkippableFunc(String currText)
