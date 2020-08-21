@@ -19,7 +19,7 @@ public abstract class AbstractRectShape extends HitShape {
 		setHeight(h);
 		return this;
 	}
-	public AbstractRectShape setBoundsSize(HitShape sample) {
+	public AbstractRectShape setBoundsSize(HasArea sample) {
 		return setBoundsSize(sample.width(), sample.height());
 	}
 	

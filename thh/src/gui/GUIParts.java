@@ -12,9 +12,11 @@ import core.GHQObject;
 import paint.ColorFilling;
 import paint.ImageFrame;
 import paint.rect.RectPaint;
+import physics.HasBoundingBox;
 import physics.HasUIBoundingBox;
 import physics.Point;
 import physics.hitShape.AbstractRectShape;
+import physics.hitShape.HasArea;
 import physics.hitShape.HitShape;
 import physics.hitShape.RectShape;
 
@@ -40,10 +42,16 @@ public class GUIParts extends GHQObject implements DragIO, HasUIBoundingBox {
 		return this;
 	}
 	//tool-getClildren
-	public LinkedList<GUIParts> getChildren(){
+	public LinkedList<GUIParts> getChildren() {
 		if(childList == null)
 			childList = new LinkedList<GUIParts>();
 		return childList;
+	}
+	public GUIParts lastChild() {
+		return getChildren().getLast();
+	}
+	public GUIParts firstChild() {
+		return getChildren().getFirst();
 	}
 	//init-background paint
 	public GUIParts setBGPaint(RectPaint paintScript) {
@@ -69,8 +77,8 @@ public class GUIParts extends GHQObject implements DragIO, HasUIBoundingBox {
 		rectShape().setBoundsSize(w, h);
 		return this;
 	}
-	public GUIParts setBoundsSize(HitShape hitShape) {
-		rectShape().setBoundsSize(hitShape);
+	public GUIParts setBoundsSize(HasArea area) {
+		rectShape().setBoundsSize(area);
 		return this;
 	}
 	public GUIParts setBounds(int x, int y, int w, int h) {
@@ -78,10 +86,8 @@ public class GUIParts extends GHQObject implements DragIO, HasUIBoundingBox {
 		setBoundsSize(w, h);
 		return this;
 	}
-	public GUIParts setBounds(GUIParts sample) {
-		point().setAll(sample.point());
-		setBoundsSize(sample.hitShape());
-		return this;
+	public GUIParts setBounds(HasBoundingBox sample) {
+		return setBounds(sample.left(), sample.top(), sample.width(), sample.height());
 	}
 	public GUIParts setXY(int x, int y) {
 		point().setXY(x, y);
@@ -132,6 +138,39 @@ public class GUIParts extends GHQObject implements DragIO, HasUIBoundingBox {
 		}
 		return childParts;
 	}
+	public <T extends GUIParts>T cloneDown(int padding, T childParts) {
+		final GUIParts lastChild = lastChild();
+		childParts.setBounds(lastChild).addXY(0, lastChild.height() + padding);
+		return addLast(childParts);
+	}
+	public <T extends GUIParts>T cloneUp(int padding, T childParts) {
+		final GUIParts lastChild = lastChild();
+		childParts.setBounds(lastChild).addXY(0, -lastChild.height() - padding);
+		return addLast(childParts);
+	}
+	public <T extends GUIParts>T cloneRight(int padding, T childParts) {
+		final GUIParts lastChild = lastChild();
+		childParts.setBounds(lastChild).addXY(lastChild.height() + padding, 0);
+		return addLast(childParts);
+	}
+	public <T extends GUIParts>T cloneLeft(int padding, T childParts) {
+		final GUIParts lastChild = lastChild();
+		childParts.setBounds(lastChild).addXY(-lastChild.height() - padding, 0);
+		return addLast(childParts);
+	}
+	public <T extends GUIParts>T cloneDown(T childParts) {
+		return cloneDown(0, childParts);
+	}
+	public <T extends GUIParts>T cloneUp(T childParts) {
+		return cloneUp(0, childParts);
+	}
+	public <T extends GUIParts>T cloneRight(T childParts) {
+		return cloneRight(0, childParts);
+	}
+	public <T extends GUIParts>T cloneLeft(T childParts) {
+		return cloneLeft(0, childParts);
+	}
+	
 	public <T extends GUIParts>T remove(T childParts) {
 		getChildren().remove(childParts);
 		return childParts;

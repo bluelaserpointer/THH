@@ -6,7 +6,7 @@ import java.util.function.BiConsumer;
 import paint.ColorFilling;
 import physics.Point;
 import physics.direction.Direction4;
-import physics.stage.GridPainter;
+import physics.stage.Grids;
 
 public class Jigsaw {
 	public final JigsawEnum type;
@@ -72,7 +72,7 @@ public class Jigsaw {
 		}
 		return type.gridBitSet.get_cellPos(gridX, gridY, false);
 	}
-	public GridPainter gridPainter() {
+	public Grids gridPainter() {
 		return type.gridBitSet;
 	}
 	public int gridX() {

@@ -8,16 +8,16 @@ import paint.rect.RectPaint;
 import physics.HasBoundingBox;
 import physics.Point;
 
-public class GridPainter implements HasGrid {
+public class Grids implements HasGrid {
 	protected final int xGrids, yGrids;
 	protected final int gridSize;
 	
-	public GridPainter(HasBoundingBox stage, int gridSize) {
+	public Grids(HasBoundingBox stage, int gridSize) {
 		this.gridSize = gridSize;
 		xGrids = stage.width()/gridSize + 1;
 		yGrids = stage.height()/gridSize + 1;
 	}
-	public GridPainter(int xGrids, int yGrids, int gridSize) {
+	public Grids(int xGrids, int yGrids, int gridSize) {
 		this.gridSize = gridSize;
 		this.xGrids = xGrids;
 		this.yGrids = yGrids;

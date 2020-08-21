@@ -4,6 +4,7 @@ import java.awt.Polygon;
 
 import core.GHQ;
 import physics.HasPoint;
+import preset.structure.Tile.TileHitShape;
 
 public class Square extends AbstractRectShape {
 	private static final long serialVersionUID = 8168254451812660305L;
@@ -32,6 +33,8 @@ public class Square extends AbstractRectShape {
 		}else if(shape instanceof MyPolygon) {
 			final Polygon POLY = ((MyPolygon)shape).polygon;
 			return POLY.intersects(point().intX() - side/2, point().intY() - side/2, side, side);
+		}else if(shape instanceof TileHitShape) {
+			return ((TileHitShape)shape).intersects(this);
 		}else {
 			System.out.println("unhandled type: " + this.getClass().getName() + " against " + shape.getClass().getName());
 		}

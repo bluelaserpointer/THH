@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 import physics.HasBoundingBox;
 
-public class GridArrayList<T> extends GridPainter {
+public class GridArrayList<T> extends Grids {
 	final ArrayList<T> list;
 	public GridArrayList(HasBoundingBox stage, int gridSize) {
 		super(stage, gridSize);

@@ -4,7 +4,7 @@ import java.util.BitSet;
 
 import physics.HasBoundingBox;
 
-public class GridBitSet extends GridPainter {
+public class GridBitSet extends Grids {
 	final BitSet bitSet;
 	public GridBitSet(HasBoundingBox stage, int gridSize) {
 		super(stage, gridSize);
