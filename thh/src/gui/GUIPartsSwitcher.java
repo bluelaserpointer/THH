@@ -31,6 +31,8 @@ public class GUIPartsSwitcher extends GUIParts{
 		super.addLast(parts);
 		if(index != nowIndex)
 			parts.disable();
+		else
+			parts.enable();
 		return parts;
 	}
 	public void switchTo(int index) {
@@ -140,7 +142,8 @@ public class GUIPartsSwitcher extends GUIParts{
 	@Override
 	public GUIParts enable() {
 		super.enable();
-		parts[nowIndex].enable();
+		if(parts[nowIndex] != null)
+			parts[nowIndex].enable();
 		return this;
 	}
 	@Override

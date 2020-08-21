@@ -150,12 +150,12 @@ public class GUIParts extends GHQObject implements DragIO, HasUIBoundingBox {
 	}
 	public <T extends GUIParts>T cloneRight(int padding, T childParts) {
 		final GUIParts lastChild = lastChild();
-		childParts.setBounds(lastChild).addXY(lastChild.height() + padding, 0);
+		childParts.setBounds(lastChild).addXY(lastChild.width() + padding, 0);
 		return addLast(childParts);
 	}
 	public <T extends GUIParts>T cloneLeft(int padding, T childParts) {
 		final GUIParts lastChild = lastChild();
-		childParts.setBounds(lastChild).addXY(-lastChild.height() - padding, 0);
+		childParts.setBounds(lastChild).addXY(-lastChild.width() - padding, 0);
 		return addLast(childParts);
 	}
 	public <T extends GUIParts>T cloneDown(T childParts) {

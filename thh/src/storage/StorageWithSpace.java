@@ -143,9 +143,11 @@ public class StorageWithSpace<T> extends ArrayList<T> {
 	}
 	@Override
 	public boolean addAll(Collection<? extends T> collection) {
-		for(T ver : collection) {
-			if(!add(ver))
-				return false;
+		if(collection != null) {
+			for(T ver : collection) {
+				if(!add(ver))
+					return false;
+			}
 		}
 		return true;
 	}

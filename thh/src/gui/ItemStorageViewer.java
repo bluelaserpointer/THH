@@ -55,7 +55,7 @@ public class ItemStorageViewer extends TableStorageViewer<ItemData> {
 				itemRCMenu.tryOpen(ELEMENT);
 			else
 				return false;
-		}else
+		} else
 			super.clicked(e);
 		return true;
 	}
