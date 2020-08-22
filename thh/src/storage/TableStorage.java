@@ -63,15 +63,15 @@ public class TableStorage<T> extends StorageWithSpace<T> {
 	}
 	public int yCells() {
 		final int size = size();
-		return size == 0 ? 0 : (size - 1)/xCells + 1;
+		return size == 0 ? 0 : (size - 1)/xCells() + 1;
 	}
 	public boolean isValidIndex(int xPos, int yPos) {
 		return 0 <= xPos && xPos < xCells() && 0 <= yPos && yPos < yCells();
 	}
 	public int cellIndex(int posX, int posY) {
-		return isValidIndex(posX, posY) ? (posX + posY*xCells) : -1;
+		return isValidIndex(posX, posY) ? (posX + posY*xCells()) : -1;
 	}
 	public T cellElement(int posX, int posY) {
-		return isValidIndex(posX, posY) ? super.get(posX + posY*xCells) : null;
+		return isValidIndex(posX, posY) ? super.get(posX + posY*xCells()) : null;
 	}
 }

@@ -5,7 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 
 import core.GHQ;
-import paint.dot.HasDotPaint;
 import preset.item.ItemData;
 
 /**
@@ -26,7 +25,7 @@ public class ItemStorageViewer extends TableStorageViewer<ItemData> {
 		return this;
 	}
 	@Override
-	public void paintOfCell(int id, HasDotPaint object, int x,int y) {
+	public void paintOfCell(int id, ItemData object, int x,int y) {
 		cellPaint.rectPaint(x, y, cellSize);
 		final Graphics2D G2 = GHQ.getG2D();
 		G2.setFont(GHQ.basicFont);
@@ -36,11 +35,11 @@ public class ItemStorageViewer extends TableStorageViewer<ItemData> {
 			return;
 		}
 		object.getDotPaint().dotPaint_capSize(x + cellSize/2, y + cellSize/2, (int)(cellSize*0.8));
-		if(storage.isSpaceElement(object)) {
+		if(isSpaceElement(object)) {
 			G2.drawString("Empty", x + cellSize - 23, y + cellSize - 9);
 		}
-		if(object instanceof ItemData && object != ItemData.BLANK_ITEM) {
-			final int AMOUNT = ((ItemData)object).getAmount();
+		if(object != ItemData.BLANK_ITEM) {
+			final int AMOUNT = object.getAmount();
 			G2.drawString(String.valueOf(AMOUNT), x + cellSize - 23, y + cellSize - 9);
 			G2.setColor(Color.BLACK);
 			G2.drawString(String.valueOf(AMOUNT), x + cellSize - 24, y + cellSize - 10);
@@ -50,7 +49,7 @@ public class ItemStorageViewer extends TableStorageViewer<ItemData> {
 	@Override
 	public boolean clicked(MouseEvent e) {
 		final ItemData ELEMENT = getMouseHoveredElement();
-		if(ELEMENT != storage.spaceElement() && e.getButton() == MouseEvent.BUTTON3) {
+		if(isSpaceElement(ELEMENT) && e.getButton() == MouseEvent.BUTTON3) {
 			if(itemRCMenu != null)
 				itemRCMenu.tryOpen(ELEMENT);
 			else
