@@ -7,10 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
-import core.Game;
-import troubleCrasher.effect.DiceEffect;
 import troubleCrasher.engine.TCGame;
 import troubleCrasher.person.*;
 import troubleCrasher.resource.BoxEnum;
@@ -34,27 +31,25 @@ public class ScriptManager {
 	
 	private int currBg = 0;
 	
-	public List<String> sendOptions = new ArrayList();
-	public List<Boolean> optionStatus = new ArrayList();
+	public final List<String> sendOptions = new ArrayList<>();
+	public final List<Boolean> optionStatus = new ArrayList<>();
 
-	public List<String> neededBox = new ArrayList();
-	public List<Integer> neededBoxIdx = new ArrayList();
+	public final List<String> neededBox = new ArrayList<>();
+	public final List<Integer> neededBoxIdx = new ArrayList<>();
     
 	public ScriptManager() {}
 	
-	public ScriptManager(String fileName){
+	public ScriptManager(String fileName) {
 		this.currentFile = fileName;
 		this.parseFile(fileName);
 	}
 	
-	private void setScriptManager(String fileName)
-	{
+	private void setScriptManager(String fileName) {
 		this.currentFile = fileName;
 		parseFile(fileName);
 	}
 	
-	public String parsePath(String name)
-	{
+	public String parsePath(String name) {
 		return pathToScripts + name + ".txt";
 	}
 		
@@ -80,7 +75,7 @@ public class ScriptManager {
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
-	public void parseLine(String currLine){
+	public void parseLine(String currLine) {
 		System.out.println("In parseLine1");
 		System.out.println(currLine);
 //		boolean flag = false;
@@ -88,8 +83,7 @@ public class ScriptManager {
 //		{
 //			return;
 //		}
-		if(currLine.charAt(0) == '#')
-		{
+		if(currLine.charAt(0) == '#') {
 			try {
 				parseFunc(currLine);
 				
@@ -100,7 +94,7 @@ public class ScriptManager {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}else {
+		} else {
 			nextLine(currLine);
 		}
 		
@@ -143,8 +137,7 @@ public class ScriptManager {
 		
 	}
 	
-	private boolean isSkippableFunc(String currText)
-	{
+	private boolean isSkippableFunc(String currText) {
 		String[] parsedLine = currText.split("#");
 		
 		switch(parsedLine[1])
@@ -158,18 +151,14 @@ public class ScriptManager {
 		}
 	}
 	
-	public void nextLine(String currText)
-	{
+	public void nextLine(String currText) {
 		PersonEnum person = findPersonWithName(parseColonHead(currText));
 		TCGame.gamePageSwitcher.setDialogue(parseColonContent(currText), person);
 	}
 
-	public PersonEnum findPersonWithName(String name)
-	{
-		for(PersonEnum person: PersonEnum.values())
-		{
-			if(person.name.contentEquals(name))
-			{
+	public PersonEnum findPersonWithName(String name) {
+		for(PersonEnum person: PersonEnum.values()) {
+			if(person.name.contentEquals(name)) {
 				return person;
 			}
 		}
@@ -182,12 +171,10 @@ public class ScriptManager {
 	 * @throws IOException
 	 * @throws InterruptedException 
 	 */
-	public void parseFunc(String funcLine) throws IOException, InterruptedException
-	{		
+	public void parseFunc(String funcLine) throws IOException, InterruptedException {		
 		String[] parsedLine = funcLine.split("#");
 		System.out.println("In parseFunc " + parsedLine[1]);
-		switch(parsedLine[1])
-		{
+		switch(parsedLine[1]) {
 			case "OPTIONS":
 				parseOptions();
 				break;
@@ -239,19 +226,16 @@ public class ScriptManager {
 		TCGame.resource.getAll();
 	}
 
-	private void parseStartLine()
-	{
+	private void parseStartLine() {
 		this.usable = true;
 		nextLine(readLine(buffReader));			
 	}
 	
-	private void parseHasBox()
-	{
+	private void parseHasBox() {
 		this.usable = false;
 	}
 	
-	private void parseJump(String funcLine) throws IOException, InterruptedException
-	{
+	private void parseJump(String funcLine) throws IOException, InterruptedException {
 		String[] parsedLine = funcLine.split("#");
 		
 		System.out.println("Jumping to " + parsedLine[2]);
@@ -261,8 +245,7 @@ public class ScriptManager {
 		parseLine(readLine(buffReader));
 	}
 	
-	private boolean parseDelete(String funcLine)
-	{
+	private boolean parseDelete(String funcLine) {
 		String[] parsedLine = funcLine.split("#");
 		
 		System.out.println("Deleting item");
@@ -270,8 +253,7 @@ public class ScriptManager {
 		String delresource = parsedLine[3];
 		int delQuantity = Integer.parseInt(parsedLine[4]);
 		
-		switch(delresource)
-		{
+		switch(delresource) {
 			case "STAMINA":
 				return TCGame.resource.delStamina(delQuantity);
 			case "MONEY":
@@ -285,8 +267,7 @@ public class ScriptManager {
 		}
 	}
 	
-	private void parseDc(String funcLine) throws IOException, InterruptedException
-	{
+	private void parseDc(String funcLine) throws IOException, InterruptedException {
 		String[] parsedLine = funcLine.split("#");
 		
 		int dc = Integer.parseInt(parsedLine[2]);
@@ -301,27 +282,23 @@ public class ScriptManager {
 		}
 	}
 	
-	private int rand(int min, int max)
-	{
+	private int rand(int min, int max) {
 		System.out.println("Generating rand: " + min + " " + max);
 		return (int)(Math.random()*(max-min+1)+min);
 	}
 	
-	private void parseBattle()
-	{
+	private void parseBattle() {
 		this.inBattle = true;
 	}
 	
-	private void parseAtk(String funcLine)
-	{
+	private void parseAtk(String funcLine) {
 		String[] parsedLine = funcLine.split("#");
 		
 		int d = Integer.parseInt(parsedLine[3]);
 		int ac = Integer.parseInt(parsedLine[5]);
 		int type;
 		String person = parsedLine[6];
-		switch(person)
-		{
+		switch(person) {
 			case "警长":
 				if(TCGame.resource.getCurrentItemName().equals("左轮手枪"))
 				{
@@ -361,54 +338,42 @@ public class ScriptManager {
 		int randIdx;
 		boolean enemyDeath = false;
 		boolean playerDeath = false;
-		if(hit)
-		{
+		if(hit) {
 			int damage = parseDmg(d);
 			// 1, 2
 
 			// 1: Player attacks, 2: YoungMan attacks, 3: Enemy attacks
-			if(person.equals("警长") || type == 2)
-			{
+			if(person.equals("警长") || type == 2) {
 				textIdx = parseDmgTextIdx(damage, d);
 				
-				if(person.equals("警长"))
-				{
+				if(person.equals("警长")) {
 					// Gun
-					if(type == 1)
-					{
-						if(rounds > 1)
-						{
+					if(type == 1) {
+						if(rounds > 1) {
 							randIdx = rand(2,4);
-						}
-						else
-						{
+						} else {
 							randIdx = 1;
 						}
-					}
-					else
-					{
+					} else {
 						// Beer
 						randIdx = rand(1,3);
 					}
 					
 					enemyDeath = (TCGame.resource.delEnemeyHp(damage) == false);
-				}else
-				{
+				} else {
 					randIdx = 1;
 					
 					enemyDeath = (TCGame.resource.delEnemeyHp(damage) == false);	
 				}
-			}else {
+			} else {
 				textIdx = 1;
 				randIdx = rand(1,3);
 				TCGame.resource.addBoxWithName(BoxEnum.WOUND_SMALL);
 			}
-		}else {
+		} else {
 			textIdx = 3;
-			if(person.equals("警长"))
-			{
-				if(type == 1)
-				{
+			if(person.equals("警长")) {
+				if(type == 1) {
 					// Gun
 					if(rounds > 1)
 						randIdx = rand(2,5);
@@ -419,19 +384,16 @@ public class ScriptManager {
 					randIdx = rand(1,3);
 				}
 				
-			}else if(type == 2)
-			{
+			} else if(type == 2) {
 				randIdx = 1;
-			}else {
+			} else {
 				randIdx = rand(1,3);
 			}
 		}
 			
-		if(hit)
-		{
+		if(hit) {
 			String name;
-			switch(type)
-			{
+			switch(type) {
 				case 1:
 					name = "GUN_SHOT";
 					break;
@@ -453,8 +415,7 @@ public class ScriptManager {
 		
 
 		System.out.println(currentFile + "-" + textIdx + "-" + randIdx);
-		if(enemyDeath)
-		{
+		if(enemyDeath) {
 			if(type == 1)
 				setScriptManager(4 + "-" + 1 + "-" + 4 + "-" + rand(1, 2));
 			else
@@ -464,8 +425,7 @@ public class ScriptManager {
 			setScriptManager(currentFile + "-" + textIdx + "-" + randIdx);
 	}
 		
-	private int parseDmg(int dmg)
-	{
+	private int parseDmg(int dmg) {
 		// TODO: 骰子
 		int diceDmg = rand(1, dmg);
 		roleDice(diceDmg, 1000);
@@ -473,8 +433,7 @@ public class ScriptManager {
 		return diceDmg;
 	}
 	
-	private int parseDmgTextIdx(int dmg, int max)
-	{
+	private int parseDmgTextIdx(int dmg, int max) {
 		if(dmg >= max/2)
 		{
 			return 1;
@@ -483,8 +442,7 @@ public class ScriptManager {
 		}
 	}
 	
-	private void parseBg(String funcLine)
-	{
+	private void parseBg(String funcLine) {
 		String[] parsedLine = funcLine.split("#");
 				
 		int bg = Integer.parseInt(parsedLine[2]);
@@ -497,13 +455,11 @@ public class ScriptManager {
 		//4：银行
 		//5：小山坡进入战斗
 		
-		if(bg == 5)
-		{
+		if(bg == 5) {
 			TCGame.setSoundBgm("BATTLE");
-		}else {
+		} else {
 			SceneEnum sceneEnum = null;
-			switch(bg)
-			{
+			switch(bg) {
 				case 1:
 					sceneEnum = SceneEnum.WORK_DAY;
 					break;
@@ -523,10 +479,9 @@ public class ScriptManager {
 			
 			System.out.println(sceneEnum);
 			
-			if(bg == currBg)
-			{
+			if(bg == currBg) {
 				TCGame.setSoundBgm(sceneEnum.bgmName);
-			}else {
+			} else {
 				TCGame.gamePageSwitcher.setSceneImageMusic(sceneEnum);
 			}
 		}
@@ -540,7 +495,7 @@ public class ScriptManager {
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
-	private void parseIf(String funcLine){
+	private void parseIf(String funcLine) {
 		String[] parsedLine = funcLine.split("#");
 		// Mocking result (true or false)
 		System.out.println("In parseIf fulFill: " + funcLine);
@@ -549,16 +504,14 @@ public class ScriptManager {
 			skipIf(Integer.parseInt(parsedLine[2]));
 	}
 	
-	private boolean parseDisable(String funcLine){
+	private boolean parseDisable(String funcLine) {
 		String[] parsedLine = funcLine.split("#");
 		return !fulfill(parsedLine);
 	}
 	
-	public boolean boxNeeded(String name)
-	{
+	public boolean boxNeeded(String name) {
 		System.out.println("-----IN BOX NEEDED-----");
-		for(int i = 0; i < this.neededBox.size(); i++)
-		{
+		for(int i = 0; i < this.neededBox.size(); i++) {
 			System.out.println(this.neededBox.get(i));	
 		}
 		System.out.println("----------");
@@ -586,8 +539,7 @@ public class ScriptManager {
 		System.out.println("---------");
 		
 		
-		if(funcLine[3].equals("HAS"))
-		{
+		if(funcLine[3].equals("HAS")) {
 			this.neededBox.add(itemName);
 			this.neededBoxIdx.add(this.neededBoxIdx.size());
 			System.out.println("*****In has box");
@@ -598,8 +550,7 @@ public class ScriptManager {
 				return true;
 			}
 			
-		}else if(funcLine[3].equals("SELECT"))
-		{
+		} else if(funcLine[3].equals("SELECT")) {
 			this.neededBox.add(itemName);
 			this.neededBoxIdx.add(this.neededBoxIdx.size());
 			System.out.println("*****In select box");
@@ -611,8 +562,7 @@ public class ScriptManager {
 				System.out.println("*****Item selected");
 				return true;
 			}
-		}else
-		{
+		} else {
 			System.out.println("HAS SOMETHING ELSE");
 		}
 		return false;
@@ -631,17 +581,15 @@ public class ScriptManager {
 	 * Skips the statements within if
 	 * @throws IOException
 	 */
-	private void skipIf(int index)
-	{
+	private void skipIf(int index) {
 		String currLine = "";
 		String matchIf = "#ENDIF#" + index;
 		while(!(currLine = readLine(buffReader)).contains(matchIf)){}
 	}
 
-	private void optionsInit()
-	{
-		this.neededBox = new ArrayList();
-		this.neededBoxIdx = new ArrayList();
+	private void optionsInit() {
+		this.neededBox.clear();
+		this.neededBoxIdx.clear();
 		this.sendOptions.clear();
 		this.optionStatus.clear();
 	}
@@ -704,19 +652,14 @@ public class ScriptManager {
 			TCGame.gamePageSwitcher.generateOptions(sendOptions, optionStatus);
 	}
 
-	public void currentItemChange()
-	{
+	public void currentItemChange() {
 		TCGame.gamePageSwitcher.generateOptions(null, null);
 		this.setScriptManager(currentFile);
 	}
 	
-	private InputStreamReader generateReader(String filePath)
-	{
-		FileInputStream fin;
+	private InputStreamReader generateReader(String filePath) {
 		try {
-			fin = new FileInputStream(filePath);
-		    InputStreamReader reader = new InputStreamReader(fin);
-		    return reader;
+		    return new InputStreamReader(new FileInputStream(filePath));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -724,11 +667,9 @@ public class ScriptManager {
 		return null;
 	}
 
-	private String parseColonContent(String currLine)
-	{
+	private String parseColonContent(String currLine) {
 		// System.out.println(currLine);
-		if(currLine.contains(":"))
-		{
+		if(currLine.contains(":")) {
 			return currLine.split(":")[1];	
 		} else if (currLine.contains("：")) {
 			return currLine.split("：")[1];
@@ -737,10 +678,8 @@ public class ScriptManager {
 		
 	}
 	
-	private String parseColonHead(String currLine)
-	{
-		if(currLine.contains(":"))
-		{
+	private String parseColonHead(String currLine) {
+		if(currLine.contains(":")) {
 			return currLine.split(":")[0];	
 		}else if (currLine.contains("：")) {
 			return currLine.split("：")[0];
@@ -754,8 +693,7 @@ public class ScriptManager {
 	 * @throws IOException
 	 * @throws InterruptedException 
 	 */
-	public void chooseOption(int index)
-	{		
+	public void chooseOption(int index) {		
 		setScriptManager(currentFile + "-" + index);
 		
 		// Scripts after optionGroup
@@ -778,8 +716,7 @@ public class ScriptManager {
 		nextLine("旁白：你获得了“" + parsedLine[4] + "”的盒子。");
 	}
 	
-	public String readLine(BufferedReader reader)
-	{
+	public String readLine(BufferedReader reader) {
 		try {
 			return reader.readLine();
 		} catch (IOException e) {
@@ -789,8 +726,7 @@ public class ScriptManager {
 		return "";
 	}
 	
-	private void roleDice(int res, int times)
-	{
+	private void roleDice(int res, int times) {
 //		DiceEffect diceEffect = new DiceEffect();
 //
 //		int i = 0;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StoryMechanicManager {
-	private List<Visitor> scheduledVisitors = new ArrayList();
+	private List<Visitor> scheduledVisitors = new ArrayList<>();
 
 	public void addVisitor(String name, int date, String script)
 	{

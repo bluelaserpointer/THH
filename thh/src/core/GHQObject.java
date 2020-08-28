@@ -1,6 +1,7 @@
 package core;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import calculate.Damage;
 import gui.GUIParts;
@@ -22,7 +23,7 @@ import preset.structure.Structure;
 import preset.unit.Unit;
 import preset.vegetation.Vegetation;
 
-public class GHQObject implements HasName, HasPaint, HasPhysics  {
+public class GHQObject implements HasName, HasIdle, HasPaint, HasPhysics  {
 	public static final GHQObject NULL_GHQ_OBJECT = new GHQObject();
 	
 	public int initialFrame;
@@ -35,6 +36,9 @@ public class GHQObject implements HasName, HasPaint, HasPhysics  {
 	protected String name = this.getClass().getName() + GHQ.NOT_NAMED;
 	
 	protected Physics physics;
+	
+	protected LinkedList<HasIdle> childrenIdle = new LinkedList<HasIdle>();
+	protected LinkedList<HasPaint> childrenPaint = new LinkedList<HasPaint>();
 	
 	//init
 	public GHQObject() {
@@ -81,8 +85,12 @@ public class GHQObject implements HasName, HasPaint, HasPhysics  {
 	public final boolean hasDeleteClaimFromStage() {
 		return isDeleted;
 	}
+	@Override
 	public void idle() {
 		paintOrder = ++nowPaintOrder;
+		for(HasIdle childIdle : childrenIdle) {
+			childIdle.idle();
+		}
 		paint();
 	}
 	/**
@@ -90,6 +98,9 @@ public class GHQObject implements HasName, HasPaint, HasPhysics  {
 	 */
 	@Override
 	public void paint() {
+		for(HasPaint childPaint : childrenPaint) {
+			childPaint.paint();
+		}
 	}
 	public int getPaintOrder() {
 		return paintOrder;
