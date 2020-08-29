@@ -237,35 +237,20 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		}
 		g2.setColor(Color.WHITE);
 		g2.fill(screenRect);
-		final int TRANSLATE_X = -cameraLeft() + (GHQ.camera == null ? 0 : GHQ.camera.projectionLeftTopPoint().intX()),
-				TRANSLATE_Y = -cameraTop() + (GHQ.camera == null ? 0 : GHQ.camera.projectionLeftTopPoint().intY());
-		g2.translate(TRANSLATE_X, TRANSLATE_Y);
 		g2.setFont(initialFont);
 		////////////////////////////////////////////////////////////////////////
 		//gameIdle
-		final int tx = (int)GHQ.fieldScreenCenterX(), ty = (int)GHQ.fieldScreenCenterY();
-		final double zoomRate = GHQ.zoomRate();
-		if(zoomRate != 1.0) {
-			g2.translate(tx, ty);
-			GHQ.scale(zoomRate, zoomRate);
-			g2.translate(-tx, -ty);
-			engine.idle(g2, stopEventKind);
-			g2.translate(tx, ty);
-			final double _zoomRate = 1.0/zoomRate;
-			GHQ.scale(_zoomRate, _zoomRate);
-			g2.translate(-tx, -ty);
-		} else
-			engine.idle(g2, stopEventKind);
+		GHQ.translateForGUI(false);
+		engine.idle(g2, stopEventKind);
+		GHQ.translateForGUI(true);
 		if(GHQ.camera != null)
 			camera.applyChanges();
 		////////////////////////////////////////////////////////////////////////
 		//GUIIdle
-		g2.translate(-TRANSLATE_X, -TRANSLATE_Y);
 		//gui parts////////////////////
 		BASE_SCREEN_UI.idle();
 		//debug ////////////////////////
 		if(debugMode) {
-			GHQ.translateForGUI(true);
 			//grid
 			g2.setColor(debugTextColor);
 			g2.setFont(basicFont);
@@ -274,11 +259,11 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				g2.drawLine(i, 0, i, screenH());
 			for(int i = 100;i < screenH();i += 100)
 				g2.drawLine(0, i, screenW(), i);
-			GHQ.translateForGUI(false);
 			////////////////
 			//stage debug info
 			////////////////
 			if(GHQ.stage != null) {
+				GHQ.translateForGUI(false);
 				//stageOrigin
 				g2.setColor(debugTextColor);
 				g2.setStroke(stroke1);
@@ -309,7 +294,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				GHQ.translateForGUI(true);
 				//entityInfo
 				g2.drawString(stage.entityAmountInfo(), 30, 100);
-				GHQ.translateForGUI(false);
 			}
 			//specInfo
 			g2.drawString("TimePerFrame(ms):" + loadTime_total, 30, 120);
@@ -334,7 +318,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				g2.drawString((int)mouseDebugX1 + "," + (int)mouseDebugY1, mouseDebugX1 + 20, mouseDebugY1 + 20);
 				if(mouseDebugX2 == GHQ.NONE) {
 					g2.drawLine(mouseDebugX1, mouseDebugY1, mouseX, mouseY);
-				}else {
+				} else {
 					g2.drawLine(mouseDebugX1, mouseDebugY1, mouseDebugX2, mouseDebugY2);
 					g2.drawString((int)mouseDebugX2 + "," + (int)mouseDebugY2, mouseDebugX2 + 20, mouseDebugY2 + 20);
 					final int DX = mouseDebugX2 - mouseDebugX1, DY = mouseDebugY2 - mouseDebugY1;
