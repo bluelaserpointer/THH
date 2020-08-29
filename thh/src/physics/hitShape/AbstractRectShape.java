@@ -25,10 +25,8 @@ public abstract class AbstractRectShape extends HitShape {
 	
 	//information
 	@Override
-	public boolean intersects(HitShape shape) {
-		if(!(shape instanceof RectShape || shape instanceof Square || shape instanceof Circle))
-			System.out.println("unhandled type: " + this.getClass().getName() + " against " + shape.getClass().getName());
-		return super.boundingBoxIntersects(shape);
+	public int preciseIntersects(HitShape shape) {
+		return -1;
 	}
 	@Override
 	public boolean intersectsDot(int x, int y) {

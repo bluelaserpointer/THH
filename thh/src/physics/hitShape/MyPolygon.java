@@ -44,21 +44,8 @@ public class MyPolygon extends HitShape{
 			points[i] = new Point.IntPoint(pointX[i], pointY[i]);
 	}
 	@Override
-	public boolean intersects(HitShape shape) {
-		final Point P2 = shape.point();
-		if(shape instanceof RectShape) {
-			final RectShape RECT = (RectShape)shape;
-			return polygon.intersects(P2.intX(), P2.intY(), RECT.width, RECT.height);
-		}else if(shape instanceof Square) {
-			final int SIDE = ((Square)shape).side;
-			return polygon.intersects(P2.intX(), P2.intY(), SIDE, SIDE);
-		}else if(shape instanceof Circle) {
-			final int SIDE = ((Circle)shape).radius*2;
-			return polygon.intersects(P2.intX(), P2.intY(), SIDE, SIDE);
-		}else {
-			System.out.println("unhandled type: " + this.getClass().getName() + " against " + shape.getClass().getName());
-		}
-		return false;
+	public int preciseIntersects(HitShape shape) {
+		return polygon.intersects(shape.left(), shape.top(), shape.width(), shape.height()) ? 1 : 0;
 	}
 	@Override
 	public boolean intersectsDot(int x, int y) {

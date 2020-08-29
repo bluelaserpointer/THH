@@ -152,8 +152,8 @@ public class UnionHitShape<T extends HasHitShape> extends HitShape {
 		return find((target) -> target.hitShape().intersectsLine(x1, y1, x2, y2), amount);
 	}
 	@Override
-	public boolean intersects(HitShape shape) {
-		return elementIntersects(shape) != null;
+	public int preciseIntersects(HitShape shape) {
+		return elementIntersects(shape) != null ? 1 : 0;
 	}
 	@Override
 	public boolean intersectsDot(int x, int y) {

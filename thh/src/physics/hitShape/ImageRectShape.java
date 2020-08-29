@@ -11,12 +11,6 @@ public class ImageRectShape extends RectShape {
 		super(pointOwner, paintOwner.getDotPaint().width(), paintOwner.getDotPaint().height());
 		this.paintOwner = paintOwner;
 	}
-	@Override
-	public boolean intersects(HitShape shape) {
-		if(!(shape instanceof ImageRectShape || shape instanceof RectShape || shape instanceof Square || shape instanceof Circle))
-			System.out.println("unhandled type: " + this.getClass().getName() + " against " + shape.getClass().getName());
-		return super.intersects(shape);
-	}
 	
 	//tool
 	@Override

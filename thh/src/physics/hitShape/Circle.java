@@ -7,7 +7,6 @@ import java.awt.geom.Line2D;
 
 import core.GHQ;
 import physics.HasPoint;
-import preset.structure.Tile.TileHitShape;
 
 public class Circle extends HitShape {
 	private static final long serialVersionUID = -1809578801160258098L;
@@ -23,23 +22,12 @@ public class Circle extends HitShape {
 		return this;
 	}
 	@Override
-	public boolean intersects(HitShape shape) {
+	public int preciseIntersects(HitShape shape) {
 		if(shape instanceof Circle) {
 			final double DR = radius + ((Circle)shape).radius;
-			return point().distanceSq(shape.point()) < DR*DR;
-		}else if(shape instanceof Square) {
-			// TODO lacking strictness
-			return point().inRangeXY(shape.point(), radius + ((Square)shape).side/2);
-		}else if(shape instanceof RectShape) {
-			// TODO lacking strictness
-			return point().inRangeXY(shape.point(), radius + ((RectShape)shape).width/2, radius + ((RectShape)shape).height/2);
-		}else if(shape instanceof TileHitShape) {
-			// TODO lacking strictness
-			return ((TileHitShape)shape).intersects(this);
-		}else {
-			System.out.println("unhandled type: " + this.getClass().getName() + " against " + shape.getClass().getName());
+			return point().distanceSq(shape.point()) < DR*DR ? 1 : 0;
 		}
-		return false;
+		return -1;
 	}
 	@Override
 	public boolean intersectsDot(int x, int y) {

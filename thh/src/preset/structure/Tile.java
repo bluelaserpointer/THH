@@ -38,19 +38,19 @@ public class Tile extends Structure implements HasUIBoundingBox {
 		}
 		private static final long serialVersionUID = -8708171125934571442L;
 		@Override
-		public boolean intersects(HitShape shape) {
+		public int preciseIntersects(HitShape shape) {
 			for(int xi = 0;xi < X_TILES;xi++) {
 				for(int yi = 0;yi < Y_TILES;yi++) {
 					if(aliveTiles.get(xi + yi*X_TILES)) {
 						Point point = new Point.IntPoint(point().intX() + xi*TILE_SIZE + TILE_SIZE/2, point().intY() + yi*TILE_SIZE + TILE_SIZE/2);
 						if(shape.point().inRangeXY(point, (TILE_SIZE + shape.width())/2, (TILE_SIZE + shape.height())/2)) {
 							lastHitTilePos = xi + yi*X_TILES;
-							return true;
+							return 1;
 						}
 					}
 				}
 			}
-			return false;
+			return 0;
 		}
 		@Override
 		public boolean intersectsDot(int x, int y) {

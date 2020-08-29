@@ -1,10 +1,7 @@
 package physics.hitShape;
 
-import java.awt.Polygon;
-
 import core.GHQ;
 import physics.HasPoint;
-import preset.structure.Tile.TileHitShape;
 
 public class Square extends AbstractRectShape {
 	private static final long serialVersionUID = 8168254451812660305L;
@@ -21,25 +18,6 @@ public class Square extends AbstractRectShape {
 		this.side = side;
 	}
 	public Square() {}
-	@Override
-	public boolean intersects(HitShape shape) {
-		if(shape instanceof Square) {
-			return point().inRangeXY(shape.point(), (side + ((Square)shape).side)/2);
-		}else if(shape instanceof RectShape) {
-			return point().inRangeXY(shape.point(), (side + ((RectShape)shape).width)/2, (side + ((RectShape)shape).height)/2);
-		}else if(shape instanceof Circle) {
-			// TODO lacking strictness
-			return point().inRangeXY(shape.point(), (side + ((Circle)shape).radius)/2);
-		}else if(shape instanceof MyPolygon) {
-			final Polygon POLY = ((MyPolygon)shape).polygon;
-			return POLY.intersects(point().intX() - side/2, point().intY() - side/2, side, side);
-		}else if(shape instanceof TileHitShape) {
-			return ((TileHitShape)shape).intersects(this);
-		}else {
-			System.out.println("unhandled type: " + this.getClass().getName() + " against " + shape.getClass().getName());
-		}
-		return false;
-	}
 	
 	//tool
 	@Override
