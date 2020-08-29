@@ -210,7 +210,8 @@ public class CornerNavigation {
 			G2.setColor(Color.ORANGE);
 			G2.drawString(String.valueOf((int)ver.distanceMark), ver.intX() - 15, ver.intY() - 15);
 			G2.setStroke(GHQ.stroke3);
-			G2.drawLine(ver.intX(), ver.intY(), ver.getPrevCornerMark().intX(), ver.getPrevCornerMark().intY());
+			if(ver.getPrevCornerMark() != null)
+				G2.drawLine(ver.intX(), ver.intY(), ver.getPrevCornerMark().intX(), ver.getPrevCornerMark().intY());
 		}
 		for(Anchor ver : anchors) {
 			ColorFilling.rectPaint(Color.CYAN, ver.intX() - 5, ver.intY() - 5, 10, 10);

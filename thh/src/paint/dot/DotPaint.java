@@ -68,10 +68,10 @@ public abstract class DotPaint extends RectPaint implements HasArea {
 	}
 	public void dotPaint_capSize(int x, int y, int maxSize) {
 		final int SIZE_BIG = maxSide();
-		if(SIZE_BIG > maxSize) {
-			dotPaint_rate(x, y, (double)maxSize/SIZE_BIG);
-		}else
+		if(SIZE_BIG == 0 || SIZE_BIG == maxSize)
 			dotPaint(x, y);
+		else
+			dotPaint_rate(x, y, (double)maxSize/SIZE_BIG);
 	}
 	public void dotPaint_capSize(Point point, int maxSize) {
 		dotPaint_capSize(point.intX(), point.intY(), maxSize);

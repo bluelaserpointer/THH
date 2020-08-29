@@ -38,7 +38,7 @@ public class ItemStorageViewer extends TableStorageViewer<ItemData> {
 		if(isSpaceElement(object)) {
 			G2.drawString("Empty", x + cellSize - 23, y + cellSize - 9);
 		}
-		if(object != ItemData.BLANK_ITEM) {
+		if(object != ItemData.BLANK_ITEM && !object.isNonStackable()) {
 			final int AMOUNT = object.getAmount();
 			G2.drawString(String.valueOf(AMOUNT), x + cellSize - 23, y + cellSize - 9);
 			G2.setColor(Color.BLACK);

@@ -66,6 +66,9 @@ public class ItemData extends GHQObject implements Usable {
 	public void setStackCap(int amount) {
 		stackCap = amount;
 	}
+	public void setNonStackable() {
+		this.setStackCap(1);
+	}
 	public void setOwner(Unit unit) {
 		owner = unit;
 	}
@@ -80,6 +83,9 @@ public class ItemData extends GHQObject implements Usable {
 	//information
 	public boolean stackable(ItemData item) {
 		return getClass().equals(item.getClass());
+	}
+	public boolean isNonStackable() {
+		return stackCap() == 1;
 	}
 	public final boolean isEmpty() {
 		return amount == 0;
