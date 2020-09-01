@@ -49,10 +49,12 @@ public class Grids implements HasGrid {
 		return new Point.DoublePoint(xPos*gridSize, yPos*gridSize);
 	}
 	public int screenLeftXPos() {
-		return GHQ.fieldScreenLeft()/gridSize;
+		final int screenLeft = GHQ.fieldScreenLeft();
+		return screenLeft < 0 ? screenLeft/gridSize - 1 : screenLeft/gridSize;
 	}
 	public int screenTopYPos() {
-		return GHQ.fieldScreenTop()/gridSize;
+		final int screenTop = GHQ.fieldScreenTop();
+		return screenTop < 0 ? screenTop/gridSize - 1 : screenTop/gridSize;
 	}
 	public int gridsToFillScreenWidth() {
 		return GHQ.fieldScreenW()/gridSize + 2;
