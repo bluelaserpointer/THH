@@ -373,14 +373,12 @@ public class GHQStage implements HasBoundingBox {
 	}
 	
 	//debug-information
-	public void unitDebugPaint(final Graphics2D g2) {
+	public void unitDebugPaint() {
 		for(Unit unit : units) {
 			final int RECT_X = unit.point().intX(), RECT_Y = unit.point().intY();
-			g2.setStroke(GHQ.stroke1);
-			g2.drawRect(RECT_X - 50, RECT_Y - 50, 100, 100);
-			g2.drawLine(RECT_X + 50, RECT_Y - 50, RECT_X + 60, RECT_Y - 60);
-			g2.setStroke(GHQ.stroke5);
-			g2.drawString(unit.name(), RECT_X + 62, RECT_Y - 68);
+			unit.drawBoundingBox(Color.RED, GHQ.stroke1);
+			GHQ.getG2D(GHQ.debugTextColor, GHQ.stroke5);
+			GHQ.getG2D().drawString(unit.name(), RECT_X + unit.width()/2, RECT_Y - unit.height()/2 - 6);
 		}
 	}
 	public String entityAmountInfo() {

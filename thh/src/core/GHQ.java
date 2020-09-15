@@ -212,7 +212,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	private static Graphics2D g2;
 	public static Font initialFont, basicFont, commentFont;
 	public static final BasicStroke stroke1 = new BasicStroke(1f), stroke3 = new BasicStroke(3f), stroke5 = new BasicStroke(5f), stroke7 = new BasicStroke(7f);
-	private static final Color HPWarningColor = new Color(255,120,120), debugTextColor = new Color(200, 200, 200);
+	public static final Color HPWarningColor = new Color(255,120,120), debugTextColor = new Color(200, 200, 200);
 	public static final DecimalFormat DF0_0 = new DecimalFormat("0.0"), DF0_00 = new DecimalFormat("0.00"), DF00_00 = new DecimalFormat("00.00");
 	private final Rectangle2D screenRect;
 	
@@ -290,7 +290,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 					}
 				}
 				//unitInfo
-				stage.unitDebugPaint(g2);
+				stage.unitDebugPaint();
 				GHQ.translateForGUI(true);
 				//entityInfo
 				g2.drawString(stage.entityAmountInfo(), 30, 100);
