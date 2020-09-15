@@ -57,7 +57,7 @@ public class Weapon {
 	 * Process the cool or reloading process.
 	 * It does nothing if both of the cool and reloading process is finished.
 	 */
-	public void idle() {
+	public void coolDownOrReload() {
 		if(isReloadFinished()) {
 			if(!isCoolFinished()) { //cooling process is on going
 				if((coolProgress += coolSpeed) >= coolTime)

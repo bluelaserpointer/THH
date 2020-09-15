@@ -92,7 +92,7 @@ public abstract class THH_BasicUnit extends Unit {
 		////////////
 		for(Weapon ver : weapon) {
 			if(ver != null)
-				ver.idle();
+				ver.coolDownOrReload();
 		}
 		////////////
 		//dynam
