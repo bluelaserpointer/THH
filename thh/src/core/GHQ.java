@@ -297,7 +297,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				stage.unitDebugPaint();
 				GHQ.translateForGUI(true);
 				//entityInfo
-				g2.drawString(stage.entityAmountInfo(), 30, 100);
+				drawString_center(stage.entityAmountInfo(), 30, 80, 300, 20);
 			}
 			//specInfo
 			g2.drawString("TimePerFrame(ms):" + loadTime_total, 30, 120);
@@ -1107,6 +1107,14 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			nowIndex += lineWordAmount;
 			y += lineH;
 		}
+	}
+	public static final void drawString_center(String string, int x, int y, int w, int h) {
+		final Font newFont = g2.getFont().deriveFont((float)(2*h));
+		final int strWidth = GHQ.getG2D().getFontMetrics(newFont).stringWidth(string);
+		drawStringGHQ(string, x + w/2 - strWidth/2, y + h, newFont);
+	}
+	public static final void drawString_left(String string, int x, int y, int h) {
+		drawStringGHQ(string, x, y + h, g2.getFont().deriveFont((float)(2*h)));
 	}
 	public static final void setFlip(boolean doXFlip, boolean doYFlip) {
 		GHQ.doXFlip = doXFlip ^ GHQ.doXFlip;
