@@ -79,7 +79,7 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	
 	//debug
 	private static boolean freezeScreen;
-	private boolean debugMode;
+	private static boolean debugMode;
 	private static int loadTime_total;
 	public static String errorPoint = "NONE";
 	
@@ -259,6 +259,10 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 				g2.drawLine(i, 0, i, screenH());
 			for(int i = 100;i < screenH();i += 100)
 				g2.drawLine(0, i, screenW(), i);
+
+			//background
+			g2.setColor(new Color(0, 0, 0, 200));
+			g2.fillRect(30, 80, 300, 125);
 			////////////////
 			//stage debug info
 			////////////////
@@ -842,6 +846,9 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final double getSPF() {
 		return 1.0/getFPS();
+	}
+	public static boolean isDebugMode() {
+		return debugMode;
 	}
 	/**
 	 * Check if there is a stopEvent.
