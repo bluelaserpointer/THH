@@ -21,7 +21,6 @@ import paint.ColorFilling;
 import paint.ColorFraming;
 import paint.ImageFrame;
 import paint.dot.DotPaint;
-import paint.rect.RectPaint;
 import physics.Angle;
 import physics.Dynam;
 import physics.HasBoundingBox;
@@ -73,8 +72,9 @@ public abstract class DefaultStageEditor extends GUIParts{
 	public DefaultStageEditor(String group) {
 		EDIT_MENU_GROUP = group + ">EDIT_MENU_GROUP>";
 		final int SCREEN_W = GHQ.screenW(),SCREEN_H = GHQ.screenH();
-		super.addLast(new BasicButton(RectPaint.BLANK_SCRIPT, new ColorFraming(Color.WHITE,GHQ.stroke3)) {
+		super.addLast(new GUIParts() {
 			{
+				setBGPaint(new ColorFraming(Color.WHITE,GHQ.stroke3));
 				setName(EDIT_MENU_GROUP).setBounds(150, 0, SCREEN_W - 150, SCREEN_H);
 			}
 			@Override

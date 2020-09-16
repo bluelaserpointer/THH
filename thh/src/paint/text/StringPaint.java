@@ -8,35 +8,35 @@ import core.GHQ;
 import paint.dot.DotPaint;
 
 public class StringPaint extends DotPaint {
-	public final String WORDS;
-	public final Color COLOR;
-	public final Font FONT;
+	public String words;
+	public Color color;
+	public Font font;
 
 	public static Color defaultColor = Color.BLACK;
 	public static Font defaultFont = GHQ.basicFont;
 
 	public StringPaint(String words) {
-		WORDS = words;
-		COLOR = defaultColor;
-		FONT = defaultFont;
+		this.words = words;
+		this.color = defaultColor;
+		this.font = defaultFont;
 	}
 	public StringPaint(String words, Color color) {
-		WORDS = words;
-		COLOR = color;
-		FONT = defaultFont;
+		this.words = words;
+		this.color = color;
+		this.font = defaultFont;
 	}
 	public StringPaint(String words, Font font, Color color) {
-		WORDS = words;
-		COLOR = color;
-		FONT = font;
+		this.words = words;
+		this.color = color;
+		this.font = font;
 	}
 	@Override
 	public void dotPaint(int x, int y) {
 		final Graphics2D G2 = GHQ.getG2D();
 		final Font PREV_FONT = G2.getFont();
-		G2.setFont(FONT.deriveFont(40F));
-		G2.setColor(COLOR);
-		G2.drawString(WORDS, x, y);
+		G2.setFont(font.deriveFont(40F));
+		G2.setColor(color);
+		G2.drawString(words, x, y);
 		G2.setFont(PREV_FONT);
 	}
 	@Override
