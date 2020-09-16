@@ -17,7 +17,6 @@ import physics.HasUIBoundingBox;
 import physics.Point;
 import physics.hitShape.AbstractRectShape;
 import physics.hitShape.HasArea;
-import physics.hitShape.HitShape;
 import physics.hitShape.RectShape;
 
 /**

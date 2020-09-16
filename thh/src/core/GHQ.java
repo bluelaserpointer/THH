@@ -36,6 +36,7 @@ import gui.MouseHook;
 import input.key.KeyListenerEx;
 import input.keyType.KeyTypeListener;
 import input.mouse.MouseListenerEx;
+import physics.HasBoundingBox;
 import physics.Point;
 import physics.stage.GHQStage;
 import preset.unit.Unit;
@@ -1085,16 +1086,6 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 		g2.drawString(string, x, y);
 		g2.setFont(FONT);
 	}
-	public static final void drawStringGHQ(String string, int x, int y, float fontSize) {
-		drawStringGHQ(string, x, y, g2.getFont().deriveFont(fontSize));
-	}
-	public static final void drawStringGHQ(String string, int x, int y, int fontStyle, float fontSize) {
-		drawStringGHQ(string, x, y, g2.getFont().deriveFont(fontStyle, fontSize));
-	}
-	public static final void drawStringGHQ(String string, int x, int y) {
-		if(string != null)
-			g2.drawString(string, x, y);
-	}
 	public static final void drawStringGHQ(String string, int x, int y, int lineH, int lineWordAmount) {
 		int nowIndex = 0;
 		while(!string.isEmpty()) {
@@ -1119,6 +1110,12 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 	}
 	public static final void drawString_center(String string, int left, int top, int w, int h) {
 		drawString_center(string, left + w/2, top, h);
+	}
+	public static void drawString_center(String string, HasBoundingBox hasBoundingBox) {
+		drawString_center(string, hasBoundingBox.left(), hasBoundingBox.top(), hasBoundingBox.width(), hasBoundingBox.height());
+	}
+	public static void drawString_center(String string, HasBoundingBox hasBoundingBox, int newHeight) {
+		drawString_center(string, hasBoundingBox.left(), hasBoundingBox.top(), hasBoundingBox.width(), newHeight);
 	}
 	public static final void drawString_left(String string, int left, int top, int h) {
 		drawStringGHQ(string, left, top + h, g2.getFont().deriveFont((float)(2*h)));

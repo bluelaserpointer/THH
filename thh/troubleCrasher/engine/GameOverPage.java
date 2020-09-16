@@ -10,7 +10,6 @@ public class GameOverPage extends GUIParts {
 	private final GUIParts toStartScreenBtn;
 	private final GUIParts toLoadScreenBtn;
 	private final GUIParts endGameScreenBtn;
-	private String text;
 	public GameOverPage(GamePageSwitcher gamePageSwitcher) {
 		this.setBGImage("thhimage/Game_Over_BG.png");
 		toStartScreenBtn = gamePageSwitcher.getSwitcherButton(GamePageSwitcher.STARTSCREEN);
@@ -47,6 +46,6 @@ public class GameOverPage extends GUIParts {
 			arrowIF.dotPaint(endGameScreenBtn.left() - 100, endGameScreenBtn.cy());
 		}
 		GHQ.getG2D(GamePageSwitcher.COLOR_GOLD);
-		GHQ.drawStringGHQ("警长在过大的压力与重伤之下倒下了", 340, 400, 20F);
+		GHQ.drawString_center("警长在过大的压力与重伤之下倒下了", 500, 400, 20);
 	}
 }

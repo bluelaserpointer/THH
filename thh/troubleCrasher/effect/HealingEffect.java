@@ -21,10 +21,10 @@ public class HealingEffect extends DotPaint {
 			healingPlusIF.dotPaint_rate(x + 75, y + 80 - yPos, 0.4);
 			healingPlusIF.dotPaint_rate(x - 82, y + 90 - yPos, 0.4);
 			GHQ.getG2D(Color.GREEN);
-			GHQ.drawStringGHQ("HEAL", x - 10, y - yPos/3, 50F);
+			GHQ.drawString_center("HEAL", x, y - yPos/3, 50);
 		} else if(passedFrame < 25) {
 			GHQ.getG2D(Color.GREEN);
-			GHQ.drawStringGHQ("HEAL", x - 10, y - yPos/3, 50F);
+			GHQ.drawString_center("HEAL", x, y - yPos/3, 50);
 		}
 	}
 

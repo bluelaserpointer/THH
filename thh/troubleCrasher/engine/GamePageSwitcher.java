@@ -3,16 +3,13 @@ package troubleCrasher.engine;
 import java.awt.Color;
 import java.util.List;
 
-// import org.w3c.dom.events.MouseEvent;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 
 import core.GHQ;
 import gui.AnimatedGHQTextArea;
 import gui.GUIParts;
 import gui.GUIPartsSwitcher;
 import paint.ImageFrame;
-import paint.dot.DotPaint;
 import paint.rect.RectPaint;
 import troubleCrasher.jigsaw.Jigsaw;
 import troubleCrasher.jigsaw.JigsawEnum;
@@ -66,7 +63,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 				super.paint();
 				nextBar.rectPaint(left(), top(), width(), height());
 				GHQ.getG2D(Color.WHITE);
-				GHQ.drawStringGHQ(this.name() , left() + 10, top() + 30, 25F);
+				GHQ.drawString_center(this.name(), this);
 			}
 			
 			@Override
@@ -266,7 +263,7 @@ public class GamePageSwitcher extends GUIPartsSwitcher {
 										super.paint();
 										crackingIF.rectPaint(left(), top(), width(), height());
 										GHQ.getG2D(Color.WHITE);
-										GHQ.drawStringGHQ("承受", cx() - 30, cy() + 10, 30F);
+										GHQ.drawString_center("承受", this, 30);
 										final Jigsaw disposedJigsaw = TCGame.jigsawViewer.disposedJigsaw();
 										if (disposedJigsaw != null) {
 											disposedJigsaw.paint(left(), top());
