@@ -1108,13 +1108,17 @@ public final class GHQ extends JPanel implements MouseListener,MouseMotionListen
 			y += lineH;
 		}
 	}
+	public static final void drawString_center(String string, int cx, int cy, Font font) {
+		final int strWidth = GHQ.getG2D().getFontMetrics(font).stringWidth(string);
+		drawStringGHQ(string, cx - strWidth/2, cy + font.getSize()/4, font);
+	}
 	public static final void drawString_center(String string, int cx, int top, int h) {
 		final Font newFont = g2.getFont().deriveFont((float)(2*h));
 		final int strWidth = GHQ.getG2D().getFontMetrics(newFont).stringWidth(string);
 		drawStringGHQ(string, cx - strWidth/2, top + h, newFont);
 	}
 	public static final void drawString_center(String string, int left, int top, int w, int h) {
-		drawStringGHQ(string, left + w/2, top, h);
+		drawString_center(string, left + w/2, top, h);
 	}
 	public static final void drawString_left(String string, int left, int top, int h) {
 		drawStringGHQ(string, left, top + h, g2.getFont().deriveFont((float)(2*h)));

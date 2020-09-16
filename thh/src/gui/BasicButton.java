@@ -61,7 +61,7 @@ public class BasicButton extends GUIParts {
 			super.paint();
 		}
 		if(strPaint != null)
-			strPaint.dotPaint(right(), bottom());
+			strPaint.dotPaint(cx(), cy());
 	}
 	@Override
 	public boolean clicked(MouseEvent e) {
